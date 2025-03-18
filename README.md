@@ -1,5 +1,9 @@
 # Life RPG Plugin
 
+Still to do !!
+
+<!-- todo -->
+
 ## Description
 This project is a plugin for Obsidian that transforms your life into an RPG game. It includes a quest system, levels, XP, classes, and skills.
 

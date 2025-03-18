@@ -7,10 +7,12 @@
     },
     "persona": {
       "name": "User",
-      "xp": 0,
       "class": "user",
       "health": 100,
-      "level": 1
+      "xp": 1150,
+      "level": 7,
+      "newXp": 161,
+      "lvlThreshold": 296
     },
     "attribute": {
       "strength": 10,

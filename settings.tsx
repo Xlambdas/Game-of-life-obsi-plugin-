@@ -17,10 +17,12 @@ export interface GameSettings {
 		};
 		persona: {
 			name: string;
-			level: [number, number];
-			xp: number;
 			class: string;
 			health: number;
+			xp: number;
+			level: number;
+			newXp: number;
+			lvlThreshold: number;
 		};
 		attribute: {
 			strength: number;
@@ -48,10 +50,12 @@ export const DEFAULT_SETTINGS: GameSettings = {
 		},
 		persona: {
 			name: "User",
-			level: [1, 0],
-			xp: 0,
 			class: "user",
 			health: 100,
+			xp: 0,
+			level: 1,
+			newXp: 0,
+			lvlThreshold: 100,
 		},
 		attribute: {
 			strength: 10,
@@ -68,7 +72,7 @@ export const DEFAULT_SETTINGS: GameSettings = {
 		quests: {},
 		skills: {},
 	}
-};
+}; // user.persona.level[0] = level, user.persona.level[1] = xp du niveau actuel, user.persona.level[2] = xp total (depuis le début)
 
 export class selfSettingTab extends PluginSettingTab {
 	plugin: any;
