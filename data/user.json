@@ -1,0 +1,30 @@
+{
+  "user1": {
+    "settings": {
+      "difficulty": "easy",
+      "theme": "default",
+      "language": "en"
+    },
+    "persona": {
+      "name": "User",
+      "xp": 0,
+      "class": "user",
+      "health": 100,
+      "level": 1
+    },
+    "attribute": {
+      "strength": 10,
+      "agility": 10,
+      "endurance": 10,
+      "charisma": 10,
+      "wisdom": 10,
+      "perception": 10,
+      "intelligence": 10
+    },
+    "free_pts": 0,
+    "inventory": {},
+    "equipment": {},
+    "quests": {},
+    "skills": {}
+  }
+}
