@@ -1,41 +1,39 @@
-# Obsidian Sample Plugin
+# Life RPG Plugin
 
-This is a sample plugin for Obsidian (https://obsidian.md).
+## Description
+This project is a plugin for Obsidian that transforms your life into an RPG game. It includes a quest system, levels, XP, classes, and skills.
 
-This project uses TypeScript to provide type checking and documentation.
-The repo depends on the latest plugin API (obsidian.d.ts) in TypeScript Definition format, which contains TSDoc comments describing what it does.
+## Installation
+1. Clone the repository into the Obsidian plugins directory.
+2. accept the use of the plugin in your vault Obsidian.
 
-This sample plugin demonstrates some of the basic functionality the plugin API can do.
-- Adds a ribbon icon, which shows a Notice when clicked.
-- Adds a command "Open Sample Modal" which opens a Modal.
-- Adds a plugin setting tab to the settings page.
-- Registers a global click event and output 'click' to the console.
-- Registers a global interval which logs 'setInterval' to the console.
+## Files
+### index.js
+This file sets up and starts the HTTP server for the API.
 
-## First time developing plugins?
+### sidebar.js
+This file contains the logic to manage levels in the plugin.
 
-Quick starting guide for new plugin devs:
+## Contributing
+Contributions are welcome! Please submit a pull request or open an issue to discuss the changes you want to make.
 
-- Check if [someone already developed a plugin for what you want](https://obsidian.md/plugins)! There might be an existing plugin similar enough that you can partner up with.
-- Make a copy of this repo as a template with the "Use this template" button (login to GitHub if you don't see it).
-- Clone your repo to a local development folder. For convenience, you can place this folder in your `.obsidian/plugins/your-plugin-name` folder.
-- Install NodeJS, then run `npm i` in the command line under your repo folder.
-- Run `npm run dev` to compile your plugin from `main.ts` to `main.js`.
-- Make changes to `main.ts` (or create new `.ts` files). Those changes should be automatically compiled into `main.js`.
-- Reload Obsidian to load the new version of your plugin.
-- Enable plugin in settings window.
-- For updates to the Obsidian API run `npm update` in the command line under your repo folder.
+## License
+This project is licensed under the MIT License.
 
-## Releasing new releases
+## Features
+- **Quest System**: Define and manage quests.
+- **Levels and XP**: Track levels and experience points.
+- **Classes and Skills**: Define character classes and skills.
 
-- Update your `manifest.json` with your new version number, such as `1.0.1`, and the minimum Obsidian version required for your latest release.
-- Update your `versions.json` file with `"new-plugin-version": "minimum-obsidian-version"` so older versions of Obsidian can download an older version of your plugin that's compatible.
-- Create new GitHub release using your new version number as the "Tag version". Use the exact version number, don't include a prefix `v`. See here for an example: https://github.com/obsidianmd/obsidian-sample-plugin/releases
-- Upload the files `manifest.json`, `main.js`, `styles.css` as binary attachments. Note: The manifest.json file must be in two places, first the root path of your repository and also in the release.
-- Publish the release.
+## Future Enhancements
+- **Inventory System**: Manage items and equipment.
+- **Achievements**: Track and display achievements.
+- **Multiplayer Support**: Allow multiple users to interact.
 
-> You can simplify the version bump process by running `npm version patch`, `npm version minor` or `npm version major` after updating `minAppVersion` manually in `manifest.json`.
-> The command will bump version in `manifest.json` and `package.json`, and add the entry for the new version to `versions.json`
+## Missing Information
+- Detailed setup instructions for the quest system.
+- Examples of how to define and manage classes and skills.
+- Information on how to integrate with other Obsidian plugins.
 
 ## Adding your plugin to the community plugin list
 
