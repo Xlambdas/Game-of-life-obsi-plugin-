@@ -205,6 +205,17 @@ export class selfSettingTab extends PluginSettingTab {
 					.setButtonText('reset')
 					.onClick(async () => {
 						this.plugin.settings = { ...DEFAULT_SETTINGS};
+						const lealflll = this.app.workspace.getLeaf(false);
+						const lealflll2 = this.app.workspace.getLeaf(true);
+						const lealflll3 = this.app.workspace.getLeavesOfType("my-view")[0];
+						console.log('settings reset', lealflll, lealflll2, lealflll3);
+						// this.app.workspace.getLeavesOfType('workspace').forEach((leaf) => leaf.detach());
+						this.app.workspace.getLeavesOfType("sidebar").forEach((leaf) => leaf.detach());
+
+						// const rightLeaf = this.app.workspace.getRightLeaf(false);
+						// if (rightLeaf) {
+						// 	rightLeaf.detach();
+						// }
 						await this.plugin.saveSettings();
 					})
 					.buttonEl.style.backgroundColor = '#cb2d06'

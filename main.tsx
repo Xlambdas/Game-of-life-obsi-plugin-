@@ -38,10 +38,12 @@ export default class game_of_life extends Plugin {
 
 		this.addRibbonIcon('sword', 'Activate sideview', () => {
 			this.openSideView();
+			new Notice("Welcome Back !");
 		});
 
 		this.addRibbonIcon('dice', 'Activate mainview', () => {
 			this.openMainView();
+			new Notice("Welcome Back !");
 		});
 
 		// --- | All commands | ---
@@ -49,6 +51,7 @@ export default class game_of_life extends Plugin {
 			id: "open RPG sidebar",
 			name: "open RPG sidebar",
 			callback: () => {
+				new Notice("Welcome Back !");
 				console.log("print, callback sidebar RPG");
 				this.openSideView();
 			}

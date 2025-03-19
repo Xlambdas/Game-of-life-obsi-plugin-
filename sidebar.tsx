@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Notice, Modal, App } from "obsidian";
 
+
+
 interface SidebarProps {
 	app: any;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ app }) => {
+
 	const filePath = `${app.vault.configDir}/plugins/game-of-life/data/user.json`;
 	const [user, setUser] = useState<any>(null);
 	const [xp, setXp] = useState(0);
@@ -33,6 +36,8 @@ const Sidebar: React.FC<SidebarProps> = ({ app }) => {
 			const level = parsedData.user1.persona.level;
 			const lvlThreshold = parsedData.user1.persona.lvlThreshold;
 			const newXp = parsedData.user1.persona.newXp;
+			const quests = parsedData.user1.quests;
+			console.log("on load data : ", quests);
 			// console.log(`XP: ${xp}, level: ${level}`);
 			setXp(xp);
 			setLevel(level);
@@ -73,7 +78,7 @@ const Sidebar: React.FC<SidebarProps> = ({ app }) => {
 	useEffect(() => {
 		loadUserData();
 	}, [app]);
- 
+
 	const updateXP = async (amount: number) => {
 		if (!user) return;
 
@@ -108,6 +113,8 @@ const Sidebar: React.FC<SidebarProps> = ({ app }) => {
 
 	if (!user) return <p>Chargement...</p>;
 	
+	const newLocal = `${(user?.user1.persona.newXp / user?.user1.persona.lvlThreshold) * 100}`;
+	// console.log(`newLocal = ${newLocal}`);
 // <div className="progress-bar">
 // <div className="bg-blue-500 h-4 transition-all duration-300" style={{ width: `${(newXp / lvlThreshold) * 100}%` }}>|</div>
 // 				</div>
@@ -116,25 +123,57 @@ const Sidebar: React.FC<SidebarProps> = ({ app }) => {
 
 	return (
 		<div className="sidebar">
+			{/* Xp and level */}
 			<div className="card">
-				<h2 className="card-title">Niveau {user?.user1.persona.level}</h2>
-
-
+				<h2 className="card-title">Level {user?.user1.persona.level}</h2>
+				<progress className="progress-bar" value={newLocal} max="100" style={{  }}>newlocal</progress>
 				<p className="xp-text">{user?.user1.persona.newXp}/{user?.user1.persona.lvlThreshold}</p>
-				<p>Nom : {user?.user1.persona.name}</p>
-			</div>
-			<h2>Panneau interactif</h2>
-			<p>Ceci est une interface React dans Obsidian.</p>
-			<p>XP : {xp}</p>
-			<button onClick={() => updateXP(10)}>Augmenter XP</button>
-			<button onClick={() => updateXP(-10)} disabled={xp <= 0}>Diminuer XP</button>
-			<div className="progress-test">
-				<p>papapodfecopsdrncfiezjdrcf</p>
-				<div className="progress-bar">
-					<div className="progress" style={{ width: `${(user?.user1.persona.newXp / user?.user1.persona.lvlThreshold) * 100}%` }}>o</div>
+				<div>
+					<p className="card-subtitle">Name : {user?.user1.persona.name}</p>
+					<p className="card-subtitle">Class : {user?.user1.persona.class}</p>
+					<p className="card-subtitle">Current XP : {xp}</p>
 				</div>
 			</div>
-			<ProgressBar testXp={50} testlvlThreshold={100} />
+
+			{/* Quests */}
+			<div className="card"> {/* sinon proposé accordion ? */}
+				<h3 className="accordion-title">Quests</h3>
+				
+				{/* {user.quests.map((quest: any) => ( // todo - comprendre comment fonctionne .map
+					<div key={quest.id} className="quest-item">
+						<p>{quest.title}</p>
+						<p className="quest-status">{quest.xp}</p>
+					</div>
+				))} */}
+			</div>
+
+			{/* Stats */}
+			<div className="card">
+				<h2 className="card-title">Stats</h2>
+				{/* {Object.entries(user.stats).map(([key, value]) => (
+					<div key={key} className="stat-item">
+						<span className="stat-name">{key}</span>
+						<span className="stat-value">{value}</span>
+					</div>
+				))} */}
+			</div>
+
+			{/* Skills ?  */} // todo
+			{/* Badges ? */} // todo
+
+			{/* dev part !! */}
+			<div className="card">
+				<button onClick={() => updateXP(10)}>Augmenter XP</button>
+				<button onClick={() => updateXP(-10)} disabled={xp <= 0}>Diminuer XP</button>
+			</div>
+
+			{/* pistes de recherche */}
+			{/* <div><ul>
+				{user.user1.quests.map((user.user1.quests) => (
+				<li key={item.id}>{item.name}</li>
+				))}
+			</ul>
+			</div> */}
 		</div>
 	);
 };

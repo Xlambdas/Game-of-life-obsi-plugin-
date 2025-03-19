@@ -1,4 +1,5 @@
 {
+  "Setting": "default",
   "user1": {
     "settings": {
       "difficulty": "easy",
@@ -6,13 +7,13 @@
       "language": "en"
     },
     "persona": {
-      "name": "User",
-      "class": "user",
+      "name": "Userezdqshcblqzshbc",
+      "class": "rogue",
       "health": 100,
-      "xp": 1150,
-      "level": 7,
-      "newXp": 161,
-      "lvlThreshold": 296
+      "xp": 520,
+      "level": 4,
+      "newXp": 156,
+      "lvlThreshold": 172
     },
     "attribute": {
       "strength": 10,
@@ -26,7 +27,13 @@
     "free_pts": 0,
     "inventory": {},
     "equipment": {},
-    "quests": {},
+    "quests": {
+      "id": 1,
+      "title": "The first quest",
+      "description": "This is the first quest",
+      "xp": 100,
+      "gold": 100
+    },
     "skills": {}
   }
 }
