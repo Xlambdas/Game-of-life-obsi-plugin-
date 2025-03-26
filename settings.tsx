@@ -3,9 +3,10 @@ import { PluginSettingTab, Plugin, App, Setting, Modal } from 'obsidian';
 import * as fs from 'fs';
 import * as path from 'path';
 import { create } from 'domain';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 import { createRoot, Root } from 'react-dom/client';
+// import Sidebar from './view/sidebar';
 
 
 export interface GameSettings {
@@ -36,6 +37,7 @@ export interface GameSettings {
 		free_pts: number;
 		inventory: {};
 		equipment: {};
+		habits: {};
 		quests: {};
 		skills: {};
 	}
@@ -69,12 +71,14 @@ export const DEFAULT_SETTINGS: GameSettings = {
 		free_pts: 0,
 		inventory: {},
 		equipment: {},
+		habits: {},
 		quests: {},
 		skills: {},
 	}
 }; // user.persona.level[0] = level, user.persona.level[1] = xp du niveau actuel, user.persona.level[2] = xp total (depuis le début)
 
 export class selfSettingTab extends PluginSettingTab {
+	settings: GameSettings;
 	plugin: any;
 
 	constructor(app: App, plugin: any) {
@@ -199,27 +203,18 @@ export class selfSettingTab extends PluginSettingTab {
 
 		new Setting(containerEl)
 			.setName('Reset Game Settings')
-			.setDesc('Click to restart the settings to default. Be carefull, all your game data may be erased... If so close this window after clicking this button.')
-			.addButton(button =>
+			.setDesc('Click to restart the settings to default. Be careful, all your game data may be erased... If so close this window after clicking this button.')
+			.addButton(button => {
 				button
 					.setButtonText('reset')
 					.onClick(async () => {
 						this.plugin.settings = { ...DEFAULT_SETTINGS};
-						const lealflll = this.app.workspace.getLeaf(false);
-						const lealflll2 = this.app.workspace.getLeaf(true);
-						const lealflll3 = this.app.workspace.getLeavesOfType("my-view")[0];
-						console.log('settings reset', lealflll, lealflll2, lealflll3);
-						// this.app.workspace.getLeavesOfType('workspace').forEach((leaf) => leaf.detach());
-						this.app.workspace.getLeavesOfType("sidebar").forEach((leaf) => leaf.detach());
-
-						// const rightLeaf = this.app.workspace.getRightLeaf(false);
-						// if (rightLeaf) {
-						// 	rightLeaf.detach();
-						// }
+						console.log('settings reset', this.plugin.settings);
+						// useEffect(() => {}, [this.plugin.settings]);
 						await this.plugin.saveSettings();
 					})
-					.buttonEl.style.backgroundColor = '#cb2d06'
-			);
+					.buttonEl.style.backgroundColor = '#cb2d06';
+			});
 
 		containerEl.createEl('h4', { text: 'Debug' });
 		new Setting(containerEl)
@@ -626,4 +621,3 @@ export async function showPerson(parsed: any): Promise<any> {
 // }
 
 // combineData();
-

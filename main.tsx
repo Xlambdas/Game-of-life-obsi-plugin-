@@ -1,12 +1,10 @@
 import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting, TFile, TextComponent, ButtonComponent, ItemView, WorkspaceLeaf, View } from 'obsidian';
-import React, { createContext } from "react";
+import React, { createContext, useState } from "react";
 import { createRoot } from "react-dom/client";
 //from other files :
-import ReactView from "./components/ReactView";
 import {GameSettings, selfSettingTab} from './settings';
-// import Sidebar from 'sidebar';
 import userData from "data/user.json";
-import Sidebar from 'sidebar';
+import { ParentA, ParentView, TestParentView } from 'view/parentView';
 
 // --- | settings App part | ---
 interface mainSettings {
@@ -20,6 +18,10 @@ const DEFAULT_SETTINGS: mainSettings = {
 export const AppContext = createContext<App | undefined>(undefined);
 export const SIDE_VIEW = 'side-view';
 export const MAIN_VIEW = 'main-view';
+export const TEST_VIEW = 'test-view';
+export const TEST_SIDE_VIEW = 'test-side-view';
+export const TEST_MAIN_VIEW = 'test-main-view';
+
 
 /**
  * Game of Life Plugin for Obsidian.
@@ -30,11 +32,13 @@ export default class game_of_life extends Plugin {
 
 	async onload() {
 		// --- | Settings part | ---
-		console.log('loading plugin');
+		console.warn('loading plugin');
 		await this.loadSettings();
 		this.addSettingTab(new selfSettingTab(this.app, this));
 		this.registerView(MAIN_VIEW, (leaf) => new mainView(leaf));  // todo
-		this.registerView(SIDE_VIEW, (leaf) => new sideView(leaf));
+		this.registerView(TEST_SIDE_VIEW, (leaf) => new testSideView(leaf)); // todo
+		this.registerView(TEST_MAIN_VIEW, (leaf) => new testMainView(leaf)); // todo
+		this.registerView(SIDE_VIEW, (leaf) => new sideView(leaf));  // todo
 
 		this.addRibbonIcon('sword', 'Activate sideview', () => {
 			this.openSideView();
@@ -74,6 +78,40 @@ export default class game_of_life extends Plugin {
 			}
 		});
 
+		// this.addCommand({
+		// 	id: "test parent/enfant",
+		// 	name: "test parent/enfant",
+		// 	callback: () => {
+		// 		new ParentModal(this.app).open();
+		// 	}
+		// });
+		// this.addCommand({
+		// 	id: "test sideview",
+		// 	name: "test sideview",
+		// 	callback: () => {
+		// 		console.log("print, callback sidebar RPG");
+		// 		this.openTestView();
+		// 	}
+		// });
+
+		// this.addCommand({
+		// 	id: "Maxi test sideview",
+		// 	name: "Maxi test sideview",
+		// 	callback: () => {
+		// 		console.log("print, callback sidebar RPG");
+		// 		this.openTestSideView();
+		// 	}
+		// });
+
+		// this.addCommand({
+		// 	id: "Maxi test mainview",
+		// 	name: "Maxi test mainview",
+		// 	callback: () => {
+		// 		console.log("print, callback sidebar RPG");
+		// 		this.openTestMainView();
+		// 	}
+		// });
+
 		this.addCommand({
 			id: "open game life file",
 			name: "open game life",
@@ -86,7 +124,11 @@ export default class game_of_life extends Plugin {
 	}
 
 	onunload() {
-		console.log('unloading plugin');
+		console.warn('unloading plugin');
+		this.app.workspace.getLeavesOfType(SIDE_VIEW).forEach((leaf) => leaf.detach());
+		this.app.workspace.getLeavesOfType(MAIN_VIEW).forEach((leaf) => leaf.detach());
+		this.app.workspace.getLeavesOfType(TEST_SIDE_VIEW).forEach((leaf) => leaf.detach());
+		this.app.workspace.getLeavesOfType(TEST_MAIN_VIEW).forEach((leaf) => leaf.detach());
 	}
 
 
@@ -127,14 +169,14 @@ export default class game_of_life extends Plugin {
 		this.settings = { ...DEFAULT_SETTINGS, ...data };
 
 		const path = `${this.app.vault.configDir}/plugins/game-of-life/data/user.json`;
-		console.log("Paramètres chargés !", this.settings);
+		// console.log("Paramètres chargés !", this.settings);
 
 		try {
 			if (await this.app.vault.adapter.exists(path)) {
 				const data = await this.app.vault.adapter.read(path);
 				const parsed = JSON.parse(data);
-				console.log("loadSettings = if settings : ", data);
-				console.log("loadSettings = if parsed : ", this.app.vault.adapter);
+				console.log("(file : main) loadSettings = settings exist");
+				// console.log("loadSettings = if parsed : ", this.app.vault.adapter);
 				return { ...DEFAULT_SETTINGS, ...parsed };
 			} else {
 				console.warn("Fichier de paramètres introuvable. Création avec valeurs par défaut.");
@@ -176,24 +218,127 @@ export default class game_of_life extends Plugin {
 		const leaves = workspace.getLeavesOfType(SIDE_VIEW);
 		let leaf: WorkspaceLeaf | null = null;
 
-			console.log("open leaf", leaf);
-		
-			if (leaves.length === 0) {
-				leaf = workspace.getRightLeaf(false);
-				if (leaf) {
-					await leaf.setViewState({ type: SIDE_VIEW, active: true });
-				}
-			} else {
-				leaf = leaves[0];
+		console.log("open side leaf", leaf);
+		if (leaves.length === 0) {
+			leaf = workspace.getRightLeaf(false);
+			if (leaf) {
+				await leaf.setViewState({ type: SIDE_VIEW, active: true });
 			}
-		
+		} else {
+			leaf = leaves[0];
+		}
+	}
+	// async openTestView() {
+	// 	const { workspace } = this.app;
 
-		if (leaf) {
-			workspace.revealLeaf(leaf);
+	// 	const leaves = workspace.getLeavesOfType(TEST_VIEW);
+	// 	let leaf: WorkspaceLeaf | null = null;
+
+	// 	console.log("open test leaf");
+	// 	if (leaves.length === 0) {
+	// 		leaf = workspace.getRightLeaf(false);
+	// 		if (leaf) {
+	// 			await leaf.setViewState({ type: TEST_VIEW, active: true });
+	// 		}
+	// 	} else {
+	// 		leaf = leaves[0];
+	// 	}
+	// }
+	async openTestSideView() {
+		const { workspace } = this.app;
+
+		const leaves = workspace.getLeavesOfType(TEST_SIDE_VIEW);
+		let leaf: WorkspaceLeaf | null = null;
+
+		console.log("open test leaf");
+		if (leaves.length === 0) {
+			leaf = workspace.getRightLeaf(false);
+			if (leaf) {
+				await leaf.setViewState({ type: TEST_SIDE_VIEW, active: true });
+			}
+		} else {
+			leaf = leaves[0];
+		}
+	}
+	async openTestMainView() {
+		const { workspace } = this.app;
+
+		const leaves = workspace.getLeavesOfType(TEST_MAIN_VIEW);
+		let leaf: WorkspaceLeaf | null = null;
+
+		console.log("open test leaf");
+		if (leaves.length === 0) {
+			leaf = workspace.getRightLeaf(false);
+			if (leaf) {
+				await leaf.setViewState({ type: TEST_MAIN_VIEW, active: true });
+			}
+		} else {
+			leaf = leaves[0];
 		}
 	}
 };
 
+
+// --- | view part | ---
+
+class sideView extends ItemView {
+	constructor(leaf: WorkspaceLeaf) {
+		super(leaf);
+	}
+
+	getViewType() {
+		return SIDE_VIEW;
+	}
+
+	getDisplayText() {
+		return 'Test view';
+	}
+
+	getIcon() {
+		return 'dice';
+	}
+
+	async onOpen() {
+		const container = this.containerEl.children[1];
+		container.empty();
+		// container.createEl('h4', { text: ' test view' });
+		const root = createRoot(container);
+		root.render(<ParentView app={this.app} type="side" />);
+	}
+
+	async onClose() {
+		// Nothing to clean up.
+	}
+}
+class mainView extends ItemView { // todo
+	constructor(leaf: WorkspaceLeaf) {
+		super(leaf);
+	}
+
+	getViewType() {
+		return MAIN_VIEW;
+	}
+
+	getDisplayText() {
+		return 'Main view';
+	}
+
+	getIcon() {
+		return 'sword';
+	}
+
+	async onOpen() {
+		const container = this.containerEl;
+		container.empty();
+		// container.createEl('h4', { text: ' main test view' });
+		const root = createRoot(container);
+		root.render(<ParentView app={this.app} type="main" />)
+	}
+
+	async onClose() {
+		// Nothing to clean up.
+	}
+}
 
 
 //------------------ | Piste de recherche | ---------------------------------------
@@ -246,49 +391,19 @@ class questModal extends Modal {
 
 }
 
-// class sidebarRPG extends ItemView {
-// 	// const { workspace} = this.app;
-	
-// 	constructor(leaf: WorkspaceLeaf) {
-// 		super(leaf);
-// 	}
 
-// 	getViewType(): string {
-// 		return "my-view";
-// 	}
-
-// 	getDisplayText(): string {
-// 		return "Panneau interactif";
-// 	}
-
-// 	async onOpen() {
-// 		console.log("open leaf (sidebarRPG)")
-// 		const container = this.containerEl.children[1];
-// 		container.empty();
-
-// 		const root = createRoot(container);
-// 		root.render(<Component />)
-// 	}
-
-// 	async onClose() {
-// 		this.containerEl.empty();
-// 	}
-// }
-
-
-
-
-export class sideView extends ItemView {
+//  --- | piste de recherche | ---
+class testSideView extends ItemView {
 	constructor(leaf: WorkspaceLeaf) {
 		super(leaf);
 	}
 
 	getViewType() {
-		return SIDE_VIEW;
+		return TEST_VIEW;
 	}
 
 	getDisplayText() {
-		return 'Side view';
+		return 'Test view';
 	}
 
 	getIcon() {
@@ -298,9 +413,9 @@ export class sideView extends ItemView {
 	async onOpen() {
 		const container = this.containerEl.children[1];
 		container.empty();
-
+		// container.createEl('h4', { text: ' test view' });
 		const root = createRoot(container);
-		root.render(<Sidebar app={this.app} />)
+		root.render(<TestParentView type="testSide" />);
 	}
 
 	async onClose() {
@@ -308,8 +423,7 @@ export class sideView extends ItemView {
 	}
 }
 
-
-export class mainView extends ItemView { // todo
+class testMainView extends ItemView { // todo
 	constructor(leaf: WorkspaceLeaf) {
 		super(leaf);
 	}
@@ -329,46 +443,12 @@ export class mainView extends ItemView { // todo
 	async onOpen() {
 		const container = this.containerEl;
 		container.empty();
-		container.createEl('h4', { text: ' main test view' });
-		// const root = createRoot(container);
-		// root.render(<Sidebar app={this.app} />)
+		// container.createEl('h4', { text: ' main test view' });
+		const root = createRoot(container);
+		root.render(<TestParentView type="testMain" />)
 	}
 
 	async onClose() {
 		// Nothing to clean up.
 	}
 }
-
-
-interface ComponentProps {
-	app: App;
-}
-
-const Component: React.FC<ComponentProps> = ({ app }) => {
-	const [user, setUser] = React.useState(userData);
-	const [xp, setXp] = React.useState(user.user1.persona.xp);
-	// const filePath = "data/user.json";
-	console.log("user", user);
-
-	return (
-		<div style={{ padding: "10px", color: "white", background: "black" }}>
-			<h2>Panneau interactif</h2>
-			<p>Ceci est une interface React dans Obsidian.</p>
-			<p>XP : {xp}</p>
-			<button onClick={() => setXp(xp + 10)}>Augmenter XP</button>
-			<button
-				onClick={async () => {
-					setXp(xp + 10);
-					user.user1.persona.xp = xp;
-
-					const path = `${app.vault.configDir}/plugins/game-of-life/data/user.json`;
-					console.log("path", path);
-					await app.vault.adapter.write(path, JSON.stringify(user, null, 2));
-					console.log("Données sauvegardées !");
-				}}
-			>
-				Sauvegarder
-			</button>
-		</div>
-	);
-};
