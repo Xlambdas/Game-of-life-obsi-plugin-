@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 // --- | side view interface | ---
 
@@ -10,9 +10,10 @@ interface SharedState {
 interface TestSideViewProps {
 	sharedState: SharedState;
 	updateSharedState: (newState: SharedState) => void;
+	onClose: () => void;
 }
 
-export const TestSideView: React.FC<TestSideViewProps> = ({ sharedState, updateSharedState }) => {
+export const TestSideView: React.FC<TestSideViewProps> = ({ sharedState, updateSharedState, onClose }) => {
 	const { xp, level } = sharedState;
 	const [reloadKey, setReloadKey] = useState(0);
 
@@ -30,6 +31,12 @@ export const TestSideView: React.FC<TestSideViewProps> = ({ sharedState, updateS
 		
 		setReloadKey(prevKey => prevKey + 1);
 	};
+
+	useEffect(() => {
+		return () => {
+			onClose(); // Trigger onClose when the component unmounts
+		};
+	}, [onClose]);
 
 	return (
 		<div key={reloadKey}>

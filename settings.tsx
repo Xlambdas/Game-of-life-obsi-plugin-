@@ -6,6 +6,7 @@ import { create } from 'domain';
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
 import { createRoot, Root } from 'react-dom/client';
+import { J } from 'framer-motion/dist/types.d-B50aGbjN';
 // import Sidebar from './view/sidebar';
 
 
@@ -39,6 +40,7 @@ export interface GameSettings {
 		equipment: {};
 		habits: {};
 		quests: {};
+		completedQuests: string[],
 		skills: {};
 	}
 }
@@ -73,6 +75,7 @@ export const DEFAULT_SETTINGS: GameSettings = {
 		equipment: {},
 		habits: {},
 		quests: {},
+		completedQuests: ["quest_1"],
 		skills: {},
 	}
 }; // user.persona.level[0] = level, user.persona.level[1] = xp du niveau actuel, user.persona.level[2] = xp total (depuis le début)
@@ -80,11 +83,15 @@ export const DEFAULT_SETTINGS: GameSettings = {
 export class selfSettingTab extends PluginSettingTab {
 	settings: GameSettings;
 	plugin: any;
+	dataUser: any;
 
 	constructor(app: App, plugin: any) {
 		super(app, plugin);
 		this.plugin = plugin;
+		this.dataUser = JSON.parse(JSON.stringify(this.plugin.settings));
 	}
+
+
 
 	display(): void {
 		const { containerEl } = this;
@@ -93,7 +100,7 @@ export class selfSettingTab extends PluginSettingTab {
 		const title = containerEl.createEl('h2', { text: 'Game of Life Plugin Settings' });
 		title.style.textAlign = 'center';
 		console.log('display all : ', this.plugin);
-
+		console.log('display test data : ', this.dataUser);
 		/** generals settings : include github documentation and tutoriel */
 		containerEl.createEl('h4', { text: 'General Settings' });
 		new Setting(containerEl)
@@ -479,6 +486,8 @@ export async function openFilePerson(): Promise<any> {
 		if (await this.app.vault.adapter.exists(path)) {
 			const data = await this.app.vault.adapter.read(path);
 			const parsed = JSON.parse(data);
+			console.log("File of the person exist :", data);
+			console.log('parsed : ', parsed);
 			return parsed;
 		} else {
 			console.warn("File of the person undefined. We need to take the default values.");
@@ -511,6 +520,7 @@ export async function createPerson(parsed: object): Promise<any> {
 	try {
 		const parse = parsed;
 		console.log('create person');
+		return parse;
 	} catch (error) {
 		console.error(error);
 	}
@@ -519,8 +529,8 @@ export async function createPerson(parsed: object): Promise<any> {
 export async function showPerson(parsed: any): Promise<any> {
 	try {
 		const parse = parsed;
-		console.log('show person : ', parse.name);
-		return parse.name;
+		console.log('show person : ', parse);
+		return parse;
 	} catch (error) {
 		console.error(error);
 	}

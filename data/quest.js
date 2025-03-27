@@ -1,20 +1,20 @@
-export default  quests = [
+export default quests = [
     {
-        id: 1,
+        id: "quest_1",
         title: "Faire 10 pompes 💪",
         description: "Fais 10 pompes pour améliorer ta force.",
         xp: 10,
-        completed: false,
+        completed: true,
     },
     {
-        id: 2,
+        id: "quest_2",
         title: "Lire 10 pages 📖",
         description: "Lis 10 pages d'un livre pour booster tes connaissances.",
         xp: 15,
         completed: false,
     },
     {
-        id: 3,
+        id: "quest_3",
         title: "Boire 2L d'eau 💧",
         description: "Hydrate-toi correctement aujourd'hui.",
         xp: 5,

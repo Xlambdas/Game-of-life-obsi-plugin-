@@ -1,67 +1,56 @@
-import React from "react";
-
-// exemple of modal :
-export const ModalTest = ({
-  onClose,
-  parentFunctions,
-}: {
-  onClose: () => void;
-  parentFunctions: {
-    sayHello: () => void;
-    increment: () => void;
-    reset: () => void;
-  };
-}) => {
-  return (
-    <div>
-      <h2>Test Modal</h2>
-      <button onClick={parentFunctions.sayHello}>Dire Bonjour (Parent)</button>
-      <button onClick={parentFunctions.increment}>Incrémenter (Parent)</button>
-      <button onClick={parentFunctions.reset}>Réinitialiser (Parent)</button>
-      <button onClick={onClose}>Fermer</button>
-    </div>
-  );
-};
+import React, { useEffect, useRef, useState } from "react";
 
 // --- | side view interface | ---
 
 interface ParentFunctions {
 	loadData: () => void;
 	updateXP: (amount: number) => void;
-	getChange: (parsed: string) => boolean;
+}
 
-	// calculLevel: (xp: number, level: number) => void;
-  }
-
-interface ChildProps {
+interface SideProps {
+	isOpen: boolean;
+	// onClose: () => void;
 	userData: any;
 	parentFunctions: ParentFunctions;
-  }
+}
 
-export const SideView: React.FC<ChildProps> = ({
+export const SideView: React.FC<SideProps> = ({
+	isOpen,
+	// onClose,
 	userData,
 	parentFunctions
 }) => {
-	console.log("file - SideView")
+	// console.log("file - SideView")
 
 	const data = JSON.stringify(userData, null, 2);
 	const parsed = JSON.parse(data);
 	const settings = parsed.user1.settings;
 	const user = parsed.user1.persona;
-	setTimeout(() => {
-		console.log("file sideView - const child - setTimeout");
-		if (parentFunctions.getChange(parsed) == true) {
-			parentFunctions.loadData();
-		}
-	}, 60000); // Attendre 1 minute avant de charger les données
-	const newLocal = `${(user.newXp / user.lvlThreshold) * 100}`;
-	// console.log("test: ", data);
-	// console.log("(file ModalTest - const child) parsed: ", parsed);
-	// console.log("(file ModalTest - const child) class: ", person.class);
-	// console.log("(file ModalTest - const child) updateXP: ", parentFunctions.updateXP);
+	const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+	const updateLoop = () => {
+		parentFunctions.loadData();
+		// console.log("file sideView - const child - updateLoop");
+	};
+
+	useEffect(() => {
+		if (isOpen) {
+			console.log("file sideView - const child - setTimeout");
+			timeoutRef.current = setTimeout(updateLoop, 20000); // reload every X seconds
+		}
+		return () => {
+			if (timeoutRef.current) {
+				clearTimeout(timeoutRef.current);
+			}
+		};
+	}, [isOpen]);
+
+	if (!isOpen) return null;
+
+
+	const newLocal = `${(user.newXp / user.lvlThreshold) * 100}`;
 	return (
-	  <div>
+	<div>
 		<div className="sidebar">
 			{/* Xp and level */}
 			<div className="card">
@@ -75,15 +64,15 @@ export const SideView: React.FC<ChildProps> = ({
 				</div>
 			</div>
 
-			{/* Quests */}
+			{/* Habits/Quests */}
 			<div className="card"> {/* sinon proposé accordion ? */}
 				<h3 className="accordion-title">Habits</h3>
-				{/* {user.quests.map((quest: any) => ( // todo - comprendre comment fonctionne .map
+				{user.quests.map((quest: any) => ( // todo - comprendre comment fonctionne .map
 					<div key={quest.id} className="quest-item">
 						<p>{quest.title}</p>
 						<p className="quest-status">{quest.xp}</p>
 					</div>
-				))} */}
+				))}
 			</div>
 			<div className="card"> {/* sinon proposé accordion ? */}
 				<h3 className="accordion-title">Quests</h3>
@@ -136,6 +125,19 @@ export const SideView: React.FC<ChildProps> = ({
 					{/* <button onClick={parentFunctions.updateXP(-10)}>Diminuer XP</button> */}
 			</div>
 		</div>
-	  </div>
+	</div>
 	);
   };
+
+
+async function loadQuests(): Promise<any[]> {
+    const filePath = `$/plugins/game-of-life/data/user.json`;
+    const response = await fetch(filePath);
+    return await response.json();
+}
+
+async function loadUserData(): Promise<any> {
+    const filePath = "path/to/user_data.json";
+    const response = await fetch(filePath);
+    return await response.json();
+}

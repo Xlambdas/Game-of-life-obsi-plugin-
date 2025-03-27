@@ -193,3 +193,35 @@ const Component: React.FC<ComponentProps> = ({ app }) => {
 	);
 };
 
+
+
+export const ParentA = () => {
+  const [count, setCount] = useState(0);
+
+  const sayHello = () => {
+	alert("Hello depuis le Parent !");
+  };
+
+  const increment = () => {
+	setCount((prev) => prev + 1);
+  };
+
+  const reset = () => {
+	setCount(0);
+  };
+
+  const parentFunctions = { sayHello, increment, reset };
+
+  return (
+	<div>
+	  <h2>Parent</h2>
+	  <p>Compteur : {count}</p>
+	  <button onClick={sayHello}>Dire Bonjour</button>
+	  <button onClick={increment}>Incrémenter</button>
+	  <button onClick={reset}>Réinitialiser</button>
+
+	  {/* Passer toutes les fonctions au composant enfant */}
+	  <ModalTest onClose={() => {}} parentFunctions={parentFunctions} />
+	</div>
+  );
+};

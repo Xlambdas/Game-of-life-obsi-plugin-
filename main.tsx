@@ -4,7 +4,7 @@ import { createRoot } from "react-dom/client";
 //from other files :
 import {GameSettings, selfSettingTab} from './settings';
 import userData from "data/user.json";
-import { ParentA, ParentView, TestParentView } from 'view/parentView';
+import { ParentView, TestParentView } from 'view/parentView';
 
 // --- | settings App part | ---
 interface mainSettings {
@@ -28,6 +28,7 @@ export const TEST_MAIN_VIEW = 'test-main-view';
  */
 export default class game_of_life extends Plugin {
 	settings: GameSettings;
+	intervalId: number | undefined;
 
 
 	async onload() {
@@ -120,11 +121,14 @@ export default class game_of_life extends Plugin {
 			}
 		});
 
-		this.registerInterval(window.setInterval(() => console.log('setInterval'), 5 * 60 * 1000));
+		this.intervalId = window.setInterval(() => console.log('setInterval'), 5 * 60 * 1000);
 	}
 
 	onunload() {
 		console.warn('unloading plugin');
+		if (this.intervalId) {
+			clearInterval(this.intervalId);
+		}
 		this.app.workspace.getLeavesOfType(SIDE_VIEW).forEach((leaf) => leaf.detach());
 		this.app.workspace.getLeavesOfType(MAIN_VIEW).forEach((leaf) => leaf.detach());
 		this.app.workspace.getLeavesOfType(TEST_SIDE_VIEW).forEach((leaf) => leaf.detach());
@@ -282,6 +286,9 @@ export default class game_of_life extends Plugin {
 // --- | view part | ---
 
 class sideView extends ItemView {
+	private timeoutId: NodeJS.Timeout | null = null;
+	private onCloseCallback: (() => void) | null = null;
+
 	constructor(leaf: WorkspaceLeaf) {
 		super(leaf);
 	}
@@ -303,14 +310,19 @@ class sideView extends ItemView {
 		container.empty();
 		// container.createEl('h4', { text: ' test view' });
 		const root = createRoot(container);
-		root.render(<ParentView app={this.app} type="side" />);
+		root.render(<ParentView app={this.app} type="" setOnCloseCallback={(callback) => { this.onCloseCallback = callback; }}/>);
 	}
 
 	async onClose() {
-		// Nothing to clean up.
+		if (this.onCloseCallback) {
+			this.onCloseCallback(); // Exécute le nettoyage dans ParentView
+		}
 	}
+
 }
 class mainView extends ItemView { // todo
+	private onCloseCallback: (() => void) | null = null;
+
 	constructor(leaf: WorkspaceLeaf) {
 		super(leaf);
 	}
@@ -332,11 +344,14 @@ class mainView extends ItemView { // todo
 		container.empty();
 		// container.createEl('h4', { text: ' main test view' });
 		const root = createRoot(container);
-		root.render(<ParentView app={this.app} type="main" />)
+		root.render(<ParentView app={this.app} type="main" setOnCloseCallback={(callback) => { this.onCloseCallback = callback; }} />);
+
 	}
 
 	async onClose() {
-		// Nothing to clean up.
+		if (this.onCloseCallback) {
+			this.onCloseCallback(); // Exécute le nettoyage dans ParentView
+		}
 	}
 }
 
