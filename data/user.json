@@ -1,4 +1,6 @@
 {
+  "Setting": "default",
+  "QuestSetting": "default",
   "user1": {
     "settings": {
       "difficulty": "easy",

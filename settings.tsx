@@ -291,7 +291,7 @@ export class selfSettingTab extends PluginSettingTab {
 
 	// 	new Setting(containerEl)
 	// 	.setName('Level')
-	// 	.addSlider(slider => 
+	// 	.addSlider(slider =>
 	// 	  slider
 	// 		.setLimits(1, 100, 1)
 	// 		.setValue(this.plugin.settings.level)

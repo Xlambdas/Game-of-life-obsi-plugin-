@@ -19,7 +19,7 @@
 		"@typescript-eslint/parser": "5.29.0",
 		"autoprefixer": "^10.4.21",
 		"builtin-modules": "3.3.0",
-		"esbuild": "0.17.3",
+		"esbuild": "^0.25.3",
 		"obsidian": "latest",
 		"postcss": "^8.5.3",
 		"tailwindcss": "^4.0.14",

@@ -2,7 +2,8 @@ import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Set
 import React, { createContext, useState } from "react";
 import { createRoot } from "react-dom/client";
 //from other files :
-import {GameSettings, selfSettingTab} from './settings';
+import {GameSettings, selfSettingTab, DEFAULT_SETTINGS} from './settings';
+import { QuestSettings, DEFAULT_QUEST_SETTINGS } from "./quest_settings";
 import userData from "data/user.json";
 import { ParentView, TestParentView } from 'view/parentView';
 
@@ -10,10 +11,17 @@ import { ParentView, TestParentView } from 'view/parentView';
 interface mainSettings {
 	Setting: string;
 }
-
-const DEFAULT_SETTINGS: mainSettings = {
-	Setting: 'default'
+interface questSettings {
+	QuestSetting: string;
 }
+
+// const DEFAULT_SETTINGS: mainSettings = {
+// 	Setting: 'default',
+// }
+
+// const DEFAULT_QUEST_SETTINGS: questSettings = {
+// 	QuestSetting: 'default',
+// }
 
 export const AppContext = createContext<App | undefined>(undefined);
 export const SIDE_VIEW = 'side-view';
@@ -28,6 +36,7 @@ export const TEST_MAIN_VIEW = 'test-main-view';
  */
 export default class game_of_life extends Plugin {
 	settings: GameSettings;
+	questSetting: QuestSettings;
 	intervalId: number | undefined;
 
 
@@ -41,12 +50,12 @@ export default class game_of_life extends Plugin {
 		this.registerView(TEST_MAIN_VIEW, (leaf) => new testMainView(leaf)); // todo
 		this.registerView(SIDE_VIEW, (leaf) => new sideView(leaf));  // todo
 
-		this.addRibbonIcon('card', 'Activate sideview', () => {
+		this.addRibbonIcon('dice', 'Activate sideview', () => {
 			this.openSideView();
 			new Notice("Welcome Back !");
 		});
 
-		this.addRibbonIcon('dice', 'Activate mainview', () => {
+		this.addRibbonIcon('sword', 'Activate mainview', () => {
 			this.openMainView();
 			new Notice("Welcome Back !");
 		});
@@ -168,28 +177,50 @@ export default class game_of_life extends Plugin {
 		new questModal(this.app).open();
 	}
 
-	// Function for the settings :
 	async loadSettings() {
-		const data = await this.loadData();
-		this.settings = { ...DEFAULT_SETTINGS, ...data };
+		await this.loadUserSettings();
+		await this.loadQuestSettings();
+	}
 
+	async loadUserSettings() {
 		const path = `${this.app.vault.configDir}/plugins/game-of-life/data/user.json`;
-		// console.log("Paramètres chargés !", this.settings);
-
 		try {
 			if (await this.app.vault.adapter.exists(path)) {
-				const data = await this.app.vault.adapter.read(path);
-				const parsed = JSON.parse(data);
-				console.log("(file : main) loadSettings = settings exist");
-				// console.log("loadSettings = if parsed : ", this.app.vault.adapter);
-				return { ...DEFAULT_SETTINGS, ...parsed };
+				const content = await this.app.vault.adapter.read(path);
+				const parsed = JSON.parse(content);
+				this.settings = { ...DEFAULT_SETTINGS, ...parsed };
+				console.log("✅ user.json chargé :", this.settings);
+				return this.settings;
 			} else {
-				console.warn("Fichier de paramètres introuvable. Création avec valeurs par défaut.");
-				return { ...DEFAULT_SETTINGS };
+				console.warn("user.json introuvable, création avec défauts.");
+				this.settings = { ...DEFAULT_SETTINGS };
+				return this.settings;
 			}
-		} catch (error) {
-			console.warn("Impossible de charger le fichier, utilisation des valeurs par défaut :", error);
-			return { ...DEFAULT_SETTINGS };
+		} catch (err) {
+			console.error("❌ Erreur loadUserSettings :", err);
+			this.settings = { ...DEFAULT_SETTINGS };
+			return this.settings;
+		}
+	}
+
+	async loadQuestSettings() {
+		const path = `${this.app.vault.configDir}/plugins/game-of-life/data/quests.json`;
+		try {
+			if (await this.app.vault.adapter.exists(path)) {
+				const content = await this.app.vault.adapter.read(path);
+				const parsed = JSON.parse(content);
+				this.questSetting = { ...DEFAULT_QUEST_SETTINGS, ...parsed };
+				console.log("✅ quests.json chargé :", this.questSetting);
+				return this.questSetting;
+			} else {
+				console.warn("quests.json introuvable, création avec défauts.");
+				this.questSetting = { ...DEFAULT_QUEST_SETTINGS };
+				return this.questSetting;
+			}
+		} catch (err) {
+			console.error("❌ Erreur loadQuestSettings :", err);
+			this.questSetting = { ...DEFAULT_QUEST_SETTINGS };
+			return this.questSetting;
 		}
 	}
 
@@ -198,6 +229,10 @@ export default class game_of_life extends Plugin {
 		const path = `${this.app.vault.configDir}/plugins/game-of-life/data/user.json`;
 		await this.app.vault.adapter.write(path, JSON.stringify(this.settings, null, 2));
 		console.log("saveSettings.Paramètres sauvegardés !", this.settings);
+		await this.saveData(this.questSetting);
+		const pathQuest = `${this.app.vault.configDir}/plugins/game-of-life/data/quests.json`;
+		await this.app.vault.adapter.write(pathQuest, JSON.stringify(this.questSetting, null, 2));
+		console.log("saveSettings.Quest.Paramètres sauvegardés !", this.questSetting);
 	}
 
 	async openMainView() {
@@ -272,7 +307,6 @@ export default class game_of_life extends Plugin {
 // --- | view part | ---
 
 class sideView extends ItemView {
-	private timeoutId: NodeJS.Timeout | null = null;
 	private onCloseCallback: (() => void) | null = null;
 
 	constructor(leaf: WorkspaceLeaf) {
@@ -296,7 +330,7 @@ class sideView extends ItemView {
 		container.empty();
 		// container.createEl('h4', { text: ' test view' });
 		const root = createRoot(container);
-		root.render(<ParentView app={this.app} type="" setOnCloseCallback={(callback) => { this.onCloseCallback = callback; }}/>);
+		root.render(<ParentView app={this.app} type="side" setOnCloseCallback={(callback) => { this.onCloseCallback = callback; }}/>);
 	}
 
 	async onClose() {
@@ -306,6 +340,7 @@ class sideView extends ItemView {
 	}
 
 }
+
 class mainView extends ItemView { // todo
 	private onCloseCallback: (() => void) | null = null;
 
@@ -355,7 +390,7 @@ class questModal extends Modal {
 		const textArea = new TextComponent(contentEl);
 		textArea.inputEl.setAttribute("rows", "5"); // ✅ Ajout de la hauteur
         textArea.inputEl.setAttribute("style", "width: 100%; resize: vertical;");
-        textArea.setPlaceholder("Tapez votre texte ici...");
+        textArea.setPlaceholder("Tapez votre nom ici...");
 
         // Bouton de validation
         new ButtonComponent(contentEl)
@@ -364,6 +399,7 @@ class questModal extends Modal {
                 const userInput = textArea.getValue().trim();
                 if (userInput) {
                     await this.saveToDatabase(userInput);
+					await this.saveQuestToDatabase(userInput);
                     new Notice("Texte enregistré !");
                 } else {
                     new Notice("Champ vide !");
@@ -382,6 +418,19 @@ class questModal extends Modal {
 		const fileExists = await this.app.vault.adapter.exists(filePath);
 
 		let content = `- ${text}\n`;
+		if (fileExists) {
+			const existingContent = await this.app.vault.adapter.read(filePath);
+			content = existingContent + content;
+		}
+
+		await this.app.vault.adapter.write(filePath, content);
+	}
+
+	async saveQuestToDatabase(text: string) {
+		const filePath = `${this.app.vault.configDir}/plugins/game-of-life/data/quests.json`; // 📄 Nom du fichier dans Obsidian
+		const fileExists = await this.app.vault.adapter.exists(filePath);
+
+		let content = `{"quest": "${text}"},\n`;
 		if (fileExists) {
 			const existingContent = await this.app.vault.adapter.read(filePath);
 			content = existingContent + content;

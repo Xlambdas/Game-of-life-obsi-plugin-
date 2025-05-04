@@ -225,3 +225,48 @@ export const ParentA = () => {
 	</div>
   );
 };
+ 
+class GameOfLifePlugin extends Plugin {
+  // ...autres méthodes du plugin...
+
+  onload() {
+    // ...autre code d'initialisation...
+    
+    this.addRibbonIcon('dice', 'Game of Life', () => {
+      const rootEl = document.createElement('div');
+      // Créer une nouvelle leaf pour afficher l'interface React
+      const leaf = this.app.workspace.getRightLeaf(false);
+      leaf.open(new GameOfLifeView(this.app, rootEl));
+      
+      // Rendre le composant React
+      ReactDOM.render(
+        <QuestList app={this.app} />,
+        rootEl
+      );
+    });
+  }
+}
+
+// Vue personnalisée pour Obsidian
+class GameOfLifeView extends ItemView {
+  constructor(app, rootEl) {
+    super(app, rootEl);
+    this.rootEl = rootEl;
+  }
+  
+  getViewType() {
+    return "game-of-life-view";
+  }
+  
+  getDisplayText() {
+    return "Game of Life";
+  }
+  
+  getIcon() {
+    return "dice";
+  }
+  
+  async onOpen() {
+    // La vue est déjà rendue dans onload
+  }
+}

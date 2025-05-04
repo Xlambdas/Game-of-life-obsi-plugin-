@@ -1,24 +1,38 @@
-[
-	{
-		"id": "quest_1",
-		"title": "The tutorial quest",
-		"description": "This is the first quest. It's a simple one.",
-		"xp": 10,
-		"completed": false
-	},
-    {
-        "id": "quest_2",
-        "title": "Lire 10 pages 📖",
-        "description": "Lis 10 pages d'un livre pour booster tes connaissances.",
-        "xp": 15,
-        "completed": false
+{
+  "QuestSetting": "default",
+  "Setting": "default",
+  "user1": {
+    "settings": {
+      "difficulty": "easy",
+      "theme": "default",
+      "language": "en"
     },
-    {
-        "id": "quest_3",
-        "title": "Boire 2L d'eau 💧",
-        "description": "Hydrate-toi correctement aujourd'hui.",
-        "xp": 5,
-        "completed": false
-    }
-
-]
+    "persona": {
+      "name": "Usererer",
+      "class": "user",
+      "health": 100,
+      "xp": 0,
+      "level": 1,
+      "newXp": 0,
+      "lvlThreshold": 100
+    },
+    "attribute": {
+      "strength": 10,
+      "agility": 10,
+      "endurance": 10,
+      "charisma": 10,
+      "wisdom": 10,
+      "perception": 10,
+      "intelligence": 10
+    },
+    "free_pts": 0,
+    "inventory": {},
+    "equipment": {},
+    "habits": {},
+    "quests": {},
+    "completedQuests": [
+      "quest_1"
+    ],
+    "skills": {}
+  }
+}

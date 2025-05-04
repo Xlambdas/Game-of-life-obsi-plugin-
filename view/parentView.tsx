@@ -77,8 +77,8 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { Notice, Modal, App } from "obsidian";
-import { SideView} from "view/sideView";
-import {MainView} from "view/mainView";
+import { SideView, SideViewTest } from "view/sideView";
+import { MainView } from "view/mainView";
 import { DEFAULT_SETTINGS } from "settings";
 import { TestMainView } from "view/testmainView";
 import { TestSideView } from "view/sidebar";
@@ -272,14 +272,14 @@ export const ParentView = ({ app, type, setOnCloseCallback }: { app: App; type: 
 	// 	const [quests, setQuests] = useState<any[]>([])};
 
 	// console.log("(file test - const ParentView) loadData: pas lues ", data);
-		const ParentFunctions = { loadData, testLoadQuest, updateXP, calculLevel, testLoadQuests: testLoadQuest }; //, calculLevel, updateXP };
+		const ParentFunctions = {loadData, testLoadQuest, updateXP, calculLevel, testLoadQuests: testLoadQuest }; //, calculLevel, updateXP };
 		if (type === "main") {
 			return <MainView isOpen={true} userData={data} parentFunctions={ParentFunctions} />;
 		}
 		if (type === "side") {
-			return <SideView isOpen={true} userData={data} quests={quest} parentFunctions={ParentFunctions} />;
+			return <SideViewTest app={App} isOpen={true} userData={data} quests={quest} parentFunctions={ParentFunctions} />;
 		}
-	
+
 		return (
 			<QuestList />
 		);
