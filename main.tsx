@@ -41,7 +41,7 @@ export default class game_of_life extends Plugin {
 		this.registerView(TEST_MAIN_VIEW, (leaf) => new testMainView(leaf)); // todo
 		this.registerView(SIDE_VIEW, (leaf) => new sideView(leaf));  // todo
 
-		this.addRibbonIcon('sword', 'Activate sideview', () => {
+		this.addRibbonIcon('card', 'Activate sideview', () => {
 			this.openSideView();
 			new Notice("Welcome Back !");
 		});
@@ -63,8 +63,8 @@ export default class game_of_life extends Plugin {
 		});
 
 		this.addCommand({
-			id: "open main view",
-			name: "open main view",
+			id: "open RPG main view",
+			name: "open RPG main view",
 			callback: () => {
 				console.log("print, callback main view");
 				this.openMainView();
@@ -86,14 +86,15 @@ export default class game_of_life extends Plugin {
 		// 		new ParentModal(this.app).open();
 		// 	}
 		// });
-		// this.addCommand({
-		// 	id: "test sideview",
-		// 	name: "test sideview",
-		// 	callback: () => {
-		// 		console.log("print, callback sidebar RPG");
-		// 		this.openTestView();
-		// 	}
-		// });
+
+		this.addCommand({
+			id: "test sideview",
+			name: "test sideview",
+			callback: () => {
+				console.log("print, callback sidebar RPG");
+				this.openTestSideView();
+			}
+		});
 
 		// this.addCommand({
 		// 	id: "Maxi test sideview",
@@ -232,22 +233,7 @@ export default class game_of_life extends Plugin {
 			leaf = leaves[0];
 		}
 	}
-	// async openTestView() {
-	// 	const { workspace } = this.app;
-
-	// 	const leaves = workspace.getLeavesOfType(TEST_VIEW);
-	// 	let leaf: WorkspaceLeaf | null = null;
-
-	// 	console.log("open test leaf");
-	// 	if (leaves.length === 0) {
-	// 		leaf = workspace.getRightLeaf(false);
-	// 		if (leaf) {
-	// 			await leaf.setViewState({ type: TEST_VIEW, active: true });
-	// 		}
-	// 	} else {
-	// 		leaf = leaves[0];
-	// 	}
-	// }
+	
 	async openTestSideView() {
 		const { workspace } = this.app;
 

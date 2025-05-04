@@ -49,7 +49,7 @@ export const MainView: React.FC<MainProps> = ({
 	return (
 		<div className="mainview">
 			<div>
-				<h1>This is the main view</h1>
+				<h1>This is the main viewwww</h1>
 				{/* Xp and level */}
 				<div className="card">
 					<h2 className="card-title">Level {user.level}</h2>

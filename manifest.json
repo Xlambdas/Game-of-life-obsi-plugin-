@@ -1,11 +1,11 @@
 {
-	"id": "game_of_life",
+	"id": "game-of-life",
 	"name": "game of life",
 	"version": "1.0.0",
 	"minAppVersion": "0.15.0",
-	"description": "Let's play with our lives...",
+	"description": "Let's play with our lives now...",
 	"author": "XLambdas",
 	"authorUrl": "https://obsidian.md",
 	"fundingUrl": "https://obsidian.md/pricing",
-	"isDesktopOnly": false
+	"isDesktopOnly": true
 }

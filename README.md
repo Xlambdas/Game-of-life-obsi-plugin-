@@ -5,9 +5,11 @@ Still to do !!
 <!-- todo -->
 
 ## Description
+
 This project is a plugin for Obsidian that transforms your life into an RPG game. It includes a quest system, levels, XP, classes, and skills.
 
 ## Installation
+
 1. Clone the repository into the Obsidian plugins directory.
 2. accept the use of the plugin in your vault Obsidian.
 
