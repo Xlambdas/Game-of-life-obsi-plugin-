@@ -10,10 +10,10 @@
       "name": "cacczedfcze",
       "class": "rogue",
       "health": 100,
-      "xp": 420,
-      "level": 4,
-      "newXp": 56,
-      "lvlThreshold": 172
+      "xp": 540,
+      "level": 5,
+      "newXp": 4,
+      "lvlThreshold": 206
     },
     "attribute": {
       "strength": 10,
@@ -33,5 +33,11 @@
       "quest_1"
     ],
     "skills": {}
-  }
+  },
+  "completedQuests": [
+    "quest_1",
+    "quest_2",
+    "quest_3"
+  ],
+  "xp": 20
 }

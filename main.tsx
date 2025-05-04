@@ -129,10 +129,10 @@ export default class game_of_life extends Plugin {
 		if (this.intervalId) {
 			clearInterval(this.intervalId);
 		}
-		this.app.workspace.getLeavesOfType(SIDE_VIEW).forEach((leaf) => leaf.detach());
-		this.app.workspace.getLeavesOfType(MAIN_VIEW).forEach((leaf) => leaf.detach());
-		this.app.workspace.getLeavesOfType(TEST_SIDE_VIEW).forEach((leaf) => leaf.detach());
-		this.app.workspace.getLeavesOfType(TEST_MAIN_VIEW).forEach((leaf) => leaf.detach());
+		// this.app.workspace.getLeavesOfType(SIDE_VIEW).forEach((leaf) => leaf.detach());
+		// this.app.workspace.getLeavesOfType(MAIN_VIEW).forEach((leaf) => leaf.detach());
+		// this.app.workspace.getLeavesOfType(TEST_SIDE_VIEW).forEach((leaf) => leaf.detach());
+		// this.app.workspace.getLeavesOfType(TEST_MAIN_VIEW).forEach((leaf) => leaf.detach());
 	}
 
 
@@ -315,7 +315,7 @@ class sideView extends ItemView {
 
 	async onClose() {
 		if (this.onCloseCallback) {
-			this.onCloseCallback(); // Exécute le nettoyage dans ParentView
+			this.onCloseCallback(); // clean all ParentView
 		}
 	}
 
@@ -350,7 +350,7 @@ class mainView extends ItemView { // todo
 
 	async onClose() {
 		if (this.onCloseCallback) {
-			this.onCloseCallback(); // Exécute le nettoyage dans ParentView
+			this.onCloseCallback(); // clean all ParentView
 		}
 	}
 }

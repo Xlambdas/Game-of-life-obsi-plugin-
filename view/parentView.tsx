@@ -82,6 +82,7 @@ import {MainView} from "view/mainView";
 import { DEFAULT_SETTINGS } from "settings";
 import { TestMainView } from "view/testmainView";
 import { TestSideView } from "view/sidebar";
+import test from "node:test";
 
 
 
@@ -98,12 +99,14 @@ export const ParentView = ({ app, type, setOnCloseCallback }: { app: App; type: 
 	const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
 	const filePath = `${app.vault.configDir}/plugins/game-of-life/data/user.json`;
-	// const fileQuest = `${app.vault.configDir}/plugins/game-of-life/data/quest.js`;
+	const fileQuest = `${app.vault.configDir}/plugins/game-of-life/data/quest.json`;
 
 
 	useEffect(() => {
 		console.log("(file parentView - const ParentView) chargement des données.. ", data);
 		loadData();
+		// for quests :
+		testLoadQuest();
 		// getAvailableQuests().then(setQuest);
 
 		// Fonction de mise à jour automatique
@@ -111,6 +114,7 @@ export const ParentView = ({ app, type, setOnCloseCallback }: { app: App; type: 
 			timeoutRef.current = setTimeout(() => {
 			console.log("Mise à jour automatique des données...");
 			loadData();
+			testLoadQuest();
 			startUpdateLoop(); // Relance la boucle
 			}, timeReload);
 		};
@@ -162,23 +166,25 @@ export const ParentView = ({ app, type, setOnCloseCallback }: { app: App; type: 
 		}
 	}
 
-	// const loadQuest = async () => {
-	// 	try {
-	// 		if (!(await app.vault.adapter.exists(fileQuest))) {
-	// 			console.warn(`⚠️ File ${fileQuest} unknown. Creating DEFAULT USER.`);
-	// 			const quests: { id: number; title: string; description: string; xp: number; completed: boolean }[] = [];
-	// 			await app.vault.adapter.write(filePath, JSON.stringify(quests, null, 2));
-	// 			setQuest(quests);
-	// 			return;
-	// 		}
-	// 		const content = await app.vault.adapter.read(fileQuest);
-	// 		const parsedQuests = JSON.parse(content);
-	// 		// console.log("(file test.tsx - const ParentView) Data loaded: ", content);
-	// 		// console.warn("(file test.tsx - const ParentView) Data loaded: ", parsedData)
-	// 	}catch (error) {
-	// 		console.error("(file test.tsx - const ParentView) Error when loading data:", error);
-	// 	}
-	// }
+	// for the quests :
+	const testLoadQuest = async (): Promise<any> => {
+		try {
+			if (!(await app.vault.adapter.exists(fileQuest))) {
+				console.warn(`⚠️ File ${fileQuest} unknown.`);
+				const quests: { id: number; title: string; description: string; xp: number; completed: boolean }[] = [];
+				await app.vault.adapter.write(fileQuest, JSON.stringify(quests, null, 2));
+				setQuest(quests);
+				return;
+			}
+			const content = await app.vault.adapter.read(fileQuest);
+			const parsedQuests = JSON.parse(content);
+			console.log("(file test.tsx - const ParentView) Data loaded: ", content);
+			console.warn("(file test.tsx - const ParentView) Data loaded: ", parsedQuests)
+			setQuest(parsedQuests);
+		}catch (error) {
+			console.error("(file test.tsx - const ParentView) Error when loading data:", error);
+		}
+	}
 
 	// async function loadQuests(): Promise<any[]> {
 	// 	const quests = await fetch(fileQuest);
@@ -266,12 +272,12 @@ export const ParentView = ({ app, type, setOnCloseCallback }: { app: App; type: 
 	// 	const [quests, setQuests] = useState<any[]>([])};
 
 	// console.log("(file test - const ParentView) loadData: pas lues ", data);
-		const ParentFunctions = { loadData, updateXP, calculLevel }; //, calculLevel, updateXP };
+		const ParentFunctions = { loadData, testLoadQuest, updateXP, calculLevel, testLoadQuests: testLoadQuest }; //, calculLevel, updateXP };
 		if (type === "main") {
 			return <MainView isOpen={true} userData={data} parentFunctions={ParentFunctions} />;
 		}
 		if (type === "side") {
-			return <SideView isOpen={true} userData={data} parentFunctions={ParentFunctions} />;
+			return <SideView isOpen={true} userData={data} quests={quest} parentFunctions={ParentFunctions} />;
 		}
 	
 		return (
@@ -334,7 +340,21 @@ export const QuestList = () => {
             <h2>Quêtes</h2>
             <ul>
 				{quests.map((quest, index) => (
-					<li key={quest.id || index}>
+					<li
+						key={quest.id || index}
+						onClick={async () => {
+							if (!quest.completed) {
+								await completeQuest(quest.id);
+								setQuests(prevQuests =>
+									prevQuests.map(q =>
+										q.id === quest.id ? { ...q, completed: true } : q
+									)
+								);
+								console.log("Quest completed! : ", quest);
+							}
+						}}
+						style={{ cursor: "pointer" }}
+					>
 						{quest.title} {quest.completed ? "✅" : "🔲"}
 					</li>
 				))}
@@ -358,8 +378,11 @@ async function completeQuest(questId: string) {
     const filePath = `${this.app.vault.configDir}/plugins/game-of-life/data/user.json`;
     let userData = await loadUserDataFromVault();
 
-    if (!userData.completedQuests.includes(questId)) {
-        userData.completedQuests.push(questId);
+	if (!Array.isArray(userData.completedQuests)) {
+		userData.completedQuests = [];
+	}
+	if (!userData.completedQuests.includes(questId)) {
+		userData.completedQuests.push(questId);
         userData.xp += 10; // Exemple : ajouter de l'XP
         await this.app.vault.adapter.write(filePath, JSON.stringify(userData, null, 2));
     }

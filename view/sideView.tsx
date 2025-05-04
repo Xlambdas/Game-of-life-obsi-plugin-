@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from "react";
 
 interface ParentFunctions {
 	loadData: () => void;
+	testLoadQuests: () => void;
 	updateXP: (amount: number) => void;
 }
 
@@ -11,6 +12,7 @@ interface SideProps {
 	isOpen: boolean;
 	// onClose: () => void;
 	userData: any;
+	quests: any;
 	parentFunctions: ParentFunctions;
 }
 
@@ -18,6 +20,7 @@ export const SideView: React.FC<SideProps> = ({
 	isOpen,
 	// onClose,
 	userData,
+	quests,
 	parentFunctions
 }) => {
 	// console.log("file - SideView")
@@ -28,8 +31,14 @@ export const SideView: React.FC<SideProps> = ({
 	const user = parsed.user1.persona;
 	const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+	const testQuest = JSON.stringify(quests, null, 2);
+	const parsedQuest = JSON.parse(testQuest);
+	console.log("parsedQuest : ", quests);
+	const quest = parsedQuest.quests;
+
 	const updateLoop = () => {
 		parentFunctions.loadData();
+		parentFunctions.testLoadQuests();
 		// console.log("file sideView - const child - updateLoop");
 	};
 
