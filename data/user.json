@@ -1,6 +1,4 @@
 {
-  "Setting": "default",
-  "QuestSetting": "default",
   "user1": {
     "settings": {
       "difficulty": "easy",
@@ -11,10 +9,10 @@
       "name": "User",
       "class": "user",
       "health": 100,
-      "xp": 0,
-      "level": 1,
-      "newXp": 0,
-      "lvlThreshold": 100
+      "xp": 200,
+      "level": 2,
+      "newXp": 100,
+      "lvlThreshold": 120
     },
     "attribute": {
       "strength": 10,

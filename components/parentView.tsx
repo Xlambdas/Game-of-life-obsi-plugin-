@@ -1,93 +1,22 @@
-// const Sidebar = () => {
-// 	// get user data from JSON file :
-
-// 	const [user, setUser] = useState(userData);
-// 	useEffect(() => {
-// 		console.log(user.user1.persona.name);  // Affiche "John Doe" dans la console
-// 	}, [user]);
-
-// 	const [xp, setXp] = useState(user.user1.persona.xp);
-
-// 	useEffect(() => {
-// 		const updatedUser = { ...user, user1: { ...user.user1, persona: { ...user.user1.persona, xp } } };
-// 		setUser(updatedUser);
-// 	}, [xp]);
-// 	const level = Math.floor(xp / 100);
-// 	const quests = [
-// 		{ id: 1, title: "Apprendre une nouvelle chanson au piano", status: "En cours" },
-// 		{ id: 2, title: "Faire 30 min de sport", status: "Terminée" },
-// 	];
-// 	const stats = { force: 10, intelligence: 15, discipline: 12 };
-// 	console.log("user", xp);
-// 	const handleXpChange = (newXp: number) => {
-// 		setXp(newXp);
-// 	};
-
-// 	return (
-// 		<div className="sidebar">
-// 			{/* XP & Niveau */}
-// 			<div className="card">
-// 				<h2 className="card-title">Niveau {level}</h2>
-// 				<div className="progress-bar">
-// 					<div className="progress" style={{ width: `${(xp % 100)}%` }}></div>
-// 				</div>
-// 				<p className="xp-text">{xp % 100}/100 XP</p>
-// 			</div>
-
-// 			{/* Quêtes */}
-// 			<div className="accordion">
-// 				<h3 className="accordion-title">Quêtes</h3>
-// 				{quests.map((quest) => (
-// 				<div key={quest.id} className="quest-item">
-// 					<p className="quest-title">{quest.title}</p>
-// 					<p className="quest-status">{quest.status}</p>
-// 				</div>
-// 				))}
-// 			</div>
-
-// 			{/* Statistiques */}
-// 			<div className="card">
-// 				<h2 className="card-title">Statistiques</h2>
-// 				{Object.entries(stats).map(([key, value]) => (
-// 				<div key={key} className="stat-item">
-// 					<span className="stat-name">{key}</span>
-// 					<span className="stat-value">{value}</span>
-// 				</div>
-// 				))}
-// 			</div>
-// 			<div>
-// 			<h1>Profil Utilisateur</h1>
-// 			<p>Nom: {user.user1.persona.name}</p>
-// 			<p>classe: {user.user1.persona.class}</p>
-// 			<p>xp: {xp}</p>
-
-// 			</div>
-// 			<button onClick={() => handleXpChange(xp + 10)}>Augmenter XP</button>
-// 			<button onClick={() => saveSettings()}>save settings</button>
-// 		</div>
-// 	);
-// };
-
-// export default Sidebar;
 
 
-
-
-//  -------------------------------
+// -------------------------------
 
 import React, { useEffect, useRef, useState } from "react";
 import { Notice, Modal, App } from "obsidian";
 import { SideView, SideViewTest } from "view/sideView";
 import { MainView } from "view/mainView";
-import { DEFAULT_SETTINGS } from "settings";
+import { DEFAULT_SETTINGS } from "data/settings";
 import { TestMainView } from "view/testmainView";
-import { TestSideView } from "view/sidebar";
+
 import test from "node:test";
 
 
 
+
+
 export const ParentView = ({ app, type, setOnCloseCallback }: { app: App; type: string; setOnCloseCallback: (callback: () => void) => void; }) => {
-	console.log("file - parentView")
+	// console.log("file - parentView")
 	const [data, setData] = useState(DEFAULT_SETTINGS);
 	const [xp, setXp] = useState(0);
 	const [level, setLevel] = useState(1);
@@ -103,7 +32,7 @@ export const ParentView = ({ app, type, setOnCloseCallback }: { app: App; type: 
 
 
 	useEffect(() => {
-		console.log("(file parentView - const ParentView) chargement des données.. ", data);
+		// console.log("(file parentView - const ParentView) chargement des données.. ", data);
 		loadData();
 		// for quests :
 		testLoadQuest();
@@ -112,7 +41,7 @@ export const ParentView = ({ app, type, setOnCloseCallback }: { app: App; type: 
 		// Fonction de mise à jour automatique
 		const startUpdateLoop = () => {
 			timeoutRef.current = setTimeout(() => {
-			console.log("Mise à jour automatique des données...");
+			// console.log("Mise à jour automatique des données...");
 			loadData();
 			testLoadQuest();
 			startUpdateLoop(); // Relance la boucle
@@ -126,7 +55,7 @@ export const ParentView = ({ app, type, setOnCloseCallback }: { app: App; type: 
 			if (timeoutRef.current) {
 				clearTimeout(timeoutRef.current);
 				timeoutRef.current = null;
-				console.log("Timeout arrêté car la sidebar est fermée.");
+				// console.log("Timeout arrêté car la sidebar est fermée.");
 			}
 			});
 		}
@@ -178,7 +107,7 @@ export const ParentView = ({ app, type, setOnCloseCallback }: { app: App; type: 
 			}
 			const content = await app.vault.adapter.read(fileQuest);
 			const parsedQuests = JSON.parse(content);
-			console.log("(file test.tsx - const ParentView) Data loaded: ", content);
+			// console.log("(file test.tsx - const ParentView) Data loaded: ", content);
 			console.warn("(file test.tsx - const ParentView) Data loaded: ", parsedQuests)
 			setQuest(parsedQuests);
 		}catch (error) {
@@ -288,45 +217,6 @@ export const ParentView = ({ app, type, setOnCloseCallback }: { app: App; type: 
 
 
 
-export const TestParentView: React.FC<{ type: string }> = ({ type }) => {
-	const [sharedState, setSharedState] = useState({ xp: 0, level: 1 });
-
-	// Fonction pour mettre à jour l'état partagé
-	const updateSharedState = (newXP: number) => {
-		const newLevel = Math.floor(newXP / 100) + 1; // Calcul du niveau basé sur XP
-		setSharedState({ xp: newXP, level: newLevel });
-	};
-
-	if (type === "testSide") {
-		return (
-			<div>
-				<h1>Test Parent side View</h1>
-				<TestSideView
-					sharedState={sharedState}
-					updateSharedState={(newState) => updateSharedState(newState.xp)}
-					onClose={() => console.log("Sidebar closed")}
-				/>
-
-			</div>
-		);
-	} if (type === "testMain") {
-		return (
-			<div>
-				<h1>Test Parent main View</h1>
-
-				<TestMainView
-					sharedState={sharedState}
-					updateSharedState={(newState) => updateSharedState(newState.xp)}
-				/>
-			</div>
-		);
-	}
-
-	return <div>Invalid type</div>;
-};
-
-
-
 
 export const QuestList = () => {
     const [quests, setQuests] = useState<any[]>([]);
@@ -389,13 +279,13 @@ async function completeQuest(questId: string) {
 }
 
 async function loadUserDataFromVault(): Promise<any> {
-	const fileP = `${this.app.vault.configDir}/plugins/game-of-life/data/user.json`;
+	const fileP = `${this.app.vault.configDir}/plugins/game-of-life/data/db/user.json`;
 	const content = await this.app.vault.adapter.read(fileP);
     return JSON.parse(content);
 }
 
 async function loadQuestsFromVault(): Promise<any[]> {
-	const fileQuest = `${this.app.vault.configDir}/plugins/game-of-life/data/quests.json`;
+	const fileQuest = `${this.app.vault.configDir}/plugins/game-of-life/data/db/quests.json`;
     const content = await this.app.vault.adapter.read(fileQuest);
     return JSON.parse(content);
 }

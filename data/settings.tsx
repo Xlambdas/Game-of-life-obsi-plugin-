@@ -8,6 +8,7 @@ import ReactDOM from 'react-dom';
 import { createRoot, Root } from 'react-dom/client';
 import { J } from 'framer-motion/dist/types.d-B50aGbjN';
 // import Sidebar from './view/sidebar';
+import { QuestSettings } from 'modales/questModal';
 
 
 export interface GameSettings {
@@ -75,7 +76,7 @@ export const DEFAULT_SETTINGS: GameSettings = {
 		equipment: {},
 		habits: {},
 		quests: {},
-		completedQuests: ["quest_1"],
+		completedQuests: [],
 		skills: {},
 	}
 }; // user.persona.level[0] = level, user.persona.level[1] = xp du niveau actuel, user.persona.level[2] = xp total (depuis le début)
@@ -84,6 +85,7 @@ export class selfSettingTab extends PluginSettingTab {
 	settings: GameSettings;
 	plugin: any;
 	dataUser: any;
+	dataQuest: QuestSettings;
 
 	constructor(app: App, plugin: any) {
 		super(app, plugin);
@@ -631,3 +633,76 @@ export async function showPerson(parsed: any): Promise<any> {
 // }
 
 // combineData();
+
+
+// export interface QuestSettings {
+// 	quests: {
+// 		[questId: string]: {
+// 			name: string;
+// 			description: string;
+// 			completed: boolean;
+// 			reward_XP: number;
+// 			// Add other quest properties as needed
+// 			// e.g., reward_items: string[];
+// 			//       start_date: string; // ISO date string
+// 			//       end_date: string; // ISO date string
+// 			//       prerequisites: string[]; // IDs of prerequisite quests
+// 			//       progress: number; // 0-100% completion
+// 			//       objectives: string[]; // List of objectives to complete
+// 			//       rewards: string[]; // List of rewards for completing the quest
+// 			//       status: "not started" | "in progress" | "completed"; // Current status of the quest
+// 			//       type: "main" | "side"; // Type of quest (main storyline or side quest)
+// 			//       difficulty: "easy" | "medium" | "hard"; // Difficulty level of the quest
+// 			//       location: string; // Location where the quest takes place
+// 			//       tags: string[]; // Tags associated with the quest
+// 			//       notes: string; // Additional notes or lore about the quest
+// 			//       created_at: string; // ISO date string for when the quest was created
+// 			//       updated_at: string; // ISO date string for when the quest was last updated
+// 			//       assigned_to: string; // ID of the user assigned to the quest
+// 			//       priority: "low" | "medium" | "high"; // Priority level of the quest
+// 			//       rewards_claimed: boolean; // Whether the rewards have been claimed
+// 			//       repeatable: boolean; // Whether the quest can be repeated
+// 			//       repeat_interval: string; // Interval for repeating the quest (e.g., "daily", "weekly")
+// 			//       completion_time: number; // Estimated time to complete the quest (in minutes)
+// 			//       completion_date: string; // ISO date string for when the quest was completed
+// 			//       completion_notes: string; // Notes about the quest completion
+// 			//       failure_reason: string; // Reason for quest failure (if applicable)
+// 			//       failure_date: string; // ISO date string for when the quest failed
+// 			//       failure_notes: string; // Notes about the quest failure
+// 			//       rewards_history: { date: string; rewards: string[] }[]; // History of rewards claimed
+// 			//       objectives_completed: { objective: string; date: string }[]; // History of completed objectives
+// 			//       objectives_failed: { objective: string; date: string }[]; // History of failed objectives
+// 			//       objectives_skipped: { objective: string; date: string }[]; // History of skipped objectives
+// 		};
+// 	};
+// 	questList: string[];
+
+// }
+
+// export const DEFAULT_QUEST_SETTINGS: QuestSettings = {
+// 	quests: {
+// 		quest1: {
+// 			name: "Quest 1",
+// 			description: "Tutorial Quest",
+// 			completed: false,
+// 			reward_XP: 100,
+// 		},
+// 	},
+// 	questList: ["quest1"],
+// };
+
+// export class QuestServices {
+// 	settings: QuestSettings;
+// 	plugin: any;
+// 	dataUser: any;
+// 	dataQuest: any;
+
+// 	constructor(app: App, plugin: any) {
+// 		this.settings = DEFAULT_QUEST_SETTINGS;
+// 		this.plugin = plugin;
+// 		this.dataUser = JSON.parse(JSON.stringify(this.plugin.settings));
+// 		this.dataQuest = JSON.parse(JSON.stringify(this.plugin.settings.quests));
+// 	}
+
+// }
+

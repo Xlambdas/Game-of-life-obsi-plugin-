@@ -1,0 +1,14 @@
+{
+  "quests": {
+    "id": "quest_1",
+    "title": "Faire 10 pompes 💪",
+    "description": "Fais 10 pompes pour améliorer ta force.",
+    "xp": 10,
+    "completed": true
+  },
+  "questList": [
+    "quest1"
+  ],
+  "QuestSetting": "default",
+  "Setting": "default"
+}

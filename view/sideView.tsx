@@ -1,8 +1,50 @@
 import React, { useEffect, useRef, useState } from "react";
 // import { QuestListTest } from "../questList/questListTest";
-import { QuestList } from "./parentView";
-
+import { QuestList } from "../components/parentView";
+import { createRoot } from "react-dom/client";
+import { App, Modal, Notice, Plugin, WorkspaceLeaf, ItemView } from "obsidian";
+import { ParentView } from "../components/parentView";
+// import { SIDE_VIEW } from "../constants/viewTypes";
 // --- | side view interface | ---
+
+export const SIDE_VIEW = 'side-view';
+
+export class sideView extends ItemView {
+	// Open the side view
+	private onCloseCallback: (() => void) | null = null;
+
+	constructor(leaf: WorkspaceLeaf) {
+		super(leaf);
+	}
+
+	getViewType() {
+		return SIDE_VIEW;
+	}
+
+	getDisplayText() {
+		return 'Test view';
+	}
+
+	getIcon() {
+		return 'dice';
+	}
+
+	async onOpen() {
+		const container = this.containerEl.children[1];
+		container.empty();
+		// container.createEl('h4', { text: ' test view' });
+		const root = createRoot(container);
+		root.render(<ParentView app={this.app} type="side" setOnCloseCallback={(callback) => { this.onCloseCallback = callback; }}/>);
+	}
+
+	async onClose() {
+		if (this.onCloseCallback) {
+			this.onCloseCallback(); // clean all ParentView
+		}
+	}
+
+}
+
 
 interface ParentFunctions {
 	loadData: () => void;
@@ -46,7 +88,7 @@ export const SideView: React.FC<SideProps> = ({
 
 	useEffect(() => {
 		if (isOpen) {
-			console.log("file sideView - const child - setTimeout");
+			// console.log("file sideView - const child - setTimeout");
 			timeoutRef.current = setTimeout(updateLoop, 20000); // reload every X seconds
 		}
 		return () => {
@@ -157,7 +199,7 @@ async function loadUserData(): Promise<any> {
 // -------------------
 
 import ReactDOM from "react-dom";
-import { QuestListTest } from "../data/quest_use";
+import { QuestListTest } from "../data/managers/quest_use";
 
 interface ParentFunctionsTest {
 	loadData: () => void;

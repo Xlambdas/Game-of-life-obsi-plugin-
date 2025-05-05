@@ -1,6 +1,51 @@
 import React, { useEffect, useRef } from "react";
-
+import { createRoot } from "react-dom/client";
+import { App, ItemView, Modal, Notice, Plugin, WorkspaceLeaf } from "obsidian";
+import { ParentView } from "../components/parentView";
+// import { MAIN_VIEW } from "../constants/viewTypes";
 // --- | main view interface | ---
+
+export const MAIN_VIEW = 'main-view';
+
+export class mainView extends ItemView { // todo
+	private onCloseCallback: (() => void) | null = null;
+
+	constructor(leaf: WorkspaceLeaf) {
+		super(leaf);
+	}
+
+	getViewType() {
+		return MAIN_VIEW;
+	}
+
+	getDisplayText() {
+		return 'Main view';
+	}
+
+	getIcon() {
+		return 'sword';
+	}
+
+	async onOpen() {
+		const container = this.containerEl;
+		container.empty();
+		// container.createEl('h4', { text: ' main test view' });
+		const root = createRoot(container);
+		root.render(<ParentView app={this.app} type="main" setOnCloseCallback={(callback) => { this.onCloseCallback = callback; }} />);
+
+	}
+
+	async onClose() {
+		if (this.onCloseCallback) {
+			this.onCloseCallback(); // clean all ParentView
+		}
+	}
+}
+
+
+
+
+
 
 interface ParentFunctions {
 	loadData: () => void;
