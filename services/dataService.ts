@@ -1,6 +1,6 @@
 import { App, TFile } from 'obsidian';
+import { QuestSettings, DEFAULT_QUEST_SETTINGS } from '../constants/DEFAULT';
 import { GameSettings, DEFAULT_SETTINGS } from '../data/settings';
-import { QuestSettings, DEFAULT_QUEST_SETTINGS } from '../modales/questModal';
 
 export class DataService {
     app: App;

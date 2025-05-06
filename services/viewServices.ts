@@ -1,6 +1,7 @@
 import { Plugin, WorkspaceLeaf } from 'obsidian';
-import { mainView } from '../view/mainView';
-import { sideView } from '../view/sideView';
+import { MainView } from '../view/mainView';
+import { SideView } from '../view/sideView';
+// import { SIDE_VIEW, MAIN_VIEW, TEST_SIDE_VIEW } from 'constants/viewTypes'; //todo - comprendre pourquoi l'import ne fonctionne pas
 
 export const SIDE_VIEW = 'side-view';
 export const MAIN_VIEW = 'main-view';
@@ -14,8 +15,8 @@ export class ViewService {
     }
 
     registerViews() {
-        this.plugin.registerView(MAIN_VIEW, (leaf) => new mainView(leaf));
-        this.plugin.registerView(SIDE_VIEW, (leaf) => new sideView(leaf));
+        this.plugin.registerView(MAIN_VIEW, (leaf) => new MainView(leaf));
+        this.plugin.registerView(SIDE_VIEW, (leaf) => new SideView(leaf));
     }
 
     async openMainView() {

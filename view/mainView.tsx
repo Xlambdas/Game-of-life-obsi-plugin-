@@ -1,13 +1,19 @@
+/**
+ * Represents the main view of the plugin, extending the Obsidian `ItemView`.
+ * This view is responsible for rendering the main interface of the plugin.
+ */
+
 import React, { useEffect, useRef } from "react";
 import { createRoot } from "react-dom/client";
-import { App, ItemView, Modal, Notice, Plugin, WorkspaceLeaf } from "obsidian";
+import { ItemView, WorkspaceLeaf } from "obsidian";
+// from other files :
 import { ParentView } from "../components/parentView";
-// import { MAIN_VIEW } from "../constants/viewTypes";
+import { MAIN_VIEW } from "../constants/viewTypes";
+
+
+
 // --- | main view interface | ---
-
-export const MAIN_VIEW = 'main-view';
-
-export class mainView extends ItemView { // todo
+export class MainView extends ItemView { // todo
 	private onCloseCallback: (() => void) | null = null;
 
 	constructor(leaf: WorkspaceLeaf) {
@@ -29,10 +35,8 @@ export class mainView extends ItemView { // todo
 	async onOpen() {
 		const container = this.containerEl;
 		container.empty();
-		// container.createEl('h4', { text: ' main test view' });
 		const root = createRoot(container);
 		root.render(<ParentView app={this.app} type="main" setOnCloseCallback={(callback) => { this.onCloseCallback = callback; }} />);
-
 	}
 
 	async onClose() {
@@ -41,10 +45,6 @@ export class mainView extends ItemView { // todo
 		}
 	}
 }
-
-
-
-
 
 
 interface ParentFunctions {
@@ -58,7 +58,7 @@ interface MainProps {
 	parentFunctions: ParentFunctions;
 }
 
-export const MainView: React.FC<MainProps> = ({
+export const MainViewSettings: React.FC<MainProps> = ({
 	isOpen,
 	userData,
 	parentFunctions
@@ -73,28 +73,27 @@ export const MainView: React.FC<MainProps> = ({
 
 	const updateLoop = () => {
 		parentFunctions.loadData();
-		// console.log("file sideView - const child - updateLoop");
 	};
 
 	useEffect(() => {
 		if (isOpen) {
-			console.log("file sideView - const child - setTimeout");
 			timeoutRef.current = setTimeout(updateLoop, 20000); // reload every X seconds
 		}
 		return () => {
 			if (timeoutRef.current) {
-			  clearTimeout(timeoutRef.current); // Stop the loop when the component unmounts
+				clearTimeout(timeoutRef.current); // Stop the loop when the component unmounts
 			}
 		};
 	}, [isOpen]);
-	if (!isOpen) return null; // If the main view is closed, don't display anything
+	if (!isOpen) return null;
 
 
 	const newLocal = `${(user.newXp / user.lvlThreshold) * 100}`;
+	// todo - make the visual part :
 	return (
-		<div className="mainview">
+		<div className="mainview"> { /* visual representation of the main view */ }
 			<div>
-				<h1>This is the main viewwww</h1>
+				<h1>This is the main view</h1>
 				{/* Xp and level */}
 				<div className="card">
 					<h2 className="card-title">Level {user.level}</h2>
@@ -111,12 +110,6 @@ export const MainView: React.FC<MainProps> = ({
 				{/* Stats */}
 				<div className="card">
 					<h2 className="card-title">Stats</h2>
-					{/* {Object.entries(user.stats).map(([key, value]) => (
-						<div key={key} className="stat-item">
-							<span className="stat-name">{key}</span>
-							<span className="stat-value">{value}</span>
-						</div>
-					))} */}
 				</div>
 
 				{/* Skills ?  todo */}
@@ -124,7 +117,7 @@ export const MainView: React.FC<MainProps> = ({
 
 		</div>
 		<div>
-			{/* dev part !! */}
+			{/* dev part : */}
 			<h1>Dev</h1>
 			<p>Nom: {user.name}</p>
 			<p>classe: {user.class}</p>

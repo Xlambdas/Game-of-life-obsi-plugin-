@@ -1,65 +1,6 @@
-import { App, Modal, Notice, SliderComponent, ToggleComponent } from "obsidian";
+import { App, Modal, Notice, ToggleComponent } from "obsidian";
 import { TextComponent, ButtonComponent } from "obsidian";
-import { createRoot } from "react-dom/client";
-
-
-export interface QuestSettings {
-	quests: {
-		[questId: string]: {
-			name: string;
-			description: string;
-			completed: boolean;
-			reward_XP: number;
-			// Add other quest properties as needed
-			// e.g., reward_items: string[];
-			//       start_date: string; // ISO date string
-			//       end_date: string; // ISO date string
-			//       prerequisites: string[]; // IDs of prerequisite quests
-			//       progress: number; // 0-100% completion
-			//       objectives: string[]; // List of objectives to complete
-			//       rewards: string[]; // List of rewards for completing the quest
-			//       status: "not started" | "in progress" | "completed"; // Current status of the quest
-			//       type: "main" | "side"; // Type of quest (main storyline or side quest)
-			//       difficulty: "easy" | "medium" | "hard"; // Difficulty level of the quest
-			//       location: string; // Location where the quest takes place
-			//       tags: string[]; // Tags associated with the quest
-			//       notes: string; // Additional notes or lore about the quest
-			//       created_at: string; // ISO date string for when the quest was created
-			//       updated_at: string; // ISO date string for when the quest was last updated
-			//       assigned_to: string; // ID of the user assigned to the quest
-			//       priority: "low" | "medium" | "high"; // Priority level of the quest
-			//       rewards_claimed: boolean; // Whether the rewards have been claimed
-			//       repeatable: boolean; // Whether the quest can be repeated
-			//       repeat_interval: string; // Interval for repeating the quest (e.g., "daily", "weekly")
-			//       completion_time: number; // Estimated time to complete the quest (in minutes)
-			//       completion_date: string; // ISO date string for when the quest was completed
-			//       completion_notes: string; // Notes about the quest completion
-			//       failure_reason: string; // Reason for quest failure (if applicable)
-			//       failure_date: string; // ISO date string for when the quest failed
-			//       failure_notes: string; // Notes about the quest failure
-			//       rewards_history: { date: string; rewards: string[] }[]; // History of rewards claimed
-			//       objectives_completed: { objective: string; date: string }[]; // History of completed objectives
-			//       objectives_failed: { objective: string; date: string }[]; // History of failed objectives
-			//       objectives_skipped: { objective: string; date: string }[]; // History of skipped objectives
-		};
-	};
-	questList: string[];
-
-}
-
-export const DEFAULT_QUEST_SETTINGS: QuestSettings = {
-	quests: {
-		quest1: {
-			name: "Quest 1",
-			description: "Tutorial Quest",
-			completed: false,
-			reward_XP: 100,
-		},
-	},
-	questList: ["quest1"],
-};
-
-
+import { QuestSettings, DEFAULT_QUEST_SETTINGS } from "../constants/DEFAULT";
 
 export class QuestModal extends Modal {
 	plugin: any;
@@ -71,20 +12,20 @@ export class QuestModal extends Modal {
 		this.dataQuest = plugin.questSetting;
     }
 
-    onOpen() {
+    onOpen() { // todo - make the visual of the quest taker
         const {contentEl} = this;
         contentEl.createEl("h2", {text: 'Create your quest :'});
 		// Toggle button to switch between simple and advanced mode
 		const advancedModeToggle = new ToggleComponent(contentEl)
 		.setTooltip("Activer/désactiver le mode avancé")
-		.setValue(false) // État initial : désactivé
+		.setValue(false)
 		.onChange((value) => {
 			if (value) {
-				// Mode avancé activé
+				// Advanced mode enabled
 				const advancedContainer = contentEl.createDiv({ cls: "advanced-mode" });
 				advancedContainer.createEl("h3", { text: "Paramètres Avancés" });
 
-				// Add advanced parameters here
+				// Advanced parameters here
 				const descriptionInput = new TextComponent(advancedContainer);
 				descriptionInput.setPlaceholder("Description de la quête...");
 				descriptionInput.inputEl.setAttribute("style", "width: 100%;");
@@ -98,7 +39,7 @@ export class QuestModal extends Modal {
 				const completedInput = new TextComponent(completedCheckbox);
 				completedInput.inputEl.setAttribute("type", "checkbox");
 			} else {
-				// Mode avancé désactivé
+				// Advanced mode disabled
 				const advancedMode = contentEl.querySelector(".advanced-mode");
 				if (advancedMode) {
 					advancedMode.remove();
@@ -106,15 +47,13 @@ export class QuestModal extends Modal {
 			}
 		});
 
-		// Vous pouvez ajouter un texte à côté du toggle
-		// contentEl.createEl("span", { text: "Mode Avancé", cls: "toggle-label" }).insertAfter(advancedModeToggle.toggleEl, null);
-        // text area
+		// text area
         const textArea = new TextComponent(contentEl);
         textArea.inputEl.setAttribute("rows", "5");
         textArea.inputEl.setAttribute("style", "width: 100%; resize: vertical;");
         textArea.setPlaceholder("Tapez votre nom ici...");
 
-        // Bouton de validation
+        // validation button
         new ButtonComponent(contentEl)
             .setButtonText("Enregistrer")
             .onClick(async () => {
@@ -136,6 +75,7 @@ export class QuestModal extends Modal {
     }
 
     async saveToDatabase(text: string) {
+		// save the text to a markdown file
         const filePath = "database.md";
         const fileExists = await this.app.vault.adapter.exists(filePath);
 
@@ -149,6 +89,7 @@ export class QuestModal extends Modal {
     }
 
 	async saveQuestToDB(text: string) {
+		// save the quest to quests.json file
 		const filePath = `${this.app.vault.configDir}/plugins/game-of-life/data/db/quests.json`;
 		const fileExists = await this.app.vault.adapter.exists(filePath);
 
