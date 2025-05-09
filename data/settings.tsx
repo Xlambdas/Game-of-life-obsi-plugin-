@@ -1,86 +1,19 @@
 /**
- * Represents the settings for the Game of Life plugin.
+ * Represents the settings tab for the Game of Life plugin.
  */
-import { PluginSettingTab, Plugin, App, Setting, Modal } from 'obsidian';
-import { QuestSettings } from 'constants/DEFAULT';
+import { PluginSettingTab, Plugin, App, Setting, Modal, TextComponent, ExtraButtonComponent } from 'obsidian';
 import { RuleModal, difficultyModal, tutorialModal } from '../modales/settingModal';
+import { DEFAULT_SETTINGS, UserSettings } from '../constants/DEFAULT';
+import { TFolder } from 'obsidian';
+import { appContextService } from '../context/appContextService';
 
-export interface GameSettings {
-	user1: {
-		settings: {
-			difficulty: string;
-			theme: string;
-			language: string;
-		};
-		persona: {
-			name: string;
-			class: string;
-			health: number;
-			xp: number;
-			level: number;
-			newXp: number;
-			lvlThreshold: number;
-		};
-		attribute: {
-			strength: number;
-			agility: number;
-			endurance: number;
-			charisma: number;
-			wisdom: number;
-			perception: number;
-			intelligence: number;
-		};
-		free_pts: number;
-		inventory: {};
-		equipment: {};
-		habits: {};
-		quests: {};
-		completedQuests: string[],
-		skills: {};
-	}
-}
-
-export const DEFAULT_SETTINGS: GameSettings = {
-	user1: {
-		settings: {
-			difficulty: 'easy',
-			theme: 'default',
-			language: 'en',
-		},
-		persona: {
-			name: "User",
-			class: "user",
-			health: 100,
-			xp: 0,
-			level: 1,
-			newXp: 0,
-			lvlThreshold: 100,
-		},
-		attribute: {
-			strength: 10,
-			agility: 10,
-			endurance: 10,
-			charisma: 10,
-			wisdom: 10,
-			perception: 10,
-			intelligence: 10
-		},
-		free_pts: 0,
-		inventory: {},
-		equipment: {},
-		habits: {},
-		quests: {},
-		completedQuests: [],
-		skills: {},
-	}
-}
 
 export class selfSettingTab extends PluginSettingTab {
 	// Initialize and show the settings
-	settings: GameSettings;
+	settings: UserSettings;
 	plugin: any;
 	dataUser: any;
-	dataQuest: QuestSettings;
+
 
 	constructor(app: App, plugin: any) {
 		super(app, plugin);
@@ -209,6 +142,83 @@ export class selfSettingTab extends PluginSettingTab {
 		/** Final settings : delete all the data */
 		containerEl.createEl('h4', { text: 'Final Settings' });
 
+		// quests file path
+		new Setting(containerEl)
+			.setName('Quests file')
+			.setDesc('Path to the markdown file where quests are stored')
+			.addText(text => text
+				.setPlaceholder('Quests.md')
+				.setValue(this.plugin.settings.questsFilePath || 'Quests.md')
+				.onChange(async (value) => {
+					this.plugin.settings.questsFilePath = value;
+					await this.plugin.saveSettings();
+				})
+			);
+
+		// quests folder
+		new Setting(containerEl)
+			.setName('Quests folder')
+			.setDesc('Select a folder for quests file')
+			.addDropdown(async (dropdown) => {
+				// Get all folders in the vault
+				const folders = this.app.vault.getAllLoadedFiles()
+					.filter(file => file instanceof TFolder)
+					.map(folder => folder.path);
+
+				// Add root folder option
+				dropdown.addOption('', 'Root (/)');
+
+				// Add all other folders
+				folders.forEach(folder => {
+					dropdown.addOption(folder, folder);
+				});
+
+				// Set current value
+				dropdown.setValue(this.plugin.settings.user1.settings.questsFolder || '');
+
+				// Handle change
+				dropdown.onChange(async (value) => {
+					this.plugin.settings.user1.settings.questsFolder = value;
+					await this.plugin.saveSettings();
+					
+				});
+			});
+
+		const refreshRateSetting = new Setting(containerEl)
+			.setName('Refresh Rate')
+			.setDesc('Refresh rate in seconds (min: 1, max: 300)');
+
+		refreshRateSetting
+			.addText((text: TextComponent) => text
+				.setPlaceholder('Enter refresh rate in seconds')
+				.setValue((this.plugin.settings.user1.settings.refreshRate / 1000).toString())
+				.onChange(async (value: string) => {
+					const seconds = parseFloat(value);
+					if (!isNaN(seconds) && seconds >= 1 && seconds <= 300) {
+						if (this.plugin.settings.user1.settings) {
+							const milliseconds = Math.round(seconds * 1000);
+							console.log('Settings: Updating refresh rate to:', seconds, 'seconds (', milliseconds, 'ms)');
+							appContextService.updateRefreshRate(milliseconds);
+							await this.plugin.saveSettings();
+						}
+					}
+				})
+			)
+			.addExtraButton((button: ExtraButtonComponent) => {
+				button
+					.setIcon('refresh-cw')
+					.setTooltip('Reset to default (5 seconds)')
+					.onClick(async () => {
+						if (this.plugin.settings.user1.settings) {
+							console.log('Settings: Resetting refresh rate to 5 seconds');
+							appContextService.updateRefreshRate(5000);
+							await this.plugin.saveSettings();
+							this.display();
+						}
+					});
+			});
+
+		// reset game settings
 		new Setting(containerEl)
 			.setName('Reset Game Settings')
 			.setDesc('Click to restart the settings to default. Be careful, all your game data may be erased... If so close this window after clicking this button.')
@@ -240,15 +250,6 @@ export class selfSettingTab extends PluginSettingTab {
 					})
 					.inputEl.setAttr('type', 'number')
 			);
-		new Setting(containerEl)
-			.setName('level')
-			.addText(text =>
-				text
-					.setValue(this.plugin.settings.user1.persona.level)
-					.onChange(async (value) => {
-						this.plugin.settings.user1.persona.level = value;
-						await this.plugin.saveSettings();
-					})
-			);
+		
 	}
 }

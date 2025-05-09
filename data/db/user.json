@@ -1,18 +1,20 @@
 {
   "user1": {
     "settings": {
-      "difficulty": "medium",
+      "difficulty": "hard",
       "theme": "default",
-      "language": "en"
+      "language": "en",
+      "questsFolder": "",
+      "refreshRate": 20000
     },
     "persona": {
-      "name": "Useet",
-      "class": "rogue",
+      "name": "get to work",
+      "class": "user",
       "health": 100,
-      "xp": 200,
-      "level": 2,
-      "newXp": 100,
-      "lvlThreshold": 120
+      "xp": 2950,
+      "level": 11,
+      "newXp": 373,
+      "lvlThreshold": 613
     },
     "attribute": {
       "strength": 10,
@@ -28,9 +30,8 @@
     "equipment": {},
     "habits": {},
     "quests": {},
-    "completedQuests": [
-      "quest_1"
-    ],
+    "completedQuests": [],
     "skills": {}
-  }
+  },
+  "questsFolder": ""
 }

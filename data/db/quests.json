@@ -1,14 +1,51 @@
-{
-  "quests": {
+[
+  {
     "id": "quest_1",
-    "title": "Faire 10 pompes 💪",
-    "description": "Fais 10 pompes pour améliorer ta force.",
-    "xp": 10,
-    "completed": true
+    "title": "First Steps",
+    "description": "Create your first note in Obsidian.",
+    "completed": true,
+    "reward_XP": 50
   },
-  "questList": [
-    "quest1"
-  ],
-  "QuestSetting": "default",
-  "Setting": "default"
-}
+  {
+    "id": "quest_2",
+    "title": "Link Master",
+    "description": "Create a link between two notes.",
+    "completed": false,
+    "reward_XP": 100
+  },
+  {
+    "id": "quest_3",
+    "title": "Tag Explorer",
+    "description": "Add three different tags to your notes.",
+    "completed": false,
+    "reward_XP": 75
+  },
+  {
+    "id": "quest_4",
+    "title": "Daily Habit",
+    "description": "Create a daily note for 3 consecutive days.",
+    "completed": false,
+    "reward_XP": 150
+  },
+  {
+    "id": "quest_5",
+    "title": "Knowledge Network",
+    "description": "Create a graph with at least 10 connected notes.",
+    "completed": false,
+    "reward_XP": 200
+  },
+  {
+    "id": "quest_1746698024130",
+    "title": "i want to break the time",
+    "description": "let's start with some description",
+    "completed": false,
+    "reward_XP": 50
+  },
+  {
+    "id": "quest_1746796646961",
+    "title": "test !",
+    "description": "first test",
+    "completed": false,
+    "reward_XP": 10
+  }
+]

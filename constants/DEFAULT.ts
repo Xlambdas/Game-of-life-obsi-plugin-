@@ -1,57 +1,120 @@
-
-export interface QuestSettings {
-	quests: {
-		[questId: string]: {
-			name: string;
-			description: string;
-			completed: boolean;
-			reward_XP: number;
-			// Add other quest properties as needed
-			// e.g., reward_items: string[];
-			//       start_date: string; // ISO date string
-			//       end_date: string; // ISO date string
-			//       prerequisites: string[]; // IDs of prerequisite quests
-			//       progress: number; // 0-100% completion
-			//       objectives: string[]; // List of objectives to complete
-			//       rewards: string[]; // List of rewards for completing the quest
-			//       status: "not started" | "in progress" | "completed"; // Current status of the quest
-			//       type: "main" | "side"; // Type of quest (main storyline or side quest)
-			//       difficulty: "easy" | "medium" | "hard"; // Difficulty level of the quest
-			//       location: string; // Location where the quest takes place
-			//       tags: string[]; // Tags associated with the quest
-			//       notes: string; // Additional notes or lore about the quest
-			//       created_at: string; // ISO date string for when the quest was created
-			//       updated_at: string; // ISO date string for when the quest was last updated
-			//       assigned_to: string; // ID of the user assigned to the quest
-			//       priority: "low" | "medium" | "high"; // Priority level of the quest
-			//       rewards_claimed: boolean; // Whether the rewards have been claimed
-			//       repeatable: boolean; // Whether the quest can be repeated
-			//       repeat_interval: string; // Interval for repeating the quest (e.g., "daily", "weekly")
-			//       completion_time: number; // Estimated time to complete the quest (in minutes)
-			//       completion_date: string; // ISO date string for when the quest was completed
-			//       completion_notes: string; // Notes about the quest completion
-			//       failure_reason: string; // Reason for quest failure (if applicable)
-			//       failure_date: string; // ISO date string for when the quest failed
-			//       failure_notes: string; // Notes about the quest failure
-			//       rewards_history: { date: string; rewards: string[] }[]; // History of rewards claimed
-			//       objectives_completed: { objective: string; date: string }[]; // History of completed objectives
-			//       objectives_failed: { objective: string; date: string }[]; // History of failed objectives
-			//       objectives_skipped: { objective: string; date: string }[]; // History of skipped objectives
-		};
-	};
-	questList: string[];
-
+export interface Quest {
+	id: string;
+    title: string;
+    description: string;
+    isCompleted: boolean;
+    reward: {
+        experience: number;
+        items?: string[];
+    };
+    requirements?: {
+        level?: number;
+        previousQuests?: string[];
+    };
+    progress?: number; // 0-100 for the progressive quests
+	due_date?: string;
+    priority?: 'low' | 'medium' | 'high';
+    created_at?: string;
+    difficulty?: 'easy' | 'medium' | 'hard' | 'expert';
+    category?: string;
 }
 
-export const DEFAULT_QUEST_SETTINGS: QuestSettings = {
-	quests: {
-		quest1: {
-			name: "Quest 1",
-			description: "Tutorial Quest",
-			completed: false,
-			reward_XP: 100,
-		},
+
+export const DEFAULT_QUEST_SETTINGS: Quest= {
+	id: "Quest_0",
+	title: "Tutorial",
+	description: "This is your first quest.",
+	isCompleted: false,
+	reward: {
+		experience: 0,
+		items: [],
 	},
-	questList: ["quest1"],
+	requirements: {
+		level: 0,
+		previousQuests: [],
+	},
+	progress: 0,
+	due_date: "",
+	priority: "low",
+	created_at: "",
+	difficulty: "easy",
+	category: "",
 };
 
+
+
+export interface UserSettings {
+	user1: {
+		settings: {
+			difficulty: string;
+			theme: string;
+			language: string;
+			questsFolder: string;
+			questsFilePath: string;
+			refreshRate: number;
+		};
+		persona: {
+			name: string;
+			class: string;
+			health: number;
+			xp: number;
+			level: number;
+			newXp: number;
+			lvlThreshold: number;
+		};
+		attribute: {
+			strength: number;
+			agility: number;
+			endurance: number;
+			charisma: number;
+			wisdom: number;
+			perception: number;
+			intelligence: number;
+		};
+		free_pts: number;
+		inventory: {};
+		equipment: {};
+		habits: {};
+		quests: {};
+		completedQuests: string[],
+		skills: {};
+	}
+}
+
+export const DEFAULT_SETTINGS: UserSettings = {
+	user1: {
+		settings: {
+			difficulty: 'easy',
+			theme: 'default',
+			language: 'en',
+			questsFolder: '',
+			questsFilePath: '',
+			refreshRate: 100,
+		},
+		persona: {
+			name: "User",
+			class: "user",
+			health: 100,
+			xp: 0,
+			level: 1,
+			newXp: 0,
+			lvlThreshold: 100,
+		},
+		attribute: {
+			strength: 10,
+			agility: 10,
+			endurance: 10,
+			charisma: 10,
+			wisdom: 10,
+			perception: 10,
+			intelligence: 10
+		},
+		free_pts: 0,
+		inventory: {},
+		equipment: {},
+		habits: {},
+		quests: {},
+		completedQuests: [],
+		skills: {},
+	}
+}

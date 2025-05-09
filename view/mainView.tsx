@@ -3,21 +3,29 @@
  * This view is responsible for rendering the main interface of the plugin.
  */
 
-import React, { useEffect, useRef } from "react";
-import { createRoot } from "react-dom/client";
+import React, { useEffect, useRef, useState } from "react";
+import { createRoot, Root } from "react-dom/client";
 import { ItemView, WorkspaceLeaf } from "obsidian";
 // from other files :
-import { ParentView } from "../components/parentView";
+
 import { MAIN_VIEW } from "../constants/viewTypes";
+import { useAppContext, AppContextProvider} from '../context/appContext';
+import { appContextService } from '../context/appContextService';
+import GOL from "../plugin";
+import { Notice } from "obsidian";
+import { viewSyncService } from '../services/syncService';
 
-
+// Removed incorrect import of React
 
 // --- | main view interface | ---
-export class MainView extends ItemView { // todo
+export class MainViewSettings extends ItemView { // todo
+	private plugin: GOL;
 	private onCloseCallback: (() => void) | null = null;
+	root: Root;
 
-	constructor(leaf: WorkspaceLeaf) {
+	constructor(leaf: WorkspaceLeaf, plugin: GOL) {
 		super(leaf);
+		this.plugin = plugin;
 	}
 
 	getViewType() {
@@ -33,18 +41,91 @@ export class MainView extends ItemView { // todo
 	}
 
 	async onOpen() {
-		const container = this.containerEl;
+		const container = this.containerEl.children[1] as HTMLElement;
+		this.root = createRoot(container);
 		container.empty();
-		const root = createRoot(container);
-		root.render(<ParentView app={this.app} type="main" setOnCloseCallback={(callback) => { this.onCloseCallback = callback; }} />);
+		this.root.render(<AppContextProvider plugin={ this.plugin }><MainView /></AppContextProvider>);
+		// root.render(<ParentView app={this.app} type="main" setOnCloseCallback={(callback) => { this.onCloseCallback = callback; }} />);
 	}
 
 	async onClose() {
+		await appContextService.saveUserDataToFile();
+		this.root.unmount();
 		if (this.onCloseCallback) {
 			this.onCloseCallback(); // clean all ParentView
 		}
 	}
 }
+
+
+export const MainView = () => {
+	const { refreshRate } = useAppContext();
+	const { saveData, updateXP } = useAppContext();
+	const [lastSaved, setLastSaved] = useState<Date | null>(null);
+
+
+	const handleSave = async () => {
+		await saveData();
+		setLastSaved(new Date());
+		new Notice("Data saved successfully!");
+	};
+
+	const handleAddXP = (amount: number) => {
+		updateXP(amount);
+		new Notice(`${amount > 0 ? "Added" : "Removed"} ${Math.abs(amount)} XP`);
+	};
+
+	useEffect(() => {
+		console.log('MainView: Initializing with refresh rate:', appContextService.getRefreshRate());
+		
+		const saveData = async () => {
+			await appContextService.saveUserDataToFile();
+		};
+
+		let currentInterval = setInterval(() => {
+			saveData();
+			setLastSaved(new Date());
+		}, appContextService.getRefreshRate());
+
+		// Subscribe to refresh rate changes
+		console.log('MainView: Subscribing to refresh rate changes');
+		const unsubscribe = viewSyncService.onRefreshRateChange((newRate: number) => {
+			console.log('MainView received refresh rate change:', newRate);
+			clearInterval(currentInterval);
+			currentInterval = setInterval(() => {
+				saveData();
+				setLastSaved(new Date());
+			}, newRate);
+		});
+
+		return () => {
+			console.log('MainView: Cleaning up interval and subscription');
+			clearInterval(currentInterval);
+			unsubscribe();
+		};
+	}, []);
+
+	return (
+		<div>
+			<h2>Game of Life - Main View</h2>
+			<div>
+				<h3>Experience points</h3>
+				<button onClick={() => handleAddXP(10)}>Add 10 XP</button>
+				<button onClick={() => handleAddXP(-10)}>Remove 10 XP</button>
+			</div>
+			<div>
+				<h3>Development Settings</h3>
+				<div className="dev-buttons">
+					<button onClick={handleSave}>Manual Save</button>
+				</div>
+				{lastSaved && (
+					<p className="last-saved">Last saved: {lastSaved.toLocaleTimeString()}</p>
+				)}
+			</div>
+
+		</div>
+	);
+};
 
 
 interface ParentFunctions {
@@ -58,7 +139,7 @@ interface MainProps {
 	parentFunctions: ParentFunctions;
 }
 
-export const MainViewSettings: React.FC<MainProps> = ({
+export const MainViewSettings_OLD: React.FC<MainProps> = ({
 	isOpen,
 	userData,
 	parentFunctions
@@ -86,8 +167,6 @@ export const MainViewSettings: React.FC<MainProps> = ({
 		};
 	}, [isOpen]);
 	if (!isOpen) return null;
-
-
 	const newLocal = `${(user.newXp / user.lvlThreshold) * 100}`;
 	// todo - make the visual part :
 	return (
@@ -119,6 +198,10 @@ export const MainViewSettings: React.FC<MainProps> = ({
 		<div>
 			{/* dev part : */}
 			<h1>Dev</h1>
+			<div>
+				<h2>Vue A</h2>
+
+			</div>
 			<p>Nom: {user.name}</p>
 			<p>classe: {user.class}</p>
 			<p>xp: {user.xp}</p>
@@ -133,6 +216,7 @@ export const MainViewSettings: React.FC<MainProps> = ({
 				}}>diminuer XP</button>
 			</div>
 		</div>
+
 	</div>
 	);
 };
