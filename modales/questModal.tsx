@@ -21,14 +21,25 @@ export class QuestModal extends Modal {
 		this.quest = this.plugin.quest;
     }
 
+	private getFormData() {
+		const title = this.titleInput.getValue().trim();
+		const description = this.descriptionInput.getValue().trim();
+		const reward = this.rewardInput ? parseInt(this.rewardInput.getValue()) : 0;
+
+		return {
+			title,
+			description,
+			reward
+		};
+	}
+
 	private normalMode = (advancedContainer: HTMLElement) => {
+		// show the form with the title and description for the quests.
 		const {contentEl} = this;
 		const advancedMode = contentEl.querySelector(".advanced-mode");
 		if (advancedMode) {
 			advancedMode.remove();
 		}
-		// const headerContainer = contentEl.createDiv({ cls: "header-container" });
-		// headerContainer.createEl("h1", {text: 'Create New Quest'});
 
 		if (advancedContainer) {
 			advancedContainer.empty();
@@ -48,57 +59,40 @@ export class QuestModal extends Modal {
 		this.descriptionInput = new TextComponent(descriptionContainer);
 		this.descriptionInput.setPlaceholder("Enter quest description...");
 		this.descriptionInput.inputEl.setAttribute("style", "width: 100%; height: 80px;");
-
-	}
-
-	private getFormData() {
-		const title = this.titleInput.getValue().trim();
-		const description = this.descriptionInput.getValue().trim();
-		const reward = this.rewardInput ? parseInt(this.rewardInput.getValue()) : 0;
-
-		return {
-			title,
-			description,
-			reward
-		};
 	}
 
 	private endButton = () => {
+		// show the buttons.
 		const {contentEl} = this;
 		// Buttons container
 		const buttonsContainer = contentEl.createDiv({ cls: "buttons-container" });
-		
 		// Cancel button
 		new ButtonComponent(buttonsContainer)
 			.setButtonText("Cancel")
 			.onClick(() => {
 				this.close();
 			});
-			
+
 		// Save button
 		new ButtonComponent(buttonsContainer)
 			.setButtonText("Save Quest")
 			.setCta()
 			.onClick(async () => {
-				console.log('Save button clicked - plugin state:', this.plugin);
 				const { title, description, reward } = this.getFormData();
-				
 				if (!title) {
 					new Notice("Quest title is required!");
 					return;
 				}
-				
+
 				if (isNaN(reward) || reward < 0) {
 					new Notice("XP reward must be a positive number!");
 					return;
 				}
 
 				if (!this.plugin?.questService) {
-					console.error('Quest service not found in plugin:', this.plugin);
-					new Notice("Quest service not initialized! Please reload the plugin.");
 					return;
 				}
-				
+
 				try {
 					await this.plugin.questService.saveQuestToJSON(title, description, reward);
 					this.close();
@@ -112,29 +106,24 @@ export class QuestModal extends Modal {
     onOpen() {
         const {contentEl} = this;
         contentEl.empty();
-
-        // Create a flex container for the header
+        // Create header
         const headerContainer = contentEl.createDiv({ cls: "header-container" });
-
-        // Add title to the left
+        // Add title
         headerContainer.createEl("h1", {text: 'Create New Quest'});
 
         // Create main container for the form
         const mainContainer = contentEl.createDiv({ cls: "quest-form" });
+		this.normalMode(mainContainer); // by default
 
-		this.normalMode(mainContainer);
-
-        // Add toggle to the right
         const advancedModeToggle = new ToggleComponent(headerContainer)
-            .setTooltip("Activer/désactiver le mode avancé")
+            .setTooltip("Show/hide supplementary settings")
             .setValue(false)
             .onChange((value) => {
                 mainContainer.empty();
                 if (value) {
                     // Advanced mode
                     const advancedContainer = mainContainer.createDiv({ cls: "advanced-mode" });
-                    advancedContainer.createEl("h3", { text: "Paramètres Avancés" });
-                    
+                    advancedContainer.createEl("h3", { text: "Supplementary settings" });
                     // Title
                     const titleContainer = advancedContainer.createDiv({ cls: "form-group" });
                     titleContainer.createEl("label", { text: "Title:" });
@@ -164,281 +153,10 @@ export class QuestModal extends Modal {
                 }
             });
 
-        // Initialize with normal mode
-        // advancedModeToggle.setValue(false);
-
 		this.endButton();
-
-
-        // Add styling
-        contentEl.createEl("style", {
-            text: `
-                .header-container {
-                    display: flex;
-                    justify-content: space-between;
-                    align-items: center;
-                    margin-bottom: 20px;
-                }
-                .quest-form {
-                    margin-bottom: 20px;
-                }
-                .form-group {
-                    margin-bottom: 15px;
-                }
-                .form-group label {
-                    display: block;
-                    margin-bottom: 5px;
-                    font-weight: 500;
-                }
-                .buttons-container {
-                    display: flex;
-                    justify-content: flex-end;
-                    gap: 10px;
-                }
-            `
-        });
     }
 
     onClose() {
         this.contentEl.empty();
     }
-
-    async saveQuest_OLD(title: string, description: string, reward: number) {
-        try {
-            // Path to quests.json file
-            const questsPath = `${this.app.vault.configDir}/plugins/game-of-life/data/db/quests.json`;
-            
-            // Check if file exists
-            const fileExists = await this.app.vault.adapter.exists(questsPath);
-            
-            // Initialize quests array
-            let quests: Quest[] = [];
-            
-            // If file exists, read existing quests
-            if (fileExists) {
-                const content = await this.app.vault.adapter.read(questsPath);
-                quests = JSON.parse(content);
-                
-                // Ensure quests is an array
-                if (!Array.isArray(quests)) {
-                    quests = [];
-                }
-            }
-            
-            // Create new quest ID (using timestamp to ensure uniqueness)
-            const questId = `quest_${Date.now()}`;
-            
-            // Create new quest object using DEFAULT_QUEST_SETTINGS as base
-            const newQuest: Quest = {
-                ...DEFAULT_QUEST_SETTINGS,
-                id: questId,
-                title: title,
-                description: description || "",
-                reward: {
-                    ...DEFAULT_QUEST_SETTINGS.reward,
-                    XP: reward || DEFAULT_QUEST_SETTINGS.reward.XP
-                },
-                created_at: new Date().toISOString()
-            };
-            
-            // Add to quests array
-            quests.push(newQuest);
-            
-            // Save to file
-            await this.app.vault.adapter.write(questsPath, JSON.stringify(quests, null, 2));
-            
-            new Notice("Quest created successfully!");
-            
-            // Make sure the directory exists
-            const dirPath = `${this.app.vault.configDir}/plugins/game-of-life/data/db`;
-            const dirExists = await this.app.vault.adapter.exists(dirPath);
-            
-            if (!dirExists) {
-                // Create directory structure if it doesn't exist
-                await this.app.vault.adapter.mkdir(dirPath);
-            }
-            
-        } catch (error) {
-            console.error("Error saving quest:", error);
-            new Notice("Failed to save quest. Check console for details.");
-        }
-    }
 }
-
-
-
-
-
-
-
-
-// export class QuestModal extends Modal {
-// 	plugin: any;
-// 	dataQuest: QuestSettings;
-
-//     constructor(app: App, plugin: any) {
-//         super(app);
-// 		this.plugin = plugin;
-// 		this.dataQuest = plugin.questSetting;
-//     }
-
-//     onOpen() { // todo - make the visual of the quest taker
-//         const {contentEl} = this;
-//         contentEl.createEl("h2", {text: 'Create your quest :'});
-// 		// Toggle button to switch between simple and advanced mode
-// 		const advancedModeToggle = new ToggleComponent(contentEl)
-// 		.setTooltip("Activer/désactiver le mode avancé")
-// 		.setValue(false)
-// 		.onChange((value) => {
-// 			if (value) {
-// 				// Advanced mode enabled
-// 				const advancedContainer = contentEl.createDiv({ cls: "advanced-mode" });
-// 				advancedContainer.createEl("h3", { text: "Paramètres Avancés" });
-
-// 				// Advanced parameters here
-// 				const descriptionInput = new TextComponent(advancedContainer);
-// 				descriptionInput.setPlaceholder("Description de la quête...");
-// 				descriptionInput.inputEl.setAttribute("style", "width: 100%;");
-
-// 				const rewardInput = new TextComponent(advancedContainer);
-// 				rewardInput.setPlaceholder("Récompense XP...");
-// 				rewardInput.inputEl.setAttribute("type", "number");
-// 				rewardInput.inputEl.setAttribute("style", "width: 100%;");
-
-// 				const completedCheckbox = advancedContainer.createEl("label", { text: "Quête terminée ?" });
-// 				const completedInput = new TextComponent(completedCheckbox);
-// 				completedInput.inputEl.setAttribute("type", "checkbox");
-// 			} else {
-// 				// Advanced mode disabled
-// 				const advancedMode = contentEl.querySelector(".advanced-mode");
-// 				if (advancedMode) {
-// 					advancedMode.remove();
-// 				}
-// 			}
-// 		});
-
-// 		// text area
-//         const textArea = new TextComponent(contentEl);
-//         textArea.inputEl.setAttribute("rows", "5");
-//         textArea.inputEl.setAttribute("style", "width: 100%; resize: vertical;");
-//         textArea.setPlaceholder("Tapez votre nom ici...");
-
-//         // validation button
-//         new ButtonComponent(contentEl)
-//             .setButtonText("Enregistrer")
-//             .onClick(async () => {
-//                 const userInput = textArea.getValue().trim();
-//                 if (userInput) {
-//                     await this.saveToDatabase(userInput);
-//                     // await this.saveQuestToDB(userInput);
-// 					await this.plugin.saveSettings();
-//                     new Notice("Texte enregistré !");
-//                 } else {
-//                     new Notice("Champ vide !");
-//                 }
-//                 this.close();
-//             });
-//     }
-
-//     onClose() {
-//         this.contentEl.empty();
-//     }
-
-//     async saveToDatabase(text: string) {
-// 		// save the text to a markdown file
-//         const filePath = "database.md";
-//         const fileExists = await this.app.vault.adapter.exists(filePath);
-
-//         let content = `- ${text}\n`;
-//         if (fileExists) {
-//             const existingContent = await this.app.vault.adapter.read(filePath);
-//             content = existingContent + content;
-//         }
-
-//         await this.app.vault.adapter.write(filePath, content);
-//     }
-
-	// async saveQuestToDB(text: string) {
-	// 	// save the quest to quests.json file
-	// 	const filePath = `${this.app.vault.configDir}/plugins/game-of-life/data/db/quests.json`;
-	// 	const fileExists = await this.app.vault.adapter.exists(filePath);
-
-	// 	let content: QuestSettings = { quests: {}, questList: [] };
-	// 	if (fileExists) {
-	// 		const existingContent = await this.app.vault.adapter.read(filePath);
-	// 		content = JSON.parse(existingContent);
-	// 	}
-
-	// 	const newQuestId = `quest_${Object.keys(content.quests).length + 1}`;
-	// 	const newQuest = {
-	// 		...DEFAULT_QUEST_SETTINGS.quests["quest1"],
-	// 		name: text,
-	// 	};
-
-	// 	// content.quests[newQuestId] = newQuest;
-	// 	// content.questList.push(newQuestId);
-
-	// 	const updatedContent = JSON.stringify(content, null, 2);
-
-	// 	await this.app.vault.adapter.write(filePath, updatedContent);
-	// }
-// }
-
-
-
-// normalMode() {
-// 	const {contentEl} = this;
-// 	const headerContainer = contentEl.createDiv({ cls: "header-container" });
-// 	headerContainer.createEl("h1", {text: 'Create New Quest'});
-// }
-
-// onOpen() {
-// 	const {contentEl} = this;
-	
-// 	// Create a flex container for the header
-// 	const headerContainer = contentEl.createDiv({ cls: "header-container" });
-	
-// 	// Add title to the left
-// 	headerContainer.createEl("h1", {text: 'Create New Quest'});
-	
-// 	// Add toggle to the right
-// 	const advancedModeToggle = new ToggleComponent(headerContainer)
-// 		.setTooltip("Activer/désactiver le mode avancé")
-// 		.setValue(false)
-// 		.onChange((value) => {
-// 			if (value) {
-				
-// 				// Advanced mode enabled
-// 				const advancedContainer = contentEl.createDiv({ cls: "advanced-mode" });
-// 				advancedContainer.createEl("h3", { text: "Paramètres Avancés" });
-
-// 				// Advanced parameters here
-// 				const descriptionInput = new TextComponent(advancedContainer);
-// 				descriptionInput.setPlaceholder("Description de la quête...");
-// 				descriptionInput.inputEl.setAttribute("style", "width: 100%;");
-
-// 				const rewardInput = new TextComponent(advancedContainer);
-// 				rewardInput.setPlaceholder("Récompense XP...");
-// 				rewardInput.inputEl.setAttribute("type", "number");
-// 				rewardInput.inputEl.setAttribute("style", "width: 100%;");
-
-// 				const completedCheckbox = advancedContainer.createEl("label", { text: "Quête terminée ?" });
-// 				const completedInput = new TextComponent(completedCheckbox);
-// 				completedInput.inputEl.setAttribute("type", "checkbox");
-// 			} else {
-// 				// Advanced mode disabled
-// 				const advancedMode = contentEl.querySelector(".advanced-mode");
-// 				if (advancedMode) {
-// 					advancedMode.remove();
-// 				}
-// 			}
-// 		});
-
-// 	// text area
-// 	const textArea = new TextComponent(contentEl);
-// 	textArea.inputEl.setAttribute("rows", "5");
-// 	textArea.inputEl.setAttribute("style", "width: 100%; resize: vertical;");
-// 	textArea.setPlaceholder("Tapez votre nom ici...");
-
-// 	// Buttons container
-// 	const buttonsContainer = contentEl.createDiv({ cls: "buttons-container" });

@@ -27,7 +27,7 @@ export const DEFAULT_QUEST_SETTINGS: Quest= {
 	description: "This is your first quest.",
 	isCompleted: false,
 	reward: {
-		XP: 5,
+		XP: 1,
 		items: [],
 	},
 	requirements: {
@@ -51,7 +51,7 @@ export interface UserSettings {
 			theme: string;
 			language: string;
 			questsFolder: string;
-			questsFilePath: string;
+			questsFileName: string;
 			refreshRate: number;
 		};
 		persona: {
@@ -89,7 +89,7 @@ export const DEFAULT_SETTINGS: UserSettings = {
 			theme: 'default',
 			language: 'en',
 			questsFolder: '',
-			questsFilePath: '',
+			questsFileName: 'Quests.md',
 			refreshRate: 100,
 		},
 		persona: {

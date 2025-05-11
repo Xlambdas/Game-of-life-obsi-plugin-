@@ -118,5 +118,45 @@
     "created_at": "2025-05-11T15:22:23.055Z",
     "difficulty": "easy",
     "category": ""
+  },
+  {
+    "id": "quest_1746978329263",
+    "title": "zdsfc",
+    "description": "zdefczeqd",
+    "isCompleted": false,
+    "reward": {
+      "XP": 5055,
+      "items": []
+    },
+    "requirements": {
+      "level": 0,
+      "previousQuests": []
+    },
+    "progress": 0,
+    "due_date": "",
+    "priority": "low",
+    "created_at": "2025-05-11T15:45:29.263Z",
+    "difficulty": "easy",
+    "category": ""
+  },
+  {
+    "id": "quest_1746978527790",
+    "title": "sdxc<",
+    "description": "rfgvsxc",
+    "isCompleted": false,
+    "reward": {
+      "XP": 50,
+      "items": []
+    },
+    "requirements": {
+      "level": 0,
+      "previousQuests": []
+    },
+    "progress": 0,
+    "due_date": "",
+    "priority": "low",
+    "created_at": "2025-05-11T15:48:47.790Z",
+    "difficulty": "easy",
+    "category": ""
   }
 ]

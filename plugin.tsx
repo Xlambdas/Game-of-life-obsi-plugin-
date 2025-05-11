@@ -3,19 +3,15 @@
  * with customizable settings, views, and commands. It manages the lifecycle of the plugin,
  * including loading settings, registering views, and handling periodic tasks.
  */
-import { App, Plugin, Notice } from 'obsidian';
+import { Plugin, Notice } from 'obsidian';
 import { selfSettingTab } from './data/settings';
 import { ViewService } from './services/viewServices';
 import { DataService } from './services/dataService';
 import { registerCommands } from './commands/registerCommands';
-import { createContext } from 'react';
-// import { AppContextService, AppContextType, AppContextProvider } from 'context/appContext';
-import { createRoot } from 'react-dom/client';
 import { DEFAULT_SETTINGS, Quest, UserSettings } from './constants/DEFAULT';
 import { appContextService } from 'context/appContextService';
 import { QuestServices } from './services/questService';
-
-
+import { QuestModal } from './modales/questModal';
 
 
 export default class GOL extends Plugin {
@@ -32,41 +28,29 @@ export default class GOL extends Plugin {
     async onload() {
         console.warn('loading plugin');
         await this.loadSettings();
-        console.log('Settings loaded:', this.settings);
 
         // Initialize services and load settings
-        console.log('Initializing services...');
         this.dataService = new DataService(this.app);
-        this.questService = new QuestServices(this.app);
-        console.log('Services created:', { 
-            dataService: !!this.dataService, 
-            questService: !!this.questService 
-        });
-        
+        this.questService = new QuestServices(this.app, this);
+
         // Initialize appContextService with the plugin instance
         appContextService.initialize(this);
-        console.log('App context initialized');
-        
+
         // Load settings first
         await this.dataService.loadSettings();
         if (this.dataService) {
             this.settings = this.dataService.settings;
-            console.log('Data service settings loaded:', this.settings);
         }
-
 
         // Register views (main and side view)
 		this.viewService = new ViewService(this);
         this.viewService.registerViews();
-        console.log('Views registered');
 
         // Register commands (all the commands of the plugin - ctrl + p)
         registerCommands(this, this.viewService);
-        console.log('Commands registered');
 
         // Register settings tab (settings of the plugin itself)
         this.addSettingTab(new selfSettingTab(this.app, this));
-        console.log('Settings tab registered');
 
         // Add ribbon icons (icons in the left sidebar)
         this.addRibbonIcon('dice', 'Activate sideview', () => {
@@ -82,7 +66,6 @@ export default class GOL extends Plugin {
 		this.addRibbonIcon('checkbox-glyph', 'Open Quests File', () => {
             this.openQuestsFile();
         });
-        console.log('Ribbon icons added');
 
         // Set interval for periodic check
         this.autoSaveIntervalId = window.setInterval(() => {
@@ -90,7 +73,6 @@ export default class GOL extends Plugin {
 		}, appContextService.getRefreshRate());
 
         this.intervalId = window.setInterval(() => console.log('setInterval'), appContextService.getRefreshRate());
-        console.log('Intervals set');
     }
 
     onunload() {
@@ -108,27 +90,15 @@ export default class GOL extends Plugin {
 
     async newQuest() {
         console.log('Creating new quest...');
-        console.log('Current plugin state:', {
-            questService: this.questService,
-            settings: this.settings,
-            pluginInstance: this
-        });
-        
+
         if (!this.questService) {
             console.error('Quest service not initialized');
-            new Notice("Quest service not initialized. Please reload the plugin.");
             return;
         }
 
         try {
-            // Open the quest modal to create a new quest
-            const { QuestModal } = await import('./modales/questModal');
             // Ensure we're passing the actual plugin instance
             const modal = new QuestModal(this.app, this);
-            console.log('Created QuestModal with plugin instance:', {
-                hasQuestService: !!this.questService,
-                pluginInstance: this
-            });
             modal.open();
         } catch (error) {
             console.error('Error creating quest modal:', error);
@@ -138,13 +108,12 @@ export default class GOL extends Plugin {
 
 	async openQuestsFile() {
         if (!this.questService) {
-            new Notice("Quest management service not initialized");
             return;
         }
-        
-        const questsPath = this.settings?.user1?.settings?.questsFilePath || 'Quests.md';
+
+        const questsFileName = this.settings?.user1?.settings?.questsFileName || 'Quests.md';
         const questsFolder = this.settings?.user1?.settings?.questsFolder || '';
-        const fullPath = questsFolder ? `${questsFolder}/${questsPath}` : questsPath;
+        const fullPath = questsFolder ? `${questsFolder}/${questsFileName}` : questsFileName;
 
         try {
             const file = this.app.vault.getAbstractFileByPath(fullPath);
@@ -168,9 +137,6 @@ export default class GOL extends Plugin {
 		if (this.dataService) {
 			await this.dataService.saveSettings();
 		}
-
-
 		new Notice('Settings saved !');
     }
-	
 }
