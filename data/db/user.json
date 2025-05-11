@@ -5,7 +5,7 @@
       "theme": "default",
       "language": "en",
       "questsFolder": "",
-      "refreshRate": 20000
+      "refreshRate": 60000
     },
     "persona": {
       "name": "get to work",

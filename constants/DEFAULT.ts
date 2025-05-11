@@ -4,8 +4,9 @@ export interface Quest {
     description: string;
     isCompleted: boolean;
     reward: {
-        experience: number;
+        XP: number;
         items?: string[];
+		completed_at?: string;
     };
     requirements?: {
         level?: number;
@@ -26,7 +27,7 @@ export const DEFAULT_QUEST_SETTINGS: Quest= {
 	description: "This is your first quest.",
 	isCompleted: false,
 	reward: {
-		experience: 0,
+		XP: 5,
 		items: [],
 	},
 	requirements: {

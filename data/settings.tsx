@@ -101,7 +101,6 @@ export class selfSettingTab extends PluginSettingTab {
 							console.log('Difficulty(file:settings.tsx)=> save settings :', value);
 						}
 					});
-
 				});
 			});
 
@@ -139,7 +138,7 @@ export class selfSettingTab extends PluginSettingTab {
 				});
 			});
 
-		/** Final settings : delete all the data */
+		/** Final settings : quests file path and folder */
 		containerEl.createEl('h4', { text: 'Final Settings' });
 
 		// quests file path
@@ -180,7 +179,6 @@ export class selfSettingTab extends PluginSettingTab {
 				dropdown.onChange(async (value) => {
 					this.plugin.settings.user1.settings.questsFolder = value;
 					await this.plugin.saveSettings();
-					
 				});
 			});
 
@@ -250,6 +248,5 @@ export class selfSettingTab extends PluginSettingTab {
 					})
 					.inputEl.setAttr('type', 'number')
 			);
-		
 	}
 }

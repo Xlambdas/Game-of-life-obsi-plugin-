@@ -1,8 +1,9 @@
 import { Plugin, Notice } from 'obsidian';
 import { ViewService } from '../services/viewServices';
 import { QuestModal } from '../modales/questModal';
+import GOL from '../plugin';
 
-export function registerCommands(plugin: Plugin, viewService: ViewService) {
+export function registerCommands(plugin: GOL, viewService: ViewService) {
     // Command to open the sidebar
     plugin.addCommand({
         id: "open RPG sidebar",
@@ -29,7 +30,7 @@ export function registerCommands(plugin: Plugin, viewService: ViewService) {
         id: "create new quest",
         name: "new quest",
         callback: () => {
-            new QuestModal(plugin.app, this).open();
+            plugin.newQuest();
         }
     });
 

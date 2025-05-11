@@ -21,7 +21,7 @@ import { QuestServices } from './services/questService';
 export default class GOL extends Plugin {
 	// Create all the settings for the game...
     settings: UserSettings;
-    quests: Quest;
+    quest: Quest;
 	questService: QuestServices;
 	// testQuestSettings: QuestSettings[];
     intervalId: number | undefined;
@@ -31,53 +31,42 @@ export default class GOL extends Plugin {
 
     async onload() {
         console.warn('loading plugin');
-		await this.loadSettings();
+        await this.loadSettings();
+        console.log('Settings loaded:', this.settings);
 
         // Initialize services and load settings
+        console.log('Initializing services...');
         this.dataService = new DataService(this.app);
-		this.questService = new QuestServices(this.app);
-		// Initialize appContextService with the plugin instance
-		appContextService.initialize(this);
+        this.questService = new QuestServices(this.app);
+        console.log('Services created:', { 
+            dataService: !!this.dataService, 
+            questService: !!this.questService 
+        });
+        
+        // Initialize appContextService with the plugin instance
+        appContextService.initialize(this);
+        console.log('App context initialized');
+        
+        // Load settings first
         await this.dataService.loadSettings();
-		if (this.dataService) {
-			this.settings = this.dataService.settings;
-		}
-		await this.questService.initialize({
-			questsFilePath: this.settings?.user1.settings.questsFilePath || '',
-			questsFolder: this.settings?.user1.settings.questsFolder || '',
-			completedQuestIds: this.settings?.user1.completedQuests || [],
-		})
+        if (this.dataService) {
+            this.settings = this.dataService.settings;
+            console.log('Data service settings loaded:', this.settings);
+        }
 
-        // this.questSetting = this.dataService.questSetting;
-
-		// const appContext: AppContextType = {
-        //     plugin: this,
-        //     settings: this.settings,
-        //     // quests: this.testQuestSettings,
-        //     updateUserSettings: (newData: Partial<UserSettings>) => {
-        //         this.settings = { ...this.settings, ...newData };
-        //         // Optionally save settings after update
-        //         this.dataService.saveSettings();
-        //     },
-        //     // updateQuests: (newQuests: QuestSettings[]) => {
-        //     //     // this.testQuestSettings = newQuests;
-        //     //     // Optionally save settings after update
-        //     //     this.dataService.saveSettings();
-        //     // }
-        // };
-
-        // Initialize the global context service
-        // AppContextService.getInstance().initialize(appContext);
 
         // Register views (main and side view)
 		this.viewService = new ViewService(this);
         this.viewService.registerViews();
+        console.log('Views registered');
 
         // Register commands (all the commands of the plugin - ctrl + p)
         registerCommands(this, this.viewService);
+        console.log('Commands registered');
 
         // Register settings tab (settings of the plugin itself)
         this.addSettingTab(new selfSettingTab(this.app, this));
+        console.log('Settings tab registered');
 
         // Add ribbon icons (icons in the left sidebar)
         this.addRibbonIcon('dice', 'Activate sideview', () => {
@@ -93,33 +82,58 @@ export default class GOL extends Plugin {
 		this.addRibbonIcon('checkbox-glyph', 'Open Quests File', () => {
             this.openQuestsFile();
         });
-
+        console.log('Ribbon icons added');
 
         // Set interval for periodic check
         this.autoSaveIntervalId = window.setInterval(() => {
 			appContextService.saveUserDataToFile();
 		}, appContextService.getRefreshRate());
 
-		this.intervalId = window.setInterval(() => console.log('setInterval'), appContextService.getRefreshRate());
+        this.intervalId = window.setInterval(() => console.log('setInterval'), appContextService.getRefreshRate());
+        console.log('Intervals set');
     }
 
     onunload() {
         console.warn('unloading plugin');
-		appContextService.saveUserDataToFile();
+        appContextService.saveUserDataToFile();
 
         if (this.intervalId) {
             clearInterval(this.intervalId);
         }
 
-		if (this.autoSaveIntervalId) {
-			clearInterval(this.autoSaveIntervalId);
-		}
+        if (this.autoSaveIntervalId) {
+            clearInterval(this.autoSaveIntervalId);
+        }
     }
 
     async newQuest() {
-		// Open the quest modal to create a new quest
-        const { QuestModal } = await import('./modales/questModal');
-        new QuestModal(this.app, this).open();
+        console.log('Creating new quest...');
+        console.log('Current plugin state:', {
+            questService: this.questService,
+            settings: this.settings,
+            pluginInstance: this
+        });
+        
+        if (!this.questService) {
+            console.error('Quest service not initialized');
+            new Notice("Quest service not initialized. Please reload the plugin.");
+            return;
+        }
+
+        try {
+            // Open the quest modal to create a new quest
+            const { QuestModal } = await import('./modales/questModal');
+            // Ensure we're passing the actual plugin instance
+            const modal = new QuestModal(this.app, this);
+            console.log('Created QuestModal with plugin instance:', {
+                hasQuestService: !!this.questService,
+                pluginInstance: this
+            });
+            modal.open();
+        } catch (error) {
+            console.error('Error creating quest modal:', error);
+            new Notice("Failed to create quest modal. Check console for details.");
+        }
     }
 
 	async openQuestsFile() {
@@ -131,7 +145,7 @@ export default class GOL extends Plugin {
         const questsPath = this.settings?.user1?.settings?.questsFilePath || 'Quests.md';
         const questsFolder = this.settings?.user1?.settings?.questsFolder || '';
         const fullPath = questsFolder ? `${questsFolder}/${questsPath}` : questsPath;
-        
+
         try {
             const file = this.app.vault.getAbstractFileByPath(fullPath);
             if (file) {
@@ -152,51 +166,11 @@ export default class GOL extends Plugin {
     async saveSettings() {
 		await this.saveData(this.settings);
 		if (this.dataService) {
-        	await this.dataService.saveSettings();
+			await this.dataService.saveSettings();
 		}
 
-		// Update quest management service with new settings
-        if (this.questService) {
-            await this.questService.initialize({
-                questsFilePath: this.settings?.user1?.settings?.questsFilePath || 'Quests.md',
-				questsFolder: this.settings?.user1?.settings?.questsFolder || '',
-                completedQuestIds: this.settings.user1?.completedQuests || []
-            });
-        }
 
 		new Notice('Settings saved !');
     }
-	async exportQuestsToCSV() {
-        if (!this.questService) {
-            new Notice("Quest management service not initialized");
-            return;
-        }
-        
-        const csv = this.questService.exportQuestsToCSV();
-        const fileName = 'quests_export.csv';
-        
-        try {
-            await this.app.vault.create(fileName, csv);
-            new Notice(`Quests exported to ${fileName}`);
-        } catch (error) {
-            console.error("Error exporting quests:", error);
-            new Notice("Failed to export quests");
-        }
-    }
-    
-    async importQuestsFromCSV(filePath: string) {
-        if (!this.questService) {
-            new Notice("Quest management service not initialized");
-            return;
-        }
-        
-        try {
-            const content = await this.app.vault.adapter.read(filePath);
-            await this.questService.importQuestsFromCSV(content);
-            new Notice("Quests imported successfully");
-        } catch (error) {
-            console.error("Error importing quests:", error);
-            new Notice("Failed to import quests");
-        }
-    }
+	
 }

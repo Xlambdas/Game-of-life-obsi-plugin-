@@ -1,51 +1,122 @@
 [
   {
-    "id": "quest_1",
-    "title": "First Steps",
-    "description": "Create your first note in Obsidian.",
-    "completed": true,
-    "reward_XP": 50
+    "id": "quest_1746971547371",
+    "title": "test",
+    "description": "11/05 at 15h52",
+    "isCompleted": false,
+    "reward": {
+      "XP": 5,
+      "items": []
+    },
+    "requirements": {
+      "level": 0,
+      "previousQuests": []
+    },
+    "progress": 0,
+    "due_date": "",
+    "priority": "low",
+    "created_at": "2025-05-11T13:52:27.371Z",
+    "difficulty": "easy",
+    "category": ""
   },
   {
-    "id": "quest_2",
-    "title": "Link Master",
-    "description": "Create a link between two notes.",
-    "completed": false,
-    "reward_XP": 100
+    "id": "quest_1746973361852",
+    "title": "test",
+    "description": "11/05 at 16:22",
+    "isCompleted": false,
+    "reward": {
+      "XP": 5,
+      "items": []
+    },
+    "requirements": {
+      "level": 0,
+      "previousQuests": []
+    },
+    "progress": 0,
+    "due_date": "",
+    "priority": "low",
+    "created_at": "2025-05-11T14:22:41.852Z",
+    "difficulty": "easy",
+    "category": ""
   },
   {
-    "id": "quest_3",
-    "title": "Tag Explorer",
-    "description": "Add three different tags to your notes.",
-    "completed": false,
-    "reward_XP": 75
+    "id": "quest_1746973450549",
+    "title": "test",
+    "description": "16h24",
+    "isCompleted": false,
+    "reward": {
+      "XP": 12,
+      "items": []
+    },
+    "requirements": {
+      "level": 0,
+      "previousQuests": []
+    },
+    "progress": 0,
+    "due_date": "",
+    "priority": "low",
+    "created_at": "2025-05-11T14:24:10.549Z",
+    "difficulty": "easy",
+    "category": ""
   },
   {
-    "id": "quest_4",
-    "title": "Daily Habit",
-    "description": "Create a daily note for 3 consecutive days.",
-    "completed": false,
-    "reward_XP": 150
+    "id": "quest_1746973863916",
+    "title": "test",
+    "description": "11/05 at 16H30",
+    "isCompleted": false,
+    "reward": {
+      "XP": 5,
+      "items": []
+    },
+    "requirements": {
+      "level": 0,
+      "previousQuests": []
+    },
+    "progress": 0,
+    "due_date": "",
+    "priority": "low",
+    "created_at": "2025-05-11T14:31:03.916Z",
+    "difficulty": "easy",
+    "category": ""
   },
   {
-    "id": "quest_5",
-    "title": "Knowledge Network",
-    "description": "Create a graph with at least 10 connected notes.",
-    "completed": false,
-    "reward_XP": 200
+    "id": "quest_1746974994966",
+    "title": "test",
+    "description": "11/05 at 16h49",
+    "isCompleted": false,
+    "reward": {
+      "XP": 18,
+      "items": []
+    },
+    "requirements": {
+      "level": 0,
+      "previousQuests": []
+    },
+    "progress": 0,
+    "due_date": "",
+    "priority": "low",
+    "created_at": "2025-05-11T14:49:54.966Z",
+    "difficulty": "easy",
+    "category": ""
   },
   {
-    "id": "quest_1746698024130",
-    "title": "i want to break the time",
-    "description": "let's start with some description",
-    "completed": false,
-    "reward_XP": 50
-  },
-  {
-    "id": "quest_1746796646961",
-    "title": "test !",
-    "description": "first test",
-    "completed": false,
-    "reward_XP": 10
+    "id": "quest_1746976943055",
+    "title": "test",
+    "description": "11/05 at 17h22",
+    "isCompleted": false,
+    "reward": {
+      "XP": 5,
+      "items": []
+    },
+    "requirements": {
+      "level": 0,
+      "previousQuests": []
+    },
+    "progress": 0,
+    "due_date": "",
+    "priority": "low",
+    "created_at": "2025-05-11T15:22:23.055Z",
+    "difficulty": "easy",
+    "category": ""
   }
 ]
