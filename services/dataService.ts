@@ -65,13 +65,18 @@ export class DataService {
     // }
 
     async saveSettings() {
-        // save all the data and the settings in user.json and then in quests.json
-        const path = `${this.app.vault.configDir}/plugins/game-of-life/data/db/user.json`;
-        await this.app.vault.adapter.write(path, JSON.stringify(this.settings, null, 2));
+        try {
+            // Ensure the db directory exists
+            const dbDir = `${this.app.vault.configDir}/plugins/game-of-life/data/db`;
+            await this.app.vault.adapter.mkdir(dbDir);
 
-        // const pathQuest = `${this.app.vault.configDir}/plugins/game-of-life/data/db/quests.json`;
-        // await this.app.vault.adapter.write(pathQuest, JSON.stringify(this.questSetting, null, 2));
-		// console.log("Data user save.")
+            // save all the data and the settings in user.json
+            const path = `${this.app.vault.configDir}/plugins/game-of-life/data/db/user.json`;
+            await this.app.vault.adapter.write(path, JSON.stringify(this.settings, null, 2));
+            console.log("✅ Settings saved to user.json");
+        } catch (error) {
+            console.error("❌ Error saving settings:", error);
+        }
     }
 
     async openFile(filePath: string) {

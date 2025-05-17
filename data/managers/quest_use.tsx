@@ -3,14 +3,7 @@ import { pathUserDB } from '../../constants/paths';
 import { useAppContext } from '../../context/appContext';
 import { Notice } from 'obsidian';
 import { get } from 'http';
-
-interface Quest {
-    id: string;
-    title: string;
-    description: string;
-    completed: boolean;
-    reward_XP: number;
-}
+import { DEFAULT_SETTINGS, Quest } from '../../constants/DEFAULT';
 
 const QuestItem = ({ quest, onComplete }: { quest: Quest; onComplete: (quest: Quest) => void }) => {
 	return (
@@ -18,26 +11,43 @@ const QuestItem = ({ quest, onComplete }: { quest: Quest; onComplete: (quest: Qu
             <label className="quest-label">
                 <input
                     type="checkbox"
-                    checked={quest.completed}
+                    checked={quest.isCompleted}
                     onChange={() => onComplete(quest)}
                     className="quest-checkbox"
                 />
-                <span className={`quest-title ${quest.completed ? 'completed' : ''}`}>
+                <span className={`quest-title ${quest.isCompleted ? 'completed' : ''}`}>
                     {quest.title}
                 </span>
             </label>
             <div className="quest-details">
-                <p className="quest-description">{quest.description}</p>
-                <p className="quest-reward">XP: {quest.reward_XP}</p>
+                <p className="quest-description">{quest.shortDescription}</p>
+                <p className="quest-reward">XP: {quest.reward.XP}</p>
             </div>
         </div>
     );
 };
 
 export async function loadUserDataFromVault(): Promise<any> {
-	const filePath = `${this.app.vault.configDir}${pathUserDB}`;
-	const content = await this.app.vault.adapter.read(filePath);
-    return JSON.parse(content);
+    try {
+        // First try to read the file
+        const content = await this.app.vault.adapter.read(pathUserDB);
+        return JSON.parse(content);
+    } catch (error) {
+        // If file doesn't exist, create it with default structure
+        try {
+            // Ensure the directory exists
+            const dirPath = pathUserDB.substring(0, pathUserDB.lastIndexOf('/'));
+            await this.app.vault.adapter.mkdir(dirPath, { recursive: true });
+            
+            // Create the file with default data
+            const defaultData = DEFAULT_SETTINGS;
+            await this.app.vault.adapter.write(pathUserDB, JSON.stringify(defaultData, null, 2));
+            return defaultData;
+        } catch (createError) {
+            console.error("Error creating user data file:", createError);
+            throw createError;
+        }
+    }
 }
 
 export async function loadQuestsFromVault(): Promise<any[]> {
@@ -119,67 +129,67 @@ export const QuestList = () => {
     }, [plugin]);
 
 	const handleCompleteQuest = async (quest: Quest) => {
-		const quests = await loadQuestsFromVault();
-		const userData = await loadUserDataFromVault();
-
-		// return Array.isArray(quests) ? quests.map(quest => ({
-		// 	...quest,
-		// 	completed: Array.isArray(userData.completedQuests) && userData.completedQuests.includes(quest.id)
-		// })) : [];
-
 		try {
+            const quests = await loadQuestsFromVault();
+			console.log("Quests loaded:", quests);
+            const userData = await loadUserDataFromVault();
+			console.log("User data loaded:", userData);
             // First update local state for immediate UI feedback
-            // setQuests(prevQuests =>
-            //     prevQuests.map(q =>²
-            //         q.id === quest.id ? { ...q, completed: !q.completed } : q
-            //     )
-            // );
-			console.log("data user ... :", userData.user1.completedQuests);
-			console.log("Quest completed:", quests);
-			console.log("Quest completed:", quest.id);
-            // Vérifier directement l'état actuel de la quête
-			const isCurrentlyCompletedInUI = quest.completed;
-			console.log(`Quest ${quest.id} UI state - Completed: ${isCurrentlyCompletedInUI}`);
-
-            // const currentlyCompleted = userData.completedQuests.includes(quest.id);
-            // console.log(`Quest ${quest.id} status - Completed: ${currentlyCompleted}`);
-            
-            // Mettre à jour l'état local après avoir vérifié le statut actuel
             setQuests(prevQuests =>
                 prevQuests.map(q =>
-                    q.id === quest.id ? { ...q, completed: !isCurrentlyCompletedInUI } : q
+                    q.id === quest.id ? { ...q, isCompleted: !q.isCompleted } : q
                 )
             );
             
+            // Vérifier directement l'état actuel de la quête
+            const isCurrentlyCompletedInUI = quest.isCompleted;
+            console.log(`Quest ${quest.id} UI state - Completed: ${isCurrentlyCompletedInUI}`);
+
             if (isCurrentlyCompletedInUI) {
                 // Marquer comme non complétée et enlever XP :
-                console.log(`Unmarking quest ${quest.id} as completed and removing ${quest.reward_XP} XP`);
-                // userData.user1.completedQuests = userData.user1.completedQuests.filter((id: string) => id !== quest.id);
-                userData.user1.persona.xp -= quest.reward_XP;
-                const questsPath = `${plugin.app.vault.configDir}/plugins/game-of-life/data/db/quests.json`;
-                const userDataPath = `${plugin.app.vault.configDir}/plugins/game-of-life/data/db/user.json`;
+                console.log(`Unmarking quest ${quest.id} as completed and removing ${quest.reward.XP} XP`);
+                userData.user1.persona.xp -= quest.reward.XP;
+                userData.user1.completedQuests = userData.user1.completedQuests.filter((id: string) => id !== quest.id);
                 
-                await plugin.app.vault.adapter.write(userDataPath, JSON.stringify(userData, null, 2));
-				await plugin.app.vault.adapter.write(questsPath, JSON.stringify(quests, null, 2));
-                updateXP(-quest.reward_XP);
-                new Notice(`Quest uncompleted. Removed ${quest.reward_XP} XP`);
+                // Mettre à jour le statut dans le fichier des quêtes
+                const updatedQuests = quests.map(q => 
+                    q.id === quest.id ? { ...q, isCompleted: false } : q
+                );
+                await plugin.app.vault.adapter.write(
+                    `${plugin.app.vault.configDir}/plugins/game-of-life/data/db/quests.json`,
+                    JSON.stringify(updatedQuests, null, 2)
+                );
+                
+                await plugin.app.vault.adapter.write(pathUserDB, JSON.stringify(userData, null, 2));
+                updateXP(-quest.reward.XP);
+                new Notice(`Quest uncompleted. Removed ${quest.reward.XP} XP`);
             } else {
                 // Si la quête n'est PAS complétée dans l'UI, alors l'utilisateur veut la cocher
-                console.log(`Marking quest ${quest.id} as completed and adding ${quest.reward_XP} XP`);
+                console.log(`Marking quest ${quest.id} as completed and adding ${quest.reward.XP} XP`);
                 
                 // Éviter les doublons
                 if (!userData.user1.completedQuests.includes(quest.id)) {
                     userData.user1.completedQuests.push(quest.id);
-                    userData.user1.persona.xp += quest.reward_XP;
+                    userData.user1.persona.xp += quest.reward.XP;
+
+                    // Mettre à jour le statut dans le fichier des quêtes
+                    const updatedQuests = quests.map(q => 
+                        q.id === quest.id ? { ...q, isCompleted: true } : q
+                    );
+                    await plugin.app.vault.adapter.write(
+                        `${plugin.app.vault.configDir}/plugins/game-of-life/data/db/quests.json`,
+                        JSON.stringify(updatedQuests, null, 2)
+                    );
+
                     await plugin.app.vault.adapter.write(pathUserDB, JSON.stringify(userData, null, 2));
-                    updateXP(quest.reward_XP);
-                    new Notice(`Quest completed! Earned ${quest.reward_XP} XP`);
+                    updateXP(quest.reward.XP);
+                    new Notice(`Quest completed! Earned ${quest.reward.XP} XP`);
                 } else {
                     // La quête est déjà marquée comme complétée dans les données, mais pas dans l'UI
                     // Ce cas ne devrait normalement pas se produire avec le code ci-dessous
                     console.warn(`Quest ${quest.id} was already completed in data but not in UI`);
                 }
-			}
+            }
         } catch (error) {
             console.error("Error handling quest completion:", error);
             new Notice("Failed to update quest status");
@@ -209,13 +219,13 @@ export const QuestList = () => {
 };
 
 
-async function getAvailableQuests(): Promise<any[]> {
+async function getAvailableQuests(): Promise<Quest[]> {
     const quests = await loadQuestsFromVault();
     const userData = await loadUserDataFromVault();
 
 	return Array.isArray(quests) ? quests.map(quest => ({
 		...quest,
-		completed: Array.isArray(userData.completedQuests) && userData.completedQuests.includes(quest.id)
+		isCompleted: Array.isArray(userData.completedQuests) && userData.completedQuests.includes(quest.id)
 	})) : [];
 }
 

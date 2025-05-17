@@ -3,14 +3,14 @@
  * with customizable settings, views, and commands. It manages the lifecycle of the plugin,
  * including loading settings, registering views, and handling periodic tasks.
  */
-import { Plugin, Notice } from 'obsidian';
+import { Plugin, Notice, TFile } from 'obsidian';
 import { selfSettingTab } from './data/settings';
 import { ViewService } from './services/viewServices';
 import { DataService } from './services/dataService';
 import { registerCommands } from './commands/registerCommands';
 import { DEFAULT_SETTINGS, Quest, UserSettings } from './constants/DEFAULT';
 import { appContextService } from 'context/appContextService';
-import { QuestServices } from './services/questService';
+import { markdownServices } from './services/questService';
 import { QuestModal } from './modales/questModal';
 
 
@@ -18,7 +18,7 @@ export default class GOL extends Plugin {
 	// Create all the settings for the game...
     settings: UserSettings;
     quest: Quest;
-	questService: QuestServices;
+	questService: markdownServices;
 	// testQuestSettings: QuestSettings[];
     intervalId: number | undefined;
     viewService: ViewService;
@@ -31,7 +31,7 @@ export default class GOL extends Plugin {
 
         // Initialize services and load settings
         this.dataService = new DataService(this.app);
-        this.questService = new QuestServices(this.app, this);
+        this.questService = new markdownServices(this.app, this);
 
         // Initialize appContextService with the plugin instance
         appContextService.initialize(this);
@@ -73,6 +73,57 @@ export default class GOL extends Plugin {
 		}, appContextService.getRefreshRate());
 
         this.intervalId = window.setInterval(() => console.log('setInterval'), appContextService.getRefreshRate());
+
+        // Ajouter un gestionnaire d'événements pour la synchronisation des quêtes
+        this.registerEvent(
+            this.app.workspace.on('file-open', async (file) => {
+                if (!file) return;
+                
+                const questsFileName = this.settings?.user1?.settings?.questsFileName || 'Quests.md';
+                const questsFolder = this.settings?.user1?.settings?.questsFolder || '';
+                const fullPath = questsFolder ? `${questsFolder}/${questsFileName}` : questsFileName;
+
+                if (file.path === fullPath) {
+                    try {
+                        // Vérifier si le fichier JSON existe
+                        const jsonPath = `${this.app.vault.configDir}/plugins/game-of-life/data/db/quests.json`;
+                        const jsonExists = await this.app.vault.adapter.exists(jsonPath);
+                        
+                        if (jsonExists) {
+                            await this.questService.syncQuestsToMarkdown();
+                            new Notice("Quests synchronized successfully!");
+                        } else {
+                            console.error('Quests JSON file not found');
+                            new Notice("Quests JSON file not found");
+                        }
+                    } catch (error) {
+                        console.error('Error syncing quests to markdown:', error);
+                        new Notice("Failed to synchronize quests");
+                    }
+                }
+            })
+        );
+
+        // Ajouter un gestionnaire pour les modifications du fichier Markdown
+        this.registerEvent(
+            this.app.vault.on('modify', async (file) => {
+                if (!file || !(file instanceof TFile)) return;
+                
+                const questsFileName = this.settings?.user1?.settings?.questsFileName || 'Quests.md';
+                const questsFolder = this.settings?.user1?.settings?.questsFolder || '';
+                const fullPath = questsFolder ? `${questsFolder}/${questsFileName}` : questsFileName;
+
+                if (file.path === fullPath) {
+                    try {
+                        const content = await this.app.vault.read(file);
+                        await this.questService.syncMarkdownToJSON(content);
+                    } catch (error) {
+                        console.error('Error syncing markdown to JSON:', error);
+                        new Notice("Failed to synchronize quests to JSON");
+                    }
+                }
+            })
+        );
     }
 
     onunload() {

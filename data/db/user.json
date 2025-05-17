@@ -1,20 +1,24 @@
 {
   "user1": {
     "settings": {
-      "difficulty": "hard",
+      "difficulty": "easy",
       "theme": "default",
       "language": "en",
       "questsFolder": "",
-      "refreshRate": 60000
+      "questsFileName": "Quests.md",
+      "refreshRate": 60000,
+      "questsCategories": [
+        "test"
+      ]
     },
     "persona": {
-      "name": "get to work",
+      "name": "testttt",
       "class": "user",
       "health": 100,
-      "xp": 2950,
-      "level": 11,
-      "newXp": 373,
-      "lvlThreshold": 613
+      "xp": 106,
+      "level": 2,
+      "newXp": 6,
+      "lvlThreshold": 120
     },
     "attribute": {
       "strength": 10,
@@ -32,6 +36,5 @@
     "quests": {},
     "completedQuests": [],
     "skills": {}
-  },
-  "questsFolder": ""
+  }
 }

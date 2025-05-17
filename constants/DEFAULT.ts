@@ -1,49 +1,6 @@
-export interface Quest {
-	id: string;
-    title: string;
-    description: string;
-    isCompleted: boolean;
-    reward: {
-        XP: number;
-        items?: string[];
-		completed_at?: string;
-    };
-    requirements?: {
-        level?: number;
-        previousQuests?: string[];
-    };
-    progress?: number; // 0-100 for the progressive quests
-	due_date?: string;
-    priority?: 'low' | 'medium' | 'high';
-    created_at?: string;
-    difficulty?: 'easy' | 'medium' | 'hard' | 'expert';
-    category?: string;
-}
-
-
-export const DEFAULT_QUEST_SETTINGS: Quest= {
-	id: "Quest_0",
-	title: "Tutorial",
-	description: "This is your first quest.",
-	isCompleted: false,
-	reward: {
-		XP: 1,
-		items: [],
-	},
-	requirements: {
-		level: 0,
-		previousQuests: [],
-	},
-	progress: 0,
-	due_date: "",
-	priority: "low",
-	created_at: "",
-	difficulty: "easy",
-	category: "",
-};
-
-
-
+/*
+* User Default Settings
+*/
 export interface UserSettings {
 	user1: {
 		settings: {
@@ -53,6 +10,7 @@ export interface UserSettings {
 			questsFolder: string;
 			questsFileName: string;
 			refreshRate: number;
+			questsCategories: string[];
 		};
 		persona: {
 			name: string;
@@ -91,6 +49,7 @@ export const DEFAULT_SETTINGS: UserSettings = {
 			questsFolder: '',
 			questsFileName: 'Quests.md',
 			refreshRate: 100,
+			questsCategories: ['Work', 'Study', 'Social', 'Other'],
 		},
 		persona: {
 			name: "User",
@@ -119,3 +78,54 @@ export const DEFAULT_SETTINGS: UserSettings = {
 		skills: {},
 	}
 }
+
+
+/*
+* Quest Default Settings
+*/
+export interface Quest {
+	id: string;
+    title: string;
+    shortDescription: string;
+    description: string;
+    isCompleted: boolean;
+    reward: {
+        XP: number;
+        items?: string[];
+		completed_at?: string;
+    };
+    requirements?: {
+        level?: number;
+        previousQuests?: string[];
+    };
+    progress?: number; // 0-100 for the progressive quests
+	dueDate?: string;
+    priority?: 'low' | 'medium' | 'high';
+    created_at?: string;
+    difficulty?: 'easy' | 'medium' | 'hard' | 'expert';
+    category?: string;
+}
+
+export const DEFAULT_QUEST_SETTINGS: Quest= {
+	id: "Quest_0",
+	title: "Tutorial",
+	shortDescription: "This is your first quest.",
+	description: "This is your first quest.",
+	isCompleted: false,
+	reward: {
+		XP: 1,
+		items: [],
+	},
+	requirements: {
+		level: 0,
+		previousQuests: [],
+	},
+	progress: 0,
+	dueDate: "",
+	priority: "low",
+	created_at: "",
+	difficulty: "easy",
+	category: "",
+};
+
+
