@@ -15,10 +15,10 @@
       "name": "testttt",
       "class": "user",
       "health": 100,
-      "xp": 106,
-      "level": 2,
-      "newXp": 6,
-      "lvlThreshold": 120
+      "xp": 5139,
+      "level": 14,
+      "newXp": 332,
+      "lvlThreshold": 1058
     },
     "attribute": {
       "strength": 10,

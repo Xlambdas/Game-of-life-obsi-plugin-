@@ -141,9 +141,8 @@ export const SideView = () => {
 				{/* Habits / Quests Section */}
 				<div className="card"> {/* sinon proposé accordion ? */}
 					<QuestList />
-					<p>Habits</p>
 				</div>
-				{/* <button onClick={handleAddXP(10)}>Add XP</button> */}
+
 				{/* Dev Tools Section (collapsible) */}
 				<details className="dev-tools card">
 					<summary className="dev-tools-title">Developer Tools</summary>
@@ -153,10 +152,10 @@ export const SideView = () => {
 						<button className="dev-button" onClick={handleSave}>Force Save</button>
 					</div>
 				</details>
-				{lastSaved && (
-					<p className="last-saved">Last saved: {lastSaved.toLocaleTimeString()}</p>
-				)}
 			</div>
+			{lastSaved && (
+				<p className="last-saved">Last saved: {lastSaved.toLocaleTimeString()}</p>
+			)}
 		</div>
 	);
 };

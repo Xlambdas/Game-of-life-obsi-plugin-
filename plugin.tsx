@@ -11,7 +11,7 @@ import { registerCommands } from './commands/registerCommands';
 import { DEFAULT_SETTINGS, Quest, UserSettings } from './constants/DEFAULT';
 import { appContextService } from 'context/appContextService';
 import { markdownServices } from './services/questService';
-import { QuestModal } from './modales/questModal';
+import { CreateQuestModal, ModifyQuestModal } from './modales/questModal';
 
 
 export default class GOL extends Plugin {
@@ -19,7 +19,6 @@ export default class GOL extends Plugin {
     settings: UserSettings;
     quest: Quest;
 	questService: markdownServices;
-	// testQuestSettings: QuestSettings[];
     intervalId: number | undefined;
     viewService: ViewService;
     dataService: DataService;
@@ -116,7 +115,7 @@ export default class GOL extends Plugin {
                 if (file.path === fullPath) {
                     try {
                         const content = await this.app.vault.read(file);
-                        await this.questService.syncMarkdownToJSON(content);
+                        // await this.questService.syncMarkdownToJSON(content);
                     } catch (error) {
                         console.error('Error syncing markdown to JSON:', error);
                         new Notice("Failed to synchronize quests to JSON");
@@ -149,13 +148,18 @@ export default class GOL extends Plugin {
 
         try {
             // Ensure we're passing the actual plugin instance
-            const modal = new QuestModal(this.app, this);
+            const modal = new CreateQuestModal(this.app, this);
             modal.open();
         } catch (error) {
             console.error('Error creating quest modal:', error);
             new Notice("Failed to create quest modal. Check console for details.");
         }
     }
+
+	async modifyQuest() {
+		const modal = new ModifyQuestModal(this.app, this);
+		modal.open();
+	}
 
 	async openQuestsFile() {
         if (!this.questService) {
@@ -188,6 +192,5 @@ export default class GOL extends Plugin {
 		if (this.dataService) {
 			await this.dataService.saveSettings();
 		}
-		new Notice('Settings saved !');
     }
 }

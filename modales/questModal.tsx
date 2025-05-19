@@ -1,9 +1,9 @@
 import { App, Modal, Notice, ToggleComponent } from "obsidian";
 import { TextComponent, ButtonComponent } from "obsidian";
-import { DEFAULT_QUEST_SETTINGS, Quest } from "../constants/DEFAULT";
 import GOL from "../plugin";
+import { Quest } from '../constants/DEFAULT';
 
-export class QuestModal extends Modal {
+export class CreateQuestModal extends Modal {
     plugin: GOL;
     titleInput: TextComponent;
 	shortDescriptionInput: TextComponent;
@@ -11,7 +11,6 @@ export class QuestModal extends Modal {
     rewardXPInput: TextComponent;
     rewardItemsInput: TextComponent;
     difficultyInput: HTMLSelectElement;
-	quest: any;
 	levelInput: HTMLInputElement;
 	previousQuestsInput: HTMLInputElement;
 	dueDateInput: HTMLInputElement;
@@ -20,13 +19,7 @@ export class QuestModal extends Modal {
 
     constructor(app: App, plugin: GOL) {
         super(app);
-        console.log('QuestModal constructor - plugin:', plugin);
-        if (!plugin || !(plugin instanceof GOL)) {
-            console.error('Invalid plugin instance passed to QuestModal');
-            throw new Error('Invalid plugin instance');
-        }
         this.plugin = plugin;
-		this.quest = this.plugin.quest;
     }
 
 	private getFormData() {
@@ -370,3 +363,148 @@ export class QuestModal extends Modal {
         this.contentEl.empty();
     }
 }
+
+
+export class ModifyQuestModal extends Modal {
+	plugin: GOL;
+	quest: Quest;
+
+	constructor(app: App, plugin: GOL) {
+		super(app);
+		this.plugin = plugin;
+	}
+
+	onOpen() {
+		const { contentEl } = this;
+		contentEl.empty();
+
+		contentEl.createEl('h2', { text: 'Modify Quest' });
+
+		// Title
+		const titleContainer = contentEl.createDiv('setting-item');
+		titleContainer.createEl('label', { text: 'Title *' });
+		const titleInput = titleContainer.createEl('input', {
+			type: 'text',
+			value: this.quest.title
+		});
+
+		// Short Description
+		const shortDescContainer = contentEl.createDiv('setting-item');
+		shortDescContainer.createEl('label', { text: 'Short Description' });
+		const shortDescInput = shortDescContainer.createEl('input', {
+			type: 'text',
+			value: this.quest.shortDescription
+		});
+
+		// Description
+		const descContainer = contentEl.createDiv('setting-item');
+		descContainer.createEl('label', { text: 'Description' });
+		const descInput = descContainer.createEl('textarea', {
+			text: this.quest.description
+		});
+		descInput.style.width = '100%';
+		descInput.style.height = '100px';
+
+		// XP Reward
+		const xpContainer = contentEl.createDiv('setting-item');
+		xpContainer.createEl('label', { text: 'XP Reward' });
+		const xpInput = xpContainer.createEl('input', {
+			type: 'number',
+			value: this.quest.reward.XP.toString()
+		});
+
+		// Difficulty
+		const difficultyContainer = contentEl.createDiv('setting-item');
+		difficultyContainer.createEl('label', { text: 'Difficulty' });
+		const difficultySelect = difficultyContainer.createEl('select', {
+			cls: "difficulty-select"
+		});
+		difficultyContainer.style.width = '100%';
+		['easy', 'medium', 'hard', 'expert'].forEach(diff => {
+			const option = difficultySelect.createEl('option', {
+				text: diff.charAt(0).toUpperCase() + diff.slice(1),
+				value: diff
+			});
+			if (diff === this.quest.settings.difficulty) {
+				option.selected = true;
+			}
+		});
+
+		// Category
+		const categoryContainer = contentEl.createDiv('setting-item');
+		categoryContainer.createEl('label', { text: 'Category' });
+		const categoryInput = categoryContainer.createEl('input', {
+			type: 'text',
+			value: this.quest.settings.category
+		});
+
+		// Priority
+		const priorityContainer = contentEl.createDiv('setting-item');
+		priorityContainer.createEl('label', { text: 'Priority' });
+		const prioritySelect = priorityContainer.createEl('select');
+		['low', 'medium', 'high'].forEach(prio => {
+			const option = prioritySelect.createEl('option', {
+				text: prio.charAt(0).toUpperCase() + prio.slice(1),
+				value: prio
+			});
+			if (prio === this.quest.settings.priority) {
+				option.selected = true;
+			}
+		});
+
+		// Due Date
+		const dueDateContainer = contentEl.createDiv('setting-item');
+		dueDateContainer.createEl('label', { text: 'Due Date' });
+		const dueDateInput = dueDateContainer.createEl('input', {
+			type: 'date',
+			value: this.quest.progression.dueDate ? new Date(this.quest.progression.dueDate).toISOString().split('T')[0] : ''
+		});
+
+		// Save Button
+		const buttonContainer = contentEl.createDiv('setting-item');
+		const saveButton = buttonContainer.createEl('button', {
+			text: 'Save Changes',
+			cls: 'mod-cta'
+		});
+
+		saveButton.addEventListener('click', async () => {
+			try {
+				// Update quest with new values
+				this.quest.title = titleInput.value;
+				this.quest.shortDescription = shortDescInput.value;
+				this.quest.description = descInput.value;
+				this.quest.reward.XP = parseInt(xpInput.value) || 0;
+				this.quest.settings.difficulty = difficultySelect.value as any;
+				this.quest.settings.category = categoryInput.value;
+				this.quest.settings.priority = prioritySelect.value as any;
+				this.quest.progression.dueDate = dueDateInput.value ? new Date(dueDateInput.value) : undefined;
+
+				// Save changes
+				await this.plugin.questService.saveQuestToJSON(
+					this.quest.title,
+					this.quest.shortDescription,
+					this.quest.description,
+					this.quest.reward.XP,
+					0, // level requirement
+					'', // previous quests
+					this.quest.settings.difficulty || 'easy',
+					this.quest.settings.category || '',
+					this.quest.progression.dueDate?.toISOString() ?? '',
+					this.quest.settings.priority || 'low',
+					this.quest.id // Pass the quest ID for updating
+				);
+				new Notice('Quest updated successfully');
+				this.close();
+			} catch (error) {
+				console.error('Error saving quest:', error);
+				new Notice('Failed to save quest changes');
+			}
+		});
+	}
+
+	onClose() {
+		const { contentEl } = this;
+		contentEl.empty();
+	}
+}
+

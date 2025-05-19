@@ -4,24 +4,46 @@ import { useAppContext } from '../../context/appContext';
 import { Notice } from 'obsidian';
 import { get } from 'http';
 import { DEFAULT_SETTINGS, Quest } from '../../constants/DEFAULT';
+import { ModifyQuestModal } from '../../modales/questModal';
 
-const QuestItem = ({ quest, onComplete }: { quest: Quest; onComplete: (quest: Quest) => void }) => {
+const QuestItem = ({
+	quest,
+	onComplete,
+	onModify,
+}: {
+	quest: Quest;
+	onComplete: (quest: Quest, completed: boolean) => void;
+	onModify: (quest: Quest) => void;
+}) => {
 	return (
         <div className="quest-item">
-            <label className="quest-label">
-                <input
-                    type="checkbox"
-                    checked={quest.isCompleted}
-                    onChange={() => onComplete(quest)}
-                    className="quest-checkbox"
-                />
-                <span className={`quest-title ${quest.isCompleted ? 'completed' : ''}`}>
-                    {quest.title}
-                </span>
-            </label>
-            <div className="quest-details">
-                <p className="quest-description">{quest.shortDescription}</p>
-                <p className="quest-reward">XP: {quest.reward.XP}</p>
+            <div className="quest-header">
+                <div className="quest-checkbox-section">
+                    <input
+                        type="checkbox"
+                        checked={quest.progression.isCompleted}
+                        onChange={() => onComplete(quest, !quest.progression.isCompleted)}
+                        className="quest-checkbox"
+                    />
+                    <span className={`quest-title ${quest.progression.isCompleted ? 'completed' : ''}`}>
+                        {quest.title}
+                    </span>
+                    <button
+                        className="quest-edit-button"
+                        onClick={() => onModify(quest)}
+                        aria-label="Edit quest"
+                    >
+                        Edit
+                    </button>
+                </div>
+            </div>
+            {quest.description && (
+                <div className="quest-description">
+                    {quest.description}
+                </div>
+            )}
+            <div className="quest-xp">
+                XP: {quest.reward.XP}
             </div>
         </div>
     );
@@ -59,10 +81,13 @@ export async function loadQuestsFromVault(): Promise<any[]> {
 
 export const QuestList = () => {
 	// return a list of quests from the quests.json file, and display them in a list.
-    // const [quests, setQuests] = useState<any[]>([]);
 	const { plugin, updateXP } = useAppContext();
 	const [quests, setQuests] = useState<Quest[]>([]);
 	const [isOpen, setIsOpen] = useState(false);
+	const [filter, setFilter] = useState('');
+    const [activeTab, setActiveTab] = useState<'active' | 'completed' | 'all'>('active');
+    const [sortBy, setSortBy] = useState<'priority' | 'xp' | 'difficulty' | 'date'>('priority');
+
 
 	const handleToggle = (e: React.SyntheticEvent<HTMLDetailsElement, Event>) => {
         const details = e.currentTarget;
@@ -137,12 +162,12 @@ export const QuestList = () => {
             // First update local state for immediate UI feedback
             setQuests(prevQuests =>
                 prevQuests.map(q =>
-                    q.id === quest.id ? { ...q, isCompleted: !q.isCompleted } : q
+                    q.id === quest.id ? { ...q, progression: { ...q.progression, isCompleted: !q.progression.isCompleted } } : q
                 )
             );
             
             // Vérifier directement l'état actuel de la quête
-            const isCurrentlyCompletedInUI = quest.isCompleted;
+            const isCurrentlyCompletedInUI = quest.progression.isCompleted;
             console.log(`Quest ${quest.id} UI state - Completed: ${isCurrentlyCompletedInUI}`);
 
             if (isCurrentlyCompletedInUI) {
@@ -153,7 +178,7 @@ export const QuestList = () => {
                 
                 // Mettre à jour le statut dans le fichier des quêtes
                 const updatedQuests = quests.map(q => 
-                    q.id === quest.id ? { ...q, isCompleted: false } : q
+                    q.id === quest.id ? { ...q, progression: { ...q.progression, isCompleted: false } } : q
                 );
                 await plugin.app.vault.adapter.write(
                     `${plugin.app.vault.configDir}/plugins/game-of-life/data/db/quests.json`,
@@ -174,7 +199,7 @@ export const QuestList = () => {
 
                     // Mettre à jour le statut dans le fichier des quêtes
                     const updatedQuests = quests.map(q => 
-                        q.id === quest.id ? { ...q, isCompleted: true } : q
+                        q.id === quest.id ? { ...q, progression: { ...q.progression, isCompleted: true } } : q
                     );
                     await plugin.app.vault.adapter.write(
                         `${plugin.app.vault.configDir}/plugins/game-of-life/data/db/quests.json`,
@@ -196,6 +221,57 @@ export const QuestList = () => {
         }
     };
 
+	const handleModifyQuest = (quest: Quest) => {
+        console.log("Modify quest clicked:", quest); // Debug log
+        if (plugin) {
+            try {
+                const modal = new ModifyQuestModal(plugin.app, plugin);
+                modal.quest = quest;
+                modal.open();
+            } catch (error) {
+                console.error("Error opening modify modal:", error);
+                new Notice("Failed to open quest editor");
+            }
+        }
+    };
+
+    // Filter and sort quests
+    const filteredQuests = quests
+        .filter(quest => {
+            const matchesSearch = !filter || 
+                quest.title.toLowerCase().includes(filter.toLowerCase()) ||
+                quest.description.toLowerCase().includes(filter.toLowerCase()) ||
+                (quest.settings.category && quest.settings.category.toLowerCase().includes(filter.toLowerCase()));
+            
+            const matchesTab = activeTab === 'all' || 
+                (activeTab === 'active' && !quest.progression.isCompleted) ||
+                (activeTab === 'completed' && quest.progression.isCompleted);
+                
+            return matchesSearch && matchesTab;
+        })
+        .sort((a, b) => {
+            // First sort by completion status
+            if (a.progression.isCompleted !== b.progression.isCompleted) {
+                return a.progression.isCompleted ? 1 : -1;
+            }
+
+            // Then sort by selected criteria
+            switch (sortBy) {
+                case 'priority':
+                    const priorityOrder = { high: 0, medium: 1, low: 2 };
+                    return priorityOrder[a.settings.priority || 'low'] - priorityOrder[b.settings.priority || 'low'];
+                case 'xp':
+                    return b.reward.XP - a.reward.XP;
+                case 'difficulty':
+                    const difficultyOrder = { easy: 0, medium: 1, hard: 2, expert: 3 };
+                    return difficultyOrder[a.settings.difficulty || 'easy'] - difficultyOrder[b.settings.difficulty || 'easy'];
+                case 'date':
+                    return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+                default:
+                    return 0;
+            }
+        });
+
     if (quests.length === 0) {
         return <div className="empty-quests">No quests available</div>;
     }
@@ -207,13 +283,92 @@ export const QuestList = () => {
             onToggle={handleToggle}
         >
             <summary className="accordion-title">Quest</summary>
-            {quests.map((quest) => (
-                <QuestItem
-                    key={quest.id}
-                    quest={quest}
-                    onComplete={handleCompleteQuest}
+            <div className="quest-controls">
+                <input
+                    type="text"
+                    placeholder="Search quests..."
+                    value={filter}
+                    onChange={(e) => setFilter(e.target.value)}
+                    className="quest-search"
                 />
-            ))}
+                
+                <div className="quest-controls-row">
+                    <div className="quest-filter-dropdown">
+                        <button className="quest-filter-button">
+                            {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
+                        </button>
+                        <div className="quest-filter-options">
+                            <button 
+                                className={`quest-filter-option ${activeTab === 'active' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('active')}
+                            >
+                                Active
+                            </button>
+                            <button 
+                                className={`quest-filter-option ${activeTab === 'completed' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('completed')}
+                            >
+                                Completed
+                            </button>
+                            <button 
+                                className={`quest-filter-option ${activeTab === 'all' ? 'active' : ''}`}
+                                onClick={() => setActiveTab('all')}
+                            >
+                                All
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="quest-sort-dropdown">
+                        <button className="quest-sort-button">
+                            Sort by: {sortBy.charAt(0).toUpperCase() + sortBy.slice(1)}
+                        </button>
+                        <div className="quest-sort-options">
+                            <button 
+                                className={`quest-sort-option ${sortBy === 'priority' ? 'active' : ''}`}
+                                onClick={() => setSortBy('priority')}
+                            >
+                                Priority
+                            </button>
+                            <button 
+                                className={`quest-sort-option ${sortBy === 'xp' ? 'active' : ''}`}
+                                onClick={() => setSortBy('xp')}
+                            >
+                                XP Reward
+                            </button>
+                            <button 
+                                className={`quest-sort-option ${sortBy === 'difficulty' ? 'active' : ''}`}
+                                onClick={() => setSortBy('difficulty')}
+                            >
+                                Difficulty
+                            </button>
+                            <button 
+                                className={`quest-sort-option ${sortBy === 'date' ? 'active' : ''}`}
+                                onClick={() => setSortBy('date')}
+                            >
+                                Date
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            {filteredQuests.length === 0 ? (
+                <div className="no-quests-message">
+                    {filter ? "No quests match your search" : "No quests available"}
+                </div>
+            ) : (
+                <div className="quests-container">
+                    {filteredQuests.map((quest) => (
+                        <QuestItem
+                            key={quest.id}
+                            quest={quest}
+                            onComplete={handleCompleteQuest}
+                            onModify={handleModifyQuest}
+                        />
+                    ))}
+                </div>
+            )}
         </details>
     );
 };

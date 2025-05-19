@@ -79,53 +79,257 @@ export const DEFAULT_SETTINGS: UserSettings = {
 	}
 }
 
+export type StatBlock = {
+	strength: number;
+	agility: number;
+	endurance: number;
+	charisma: number;
+	wisdom: number;
+	perception: number;
+	intelligence: number;
+}
 
+
+export type TaskType = 'quest' | 'habit'; // | 'skill' | 'goal';
+
+export interface BaseTask {
+	id: string;
+	title: string;
+	shortDescription: string;
+	description: string;
+	created_at: Date;
+	settings: {
+		type: 'quest' | 'habit';
+		priority?: 'low' | 'medium' | 'high';
+		difficulty?: 'easy' | 'medium' | 'hard' | 'expert';
+		category: 'work' | 'study' | 'social' | 'undefined' | string;
+		isSecret?: boolean;
+		isTimeSensitive?: boolean;
+	};
+}
+
+export interface Quest extends BaseTask {
+	settings: {type: 'quest'} & BaseTask['settings'];
+	progression: {
+		isCompleted: boolean;
+		completed_at: Date;
+		progress: number;
+		dueDate?: Date;
+		subtasks?: string[];
+	};
+	reward: {
+		XP: number;
+		items?: string[];
+		attributes?: StatBlock;
+		unlock?: string[];
+	}
+	requirements?: {
+		level?: number;
+		previousQuests?: string[];
+		stats?: StatBlock;
+	};
+	recurrence?: never;
+	failureConsequence?: string;
+}
 /*
 * Quest Default Settings
 */
-export interface Quest {
-	id: string;
-    title: string;
-    shortDescription: string;
-    description: string;
-    isCompleted: boolean;
-    reward: {
-        XP: number;
-        items?: string[];
-		completed_at?: string;
-    };
-    requirements?: {
-        level?: number;
-        previousQuests?: string[];
-    };
-    progress?: number; // 0-100 for the progressive quests
-	dueDate?: string;
-    priority?: 'low' | 'medium' | 'high';
-    created_at?: string;
-    difficulty?: 'easy' | 'medium' | 'hard' | 'expert';
-    category?: string;
-}
 
-export const DEFAULT_QUEST_SETTINGS: Quest= {
+export const DEFAULT_QUEST: Quest = {
 	id: "Quest_0",
 	title: "Tutorial",
 	shortDescription: "This is your first quest.",
 	description: "This is your first quest.",
-	isCompleted: false,
+	created_at: new Date(),
+	settings: {
+		type: 'quest',
+		category: 'work',
+		priority: 'low',
+		difficulty: 'easy',
+		isSecret: false,
+		isTimeSensitive: false,
+	},
+	progression: {
+		isCompleted: false,
+		completed_at: new Date(0),
+		progress: 0,
+		dueDate: new Date(0),
+		subtasks: [],
+	},
 	reward: {
 		XP: 1,
 		items: [],
+		attributes: {
+			strength: 0,
+			agility: 0,
+			endurance: 0,
+			charisma: 0,
+			wisdom: 0,
+			perception: 0,
+			intelligence: 1,
+		},
+		unlock: [],
 	},
 	requirements: {
 		level: 0,
 		previousQuests: [],
+		stats: {
+			strength: 0,
+			agility: 0,
+			endurance: 0,
+			charisma: 0,
+			wisdom: 0,
+			perception: 0,
+			intelligence: 0,
+		},
 	},
-	progress: 0,
-	dueDate: "",
-	priority: "low",
-	created_at: "",
-	difficulty: "easy",
-	category: "",
+	recurrence: undefined,
+	failureConsequence: "You failed the quest.",
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+export interface Habit extends BaseTask {
+	settings: {type: 'habit'} & BaseTask['settings'];
+	recurrence: {
+		interval: number;
+		unit: "days" | "weeks" | "months";
+	};
+	streak: {
+		current: number;
+		best: number;
+		resetDate?: Date;
+	};
+	penalty?: {
+		XPLoss: number;
+		breackStreak: boolean;
+	};
+	reward?: {
+		XP: number;
+		attributes?: StatBlock;
+		items?: string[];
+	};
+}
+
+
+export interface Quest_old {
+	settings: {
+		id: string;
+		title: string;
+		shortDescription: string;
+		description: string;
+		priority?: 'low' | 'medium' | 'high';
+		difficulty?: 'easy' | 'medium' | 'hard' | 'expert';
+		category: 'work' | 'study' | 'social' | string;
+	};
+	progression: {
+		isCompleted: boolean;
+		completed_at: Date;
+		progress: number;
+		dueDate?: Date;
+		subtasks?: string[];
+	};
+    reward: {
+        XP: number;
+        items?: string[];
+		attributes?: {
+			strength: number;
+			agility: number;
+			endurance: number;
+			charisma: number;
+			wisdom: number;
+			perception: number;
+			intelligence: number;
+		};
+		unlock?: string[];
+    };
+    requirements?: {
+        level?: number;
+        previousQuests?: string[];
+		stats?: {
+			strength: number;
+			agility: number;
+			endurance: number;
+			charisma: number;
+			wisdom: number;
+			perception: number;
+			intelligence: number;
+		};
+    };
+    recurrence?: {
+        interval: number;
+        unit: "days" | "weeks" | "months";
+    };
+    isSecret?: boolean;
+    isTimeSensitive?: boolean;
+	failureConsequence?: string;
+}
+
+export const DEFAULT_QUEST_SETTINGS_OLD: Quest_old= {
+	settings: {
+		id: "Quest_0",
+		title: "Tutorial",
+		shortDescription: "This is your first quest.",
+		description: "This is your first quest.",
+		priority: "low",
+		difficulty: "easy",
+		category: "",
+	},
+	progression: {
+		isCompleted: false,
+		completed_at: new Date(),
+		progress: 0,
+		dueDate: new Date(),
+		subtasks: [],
+	},
+	reward: {
+		XP: 1,
+		items: [],
+		attributes: {
+			strength: 0,
+			agility: 0,
+			endurance: 0,
+			charisma: 0,
+			wisdom: 0,
+			perception: 0,
+			intelligence: 0
+		},
+		unlock: [],
+	},
+	requirements: {
+		level: 0,
+		previousQuests: [],
+		stats: {
+			strength: 0,
+			agility: 0,
+			endurance: 0,
+			charisma: 0,
+			wisdom: 0,
+			perception: 0,
+			intelligence: 0
+		}
+	},
+	recurrence: {
+		interval: 0,
+		unit: "days",
+	},
+	isSecret: false,
+	isTimeSensitive: false,
+	failureConsequence: "",
 };
 
 

@@ -1,6 +1,5 @@
 import { Plugin, Notice } from 'obsidian';
 import { ViewService } from '../services/viewServices';
-import { QuestModal } from '../modales/questModal';
 import GOL from '../plugin';
 
 export function registerCommands(plugin: GOL, viewService: ViewService) {
@@ -34,6 +33,14 @@ export function registerCommands(plugin: GOL, viewService: ViewService) {
         }
     });
 
+	// Command to modify a quest
+	plugin.addCommand({
+		id: "modify quest",
+		name: "modify quest",
+		callback: () => {
+			plugin.modifyQuest();
+		}
+	});
     // Command to test sidebar
     plugin.addCommand({
         id: "test sideview",
