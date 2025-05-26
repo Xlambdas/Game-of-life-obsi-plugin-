@@ -8,7 +8,8 @@
       "questsFileName": "Quests.md",
       "refreshRate": 60000,
       "questsCategories": [
-        "test"
+        "test",
+        "caca"
       ]
     },
     "persona": {

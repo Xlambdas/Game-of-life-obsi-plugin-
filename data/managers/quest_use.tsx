@@ -15,6 +15,8 @@ const QuestItem = ({
 	onComplete: (quest: Quest, completed: boolean) => void;
 	onModify: (quest: Quest) => void;
 }) => {
+	const isEditable = !quest.progression.isCompleted && !quest.isSystemQuest;
+
 	return (
         <div className="quest-item">
             <div className="quest-header">
@@ -27,14 +29,17 @@ const QuestItem = ({
                     />
                     <span className={`quest-title ${quest.progression.isCompleted ? 'completed' : ''}`}>
                         {quest.title}
+                        {quest.isSystemQuest && <span className="quest-system-badge">System</span>}
                     </span>
-                    <button
-                        className="quest-edit-button"
-                        onClick={() => onModify(quest)}
-                        aria-label="Edit quest"
-                    >
-                        Edit
-                    </button>
+                    {isEditable && (
+                        <button
+                            className="quest-edit-button"
+                            onClick={() => onModify(quest)}
+                            aria-label="Edit quest"
+                        >
+                            Edit
+                        </button>
+                    )}
                 </div>
             </div>
             {quest.description && (

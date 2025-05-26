@@ -2,38 +2,62 @@ import { App, Modal, Notice, ToggleComponent } from "obsidian";
 import { TextComponent, ButtonComponent } from "obsidian";
 import GOL from "../plugin";
 import { Quest } from '../constants/DEFAULT';
+import { viewSyncService } from '../services/syncService';
+import { TitleInput, ShortDescriptionInput, DescriptionInput, CategoryInput, PriorityInput, DifficultyInput, dueDateInput, SubtasksInput, RequireLevelInput, RequirePreviousQuestsInput, RewardAttributeInput, rewardItemsInput } from "../components/inputs";
+import { separator, subTitle, endButton } from "../components/uiHelpers";
+
+// Version : vsc
 
 export class CreateQuestModal extends Modal {
-    plugin: GOL;
-    titleInput: TextComponent;
-	shortDescriptionInput: TextComponent;
-    descriptionInput: HTMLTextAreaElement;
-    rewardXPInput: TextComponent;
-    rewardItemsInput: TextComponent;
-    difficultyInput: HTMLSelectElement;
-	levelInput: HTMLInputElement;
-	previousQuestsInput: HTMLInputElement;
-	dueDateInput: HTMLInputElement;
-	priorityInput: HTMLSelectElement;
-	categoryInput: HTMLSelectElement;
+	plugin: GOL;
+	titleInput: TitleInput;
+	shortDescriptionInput: ShortDescriptionInput;
+	descriptionInput: DescriptionInput;
+	rewardXPInput: TextComponent;
+	rewardItemsInput: rewardItemsInput;
+	difficultyInput: DifficultyInput;
+	requireLevelInput: RequireLevelInput;
+	requirePreviousQuestsInput: RequirePreviousQuestsInput;
+	dueDateInput: dueDateInput;
+	priorityInput: PriorityInput;
+	categoryInput: CategoryInput;
+	rewardAttributeInput: RewardAttributeInput;
 
     constructor(app: App, plugin: GOL) {
         super(app);
         this.plugin = plugin;
     }
 
+
+	/*
+	* Get the form data
+	*/
 	private getFormData() {
 		const title = this.titleInput.getValue().trim();
 		const shortDescription = this.shortDescriptionInput.getValue().trim();
-		const description = this.descriptionInput.value.trim();
-		const reward_XP = this.rewardXPInput ? parseInt(this.rewardXPInput.getValue()) : 0;
-		const reward_items = this.rewardItemsInput ? this.rewardItemsInput.getValue().trim() : "";
-		const require_level = this.levelInput ? parseInt(this.levelInput.value) : 0;
-		const require_previousQuests = this.previousQuestsInput ? this.previousQuestsInput.value : "";
-		const dueDate = this.dueDateInput ? this.dueDateInput.value : "";
-		const priority = this.priorityInput ? this.priorityInput.value : "low";
-		const difficulty = this.difficultyInput ? this.difficultyInput.value : "easy";
-		const category = this.categoryInput ? this.categoryInput.value : "";
+		const description = this.descriptionInput?.getValue()?.trim() || "";
+		const reward_XP = this.rewardXPInput ? parseInt(this.rewardXPInput.getValue()) || 0 : 0;
+		const reward_items = this.rewardItemsInput?.getValue()?.trim() || "";
+		const require_level = this.requireLevelInput ? this.requireLevelInput.getValue() || 0 : 0;
+		const require_previousQuests = this.requirePreviousQuestsInput ? this.requirePreviousQuestsInput.getValue() : "";
+		const dueDate = this.dueDateInput?.getValue() || "";
+		const priority = this.priorityInput?.getValue() || "low";
+		const difficulty = this.difficultyInput?.getValue() || "easy";
+		const category = this.categoryInput?.getValue() || "";
+
+		// Get all attribute rewards
+		const attributeRewards = this.rewardAttributeInput.getStatBlock();
+		if (this.rewardAttributeInput && typeof this.rewardAttributeInput.getValue === "function") {
+			const rewardsArray = this.rewardAttributeInput.getValue();
+			const attributeRewards: Record<string, number> = {};
+			if (Array.isArray(rewardsArray)) {
+				rewardsArray.forEach(({ attribute, xp }) => {
+					if (attribute && typeof xp === "number" && xp > 0) {
+						attributeRewards[attribute] = xp;
+					}
+				});
+			}
+		}
 
 		return {
 			title,
@@ -42,13 +66,18 @@ export class CreateQuestModal extends Modal {
 			reward_XP,
 			reward_items,
 			require_level,
-			require_previousQuests,
+			require_previousQuests: Array.isArray(require_previousQuests) ? require_previousQuests : (require_previousQuests || ""),
 			dueDate,
 			priority,
 			difficulty,
-			category
+			category,
+			attributeRewards
 		};
 	}
+
+	/*
+	* UI part
+	*/
 
 	private normalMode = (Container: HTMLElement) => {
 		// show the form with the title and description for the quests.
@@ -63,116 +92,17 @@ export class CreateQuestModal extends Modal {
 		}
 		const formContainer = Container.createDiv({ cls: "quest-form" });
 
-		// Title (Required)
-		const titleContainer = formContainer.createDiv({ cls: "form-group required" });
-		titleContainer.createEl("label", { text: "Title *" });
-		this.titleInput = new TextComponent(titleContainer);
-		this.titleInput.setPlaceholder("Enter quest title...");
-		this.titleInput.inputEl.setAttribute("style", "width: 100%;");
-		this.titleInput.inputEl.setAttribute("required", "true");
-
-		// Description
-		const shortDescriptionContainer = formContainer.createDiv({ cls: "form-group" });
-		shortDescriptionContainer.createEl("label", { text: "Short Description:" });
-		this.shortDescriptionInput = new TextComponent(shortDescriptionContainer);
-		this.shortDescriptionInput.setPlaceholder("Enter short quest description... You'll see it on the sideView");
-		this.shortDescriptionInput.inputEl.setAttribute("style", "width: 100%;");
-
-		// XP Reward
-		const rewardContainer = formContainer.createDiv({ cls: "form-group" });
-		rewardContainer.createEl("label", { text: "XP Reward:" });
-		this.rewardXPInput = new TextComponent(rewardContainer);
-		this.rewardXPInput.setValue("50");
-		this.rewardXPInput.inputEl.setAttribute("type", "number");
-		this.rewardXPInput.inputEl.setAttribute("min", "0");
-		this.rewardXPInput.inputEl.setAttribute("style", "width: 100%;");
-
-		// Items Reward
-		const rewardItemsContainer = formContainer.createDiv({ cls: "form-group" });
-		rewardItemsContainer.createEl("label", { text: "Items Reward:" });
-		this.rewardItemsInput = new TextComponent(rewardItemsContainer);
-		this.rewardItemsInput.setPlaceholder("Enter items reward...");
+		this.titleInput = new TitleInput(formContainer);
+		this.shortDescriptionInput = new ShortDescriptionInput(formContainer);
+		this.categoryInput = new CategoryInput(formContainer, this.plugin);
 	}
-
-	private endButton = () => {
-		// show the buttons.
-		const {contentEl} = this;
-		// Buttons container
-		const buttonsContainer = contentEl.createDiv({ cls: "buttons-container" });
-		
-		// Create a flex container for the note and buttons
-		const flexContainer = buttonsContainer.createDiv({ cls: "buttons-flex-container" });
-		
-		// Add required fields note on the left
-		const noteContainer = flexContainer.createDiv({ cls: "required-note-container" });
-		noteContainer.createEl("p", {text: '* Required fields', cls: 'required-note'});
-		
-		// Create a container for the buttons
-		const buttonsGroup = flexContainer.createDiv({ cls: "buttons-group" });
-		
-		// Cancel button
-		new ButtonComponent(buttonsGroup)
-			.setButtonText("Cancel")
-			.onClick(() => {
-				this.close();
-			});
-
-		// Save button
-		new ButtonComponent(buttonsGroup)
-			.setButtonText("Save Quest")
-			.setCta()
-			.onClick(async () => {
-				const { title, shortDescription, description, reward_XP, require_level, require_previousQuests, difficulty, category, dueDate, priority } = this.getFormData();
-				if (!title) {
-					new Notice("Quest title is required !");
-					return;
-				}
-				if (!shortDescription) {
-					new Notice("Short description is required !");
-					return;
-				}
-
-				if (isNaN(reward_XP) || reward_XP < 0) {
-					new Notice("XP reward must be a positive number !");
-					return;
-				}
-
-				if (require_level < 0) {
-					new Notice("Level must be a positive number !");
-					return;
-				}
-
-				if (!this.plugin?.questService) {
-					return;
-				}
-
-				try {
-					await this.plugin.questService.saveQuestToJSON(title, shortDescription, description, reward_XP, require_level, require_previousQuests, difficulty, category, dueDate, priority);
-					this.close();
-				} catch (error) {
-					console.error("Error saving quest:", error);
-					new Notice("Failed to save quest. Check console for details.");
-				}
-			});
-	}
-
-    private formatDate(dateString: string): string {
-        const date = new Date(dateString);
-        return date.toLocaleString('fr-FR', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
-    }
 
     onOpen() {
         const {contentEl} = this;
         contentEl.empty();
-        // Create header
+
+        // Create header with title and toggle for advanced mode
         const headerContainer = contentEl.createDiv({ cls: "header-container" });
-        // Add title
         headerContainer.createEl("h1", {text: 'Create New Quest'});
 
         // Create main container for the form
@@ -180,183 +110,67 @@ export class CreateQuestModal extends Modal {
 		this.normalMode(mainContainer); // by default
 		const advancedContainer = mainContainer.createDiv({ cls: "advanced-mode" });
 
-
         const advancedModeToggle = new ToggleComponent(headerContainer)
             .setTooltip("Show/hide supplementary settings")
             .setValue(false)
             .onChange((value) => {
-
                 if (value) {
                     // Advanced mode
-                    advancedContainer.createEl("h3", { text: "Supplementary settings" });
+                    const title = advancedContainer.createEl("h3", { text: "Supplementary settings" });
+                    title.style.textAlign = "center";
+                    title.style.width = "100%";
+                    title.style.marginBottom = "20px";
+                    title.style.color = "var(--text-normal)";
+                    title.style.fontSize = "1.2em";
+                    title.style.fontWeight = "600";
 
-					// Description
-					const descriptionContainer = advancedContainer.createDiv({ cls: "form-group" });
-					descriptionContainer.createEl("label", { text: "Full description:" });
-					this.descriptionInput = descriptionContainer.createEl("textarea", {
-						placeholder: "Enter quest description...",
-						cls: "quest-description"
-					});
-					this.descriptionInput.style.width = "100%";
-					this.descriptionInput.style.height = "120px";
-					this.descriptionInput.style.resize = "vertical";
+					this.descriptionInput = new DescriptionInput(advancedContainer);
 
-                    // Requirements
-                    const requirementsContainer = advancedContainer.createDiv({ cls: "form-group" });
-                    requirementsContainer.createEl("label", { text: "Requirements:" });
-                    const levelContainer = requirementsContainer.createDiv({ cls: "form-group" });
-                    levelContainer.createEl("label", { text: "Level:" });
-                    this.levelInput = levelContainer.createEl("input", {
-                        type: "number",
-                        placeholder: "Enter quest level..."
-                    });
-                    this.levelInput.min = "0";
-                    this.levelInput.style.width = "100%";
+					// setings section
+					separator(advancedContainer);
+					subTitle(advancedContainer, "Settings");
+					this.priorityInput = new PriorityInput(advancedContainer);
+					this.difficultyInput = new DifficultyInput(advancedContainer);
+					this.dueDateInput = new dueDateInput(advancedContainer);
 
-					// Previous Quests
-					const previousQuestsContainer = advancedContainer.createDiv({ cls: "form-group" });
-					previousQuestsContainer.createEl("label", { text: "Previous Quests:" });
-					this.previousQuestsInput = previousQuestsContainer.createEl("input", {
-						type: "text",
-						placeholder: "Enter previous quests..."
-					});
-					this.previousQuestsInput.style.width = "100%";
+                    // Requirements section
+					separator(advancedContainer);
+					subTitle(advancedContainer, "Requirements and Rewards");
 
-					// Due Date
-					const dueDateContainer = advancedContainer.createDiv({ cls: "form-group" });
-					dueDateContainer.createEl("label", { text: "Due Date:" });
-					this.dueDateInput = dueDateContainer.createEl("input", {
-						type: "date",
-						placeholder: "Enter due date..."
-					});
-					this.dueDateInput.style.width = "100%";
+					this.requireLevelInput = new RequireLevelInput(advancedContainer);
+					this.requirePreviousQuestsInput = new RequirePreviousQuestsInput(advancedContainer, this.plugin);
 
-					// Priority
-					const priorityContainer = advancedContainer.createDiv({ cls: "form-group" });
-					priorityContainer.createEl("label", { text: "Priority:" });
-					this.priorityInput = priorityContainer.createEl("select", {
-						cls: "priority-select"
-					});
-					this.priorityInput.style.width = "100%";
+					// Reward section
+					separator(advancedContainer);
+					subTitle(advancedContainer, "Rewards");
+					const rewardTitle = advancedContainer.createEl("h3", { text: "Rewards" });
+					rewardTitle.style.fontStyle = "italic";
 
-					// Add options
-					const priorities = ["low", "medium", "high"];
-					priorities.forEach(priority => {
-						const option = this.priorityInput.createEl("option", {
-							text: priority.charAt(0).toUpperCase() + priority.slice(1),
-							value: priority
-						});
-					});
+					this.rewardAttributeInput = new RewardAttributeInput(advancedContainer, this.plugin);
+					this.rewardItemsInput = new rewardItemsInput(advancedContainer);
 
-                    // difficulty
-                    const difficultyContainer = advancedContainer.createDiv({ cls: "form-group" });
-                    difficultyContainer.createEl("label", { text: "Estimated difficulty:" });
-                    this.difficultyInput = difficultyContainer.createEl("select", {
-                        cls: "difficulty-select"
-                    });
-                    this.difficultyInput.style.width = "100%";
-
-                    // Add options
-                    const difficulties = ["easy", "medium", "difficult"];
-                    difficulties.forEach(difficulty => {
-                        const option = this.difficultyInput.createEl("option", {
-                            text: difficulty.charAt(0).toUpperCase() + difficulty.slice(1),
-                            value: difficulty
-                        });
-                    });
-
-
-					// Category
-					const categoryContainer = advancedContainer.createDiv({ cls: "form-group" });
-					categoryContainer.createEl("label", { text: "Category:" });
-					this.categoryInput = categoryContainer.createEl("select", {
-						cls: "category-select"
-					});
-					this.categoryInput.style.width = "100%";
-
-					// Add predefined categories
-					const defaultCategories = ["Main Quest", "Side Quest", "Daily Quest", "Weekly Quest", "Other"];
-					const userCategories = this.plugin.settings.user1.settings.questsCategories || [];
-					const allCategories = [...new Set([...defaultCategories, ...userCategories])];
-
-					allCategories.forEach(category => {
-						const option = this.categoryInput.createEl("option", {
-							text: category,
-							value: category
-						});
-					});
-
-					// Add "Add new category" option
-					const newCategoryOption = this.categoryInput.createEl("option", {
-						text: "+ Add new category",
-						value: "new"
-					});
-
-					// Create new category input (hidden by default)
-					const newCategoryContainer = categoryContainer.createDiv({ cls: "form-group" });
-					newCategoryContainer.style.display = "none";
-					const newCategoryInput = newCategoryContainer.createEl("input", {
-						type: "text",
-						placeholder: "Enter new category name..."
-					});
-					newCategoryInput.style.width = "100%";
-
-					// Add button to confirm new category
-					const addButton = newCategoryContainer.createEl("button", {
-						text: "Add",
-						cls: "mod-cta"
-					});
-
-					// Handle new category selection
-					this.categoryInput.addEventListener("change", (e) => {
-						if (this.categoryInput.value === "new") {
-							newCategoryContainer.style.display = "block";
-							newCategoryInput.focus();
-						} else {
-							newCategoryContainer.style.display = "none";
-						}
-					});
-
-					// Handle adding new category
-					addButton.addEventListener("click", async () => {
-						const newCategory = newCategoryInput.value.trim();
-						if (newCategory) {
-							// Add to select
-							const option = this.categoryInput.createEl("option", {
-								text: newCategory,
-								value: newCategory
-							});
-							this.categoryInput.value = newCategory;
-							newCategoryContainer.style.display = "none";
-							newCategoryInput.value = "";
-
-							// Save to settings
-							if (!this.plugin.settings.user1.settings.questsCategories) {
-								this.plugin.settings.user1.settings.questsCategories = [];
-							}
-							if (!this.plugin.settings.user1.settings.questsCategories.includes(newCategory)) {
-								this.plugin.settings.user1.settings.questsCategories.push(newCategory);
-								await this.plugin.saveSettings();
-							}
-						}
-					});
-
-					// Handle enter key in new category input
-					newCategoryInput.addEventListener("keypress", (e) => {
-						if (e.key === "Enter") {
-							addButton.click();
-						}
-					});
-
+					// XP bonus
+					const rewardContainer = advancedContainer.createDiv({ cls: "form-group" });
+					rewardContainer.createEl("label", { text: "XP Reward:" });
+					this.rewardXPInput = new TextComponent(rewardContainer);
+					this.rewardXPInput.setValue("1");
+					this.rewardXPInput.inputEl.setAttribute("type", "number");
+					this.rewardXPInput.inputEl.setAttribute("min", "0");
+					this.rewardXPInput.inputEl.setAttribute("style", "width: 100%;");
                 } else {
                     // Normal mode
 					advancedContainer.empty();
-                    // const normalContainer = mainContainer.createDiv({ cls: "normal-mode" });
-                    // this.normalMode(normalContainer);
                 }
             });
-
-		this.endButton();
+		endButton({
+			contentEl: contentEl,
+			plugin: {
+				questService: this.plugin.questService
+			},
+			close: () => this.close(),
+			getFormData: () => this.getFormData()
+		})
+		// this.endButton();
     }
 
     onClose() {
@@ -368,6 +182,7 @@ export class CreateQuestModal extends Modal {
 export class ModifyQuestModal extends Modal {
 	plugin: GOL;
 	quest: Quest;
+	attributePairs: { attributeSelect: HTMLSelectElement; xpInput: HTMLInputElement }[] = [];
 
 	constructor(app: App, plugin: GOL) {
 		super(app);
@@ -411,6 +226,137 @@ export class ModifyQuestModal extends Modal {
 		const xpInput = xpContainer.createEl('input', {
 			type: 'number',
 			value: this.quest.reward.XP.toString()
+		});
+
+		// Attribute Rewards
+		const attributeRewardContainer = contentEl.createDiv('setting-item');
+		attributeRewardContainer.createEl('label', { text: 'Attribute XP Rewards:' });
+		
+		// Container for attribute pairs
+		const attributePairsContainer = attributeRewardContainer.createDiv({ cls: "attribute-pairs-container" });
+		
+		// Add button to add new attribute pair
+		const addAttributeButton = attributeRewardContainer.createEl("button", {
+			text: "+ Add Attribute Reward",
+			cls: "mod-cta"
+		});
+
+		// Function to create a new attribute pair
+		const createAttributePair = (initialAttribute?: string, initialXP?: number) => {
+			const pairContainer = attributePairsContainer.createDiv({ cls: "attribute-pair" });
+			pairContainer.style.display = "flex";
+			pairContainer.style.alignItems = "center";
+			pairContainer.style.marginBottom = "8px";
+			
+			// Attribute select
+			const attributeSelect = pairContainer.createEl("select", {
+				cls: "attribute-select"
+			}) as HTMLSelectElement;
+			attributeSelect.style.width = "50%";
+			attributeSelect.style.marginRight = "8px";
+
+			// Add options for each attribute
+			const attributes = ["strength", "agility", "endurance", "charisma", "wisdom", "perception", "intelligence"];
+			// Add placeholder option
+			const placeholderOption = attributeSelect.createEl("option", {
+				text: "Select attribute...",
+				value: ""
+			}) as HTMLOptionElement;
+			placeholderOption.disabled = true;
+			placeholderOption.selected = !initialAttribute;
+			// Add attribute options
+			attributes.forEach(attr => {
+				const option = attributeSelect.createEl("option", {
+					text: attr.charAt(0).toUpperCase() + attr.slice(1),
+					value: attr
+				});
+				if (attr === initialAttribute) {
+					option.selected = true;
+				}
+			});
+
+			// XP amount input
+			const xpInput = pairContainer.createEl("input", {
+				type: "number",
+				placeholder: "XP amount...",
+				cls: "attribute-xp-input"
+			}) as HTMLInputElement;
+			xpInput.style.width = "35%";
+			xpInput.style.marginRight = "8px";
+			if (initialXP) {
+				xpInput.value = initialXP.toString();
+			}
+
+			// Remove button
+			const removeButton = pairContainer.createEl("button", {
+				text: "×",
+				cls: "mod-warning"
+			});
+			removeButton.style.width = "24px";
+			removeButton.style.height = "24px";
+			removeButton.style.padding = "0";
+			removeButton.style.display = "flex";
+			removeButton.style.alignItems = "center";
+			removeButton.style.justifyContent = "center";
+
+			// Function to update available attributes
+			const updateAvailableAttributes = () => {
+				const selectedAttributes = this.attributePairs
+					.filter(p => p.attributeSelect !== attributeSelect)
+					.map(p => p.attributeSelect.value);
+
+				// Disable options that are already selected in other pairs
+				Array.from(attributeSelect.options).forEach(option => {
+					option.disabled = selectedAttributes.includes(option.value);
+				});
+
+				// If current selection is now disabled, reset it
+				if (selectedAttributes.includes(attributeSelect.value)) {
+					attributeSelect.value = "";
+				}
+			};
+
+			// Update available attributes when this select changes
+			attributeSelect.addEventListener("change", updateAvailableAttributes);
+
+			// Remove this pair when clicking the remove button
+			removeButton.addEventListener("click", () => {
+				const index = this.attributePairs.findIndex(p => p.attributeSelect === attributeSelect);
+				if (index !== -1) {
+					this.attributePairs.splice(index, 1);
+					// Update available attributes in all other pairs
+					this.attributePairs.forEach(pair => {
+						const event = new Event("change");
+						pair.attributeSelect.dispatchEvent(event);
+					});
+				}
+				pairContainer.remove();
+			});
+
+			// Add to attribute pairs array
+			this.attributePairs.push({ attributeSelect, xpInput });
+
+			// Update available attributes for all pairs
+			this.attributePairs.forEach(pair => {
+				const event = new Event("change");
+				pair.attributeSelect.dispatchEvent(event);
+			});
+
+			return { attributeSelect, xpInput };
+		};
+
+		// Add initial attribute pairs from the quest
+		if (this.quest.reward.attributes) {
+			Object.entries(this.quest.reward.attributes).forEach(([attr, xp]) => {
+				if (xp > 0) {
+					createAttributePair(attr, xp);
+				}
+			});
+		}
+
+		// Add new attribute pair when clicking the add button
+		addAttributeButton.addEventListener("click", () => {
+			createAttributePair();
 		});
 
 		// Difficulty
@@ -467,37 +413,69 @@ export class ModifyQuestModal extends Modal {
 			cls: 'mod-cta'
 		});
 
+		// Delete Button
+		const deleteButton = buttonContainer.createEl('button', {
+			text: 'Delete Quest',
+			cls: 'mod-warning'
+		});
+
 		saveButton.addEventListener('click', async () => {
 			try {
-				// Update quest with new values
-				this.quest.title = titleInput.value;
-				this.quest.shortDescription = shortDescInput.value;
-				this.quest.description = descInput.value;
-				this.quest.reward.XP = parseInt(xpInput.value) || 0;
-				this.quest.settings.difficulty = difficultySelect.value as any;
-				this.quest.settings.category = categoryInput.value;
-				this.quest.settings.priority = prioritySelect.value as any;
-				this.quest.progression.dueDate = dueDateInput.value ? new Date(dueDateInput.value) : undefined;
+				// Get attribute rewards
+				const attributeRewards: Record<string, number> = {};
+				this.attributePairs.forEach(pair => {
+					if (pair.attributeSelect.value && pair.xpInput.value) {
+						attributeRewards[pair.attributeSelect.value] = parseInt(pair.xpInput.value) || 0;
+					}
+				});
 
 				// Save changes
 				await this.plugin.questService.saveQuestToJSON(
-					this.quest.title,
-					this.quest.shortDescription,
-					this.quest.description,
-					this.quest.reward.XP,
+					titleInput.value,
+					shortDescInput.value,
+					descInput.value,
+					parseInt(xpInput.value) || 0,
 					0, // level requirement
 					'', // previous quests
-					this.quest.settings.difficulty || 'easy',
-					this.quest.settings.category || '',
-					this.quest.progression.dueDate?.toISOString() ?? '',
-					this.quest.settings.priority || 'low',
-					this.quest.id // Pass the quest ID for updating
+					difficultySelect.value,
+					categoryInput.value,
+					dueDateInput.value,
+					prioritySelect.value,
+					this.quest.id, // Pass the quest ID for updating
+					attributeRewards // Pass the attribute rewards
 				);
 				new Notice('Quest updated successfully');
+				// Notify view to reload
+				viewSyncService.emitStateChange({ questsUpdated: true });
 				this.close();
 			} catch (error) {
 				console.error('Error saving quest:', error);
 				new Notice('Failed to save quest changes');
+			}
+		});
+
+		deleteButton.addEventListener('click', async () => {
+			if (confirm('Are you sure you want to delete this quest? This action cannot be undone.')) {
+				try {
+					// Delete the quest from the JSON file
+					const questsPath = `${this.app.vault.configDir}/plugins/game-of-life/data/db/quests.json`;
+					const content = await this.app.vault.adapter.read(questsPath);
+					const quests = JSON.parse(content);
+					
+					// Filter out the quest to delete
+					const updatedQuests = quests.filter((q: Quest) => q.id !== this.quest.id);
+					
+					// Save the updated quests
+					await this.app.vault.adapter.write(questsPath, JSON.stringify(updatedQuests, null, 2));
+					
+					new Notice('Quest deleted successfully');
+					// Notify view to reload
+					viewSyncService.emitStateChange({ questsUpdated: true });
+					this.close();
+				} catch (error) {
+					console.error('Error deleting quest:', error);
+					new Notice('Failed to delete quest');
+				}
 			}
 		});
 	}
@@ -506,5 +484,9 @@ export class ModifyQuestModal extends Modal {
 		const { contentEl } = this;
 		contentEl.empty();
 	}
+}
+
+function getValue() {
+	throw new Error("Function not implemented.");
 }
 

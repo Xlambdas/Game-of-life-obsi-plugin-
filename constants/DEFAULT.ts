@@ -102,7 +102,7 @@ export interface BaseTask {
 		type: 'quest' | 'habit';
 		priority?: 'low' | 'medium' | 'high';
 		difficulty?: 'easy' | 'medium' | 'hard' | 'expert';
-		category: 'work' | 'study' | 'social' | 'undefined' | string;
+		category: 'Physical' | 'study' | 'social' | 'personal' | 'undefined' | string;
 		isSecret?: boolean;
 		isTimeSensitive?: boolean;
 	};
@@ -130,6 +130,7 @@ export interface Quest extends BaseTask {
 	};
 	recurrence?: never;
 	failureConsequence?: string;
+	isSystemQuest?: boolean;
 }
 /*
 * Quest Default Settings
@@ -140,25 +141,25 @@ export const DEFAULT_QUEST: Quest = {
 	title: "Tutorial",
 	shortDescription: "This is your first quest.",
 	description: "This is your first quest.",
-	created_at: new Date(),
+	created_at: new Date(), // Auto generated
 	settings: {
-		type: 'quest',
-		category: 'work',
-		priority: 'low',
-		difficulty: 'easy',
-		isSecret: false,
-		isTimeSensitive: false,
+		type: 'quest', // Auto generated
+		category: 'work', // todo: do the association between the categories and the attributes..
+		priority: 'low', // todo: do algo
+		difficulty: 'easy', // todo: do algo
+		isSecret: false, // Auto generated
+		isTimeSensitive: false, // todo: do algo to set the limit time
 	},
 	progression: {
 		isCompleted: false,
-		completed_at: new Date(0),
-		progress: 0,
-		dueDate: new Date(0),
-		subtasks: [],
+		completed_at: new Date(0), // Auto generated
+		progress: 0, // Auto generated (0-100) //todo: do algo
+		dueDate: new Date(0), // Auto generated //todo do algo
+		subtasks: [], // todo: do algo
 	},
 	reward: {
-		XP: 1,
-		items: [],
+		XP: 1, // todo: do algo
+		items: [], // todo: do algo
 		attributes: {
 			strength: 0,
 			agility: 0,
@@ -168,11 +169,11 @@ export const DEFAULT_QUEST: Quest = {
 			perception: 0,
 			intelligence: 1,
 		},
-		unlock: [],
+		unlock: [], // todo: do algo
 	},
-	requirements: {
+	requirements: { // todo: do algo
 		level: 0,
-		previousQuests: [],
+		previousQuests: [], // todo: do algo
 		stats: {
 			strength: 0,
 			agility: 0,
@@ -184,23 +185,14 @@ export const DEFAULT_QUEST: Quest = {
 		},
 	},
 	recurrence: undefined,
-	failureConsequence: "You failed the quest.",
+	failureConsequence: "You failed the quest.", // todo: do algo
+	isSystemQuest: true // todo: do algo
 };
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+/*
+* Habit Default Settings
+*/
 
 
 export interface Habit extends BaseTask {
@@ -223,113 +215,48 @@ export interface Habit extends BaseTask {
 		attributes?: StatBlock;
 		items?: string[];
 	};
+	isSystemHabit?: boolean;
 }
 
-
-export interface Quest_old {
+export const DEFAULT_HABIT: Habit = {
+	id: "Habit_0",
+	title: "Tutorial",
+	shortDescription: "This is your first habit.",
+	description: "This is your first habit.",
+	created_at: new Date(),
 	settings: {
-		id: string;
-		title: string;
-		shortDescription: string;
-		description: string;
-		priority?: 'low' | 'medium' | 'high';
-		difficulty?: 'easy' | 'medium' | 'hard' | 'expert';
-		category: 'work' | 'study' | 'social' | string;
-	};
-	progression: {
-		isCompleted: boolean;
-		completed_at: Date;
-		progress: number;
-		dueDate?: Date;
-		subtasks?: string[];
-	};
-    reward: {
-        XP: number;
-        items?: string[];
-		attributes?: {
-			strength: number;
-			agility: number;
-			endurance: number;
-			charisma: number;
-			wisdom: number;
-			perception: number;
-			intelligence: number;
-		};
-		unlock?: string[];
-    };
-    requirements?: {
-        level?: number;
-        previousQuests?: string[];
-		stats?: {
-			strength: number;
-			agility: number;
-			endurance: number;
-			charisma: number;
-			wisdom: number;
-			perception: number;
-			intelligence: number;
-		};
-    };
-    recurrence?: {
-        interval: number;
-        unit: "days" | "weeks" | "months";
-    };
-    isSecret?: boolean;
-    isTimeSensitive?: boolean;
-	failureConsequence?: string;
-}
-
-export const DEFAULT_QUEST_SETTINGS_OLD: Quest_old= {
-	settings: {
-		id: "Quest_0",
-		title: "Tutorial",
-		shortDescription: "This is your first quest.",
-		description: "This is your first quest.",
-		priority: "low",
-		difficulty: "easy",
-		category: "",
+		type: 'habit',
+		category: 'personal',
+		priority: 'low',
+		difficulty: 'easy',
+		isSecret: false,
+		isTimeSensitive: false,
 	},
-	progression: {
-		isCompleted: false,
-		completed_at: new Date(),
-		progress: 0,
-		dueDate: new Date(),
-		subtasks: [],
+	recurrence: {
+		interval: 1,
+		unit: 'days',
+	},
+	streak: {
+		current: 0,
+		best: 0,
+		resetDate: new Date(),
+	},
+	penalty: {
+		XPLoss: 0,
+		breackStreak: false,
 	},
 	reward: {
-		XP: 1,
-		items: [],
+		XP: 0,
 		attributes: {
 			strength: 0,
 			agility: 0,
-			endurance: 0,
+			endurance: 1,
 			charisma: 0,
 			wisdom: 0,
 			perception: 0,
-			intelligence: 0
+			intelligence: 0,
 		},
-		unlock: [],
+		items: [],
 	},
-	requirements: {
-		level: 0,
-		previousQuests: [],
-		stats: {
-			strength: 0,
-			agility: 0,
-			endurance: 0,
-			charisma: 0,
-			wisdom: 0,
-			perception: 0,
-			intelligence: 0
-		}
-	},
-	recurrence: {
-		interval: 0,
-		unit: "days",
-	},
-	isSecret: false,
-	isTimeSensitive: false,
-	failureConsequence: "",
+	isSystemHabit: false,
 };
-
-
