@@ -186,7 +186,7 @@ export const DEFAULT_QUEST: Quest = {
 	},
 	recurrence: undefined,
 	failureConsequence: "You failed the quest.", // todo: do algo
-	isSystemQuest: true // todo: do algo
+	isSystemQuest: false // todo: do algo
 };
 
 

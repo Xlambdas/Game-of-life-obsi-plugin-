@@ -1,6 +1,6 @@
 import { TextComponent } from "obsidian";
 import GOL from "plugin";
-import { DescriptionHelper } from "./helpers";
+import { DescriptionHelper } from "./uiHelpers";
 
 
 export class TitleInput {
@@ -543,6 +543,8 @@ export class rewardItemsInput {
 	constructor(container: HTMLElement, initialValue?: string) {
 		const itemsContainer = container.createDiv({ cls: "form-group" });
 		itemsContainer.createEl("label", { text: "Reward items (one per line)" });
+		this.description = new DescriptionHelper(itemsContainer, "List the items you will receive as a reward for completing this quest. This adds tangible value to your achievements!");
+
 		this.input = itemsContainer.createEl("textarea", {
 			placeholder: "Enter reward items, one per line...",
 			cls: "reward-items-input"
@@ -553,8 +555,6 @@ export class rewardItemsInput {
 		if (initialValue) {
 			this.input.value = initialValue;
 		}
-		
-		this.description = new DescriptionHelper(itemsContainer, "List the items you will receive as a reward for completing this quest. This adds tangible value to your achievements!");
 	}
 
 	getValue(): string {

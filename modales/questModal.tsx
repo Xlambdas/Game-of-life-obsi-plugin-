@@ -4,164 +4,98 @@ import GOL from "../plugin";
 import { Quest } from '../constants/DEFAULT';
 import { viewSyncService } from '../services/syncService';
 import { TitleInput, ShortDescriptionInput, DescriptionInput, CategoryInput, PriorityInput, DifficultyInput, dueDateInput, SubtasksInput, RequireLevelInput, RequirePreviousQuestsInput, RewardAttributeInput, rewardItemsInput } from "../components/inputs";
-import { separator, subTitle, endButton } from "../components/uiHelpers";
+import { separator, createHeader, titleSection, subTitle } from "../components/uiHelpers";
+import { endButton } from "../components/questUI";
+import { getDescrInput, getSettingsInputs, getRequirementsInputs, getRewardInputs } from "components/formHelpers";
 
-// Version : vsc
+// Version : cur
 
 export class CreateQuestModal extends Modal {
-	plugin: GOL;
-	titleInput: TitleInput;
-	shortDescriptionInput: ShortDescriptionInput;
-	descriptionInput: DescriptionInput;
-	rewardXPInput: TextComponent;
-	rewardItemsInput: rewardItemsInput;
-	difficultyInput: DifficultyInput;
-	requireLevelInput: RequireLevelInput;
-	requirePreviousQuestsInput: RequirePreviousQuestsInput;
-	dueDateInput: dueDateInput;
-	priorityInput: PriorityInput;
-	categoryInput: CategoryInput;
-	rewardAttributeInput: RewardAttributeInput;
+	private plugin: GOL;
+	private titleInput: TitleInput;
+	private shortDescriptionInput: ShortDescriptionInput;
+	private descriptionInput: DescriptionInput;
+	private rewardXPInput: TextComponent;
+	private rewardItemsInput: rewardItemsInput;
+	private difficultyInput: DifficultyInput;
+	private requireLevelInput: RequireLevelInput;
+	private requirePreviousQuestsInput: RequirePreviousQuestsInput;
+	private dueDateInput: dueDateInput;
+	private priorityInput: PriorityInput;
+	private categoryInput: CategoryInput;
+	private rewardAttributeInput: RewardAttributeInput;
 
-    constructor(app: App, plugin: GOL) {
-        super(app);
-        this.plugin = plugin;
-    }
-
-
-	/*
-	* Get the form data
-	*/
-	private getFormData() {
-		const title = this.titleInput.getValue().trim();
-		const shortDescription = this.shortDescriptionInput.getValue().trim();
-		const description = this.descriptionInput?.getValue()?.trim() || "";
-		const reward_XP = this.rewardXPInput ? parseInt(this.rewardXPInput.getValue()) || 0 : 0;
-		const reward_items = this.rewardItemsInput?.getValue()?.trim() || "";
-		const require_level = this.requireLevelInput ? this.requireLevelInput.getValue() || 0 : 0;
-		const require_previousQuests = this.requirePreviousQuestsInput ? this.requirePreviousQuestsInput.getValue() : "";
-		const dueDate = this.dueDateInput?.getValue() || "";
-		const priority = this.priorityInput?.getValue() || "low";
-		const difficulty = this.difficultyInput?.getValue() || "easy";
-		const category = this.categoryInput?.getValue() || "";
-
-		// Get all attribute rewards
-		const attributeRewards = this.rewardAttributeInput.getStatBlock();
-		if (this.rewardAttributeInput && typeof this.rewardAttributeInput.getValue === "function") {
-			const rewardsArray = this.rewardAttributeInput.getValue();
-			const attributeRewards: Record<string, number> = {};
-			if (Array.isArray(rewardsArray)) {
-				rewardsArray.forEach(({ attribute, xp }) => {
-					if (attribute && typeof xp === "number" && xp > 0) {
-						attributeRewards[attribute] = xp;
-					}
-				});
-			}
-		}
-
-		return {
-			title,
-			shortDescription,
-			description,
-			reward_XP,
-			reward_items,
-			require_level,
-			require_previousQuests: Array.isArray(require_previousQuests) ? require_previousQuests : (require_previousQuests || ""),
-			dueDate,
-			priority,
-			difficulty,
-			category,
-			attributeRewards
-		};
+	constructor(app: App, plugin: GOL) {
+		super(app);
+		this.plugin = plugin;
 	}
 
-	/*
-	* UI part
-	*/
+	onOpen() {
+		const { contentEl } = this;
+		contentEl.empty();
 
-	private normalMode = (Container: HTMLElement) => {
-		// show the form with the title and description for the quests.
-		const {contentEl} = this;
-		const advancedMode = contentEl.querySelector(".advanced-mode");
-		if (advancedMode) {
-			advancedMode.remove();
-		}
+		createHeader(contentEl, 'Create New Quest');
+		const mainContainer = this.createMainContainer(contentEl);
+		this.createAdvancedModeToggle(contentEl, mainContainer);
+		this.createEndButtons(contentEl);
+	}
 
-		if (Container) {
-			Container.empty();
-		}
-		const formContainer = Container.createDiv({ cls: "quest-form" });
+	onClose() {
+		this.contentEl.empty();
+	}
 
+	private createMainContainer(contentEl: HTMLElement): HTMLElement {
+		const mainContainer = contentEl.createDiv({ cls: "quest-form" });
+		this.createNormalMode(mainContainer);
+		return mainContainer;
+	}
+
+	private createNormalMode(container: HTMLElement) {
+		const formContainer = container.createDiv({ cls: "quest-form" });
 		this.titleInput = new TitleInput(formContainer);
 		this.shortDescriptionInput = new ShortDescriptionInput(formContainer);
 		this.categoryInput = new CategoryInput(formContainer, this.plugin);
 	}
 
-    onOpen() {
-        const {contentEl} = this;
-        contentEl.empty();
-
-        // Create header with title and toggle for advanced mode
-        const headerContainer = contentEl.createDiv({ cls: "header-container" });
-        headerContainer.createEl("h1", {text: 'Create New Quest'});
-
-        // Create main container for the form
-        const mainContainer = contentEl.createDiv({ cls: "quest-form" });
-		this.normalMode(mainContainer); // by default
+	private createAdvancedModeToggle(contentEl: HTMLElement, mainContainer: HTMLElement) {
 		const advancedContainer = mainContainer.createDiv({ cls: "advanced-mode" });
+		const headerContainer = contentEl.querySelector(".header-container") as HTMLElement;
+		
+		if (!headerContainer) {
+			console.error("Header container not found");
+			return;
+		}
 
-        const advancedModeToggle = new ToggleComponent(headerContainer)
-            .setTooltip("Show/hide supplementary settings")
-            .setValue(false)
-            .onChange((value) => {
-                if (value) {
-                    // Advanced mode
-                    const title = advancedContainer.createEl("h3", { text: "Supplementary settings" });
-                    title.style.textAlign = "center";
-                    title.style.width = "100%";
-                    title.style.marginBottom = "20px";
-                    title.style.color = "var(--text-normal)";
-                    title.style.fontSize = "1.2em";
-                    title.style.fontWeight = "600";
-
-					this.descriptionInput = new DescriptionInput(advancedContainer);
-
-					// setings section
-					separator(advancedContainer);
-					subTitle(advancedContainer, "Settings");
-					this.priorityInput = new PriorityInput(advancedContainer);
-					this.difficultyInput = new DifficultyInput(advancedContainer);
-					this.dueDateInput = new dueDateInput(advancedContainer);
-
-                    // Requirements section
-					separator(advancedContainer);
-					subTitle(advancedContainer, "Requirements and Rewards");
-
-					this.requireLevelInput = new RequireLevelInput(advancedContainer);
-					this.requirePreviousQuestsInput = new RequirePreviousQuestsInput(advancedContainer, this.plugin);
-
-					// Reward section
-					separator(advancedContainer);
-					subTitle(advancedContainer, "Rewards");
-					const rewardTitle = advancedContainer.createEl("h3", { text: "Rewards" });
-					rewardTitle.style.fontStyle = "italic";
-
-					this.rewardAttributeInput = new RewardAttributeInput(advancedContainer, this.plugin);
-					this.rewardItemsInput = new rewardItemsInput(advancedContainer);
-
-					// XP bonus
-					const rewardContainer = advancedContainer.createDiv({ cls: "form-group" });
-					rewardContainer.createEl("label", { text: "XP Reward:" });
-					this.rewardXPInput = new TextComponent(rewardContainer);
-					this.rewardXPInput.setValue("1");
-					this.rewardXPInput.inputEl.setAttribute("type", "number");
-					this.rewardXPInput.inputEl.setAttribute("min", "0");
-					this.rewardXPInput.inputEl.setAttribute("style", "width: 100%;");
-                } else {
-                    // Normal mode
+		new ToggleComponent(headerContainer)
+			.setTooltip("Show/hide supplementary settings")
+			.setValue(false)
+			.onChange((value) => {
+				if (value) {
+					this.showAdvancedMode(advancedContainer);
+				} else {
 					advancedContainer.empty();
-                }
-            });
+				}
+			});
+	}
+
+	private showAdvancedMode(container: HTMLElement) {
+		separator(container);
+		titleSection(container, "Supplementary Settings");
+		this.descriptionInput = getDescrInput(container);
+		const { priorityInput, difficultyInput, dueDateInput } = getSettingsInputs(container);
+		this.priorityInput = priorityInput;
+		this.difficultyInput = difficultyInput;
+		this.dueDateInput = dueDateInput;
+		const {requireLevelInput , requirePreviousQuestsInput } = getRequirementsInputs(container, this.plugin);
+		this.requireLevelInput = requireLevelInput;
+		this.requirePreviousQuestsInput = requirePreviousQuestsInput;
+		const { rewardAttributeInput, rewardItemsInput, rewardXPInput } = getRewardInputs(container, this.plugin);
+		this.rewardAttributeInput = rewardAttributeInput;
+		this.rewardItemsInput = rewardItemsInput;
+		this.rewardXPInput = rewardXPInput;
+	}
+
+	private createEndButtons(contentEl: HTMLElement) {
 		endButton({
 			contentEl: contentEl,
 			plugin: {
@@ -169,15 +103,43 @@ export class CreateQuestModal extends Modal {
 			},
 			close: () => this.close(),
 			getFormData: () => this.getFormData()
-		})
-		// this.endButton();
-    }
+		});
+	}
 
-    onClose() {
-        this.contentEl.empty();
-    }
+	private getFormData() {
+		return {
+			title: this.titleInput.getValue().trim(),
+			shortDescription: this.shortDescriptionInput.getValue().trim(),
+			description: this.descriptionInput?.getValue()?.trim() || "",
+			reward_XP: this.rewardXPInput ? parseInt(this.rewardXPInput.getValue()) || 0 : 0,
+			reward_items: this.rewardItemsInput?.getValue()?.trim() || "",
+			require_level: this.requireLevelInput ? this.requireLevelInput.getValue() || 0 : 0,
+			require_previousQuests: this.requirePreviousQuestsInput ? this.requirePreviousQuestsInput.getValue() : "",
+			dueDate: this.dueDateInput?.getValue() || "",
+			priority: this.priorityInput?.getValue() || "low",
+			difficulty: this.difficultyInput?.getValue() || "easy",
+			category: this.categoryInput?.getValue() || "",
+			attributeRewards: this.rewardAttributeInput?.getStatBlock?.() || {
+				strength: 0,
+				agility: 0,
+				endurance: 0,
+				charisma: 0,
+				wisdom: 0,
+				perception: 0,
+				intelligence: 0
+			}
+		};
+	}
 }
 
+
+
+
+
+
+// -------------------------------------------------------
+// quest modification modal
+// -------------------------------------------------------
 
 export class ModifyQuestModal extends Modal {
 	plugin: GOL;
