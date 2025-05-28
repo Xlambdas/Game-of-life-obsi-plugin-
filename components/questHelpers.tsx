@@ -1,4 +1,3 @@
-
 import type { Plugin } from "obsidian";
 import { Notice, ButtonComponent } from "obsidian";
 import { Quest } from "../constants/DEFAULT";
@@ -17,7 +16,6 @@ export type EndButtonDeps = {
 				require_previousQuests: string,
 				difficulty: string,
 				category: string,
-				dueDate: string | undefined,
 				priority: string,
 				questId: string | undefined,
 				attributeRewards: any
@@ -34,14 +32,13 @@ export type EndButtonDeps = {
 		require_previousQuests: string[] | string;
 		difficulty: string;
 		category: string;
-		dueDate: string | undefined;
 		priority: string;
 		attributeRewards: any;
 	};
 };
 
 export const createQuestFromFormData = (formData: ReturnType<EndButtonDeps['getFormData']>): Omit<Quest, 'id'> => {
-	const { title, shortDescription, description, reward_XP, require_level, require_previousQuests, difficulty, category, dueDate, priority, attributeRewards } = formData;
+	const { title, shortDescription, description, reward_XP, require_level, require_previousQuests, difficulty, category, priority, attributeRewards } = formData;
 
 	return {
 		title,
@@ -72,7 +69,6 @@ export const createQuestFromFormData = (formData: ReturnType<EndButtonDeps['getF
 			isCompleted: false,
 			completed_at: new Date(0),
 			progress: 0,
-			dueDate: dueDate ? new Date(dueDate) : undefined,
 			subtasks: []
 		},
 		requirements: {
@@ -110,3 +106,39 @@ export const validateQuestFormData = (formData: ReturnType<EndButtonDeps['getFor
 
 	return null;
 };
+
+export function getFormData(inputs: {
+	titleInput: { getValue: () => string };
+	shortDescriptionInput: { getValue: () => string };
+	descriptionInput?: { getValue: () => string };
+	rewardXPInput?: { getValue: () => string };
+	rewardItemsInput?: { getValue: () => string };
+	requireLevelInput?: { getValue: () => number };
+	requirePreviousQuestsInput?: { getValue: () => string[] | string };
+	priorityInput?: { getValue: () => string };
+	difficultyInput?: { getValue: () => string };
+	categoryInput?: { getValue: () => string };
+	rewardAttributeInput?: { getStatBlock?: () => any };
+}) {
+	const formData = {
+		title: inputs.titleInput.getValue().trim(),
+		shortDescription: inputs.shortDescriptionInput.getValue().trim(),
+		description: inputs.descriptionInput?.getValue()?.trim() || "",
+		reward_XP: inputs.rewardXPInput ? parseInt(inputs.rewardXPInput.getValue()) || 0 : 0,
+		require_level: inputs.requireLevelInput ? inputs.requireLevelInput.getValue() || 0 : 0,
+		require_previousQuests: inputs.requirePreviousQuestsInput ? inputs.requirePreviousQuestsInput.getValue() : "",
+		priority: inputs.priorityInput?.getValue() || "low",
+		difficulty: inputs.difficultyInput?.getValue() || "easy",
+		category: inputs.categoryInput?.getValue() || "",
+		attributeRewards: inputs.rewardAttributeInput?.getStatBlock?.() || {
+			strength: 0,
+			agility: 0,
+			endurance: 0,
+			charisma: 0,
+			wisdom: 0,
+			perception: 0,
+			intelligence: 0
+		}
+	};
+	return formData;
+}

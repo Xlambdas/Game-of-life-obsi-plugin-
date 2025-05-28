@@ -302,106 +302,111 @@ export class markdownServices {
     /**
      * Saves a new quest to the JSON file
      */
-    async saveQuestToJSON(title: string, shortDescription: string, description: string, reward: number, require_level: number, require_previousQuests: string, difficulty: string, category: string, dueDate: string, priority: string, questId?: string, attributes?: Record<string, number>): Promise<Quest> {
+    async saveQuestToJSON(
+        title: string,
+        shortDescription: string,
+        description: string,
+        reward: number,
+        require_level: number,
+        require_previousQuests: string,
+        difficulty: string,
+        category: string,
+        dueDate: Date | undefined,
+        priority: string,
+        questId?: string,
+        attributes?: StatBlock
+    ): Promise<Quest> {
         try {
             const questsPath = `${this.app.vault.configDir}/plugins/game-of-life/data/db/quests.json`;
-            
-            // Lire les quêtes existantes
             let quests: Quest[] = [];
+            
             try {
                 const content = await this.app.vault.adapter.read(questsPath);
                 quests = JSON.parse(content);
             } catch (error) {
-                console.log('No existing quests file or error reading it');
+                console.log("No existing quests file found, creating new one");
             }
-            
-            // Convertir les attributs en StatBlock
-            const statBlock: StatBlock = {
-                strength: attributes?.strength || 0,
-                agility: attributes?.agility || 0,
-                endurance: attributes?.endurance || 0,
-                charisma: attributes?.charisma || 0,
-                wisdom: attributes?.wisdom || 0,
-                perception: attributes?.perception || 0,
-                intelligence: attributes?.intelligence || 0
-            };
-            
-            // Vérifier si on met à jour une quête existante
-            const existingQuestIndex = questId ? quests.findIndex(q => q.id === questId) : -1;
-            
+
+            let quest: Quest;
+            const existingQuestIndex = quests.findIndex(q => q.id === questId);
+
             if (existingQuestIndex !== -1) {
-                // Mettre à jour la quête existante
-                const updatedQuest = {
-                    ...quests[existingQuestIndex],
-                    title,
-                    shortDescription: shortDescription || "",
-                    description: description || "",
-                    settings: {
-                        ...quests[existingQuestIndex].settings,
-                        priority: (priority && ["low", "medium", "high"].includes(priority)) ? priority as "low" | "medium" | "high" : quests[existingQuestIndex].settings.priority,
-                        difficulty: (difficulty && ["easy", "medium", "hard", "expert"].includes(difficulty)) ? difficulty as "easy" | "medium" | "hard" | "expert" : quests[existingQuestIndex].settings.difficulty,
-                        category: category || quests[existingQuestIndex].settings.category,
-                    },
-                    reward: {
-                        ...quests[existingQuestIndex].reward,
-                        XP: reward || quests[existingQuestIndex].reward.XP,
-                        attributes: statBlock
-                    },
-                    progression: {
-                        ...quests[existingQuestIndex].progression,
-                        dueDate: dueDate ? new Date(dueDate) : undefined,
-                    }
-                };
+                // Update existing quest
+                quest = quests[existingQuestIndex];
+                quest.title = title;
+                quest.shortDescription = shortDescription;
+                quest.description = description;
+                quest.settings.priority = priority as "low" | "medium" | "high";
+                quest.settings.difficulty = difficulty as "easy" | "medium" | "hard" | "expert";
+                quest.settings.category = category;
+                quest.reward.XP = reward;
+                quest.progression.dueDate = dueDate;
+                if (!quest.requirements) {
+                    quest.requirements = {
+                        level: 0,
+                        previousQuests: [],
+                        stats: {
+                            strength: 0,
+                            agility: 0,
+                            endurance: 0,
+                            charisma: 0,
+                            wisdom: 0,
+                            perception: 0,
+                            intelligence: 0
+                        }
+                    };
+                }
+                quest.requirements.level = require_level;
+                quest.requirements.previousQuests = require_previousQuests ? require_previousQuests.split(',') : [];
                 
-                quests[existingQuestIndex] = updatedQuest;
-                new Notice("Quest updated successfully!");
+                if (attributes) {
+                    quest.reward.attributes = attributes;
+                }
             } else {
-                // Créer une nouvelle quête
-                const id = this.generateQuestId();
-                const newQuest: Quest = {
-                    ...DEFAULT_QUEST,
-                    id,
+                // Create new quest
+                const newId = this.generateQuestId();
+                const defaultQuest = { ...DEFAULT_QUEST };
+                quest = {
+                    ...defaultQuest,
+                    id: newId,
                     title,
                     shortDescription: shortDescription || "",
                     description: description || "",
                     created_at: new Date(),
                     settings: {
-                        type: 'quest',
-                        priority: (priority && ["low", "medium", "high"].includes(priority)) ? priority as "low" | "medium" | "high" : DEFAULT_QUEST.settings.priority,
-                        difficulty: (difficulty && ["easy", "medium", "hard", "expert"].includes(difficulty)) ? difficulty as "easy" | "medium" | "hard" | "expert" : DEFAULT_QUEST.settings.difficulty,
-                        category: category || DEFAULT_QUEST.settings.category,
-                        isSecret: false,
-                        isTimeSensitive: false,
+                        ...defaultQuest.settings,
+                        priority: priority as "low" | "medium" | "high",
+                        difficulty: difficulty as "easy" | "medium" | "hard" | "expert",
+                        category,
                     },
                     progression: {
+                        ...defaultQuest.progression,
                         isCompleted: false,
                         completed_at: new Date(0),
                         progress: 0,
-                        subtasks: [],
+                        dueDate: dueDate || undefined,
                     },
                     reward: {
-                        XP: reward || DEFAULT_QUEST.reward.XP,
-                        items: [],
-                        attributes: statBlock,
-                        unlock: [],
+                        ...defaultQuest.reward,
+                        XP: reward,
+                        attributes: attributes || defaultQuest.reward.attributes,
                     },
+                    requirements: {
+                        ...defaultQuest.requirements,
+                        level: require_level,
+                        previousQuests: require_previousQuests ? require_previousQuests.split(',') : [],
+                    },
+                    isSystemQuest: false
                 };
-                
-                quests.push(newQuest);
-                new Notice("Quest created successfully!");
+                quests.push(quest);
             }
-            
-            // Sauvegarder dans le fichier
+
             await this.app.vault.adapter.write(questsPath, JSON.stringify(quests, null, 2));
-            
-            // Mettre à jour le cache local
-            this.quests = quests;
-            
-            return existingQuestIndex !== -1 ? quests[existingQuestIndex] : quests[quests.length - 1];
-            
+            new Notice('Quest saved successfully');
+            return quest;
         } catch (error) {
-            console.error("Error saving quest:", error);
-            new Notice("Failed to save quest. Check console for details.");
+            console.error('Error saving quest:', error);
+            new Notice('Failed to save quest');
             throw error;
         }
     }

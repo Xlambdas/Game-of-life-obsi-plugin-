@@ -14,11 +14,9 @@ export const endButton = ({
 	// Create a flex container for the note and buttons
 	const flexContainer = buttonsContainer.createDiv({ cls: "buttons-flex-container" });
 
-	// Add required fields note on the left
+	// required fields note
 	const noteContainer = flexContainer.createDiv({ cls: "required-note-container" });
 	noteContainer.createEl("p", { text: '* Required fields', cls: 'required-note' });
-
-	// Create a container for the buttons
 	const buttonsGroup = flexContainer.createDiv({ cls: "buttons-group" });
 
 	// Cancel button
@@ -47,7 +45,7 @@ export const endButton = ({
 			}
 
 			try {
-				const { title, shortDescription, description, reward_XP, require_level, require_previousQuests, difficulty, category, dueDate, priority, attributeRewards } = formData;
+				const { title, shortDescription, description, reward_XP, require_level, require_previousQuests, difficulty, category, priority, attributeRewards } = formData;
 
 				await plugin.questService.saveQuestToJSON(
 					title,
@@ -58,7 +56,6 @@ export const endButton = ({
 					Array.isArray(require_previousQuests) ? require_previousQuests.join(",") : require_previousQuests,
 					difficulty,
 					category,
-					dueDate,
 					priority,
 					undefined, // questId for new quests
 					attributeRewards // Pass the attribute rewards
@@ -70,3 +67,11 @@ export const endButton = ({
 			}
 		});
 };
+
+
+// export const endButtonModified = ({
+// 	contentEl,
+// 	plugin,
+// 	close,
+// 	getFormData
+// }: EndButtonDeps) => {

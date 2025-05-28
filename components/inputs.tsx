@@ -56,15 +56,20 @@ export class DescriptionInput {
 	constructor(container: HTMLElement, initialValue?: string) {
 		const descriptionContainer = container.createDiv({ cls: "form-group" });
 		descriptionContainer.createEl("label", { text: "Full description" });
+		
 		this.input = descriptionContainer.createEl("textarea", {
 			placeholder: "Enter quest description...",
 			cls: "quest-description"
-		});
-		this.input.style.width = "100%";
-		this.input.style.resize = "vertical";
+		}) as HTMLTextAreaElement;
+		
+		// Configuration des propriétés de base
+		this.input.rows = 4;
+		
+		// Définition de la valeur initiale
 		if (initialValue) {
 			this.input.value = initialValue;
 		}
+		
 		this.description = new DescriptionHelper(descriptionContainer, "The more vivid and detailed your quest is, the more powerful and motivating it becomes. Add purpose, emotion, and clarity!");
 	}
 
@@ -102,6 +107,7 @@ export class CategoryInput {
 		this.input.style.boxShadow = "0 2px 4px rgba(0, 0, 0, 0.1)";
 
 		const defaultCategories = [
+			"Undefined",
 			"Physical",        // strength, endurance, agility
 			"Mental",          // intelligence, wisdom, perception
 			"Social",          // charisma, leadership
@@ -109,7 +115,6 @@ export class CategoryInput {
 			"Emotional",       // maybe to wisdom, charisma
 			"Organizational",  // wisdom, intelligence
 			"Exploration",     // perception, endurance
-			"Undefined",
 		];
 		const userCategories = this.plugin.settings.user1.settings.questsCategories || [];
 		const allCategories = [...new Set([...defaultCategories, ...userCategories])];
@@ -276,7 +281,7 @@ export class dueDateInput {
 	private input: HTMLInputElement;
 	private description: DescriptionHelper;
 
-	constructor(container: HTMLElement, initialValue?: string) {
+	constructor(container: HTMLElement, initialValue?: Date) {
 		const dueDateContainer = container.createDiv({ cls: "form-group" });
 		dueDateContainer.createEl("label", { text: "Due date" });
 		this.input = dueDateContainer.createEl("input", {
@@ -284,24 +289,34 @@ export class dueDateInput {
 			cls: "due-date-input"
 		}) as HTMLInputElement;
 		this.input.style.width = "100%";
-		// this.input.style.height = "30px";
-		// this.input.style.borderRadius = "5px";
-		// this.input.style.border = "1px solid var(--input-border)";
-		// this.input.style.padding = "5px";
-		// this.input.style.marginBottom = "10px";
-		// this.input.style.fontSize = "14px";
-		// this.input.style.fontWeight = "normal";
-		// this.input.style.color = "var(--text-muted)";
 
 		if (initialValue) {
-			this.input.value = initialValue;
+			const year = initialValue.getFullYear();
+			const month = String(initialValue.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+			const day = String(initialValue.getDate()).padStart(2, '0');
+			this.input.value = `${year}-${month}-${day}`;
 		}
 
 		this.description = new DescriptionHelper(dueDateContainer, "Set a deadline to keep your quest on track. A clear end date helps you stay focused and motivated!");
 	}
 
-	getValue(): string {
-		return this.input.value;
+	getValue(): Date | undefined {
+		if (!this.input.value) return undefined;
+		const [year, month, day] = this.input.value.split('-').map(Number);
+		return new Date(year, month - 1, day); // Month is 0-indexed in Date constructor
+	}
+
+	setValue(date: Date): Date | undefined {
+		if (!(date instanceof Date) || isNaN(date.getTime())) {
+			console.error("Invalid date provided to dueDateInput.setValue");
+			return undefined;
+		}
+		if (!date) return undefined;
+		this.input.style.display = "block";
+		const year = date.getFullYear();
+		const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+		const day = String(date.getDate()).padStart(2, '0');
+		this.input.value = `${year}-${month}-${day}`;
 	}
 }
 
@@ -380,7 +395,6 @@ export class RequirePreviousQuestsInput {
 		return [""];
 	}
 }
-
 
 export class RewardAttributeInput {
 	private attributePairs: { attributeSelect: HTMLSelectElement; xpInput: HTMLInputElement }[] = [];
@@ -500,12 +514,18 @@ export class RewardAttributeInput {
 			});
 		};
 
-		// Add initial attribute pairs if provided
+		// Always show the add button and the container
+		let hasNonZero = false;
 		if (initialValue && Array.isArray(initialValue)) {
 			initialValue.forEach(pair => {
-				createAttributePair(pair.attribute, pair.xp);
+				if (pair.xp && pair.xp !== 0) {
+					createAttributePair(pair.attribute, pair.xp);
+					hasNonZero = true;
+				}
 			});
-		} else {
+		}
+		// If no initial non-zero, show at least one empty pair
+		if (!hasNonZero) {
 			createAttributePair();
 		}
 
@@ -534,6 +554,7 @@ export class RewardAttributeInput {
 		return statBlock;
 	}
 }
+
 
 
 export class rewardItemsInput {

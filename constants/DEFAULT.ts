@@ -108,6 +108,11 @@ export interface BaseTask {
 	};
 }
 
+
+
+/*
+* Quest Default Settings
+*/
 export interface Quest extends BaseTask {
 	settings: {type: 'quest'} & BaseTask['settings'];
 	progression: {
@@ -123,18 +128,15 @@ export interface Quest extends BaseTask {
 		attributes?: StatBlock;
 		unlock?: string[];
 	}
-	requirements?: {
-		level?: number;
+	requirements: {
+		level: number;
 		previousQuests?: string[];
-		stats?: StatBlock;
+		stats: StatBlock;
 	};
-	recurrence?: never;
+	// recurrence: never;
 	failureConsequence?: string;
 	isSystemQuest?: boolean;
 }
-/*
-* Quest Default Settings
-*/
 
 export const DEFAULT_QUEST: Quest = {
 	id: "Quest_0",
@@ -148,13 +150,13 @@ export const DEFAULT_QUEST: Quest = {
 		priority: 'low', // todo: do algo
 		difficulty: 'easy', // todo: do algo
 		isSecret: false, // Auto generated
-		isTimeSensitive: false, // todo: do algo to set the limit time
+		isTimeSensitive: false, //Auto generated // todo: do algo to set the limit time
 	},
 	progression: {
 		isCompleted: false,
 		completed_at: new Date(0), // Auto generated
 		progress: 0, // Auto generated (0-100) //todo: do algo
-		dueDate: new Date(0), // Auto generated //todo do algo
+		dueDate: new Date(0), //todo do algo
 		subtasks: [], // todo: do algo
 	},
 	reward: {
@@ -184,9 +186,9 @@ export const DEFAULT_QUEST: Quest = {
 			intelligence: 0,
 		},
 	},
-	recurrence: undefined,
+	// recurrence: undefined, // Auto generated // todo: do algo
 	failureConsequence: "You failed the quest.", // todo: do algo
-	isSystemQuest: false // todo: do algo
+	isSystemQuest: false // Auto generated // todo: do algo
 };
 
 

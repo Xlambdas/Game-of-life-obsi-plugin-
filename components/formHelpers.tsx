@@ -1,14 +1,12 @@
-import { ButtonComponent, Notice } from "obsidian";
-import { Quest } from "../constants/DEFAULT";
-import { DescriptionInput, PriorityInput, DifficultyInput, dueDateInput, RequireLevelInput, RequirePreviousQuestsInput, RewardAttributeInput, rewardItemsInput } from "./inputs";
+import { DescriptionInput, PriorityInput, DifficultyInput,  RequireLevelInput, RequirePreviousQuestsInput, RewardAttributeInput, rewardItemsInput, dueDateInput } from "./inputs";
 import type GOL from "../plugin";
-import { separator, titleSection, subTitle, DescriptionHelper } from "./uiHelpers";
+import { separator, subTitle, DescriptionHelper } from "./uiHelpers";
 import { TextComponent } from "obsidian";
+import { StatBlock } from "constants/DEFAULT";
 
 interface SettingsSection {
     priorityInput: PriorityInput;
     difficultyInput: DifficultyInput;
-    dueDateInput: dueDateInput;
 }
 
 interface RequirementsSection {
@@ -26,37 +24,42 @@ export const getDescrInput = (container: HTMLElement): DescriptionInput => {
     return new DescriptionInput(container);
 };
 
-export const getSettingsInputs = (container: HTMLElement): SettingsSection => {
+export const getSettingsInputs = (container: HTMLElement, priority?: string, difficulty?: string): SettingsSection => {
     separator(container);
     subTitle(container, "Settings");
     return {
-        priorityInput: new PriorityInput(container),
-        difficultyInput: new DifficultyInput(container),
-        dueDateInput: new dueDateInput(container)
+        priorityInput: new PriorityInput(container, priority),
+        difficultyInput: new DifficultyInput(container, difficulty),
     };
 };
 
-export const getRequirementsInputs = (container: HTMLElement, plugin: GOL): RequirementsSection => {
+export const getRequirementsInputs = (container: HTMLElement, plugin: GOL, require_level?: number, require_previousQuests?: string[]): RequirementsSection => {
     separator(container);
     subTitle(container, "Requirements");
     return {
-        requireLevelInput: new RequireLevelInput(container),
-        requirePreviousQuestsInput: new RequirePreviousQuestsInput(container, plugin)
+        requireLevelInput: new RequireLevelInput(container, require_level),
+        requirePreviousQuestsInput: new RequirePreviousQuestsInput(container, plugin, require_previousQuests)
     };
 };
 
-export const getRewardInputs = (container: HTMLElement, plugin: GOL): RewardsSection => {
+export const getRewardInputs = (container: HTMLElement, plugin: GOL, reward_attribute?: StatBlock, reward_XP?: number): RewardsSection => {
     separator(container);
     subTitle(container, "Rewards");
 
     return {
-        rewardAttributeInput: new RewardAttributeInput(container, plugin),
+        rewardAttributeInput: new RewardAttributeInput(
+            container,
+            plugin,
+            reward_attribute
+                ? Object.entries(reward_attribute).map(([attribute, xp]) => ({ attribute, xp }))
+                : undefined
+        ),
         rewardItemsInput: new rewardItemsInput(container),
-        rewardXPInput: createXPRewardInput(container)
+        rewardXPInput: createXPRewardInput(container, reward_XP)
     };
 };
 
-const createXPRewardInput = (container: HTMLElement): TextComponent => { //todo delete this
+const createXPRewardInput = (container: HTMLElement, initialValue?: number): TextComponent => { //todo delete this
     const rewardContainer = container.createDiv({ cls: "form-group" });
     rewardContainer.createEl("label", { text: "Bonus XP:" });
 	new DescriptionHelper(rewardContainer, "You can add bonus XP. If you complete the quest you can then choose in wich attribute you want to add the bonus XP.");
@@ -65,5 +68,12 @@ const createXPRewardInput = (container: HTMLElement): TextComponent => { //todo 
     rewardXPInput.inputEl.setAttribute("type", "number");
     rewardXPInput.inputEl.setAttribute("min", "0");
     rewardXPInput.inputEl.setAttribute("style", "width: 100%;");
-    return rewardXPInput;
+
+	if (initialValue !== undefined) {
+		if (isNaN(initialValue) || initialValue < 0) {
+			initialValue = 0; // Ensure the value is non-negative
+		}
+		rewardXPInput.setValue(initialValue.toString());
+	}
+	return rewardXPInput;
 };
