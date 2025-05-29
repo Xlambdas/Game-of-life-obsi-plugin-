@@ -12,7 +12,6 @@ export class QuestServices {
     private quests: Quest[] = [];
     private completedQuestIds: string[] = [];
     private questCounter: number = 0;
-    private availableIds: Set<number> = new Set();
 
     constructor(app: App, plugin: any) {
         this.app = app;
@@ -21,9 +20,7 @@ export class QuestServices {
         this.initializeQuestCounter();
     }
 
-    /**
-     * Gets a specific quest by ID
-     */
+    // Gets a specific quest by ID
     getQuestById(id: string): Quest | undefined {
         return this.quests.find(q => q.id === id);
     }
@@ -50,10 +47,8 @@ export class QuestServices {
                 new Notice(validationError);
                 return;
             }
-
             formData.questId = quest.id;
             await this.saveQuestToJSON(formData);
-
             new Notice('Quest updated successfully');
             viewSyncService.emitStateChange({ questsUpdated: true });
         } catch (error) {
@@ -62,11 +57,12 @@ export class QuestServices {
         }
     }
 
-    private async initializeQuestCounter() {
+    private async initializeQuestCounter() { // todo : use dataService (simplify)
         try {
-            const questsPath = `${this.app.vault.configDir}/plugins/game-of-life/data/db/quests.json`;
-            const content = await this.app.vault.adapter.read(questsPath);
-            const quests = JSON.parse(content);
+            // const questsPath = `${this.app.vault.configDir}/plugins/game-of-life/data/db/quests.json`;
+            // const content = await this.app.vault.adapter.read(questsPath);
+			// const quests = JSON.parse(content);
+            const quests = this.plugin.dataService.loadQuests()
             
             // Initialize the counter with the highest existing ID
             const maxId = quests.reduce((max: number, quest: Quest) => {
@@ -101,7 +97,7 @@ export class QuestServices {
         }
     }
 
-    private generateQuestId(): string {
+    private generateQuestId(): string { // todo : find the real use
         // Incrémenter le compteur et retourner le nouvel ID
         this.questCounter++;
         return `quest_${this.questCounter}`;
@@ -117,12 +113,12 @@ export class QuestServices {
             console.error("Quest not found:", questId);
             return false;
         }
-        
+
         // Update local state
         quest.progression.isCompleted = completed;
         quest.progression.completed_at = new Date();
         quest.progression.progress = 100;
-        
+
         // Update completed quests list
         if (completed) {
             if (!this.completedQuestIds.includes(questId)) {
@@ -137,10 +133,10 @@ export class QuestServices {
             await updateCallback(-quest.reward.XP);
             new Notice(`Quest uncompleted. Removed ${quest.reward.XP} XP`);
         }
-        
+
         // Notify listeners about state change
         viewSyncService.emitStateChange({ questsUpdated: true });
-        
+
         return true;
     }
 

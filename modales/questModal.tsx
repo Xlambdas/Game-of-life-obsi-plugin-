@@ -1,19 +1,13 @@
-import { App, Modal, Notice, ToggleComponent } from "obsidian";
-import { TextComponent, ButtonComponent } from "obsidian";
+import { App, Modal, Notice } from "obsidian";
 import GOL from "../plugin";
-import { Quest, StatBlock } from '../constants/DEFAULT';
-import { viewSyncService } from '../services/syncService';
-import { TitleInput, ShortDescriptionInput, DescriptionInput, CategoryInput, PriorityInput, DifficultyInput, RequireLevelInput, RequirePreviousQuestsInput, RewardAttributeInput, rewardItemsInput, dueDateInput } from "../components/inputs";
-import { separator, createHeader, titleSection, subTitle } from "../components/uiHelpers";
+import { Quest } from '../constants/DEFAULT';
+import { createHeader } from "../components/uiHelpers";
 import { endButton } from "../components/questUI";
-import { getDescrInput, getSettingsInputs, getRequirementsInputs, getRewardInputs } from "components/formHelpers";
-import { create } from "domain";
-import { getFormData, validateQuestFormData } from "components/questHelpers";
-import { QuestFormData, FormInputs, RewardsSection } from "../types/quest";
 import { QuestFormManager } from "../data/managers/formManager";
 
-// Version : cursor
-
+/*
+* Create a modal to create a new quest with all the information the user want.
+*/
 export class CreateQuestModal extends Modal {
 	private plugin: GOL;
 	private formManager: QuestFormManager;
@@ -53,12 +47,9 @@ export class CreateQuestModal extends Modal {
 }
 
 
-
-
-// -------------------------------------------------------
-// quest modification modal
-// -------------------------------------------------------
-
+/*
+* Create a modal to modify the selected quest.
+*/
 export class ModifyQuestModal extends Modal {
 	plugin: GOL;
 	quest: Quest;

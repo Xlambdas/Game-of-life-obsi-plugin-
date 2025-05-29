@@ -1,7 +1,5 @@
-import type { Plugin } from "obsidian";
-import { Notice, ButtonComponent } from "obsidian";
-import { Quest, StatBlock } from "../constants/DEFAULT";
-import { QuestFormData, FormInputs } from "../types/quest";
+import { Quest } from "../constants/DEFAULT";
+import { QuestFormData } from "../types/quest";
 
 export type EndButtonDeps = {
 	version: "create" | "edit";
