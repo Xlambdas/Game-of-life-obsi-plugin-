@@ -1,91 +1,82 @@
-import { App, TFile } from 'obsidian';
-import { UserSettings, DEFAULT_SETTINGS } from '../constants/DEFAULT';
-
+import { App, TFile, Notice } from 'obsidian';
+import { UserSettings, DEFAULT_SETTINGS, Quest, StatBlock } from '../constants/DEFAULT';
 import { pathUserDB } from "../constants/paths";
 
 export class DataService {
     app: App;
     settings: UserSettings;
-    // questSetting: testQuestSettings;
+    private quests: Quest[] = [];
 
     constructor(app: App) {
         this.app = app;
-        this.settings = { ...DEFAULT_SETTINGS };
-        // this.questSetting = { ...DEFAULT_TEST_QUEST_SETTINGS };
     }
 
     async loadSettings() {
-        // Load all the data and the settings
-        await this.loadUserSettings();
-        // await this.loadQuestSettings();
+        await this.loadUser();
+		await this.loadQuests();
     }
 
-    async loadUserSettings() {
-        // Load the data in the file user.json
-        const path = `${this.app.vault.configDir}${pathUserDB}`;
+    async loadUser() {
         try {
-            if (await this.app.vault.adapter.exists(path)) {
-                const content = await this.app.vault.adapter.read(path);
-                const parsed = JSON.parse(content);
-                this.settings = { ...DEFAULT_SETTINGS, ...parsed };
-                console.log("✅ user.json chargé :", this.settings);
-                return this.settings;
-            } else {
-                console.warn("user.json introuvable, création avec défauts.");
-                this.settings = { ...DEFAULT_SETTINGS };
-                return this.settings;
+            const pathUserDB = `${this.app.vault.configDir}/plugins/game-of-life/data/db/user.json`;
+            const content = await this.app.vault.adapter.read(pathUserDB);
+            this.settings = JSON.parse(content);
+        } catch (error) {
+            // If file doesn't exist, create it with default structure
+            try {
+                // const pathUserDB = `${this.app.vault.configDir}/plugins/game-of-life/data/db/user.json`;
+                const dirPath = pathUserDB.substring(0, pathUserDB.lastIndexOf('/'));
+                await this.app.vault.adapter.mkdir(dirPath);
+                this.settings = DEFAULT_SETTINGS;
+                await this.app.vault.adapter.write(pathUserDB, JSON.stringify(this.settings, null, 2));
+            } catch (createError) {
+                console.error("Error creating user data file:", createError);
+                throw createError;
             }
-        } catch (err) {
-            console.error("❌ Erreur loadUserSettings :", err);
-            this.settings = { ...DEFAULT_SETTINGS };
-            return this.settings;
         }
     }
 
-    // async loadQuestSettings() {
-    //     // Load the data in the file quests.json
-    //     const path = `${this.app.vault.configDir}/plugins/game-of-life/data/db/quests.json`;
-    //     try {
-    //         if (await this.app.vault.adapter.exists(path)) {
-    //             const content = await this.app.vault.adapter.read(path);
-    //             const parsed = JSON.parse(content);
-    //             this.questSetting = { ...DEFAULT_QUEST_SETTINGS, ...parsed };
-    //             console.log("✅ quests.json chargé :", this.questSetting);
-    //             return this.questSetting;
-    //         } else {
-    //             console.warn("quests.json introuvable, création avec défauts.");
-    //             this.questSetting = { ...DEFAULT_TEST_QUEST_SETTINGS };
-    //             return this.questSetting;
-    //         }
-    //     } catch (err) {
-    //         console.error("❌ Erreur loadQuestSettings :", err);
-    //         this.questSetting = { ...DEFAULT_TEST_QUEST_SETTINGS };
-    //         return this.questSetting;
-    //     }
-    // }
+    async loadQuests(): Promise<Quest[]> {
+        try {
+            const questsPath = `${this.app.vault.configDir}/plugins/game-of-life/data/db/quests.json`;
+            const content = await this.app.vault.adapter.read(questsPath);
+            this.quests = JSON.parse(content);
+            return this.quests;
+        } catch (error) {
+            console.error("Error loading quests:", error);
+            return [];
+        }
+    }
 
     async saveSettings() {
         try {
-            // Ensure the db directory exists
-            const dbDir = `${this.app.vault.configDir}/plugins/game-of-life/data/db`;
-            await this.app.vault.adapter.mkdir(dbDir);
-
-            // save all the data and the settings in user.json
-            const path = `${this.app.vault.configDir}/plugins/game-of-life/data/db/user.json`;
-            await this.app.vault.adapter.write(path, JSON.stringify(this.settings, null, 2));
-            console.log("✅ Settings saved to user.json");
+            const pathUserDB = `${this.app.vault.configDir}/plugins/game-of-life/data/db/user.json`;
+            await this.app.vault.adapter.write(pathUserDB, JSON.stringify(this.settings, null, 2));
         } catch (error) {
-            console.error("❌ Error saving settings:", error);
+            console.error("Error saving settings:", error);
+            new Notice("Failed to save settings");
         }
     }
 
-    async openFile(filePath: string) {
-        // Open the file in the editor
-        const file = this.app.vault.getAbstractFileByPath(filePath);
-        if (file instanceof TFile) {
-            this.app.workspace.openLinkText(filePath, "", true);
-        } else {
-            console.log("Fichier introuvable :", filePath);
+    // DAO function for quest operations
+    async saveQuestsToFile(quests: Quest[]): Promise<void> {
+        try {
+            const questsPath = `${this.app.vault.configDir}/plugins/game-of-life/data/db/quests.json`;
+            await this.app.vault.adapter.write(questsPath, JSON.stringify(quests, null, 2));
+        } catch (error) {
+            console.error("Error saving quests:", error);
+            throw error;
+        }
+    }
+
+    async loadQuestsFromFile(): Promise<Quest[]> {
+        try {
+            const questsPath = `${this.app.vault.configDir}/plugins/game-of-life/data/db/quests.json`;
+            const content = await this.app.vault.adapter.read(questsPath);
+            return JSON.parse(content);
+        } catch (error) {
+            console.error("Error loading quests:", error);
+            return [];
         }
     }
 }

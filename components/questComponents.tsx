@@ -61,14 +61,6 @@ export const QuestList = () => {
                 return;
             }
             
-            try {
-                const loadedQuests = await plugin.questService.loadQuestFromMarkdown();
-                console.log("Loaded quests:", loadedQuests); // Debug log
-                setQuests(Array.isArray(loadedQuests) ? loadedQuests : []);
-            } catch (error) {
-                console.error("Error loading quests:", error);
-                setQuests([]);
-            }
         };
         
         if (plugin) {

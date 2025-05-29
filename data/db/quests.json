@@ -102,7 +102,7 @@
     "isSystemQuest": false
   },
   {
-    "id": "quest_6",
+    "id": "quest_8",
     "title": "test",
     "shortDescription": "",
     "description": "11/05 at 17h22",
@@ -153,7 +153,7 @@
     "isSystemQuest": false
   },
   {
-    "id": "quest_7",
+    "id": "quest_91",
     "title": "zdsfc",
     "shortDescription": "",
     "description": "zdefczeqd",
@@ -175,107 +175,6 @@
     },
     "reward": {
       "XP": 5055,
-      "items": [],
-      "attributes": {
-        "strength": 0,
-        "agility": 0,
-        "endurance": 0,
-        "charisma": 0,
-        "wisdom": 0,
-        "perception": 0,
-        "intelligence": 0
-      },
-      "unlock": []
-    },
-    "requirements": {
-      "level": 0,
-      "previousQuests": [],
-      "stats": {
-        "strength": 0,
-        "agility": 0,
-        "endurance": 0,
-        "charisma": 0,
-        "wisdom": 0,
-        "perception": 0,
-        "intelligence": 0
-      }
-    },
-    "failureConsequence": "",
-    "isSystemQuest": false
-  },
-  {
-    "id": "quest_8",
-    "title": "syz",
-    "shortDescription": "",
-    "description": "rfgvsxc",
-    "created_at": "2025-05-11T15:48:47.790Z",
-    "settings": {
-      "type": "quest",
-      "priority": "low",
-      "difficulty": "easy",
-      "category": "Other",
-      "isSecret": false,
-      "isTimeSensitive": false
-    },
-    "progression": {
-      "isCompleted": false,
-      "completed_at": "1970-01-01T00:00:00.000Z",
-      "progress": 0,
-      "subtasks": []
-    },
-    "reward": {
-      "XP": 50,
-      "items": [],
-      "attributes": {
-        "strength": 0,
-        "agility": 0,
-        "endurance": 0,
-        "charisma": 0,
-        "wisdom": 0,
-        "perception": 0,
-        "intelligence": 0
-      },
-      "unlock": []
-    },
-    "requirements": {
-      "level": 0,
-      "previousQuests": [],
-      "stats": {
-        "strength": 0,
-        "agility": 0,
-        "endurance": 0,
-        "charisma": 0,
-        "wisdom": 0,
-        "perception": 0,
-        "intelligence": 0
-      }
-    },
-    "failureConsequence": "",
-    "isSystemQuest": false
-  },
-  {
-    "id": "quest_9",
-    "title": "zedrghtgny",
-    "shortDescription": "",
-    "description": "ertgfyhjnk,;nuytrezrteg(yhjuki;,ytre",
-    "created_at": "2025-05-16T11:37:29.467Z",
-    "settings": {
-      "type": "quest",
-      "priority": "low",
-      "difficulty": "easy",
-      "category": "Other",
-      "isSecret": false,
-      "isTimeSensitive": false
-    },
-    "progression": {
-      "isCompleted": false,
-      "completed_at": "1970-01-01T00:00:00.000Z",
-      "progress": 0,
-      "dueDate": "",
-      "subtasks": []
-    },
-    "reward": {
-      "XP": 50,
       "items": [],
       "attributes": {
         "strength": 0,
@@ -327,57 +226,6 @@
     },
     "reward": {
       "XP": 1,
-      "items": [],
-      "attributes": {
-        "strength": 0,
-        "agility": 0,
-        "endurance": 0,
-        "charisma": 0,
-        "wisdom": 0,
-        "perception": 0,
-        "intelligence": 0
-      },
-      "unlock": []
-    },
-    "requirements": {
-      "level": 0,
-      "previousQuests": [],
-      "stats": {
-        "strength": 0,
-        "agility": 0,
-        "endurance": 0,
-        "charisma": 0,
-        "wisdom": 0,
-        "perception": 0,
-        "intelligence": 0
-      }
-    },
-    "failureConsequence": "",
-    "isSystemQuest": false
-  },
-  {
-    "id": "quest_11",
-    "title": "deszcf",
-    "shortDescription": "",
-    "description": "",
-    "created_at": "2025-05-16T11:50:40.318Z",
-    "settings": {
-      "type": "quest",
-      "priority": "low",
-      "difficulty": "easy",
-      "category": "Other",
-      "isSecret": false,
-      "isTimeSensitive": false
-    },
-    "progression": {
-      "isCompleted": false,
-      "completed_at": "1970-01-01T00:00:00.000Z",
-      "progress": 0,
-      "dueDate": "",
-      "subtasks": []
-    },
-    "reward": {
-      "XP": 50,
       "items": [],
       "attributes": {
         "strength": 0,
@@ -519,108 +367,6 @@
       "priority": "low",
       "difficulty": "easy",
       "category": "Other",
-      "isSecret": false,
-      "isTimeSensitive": false
-    },
-    "progression": {
-      "isCompleted": false,
-      "completed_at": "1970-01-01T00:00:00.000Z",
-      "progress": 0,
-      "dueDate": "",
-      "subtasks": []
-    },
-    "reward": {
-      "XP": 0,
-      "items": [],
-      "attributes": {
-        "strength": 0,
-        "agility": 0,
-        "endurance": 0,
-        "charisma": 0,
-        "wisdom": 0,
-        "perception": 0,
-        "intelligence": 0
-      },
-      "unlock": []
-    },
-    "requirements": {
-      "level": 0,
-      "previousQuests": [],
-      "stats": {
-        "strength": 0,
-        "agility": 0,
-        "endurance": 0,
-        "charisma": 0,
-        "wisdom": 0,
-        "perception": 0,
-        "intelligence": 0
-      }
-    },
-    "failureConsequence": "",
-    "isSystemQuest": false
-  },
-  {
-    "id": "quest_15",
-    "title": "desfrgdh",
-    "shortDescription": "",
-    "description": "desfcgvb h,",
-    "created_at": "2025-05-16T12:32:01.798Z",
-    "settings": {
-      "type": "quest",
-      "priority": "low",
-      "difficulty": "medium",
-      "category": "Other",
-      "isSecret": false,
-      "isTimeSensitive": false
-    },
-    "progression": {
-      "isCompleted": false,
-      "completed_at": "1970-01-01T00:00:00.000Z",
-      "progress": 0,
-      "dueDate": "",
-      "subtasks": []
-    },
-    "reward": {
-      "XP": 5,
-      "items": [],
-      "attributes": {
-        "strength": 0,
-        "agility": 0,
-        "endurance": 0,
-        "charisma": 0,
-        "wisdom": 0,
-        "perception": 0,
-        "intelligence": 0
-      },
-      "unlock": []
-    },
-    "requirements": {
-      "level": 0,
-      "previousQuests": [],
-      "stats": {
-        "strength": 0,
-        "agility": 0,
-        "endurance": 0,
-        "charisma": 0,
-        "wisdom": 0,
-        "perception": 0,
-        "intelligence": 0
-      }
-    },
-    "failureConsequence": "",
-    "isSystemQuest": false
-  },
-  {
-    "id": "quest_16",
-    "title": "zsedaz",
-    "shortDescription": "test direct",
-    "description": "test",
-    "created_at": "2025-05-16T18:59:08.966Z",
-    "settings": {
-      "type": "quest",
-      "priority": "low",
-      "difficulty": "easy",
-      "category": "Main Quest",
       "isSecret": false,
       "isTimeSensitive": false
     },
@@ -2297,6 +2043,722 @@
       "progress": 0,
       "subtasks": [],
       "dueDate": "2025-05-27T18:44:20.217Z"
+    },
+    "reward": {
+      "XP": 1,
+      "items": [],
+      "attributes": {
+        "strength": 0,
+        "agility": 0,
+        "endurance": 0,
+        "charisma": 0,
+        "wisdom": 0,
+        "perception": 0,
+        "intelligence": 0
+      },
+      "unlock": []
+    },
+    "requirements": {
+      "level": 0,
+      "previousQuests": [],
+      "stats": {
+        "strength": 0,
+        "agility": 0,
+        "endurance": 0,
+        "charisma": 0,
+        "wisdom": 0,
+        "perception": 0,
+        "intelligence": 0
+      }
+    },
+    "failureConsequence": "You failed the quest.",
+    "isSystemQuest": false
+  },
+  {
+    "id": "quest_1",
+    "title": "agfb,",
+    "shortDescription": "sdrftgyh",
+    "description": "",
+    "created_at": "2025-05-28T19:46:07.034Z",
+    "settings": {
+      "type": "quest",
+      "category": "Social",
+      "priority": "low",
+      "difficulty": "easy",
+      "isSecret": false,
+      "isTimeSensitive": false
+    },
+    "progression": {
+      "isCompleted": false,
+      "completed_at": "1970-01-01T00:00:00.000Z",
+      "progress": 0,
+      "subtasks": []
+    },
+    "reward": {
+      "XP": 1,
+      "items": [],
+      "attributes": {},
+      "unlock": []
+    },
+    "requirements": {
+      "level": 0,
+      "previousQuests": [],
+      "stats": {
+        "strength": 0,
+        "agility": 0,
+        "endurance": 0,
+        "charisma": 0,
+        "wisdom": 0,
+        "perception": 0,
+        "intelligence": 0
+      }
+    },
+    "failureConsequence": "You failed the quest.",
+    "isSystemQuest": false
+  },
+  {
+    "id": "quest_76",
+    "title": "test de nuit",
+    "shortDescription": "caca de descr",
+    "description": "caca de grande description",
+    "created_at": "2025-05-28T20:14:11.704Z",
+    "settings": {
+      "type": "quest",
+      "category": "Undefined",
+      "priority": "low",
+      "difficulty": "easy",
+      "isSecret": false,
+      "isTimeSensitive": false
+    },
+    "progression": {
+      "isCompleted": false,
+      "completed_at": "1970-01-01T00:00:00.000Z",
+      "progress": 0,
+      "subtasks": []
+    },
+    "reward": {
+      "XP": 1,
+      "items": [],
+      "attributes": {
+        "charisma": 12
+      },
+      "unlock": []
+    },
+    "requirements": {
+      "level": 0,
+      "previousQuests": [],
+      "stats": {
+        "strength": 0,
+        "agility": 0,
+        "endurance": 0,
+        "charisma": 0,
+        "wisdom": 0,
+        "perception": 0,
+        "intelligence": 0
+      }
+    },
+    "failureConsequence": "You failed the quest.",
+    "isSystemQuest": false
+  },
+  {
+    "id": "quest_1748526978731_493",
+    "title": "test",
+    "shortDescription": "super",
+    "description": "",
+    "created_at": "2025-05-29T13:56:18.731Z",
+    "settings": {
+      "type": "quest",
+      "category": "Undefined",
+      "priority": "low",
+      "difficulty": "easy",
+      "isSecret": false,
+      "isTimeSensitive": false
+    },
+    "progression": {
+      "isCompleted": false,
+      "completed_at": "1970-01-01T00:00:00.000Z",
+      "progress": 0,
+      "subtasks": [],
+      "dueDate": "2025-12-11T23:00:00.000Z"
+    },
+    "reward": {
+      "XP": 0,
+      "items": [],
+      "attributes": {},
+      "unlock": []
+    },
+    "requirements": {
+      "level": 0,
+      "previousQuests": [],
+      "stats": {
+        "strength": 0,
+        "agility": 0,
+        "endurance": 0,
+        "charisma": 0,
+        "wisdom": 0,
+        "perception": 0,
+        "intelligence": 0
+      }
+    },
+    "failureConsequence": "You failed the quest.",
+    "isSystemQuest": false
+  },
+  {
+    "id": "quest_90",
+    "title": "tet de quiliti",
+    "shortDescription": "caca",
+    "description": "",
+    "created_at": "2025-05-29T14:14:01.807Z",
+    "settings": {
+      "type": "quest",
+      "category": "Undefined",
+      "priority": "normal",
+      "difficulty": "easy",
+      "isSecret": false,
+      "isTimeSensitive": false
+    },
+    "progression": {
+      "isCompleted": false,
+      "completed_at": "1970-01-01T00:00:00.000Z",
+      "progress": 0,
+      "subtasks": []
+    },
+    "reward": {
+      "XP": 0,
+      "items": [],
+      "attributes": {
+        "strength": 0,
+        "agility": 0,
+        "endurance": 0,
+        "charisma": 0,
+        "wisdom": 0,
+        "perception": 0,
+        "intelligence": 0
+      },
+      "unlock": []
+    },
+    "requirements": {
+      "level": 0,
+      "previousQuests": [],
+      "stats": {
+        "strength": 0,
+        "agility": 0,
+        "endurance": 0,
+        "charisma": 0,
+        "wisdom": 0,
+        "perception": 0,
+        "intelligence": 0
+      }
+    },
+    "failureConsequence": "You failed the quest.",
+    "isSystemQuest": false
+  },
+  {
+    "id": "quest_5",
+    "title": "test counter",
+    "shortDescription": "tentative",
+    "description": "",
+    "created_at": "2025-05-29T14:45:45.200Z",
+    "settings": {
+      "type": "quest",
+      "category": "Undefined",
+      "priority": "low",
+      "difficulty": "easy",
+      "isSecret": false,
+      "isTimeSensitive": false
+    },
+    "progression": {
+      "isCompleted": false,
+      "completed_at": "1970-01-01T00:00:00.000Z",
+      "progress": 0,
+      "subtasks": []
+    },
+    "reward": {
+      "XP": 0,
+      "items": [],
+      "attributes": {
+        "strength": 0,
+        "agility": 0,
+        "endurance": 0,
+        "charisma": 0,
+        "wisdom": 0,
+        "perception": 0,
+        "intelligence": 0
+      },
+      "unlock": []
+    },
+    "requirements": {
+      "level": 0,
+      "previousQuests": [],
+      "stats": {
+        "strength": 0,
+        "agility": 0,
+        "endurance": 0,
+        "charisma": 0,
+        "wisdom": 0,
+        "perception": 0,
+        "intelligence": 0
+      }
+    },
+    "failureConsequence": "You failed the quest.",
+    "isSystemQuest": false
+  },
+  {
+    "id": "quest_6",
+    "title": "another",
+    "shortDescription": "test n2 sur les num des quetes",
+    "description": "",
+    "created_at": "2025-05-29T14:47:21.116Z",
+    "settings": {
+      "type": "quest",
+      "category": "Creative",
+      "priority": "low",
+      "difficulty": "easy",
+      "isSecret": false,
+      "isTimeSensitive": false
+    },
+    "progression": {
+      "isCompleted": false,
+      "completed_at": "1970-01-01T00:00:00.000Z",
+      "progress": 0,
+      "dueDate": "2025-06-26T22:00:00.000Z",
+      "subtasks": []
+    },
+    "reward": {
+      "XP": 0,
+      "items": [],
+      "attributes": {
+        "strength": 0,
+        "agility": 0,
+        "endurance": 0,
+        "charisma": 0,
+        "wisdom": 0,
+        "perception": 0,
+        "intelligence": 0
+      },
+      "unlock": []
+    },
+    "requirements": {
+      "level": 0,
+      "previousQuests": [],
+      "stats": {
+        "strength": 0,
+        "agility": 0,
+        "endurance": 0,
+        "charisma": 0,
+        "wisdom": 0,
+        "perception": 0,
+        "intelligence": 0
+      }
+    },
+    "failureConsequence": "You failed the quest.",
+    "isSystemQuest": false
+  },
+  {
+    "id": "quest_7",
+    "title": "par default",
+    "shortDescription": "test des valeurs par défauts",
+    "description": "",
+    "created_at": "2025-05-29T14:52:36.181Z",
+    "settings": {
+      "type": "quest",
+      "category": "Undefined",
+      "priority": "low",
+      "difficulty": "easy",
+      "isSecret": false,
+      "isTimeSensitive": false
+    },
+    "progression": {
+      "isCompleted": false,
+      "completed_at": "1970-01-01T00:00:00.000Z",
+      "progress": 0,
+      "subtasks": []
+    },
+    "reward": {
+      "XP": 1,
+      "items": [],
+      "attributes": {},
+      "unlock": []
+    },
+    "requirements": {
+      "level": 0,
+      "previousQuests": [],
+      "stats": {
+        "strength": 0,
+        "agility": 0,
+        "endurance": 0,
+        "charisma": 0,
+        "wisdom": 0,
+        "perception": 0,
+        "intelligence": 0
+      }
+    },
+    "failureConsequence": "You failed the quest.",
+    "isSystemQuest": false
+  },
+  {
+    "id": "quest_11",
+    "title": "attribute",
+    "shortDescription": "test de catégorie avec attribute",
+    "description": "",
+    "created_at": "2025-05-29T14:57:52.534Z",
+    "settings": {
+      "type": "quest",
+      "category": "Physical",
+      "priority": "low",
+      "difficulty": "easy",
+      "isSecret": false,
+      "isTimeSensitive": false
+    },
+    "progression": {
+      "isCompleted": false,
+      "completed_at": "1970-01-01T00:00:00.000Z",
+      "progress": 0,
+      "subtasks": []
+    },
+    "reward": {
+      "XP": 1,
+      "items": [],
+      "attributes": {},
+      "unlock": []
+    },
+    "requirements": {
+      "level": 0,
+      "previousQuests": [],
+      "stats": {
+        "strength": 0,
+        "agility": 0,
+        "endurance": 0,
+        "charisma": 0,
+        "wisdom": 0,
+        "perception": 0,
+        "intelligence": 0
+      }
+    },
+    "failureConsequence": "You failed the quest.",
+    "isSystemQuest": false
+  },
+  {
+    "id": "quest_15",
+    "title": "attribut v2",
+    "shortDescription": "test n2 pour ll'association attribut/catégorie",
+    "description": "",
+    "created_at": "2025-05-29T15:00:20.028Z",
+    "settings": {
+      "type": "quest",
+      "category": "Creative",
+      "priority": "low",
+      "difficulty": "easy",
+      "isSecret": false,
+      "isTimeSensitive": false
+    },
+    "progression": {
+      "isCompleted": false,
+      "completed_at": "1970-01-01T00:00:00.000Z",
+      "progress": 0,
+      "subtasks": []
+    },
+    "reward": {
+      "XP": 1,
+      "items": [],
+      "attributes": {
+        "strength": 0,
+        "agility": 0,
+        "endurance": 0,
+        "charisma": 0,
+        "wisdom": 0,
+        "perception": 0,
+        "intelligence": 0
+      },
+      "unlock": []
+    },
+    "requirements": {
+      "level": 0,
+      "previousQuests": [],
+      "stats": {
+        "strength": 0,
+        "agility": 0,
+        "endurance": 0,
+        "charisma": 0,
+        "wisdom": 0,
+        "perception": 0,
+        "intelligence": 0
+      }
+    },
+    "failureConsequence": "You failed the quest.",
+    "isSystemQuest": false
+  },
+  {
+    "id": "quest_16",
+    "title": "attribute",
+    "shortDescription": "test n3 attribute",
+    "description": "",
+    "created_at": "2025-05-29T15:03:06.212Z",
+    "settings": {
+      "type": "quest",
+      "category": "Physical",
+      "priority": "low",
+      "difficulty": "easy",
+      "isSecret": false,
+      "isTimeSensitive": false
+    },
+    "progression": {
+      "isCompleted": false,
+      "completed_at": "1970-01-01T00:00:00.000Z",
+      "progress": 0,
+      "subtasks": []
+    },
+    "reward": {
+      "XP": 1,
+      "items": [],
+      "attributes": {
+        "strength": 0,
+        "agility": 0,
+        "endurance": 0,
+        "charisma": 0,
+        "wisdom": 0,
+        "perception": 0,
+        "intelligence": 0
+      },
+      "unlock": []
+    },
+    "requirements": {
+      "level": 0,
+      "previousQuests": [],
+      "stats": {
+        "strength": 0,
+        "agility": 0,
+        "endurance": 0,
+        "charisma": 0,
+        "wisdom": 0,
+        "perception": 0,
+        "intelligence": 0
+      }
+    },
+    "failureConsequence": "You failed the quest.",
+    "isSystemQuest": false
+  },
+  {
+    "id": "quest_49",
+    "title": "attribute",
+    "shortDescription": "test n4",
+    "description": "",
+    "created_at": "2025-05-29T15:07:14.794Z",
+    "settings": {
+      "type": "quest",
+      "category": "Physical",
+      "priority": "low",
+      "difficulty": "easy",
+      "isSecret": false,
+      "isTimeSensitive": false
+    },
+    "progression": {
+      "isCompleted": false,
+      "completed_at": "1970-01-01T00:00:00.000Z",
+      "progress": 0,
+      "subtasks": []
+    },
+    "reward": {
+      "XP": 1,
+      "items": [],
+      "attributes": {
+        "strength": 0,
+        "agility": 0,
+        "endurance": 0,
+        "charisma": 0,
+        "wisdom": 0,
+        "perception": 0,
+        "intelligence": 0
+      },
+      "unlock": []
+    },
+    "requirements": {
+      "level": 0,
+      "previousQuests": [],
+      "stats": {
+        "strength": 0,
+        "agility": 0,
+        "endurance": 0,
+        "charisma": 0,
+        "wisdom": 0,
+        "perception": 0,
+        "intelligence": 0
+      }
+    },
+    "failureConsequence": "You failed the quest.",
+    "isSystemQuest": false
+  },
+  {
+    "id": "quest_50",
+    "title": "attribute retour a ma",
+    "shortDescription": "retour a la case départ....",
+    "description": "fuuuuuuuullllllllllll desc",
+    "created_at": "2025-05-29T15:09:34.465Z",
+    "settings": {
+      "type": "quest",
+      "category": "Undefined",
+      "priority": "low",
+      "difficulty": "easy",
+      "isSecret": false,
+      "isTimeSensitive": false
+    },
+    "progression": {
+      "isCompleted": false,
+      "completed_at": "1970-01-01T00:00:00.000Z",
+      "progress": 0,
+      "subtasks": []
+    },
+    "reward": {
+      "XP": 1,
+      "items": [],
+      "attributes": {
+        "strength": 0,
+        "agility": 0,
+        "endurance": 2,
+        "charisma": 0,
+        "wisdom": 3,
+        "perception": 0,
+        "intelligence": 0
+      },
+      "unlock": []
+    },
+    "requirements": {
+      "level": 0,
+      "previousQuests": [
+        ""
+      ],
+      "stats": {
+        "strength": 0,
+        "agility": 0,
+        "endurance": 0,
+        "charisma": 0,
+        "wisdom": 0,
+        "perception": 0,
+        "intelligence": 0
+      }
+    },
+    "failureConsequence": "You failed the quest.",
+    "isSystemQuest": false
+  },
+  {
+    "id": "quest_51",
+    "title": "simplification",
+    "shortDescription": "test sur l'architecture de create Quest modal",
+    "description": "",
+    "created_at": "2025-05-29T15:20:57.508Z",
+    "settings": {
+      "type": "quest",
+      "category": "Undefined",
+      "priority": "low",
+      "difficulty": "easy",
+      "isSecret": false,
+      "isTimeSensitive": false
+    },
+    "progression": {
+      "isCompleted": false,
+      "completed_at": "1970-01-01T00:00:00.000Z",
+      "progress": 0,
+      "subtasks": []
+    },
+    "reward": {
+      "XP": 1,
+      "items": [],
+      "attributes": {
+        "strength": 0,
+        "agility": 0,
+        "endurance": 0,
+        "charisma": 0,
+        "wisdom": 0,
+        "perception": 0,
+        "intelligence": 0
+      },
+      "unlock": []
+    },
+    "requirements": {
+      "level": 0,
+      "previousQuests": [],
+      "stats": {
+        "strength": 0,
+        "agility": 0,
+        "endurance": 0,
+        "charisma": 0,
+        "wisdom": 0,
+        "perception": 0,
+        "intelligence": 0
+      }
+    },
+    "failureConsequence": "You failed the quest.",
+    "isSystemQuest": false
+  },
+  {
+    "id": "quest_52",
+    "title": "getdata",
+    "shortDescription": "test for the separation",
+    "description": "",
+    "created_at": "2025-05-29T16:17:30.012Z",
+    "settings": {
+      "type": "quest",
+      "category": "Emotional",
+      "priority": "normal",
+      "difficulty": "easy",
+      "isSecret": false,
+      "isTimeSensitive": false
+    },
+    "progression": {
+      "isCompleted": false,
+      "completed_at": "1970-01-01T00:00:00.000Z",
+      "progress": 0,
+      "subtasks": []
+    },
+    "reward": {
+      "XP": 0,
+      "items": [],
+      "attributes": {
+        "strength": 0,
+        "agility": 0,
+        "endurance": 0,
+        "charisma": 0,
+        "wisdom": 0,
+        "perception": 0,
+        "intelligence": 0
+      },
+      "unlock": []
+    },
+    "requirements": {
+      "level": 0,
+      "previousQuests": [],
+      "stats": {
+        "strength": 0,
+        "agility": 0,
+        "endurance": 0,
+        "charisma": 0,
+        "wisdom": 0,
+        "perception": 0,
+        "intelligence": 0
+      }
+    },
+    "failureConsequence": "You failed the quest.",
+    "isSystemQuest": false
+  },
+  {
+    "id": "quest_9",
+    "title": "test",
+    "shortDescription": "cancel button",
+    "description": "",
+    "created_at": "2025-05-29T16:50:14.067Z",
+    "settings": {
+      "type": "quest",
+      "category": "Undefined",
+      "priority": "normal",
+      "difficulty": "easy",
+      "isSecret": false,
+      "isTimeSensitive": false
+    },
+    "progression": {
+      "isCompleted": false,
+      "completed_at": "1970-01-01T00:00:00.000Z",
+      "progress": 0,
+      "subtasks": []
     },
     "reward": {
       "XP": 1,

@@ -8,17 +8,21 @@ import { selfSettingTab } from './data/settings';
 import { ViewService } from './services/viewServices';
 import { DataService } from './services/dataService';
 import { registerCommands } from './commands/registerCommands';
-import { DEFAULT_SETTINGS, Quest, UserSettings } from './constants/DEFAULT';
+import { DEFAULT_SETTINGS, UserSettings, Quest, Habit } from './constants/DEFAULT';
 import { appContextService } from 'context/appContextService';
-import { markdownServices } from './services/questService';
+import { QuestServices } from './services/questService';
 import { CreateQuestModal, ModifyQuestModal } from './modales/questModal';
+import { CreateHabitModal } from './modales/habitModal';
+import { HabitServices } from './services/habitService';
 
 
 export default class GOL extends Plugin {
 	// Create all the settings for the game...
     settings: UserSettings;
     quest: Quest;
-	questService: markdownServices;
+	questService: QuestServices;
+	habit: Habit;
+	habitService: HabitServices;
     intervalId: number | undefined;
     viewService: ViewService;
     dataService: DataService;
@@ -26,13 +30,12 @@ export default class GOL extends Plugin {
 
     async onload() {
         console.warn('loading plugin');
-        await this.loadSettings();
 
         // Initialize services and load settings
+		await this.loadSettings();
         this.dataService = new DataService(this.app);
-        this.questService = new markdownServices(this.app, this);
-
-        // Initialize appContextService with the plugin instance
+        this.questService = new QuestServices(this.app, this);
+		this.habitService = new HabitServices(this.app, this);
         appContextService.initialize(this);
 
         // Load settings first
@@ -41,17 +44,14 @@ export default class GOL extends Plugin {
             this.settings = this.dataService.settings;
         }
 
-        // Register views (main and side view)
+        // Register views (main and side view); settings tab
 		this.viewService = new ViewService(this);
         this.viewService.registerViews();
+		this.addSettingTab(new selfSettingTab(this.app, this));
 
         // Register commands (all the commands of the plugin - ctrl + p)
         registerCommands(this, this.viewService);
 
-        // Register settings tab (settings of the plugin itself)
-        this.addSettingTab(new selfSettingTab(this.app, this));
-
-        // Add ribbon icons (icons in the left sidebar)
         this.addRibbonIcon('dice', 'Activate sideview', () => {
             this.viewService.openSideView();
             new Notice("Welcome Back !");
@@ -73,7 +73,6 @@ export default class GOL extends Plugin {
 
         this.intervalId = window.setInterval(() => console.log('setInterval'), appContextService.getRefreshRate());
 
-        // Ajouter un gestionnaire d'événements pour la synchronisation des quêtes
         this.registerEvent(
             this.app.workspace.on('file-open', async (file) => {
                 if (!file) return;
@@ -87,9 +86,7 @@ export default class GOL extends Plugin {
                         // Vérifier si le fichier JSON existe
                         const jsonPath = `${this.app.vault.configDir}/plugins/game-of-life/data/db/quests.json`;
                         const jsonExists = await this.app.vault.adapter.exists(jsonPath);
-                        
                         if (jsonExists) {
-                            await this.questService.syncQuestsToMarkdown();
                             new Notice("Quests synchronized successfully!");
                         } else {
                             console.error('Quests JSON file not found');
@@ -98,27 +95,6 @@ export default class GOL extends Plugin {
                     } catch (error) {
                         console.error('Error syncing quests to markdown:', error);
                         new Notice("Failed to synchronize quests");
-                    }
-                }
-            })
-        );
-
-        // Ajouter un gestionnaire pour les modifications du fichier Markdown
-        this.registerEvent(
-            this.app.vault.on('modify', async (file) => {
-                if (!file || !(file instanceof TFile)) return;
-                
-                const questsFileName = this.settings?.user1?.settings?.questsFileName || 'Quests.md';
-                const questsFolder = this.settings?.user1?.settings?.questsFolder || '';
-                const fullPath = questsFolder ? `${questsFolder}/${questsFileName}` : questsFileName;
-
-                if (file.path === fullPath) {
-                    try {
-                        const content = await this.app.vault.read(file);
-                        // await this.questService.syncMarkdownToJSON(content);
-                    } catch (error) {
-                        console.error('Error syncing markdown to JSON:', error);
-                        new Notice("Failed to synchronize quests to JSON");
                     }
                 }
             })
@@ -180,6 +156,25 @@ export default class GOL extends Plugin {
         } catch (error) {
             console.error("Error opening quests file:", error);
             new Notice("Failed to open quests file");
+        }
+    }
+
+	
+    async newHabit() {
+        console.log('Creating new habit...');
+
+        if (!this.questService) {
+            console.error('Quest service not initialized');
+            return;
+        }
+
+        try {
+            // Ensure we're passing the actual plugin instance
+            const modal = new CreateHabitModal(this.app, this);
+            modal.open();
+        } catch (error) {
+            console.error('Error creating quest modal:', error);
+            new Notice("Failed to create quest modal. Check console for details.");
         }
     }
 

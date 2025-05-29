@@ -1,43 +1,17 @@
 import type { Plugin } from "obsidian";
 import { Notice, ButtonComponent } from "obsidian";
-import { Quest } from "../constants/DEFAULT";
-
+import { Quest, StatBlock } from "../constants/DEFAULT";
+import { QuestFormData, FormInputs } from "../types/quest";
 
 export type EndButtonDeps = {
+	version: "create" | "edit";
 	contentEl: HTMLElement;
-	plugin: {
-		questService?: {
-			saveQuestToJSON: (
-				title: string,
-				shortDescription: string,
-				description: string,
-				reward_XP: number,
-				require_level: number,
-				require_previousQuests: string,
-				difficulty: string,
-				category: string,
-				priority: string,
-				questId: string | undefined,
-				attributeRewards: any
-			) => Promise<Quest>;
-		};
-	};
-	close: () => void;
-	getFormData: () => {
-		title: string;
-		shortDescription: string;
-		description: string;
-		reward_XP: number;
-		require_level: number;
-		require_previousQuests: string[] | string;
-		difficulty: string;
-		category: string;
-		priority: string;
-		attributeRewards: any;
-	};
+	onSubmit: () => Promise<void>;
+	onCancel?: () => void;
+	onDelete?: () => Promise<void>;
 };
 
-export const createQuestFromFormData = (formData: ReturnType<EndButtonDeps['getFormData']>): Omit<Quest, 'id'> => {
+export const createQuestFromFormData = (formData: QuestFormData): Omit<Quest, 'id'> => {
 	const { title, shortDescription, description, reward_XP, require_level, require_previousQuests, difficulty, category, priority, attributeRewards } = formData;
 
 	return {
@@ -88,7 +62,7 @@ export const createQuestFromFormData = (formData: ReturnType<EndButtonDeps['getF
 	};
 };
 
-export const validateQuestFormData = (formData: ReturnType<EndButtonDeps['getFormData']>): string | null => {
+export const validateQuestFormData = (formData: QuestFormData): string | null => {
 	const { title, shortDescription, reward_XP, require_level } = formData;
 
 	if (!title) {
@@ -119,6 +93,7 @@ export function getFormData(inputs: {
 	difficultyInput?: { getValue: () => string };
 	categoryInput?: { getValue: () => string };
 	rewardAttributeInput?: { getStatBlock?: () => any };
+	dueDateInput?: { getValue: () => Date | undefined };
 }) {
 	const formData = {
 		title: inputs.titleInput.getValue().trim(),
@@ -130,6 +105,7 @@ export function getFormData(inputs: {
 		priority: inputs.priorityInput?.getValue() || "low",
 		difficulty: inputs.difficultyInput?.getValue() || "easy",
 		category: inputs.categoryInput?.getValue() || "",
+		dueDate: inputs.dueDateInput?.getValue(),
 		attributeRewards: inputs.rewardAttributeInput?.getStatBlock?.() || {
 			strength: 0,
 			agility: 0,

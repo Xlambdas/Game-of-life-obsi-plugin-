@@ -7,19 +7,16 @@ import { UserSettings, DEFAULT_SETTINGS } from '../constants/DEFAULT';
 
 export interface AppContextType {
     // updateLevel: (newLevel: number) => void; // Function to update the test level
-    plugin: GOL; // Reference to the plugin instance
-    settings: UserSettings; // User settings
-	updateSettings: (newData: Partial<UserSettings>) => void; // Function to update user settings
-	updateXP: (amount: number) => void; // Function to update XP
-	saveData: () => Promise<void>; // Function to save data
-	refreshRate: number; // Function to update refresh rate
+    plugin: GOL;
+    settings: UserSettings;
+	updateSettings: (newData: Partial<UserSettings>) => void;
+	updateXP: (amount: number) => void;
+	saveData: () => Promise<void>;
+	refreshRate: number;
     // quests: QuestSettings[];
     // updateUserSettings: (newData: Partial<UserSettings>) => void;
     // updateQuests: (newQuests: QuestSettings[]) => void;
 }
-
-// Create a context React for the application :
-// const AppContext = createContext<AppContextType | null>(null);
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
 

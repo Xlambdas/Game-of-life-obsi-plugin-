@@ -545,9 +545,17 @@ export class RewardAttributeInput {
 	}
 
 	getStatBlock(): Record<string, number> {
-		const statBlock: Record<string, number> = {};
+		const statBlock: Record<string, number> = {
+			strength: 0,
+			agility: 0,
+			endurance: 0,
+			charisma: 0,
+			wisdom: 0,
+			perception: 0,
+			intelligence: 0
+		};
 		this.getValue().forEach(({ attribute, xp }) => {
-			if (attribute && typeof xp === "number" && xp > 0) {
+			if (attribute && typeof xp === "number") {
 				statBlock[attribute] = xp;
 			}
 		});

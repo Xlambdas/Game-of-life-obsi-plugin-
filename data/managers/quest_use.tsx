@@ -42,9 +42,9 @@ const QuestItem = ({
                     )}
                 </div>
             </div>
-            {quest.description && (
+            {quest.shortDescription && (
                 <div className="quest-description">
-                    {quest.description}
+                    {quest.shortDescription}
                 </div>
             )}
             <div className="quest-xp">

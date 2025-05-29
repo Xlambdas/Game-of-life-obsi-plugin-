@@ -33,14 +33,15 @@ export function registerCommands(plugin: GOL, viewService: ViewService) {
         }
     });
 
-	// Command to modify a quest
+	// Create a new habit
 	plugin.addCommand({
-		id: "modify quest",
-		name: "modify quest",
+		id: "create new habit",
+		name: "new habit",
 		callback: () => {
-			plugin.modifyQuest();
+			plugin.newHabit();
 		}
 	});
+
     // Command to test sidebar
     plugin.addCommand({
         id: "test sideview",

@@ -3,7 +3,7 @@ import { AppContextType } from "./appContext";
 import GOL from "../plugin";
 import { viewSyncService } from "services/syncService";
 import { Notice } from "obsidian";
-import { Quest, UserSettings } from "../constants/DEFAULT";
+import { Quest, UserSettings, Habit  } from "../constants/DEFAULT";
 
 
 // Singleton service to manage the application context
@@ -12,7 +12,8 @@ class AppContextService {
     private context: AppContextType | null = null;
 	private _plugin: GOL | null = null;
 	private _settings: UserSettings | null = null;
-	private _quests: Quest | null = null; // Replace with actual type if available
+	private _quests: Quest | null = null;
+	private _habits: Habit | null = null;
 	private saveDebounceTimout: NodeJS.Timeout | null = null;
 	private readonly SAVE_DELAY: number = 2000; // 2 second delay for saving
 	// private _listeners: Set<(context: AppContextType | null) => void> = new Set();
@@ -26,35 +27,28 @@ class AppContextService {
         return AppContextService.instance;
     }
 
-	// setContext(context: AppContextType): void {
-	// 	this._context = context;
-	// }
-
-    // get context(): AppContextType | null {
-    //     return this._context;
-    // }
-
 	get plugin(): GOL | null {
 		return this._plugin;
 	}
 	get settings(): UserSettings | null {
 		return this._settings;
 	}
-	get quests(): Quest | null { // Replace with actual type if available
+	get quests(): Quest | null {
 		return this._quests;
+	}
+	get habits(): Habit | null {
+		return this._habits;
 	}
 	set plugin(plugin: GOL | null) {
 		this._plugin = plugin;
 		console.log("✅ Plugin instance set in AppContextService");
 	}
-	// updateLevel(newLevel: number): void {
-	// 	this._context?.updateLevel(newLevel);
-	// };
 
     initialize(plugin: GOL): void {
 		this._plugin = plugin;
 		this._settings = plugin.settings;
 		this._quests = plugin.quest;
+		this._habits = plugin.habit;
     }
 
 	getContext(): AppContextType | null {
@@ -79,6 +73,7 @@ class AppContextService {
 		this._plugin.settings = { ...this._plugin.settings, ...newData };
 		this._settings = this._plugin.settings;
 		this._quests = this._plugin.quest;
+		this._habits = this._plugin.habit;
         viewSyncService.emitStateChange(this._settings);
 		this.scheduleSave();
 	}
@@ -90,6 +85,15 @@ class AppContextService {
 		}
 		this._plugin.quest = { ...this._plugin.quest, ...newData };
 		this._quests = this._plugin.quest;
+		this.scheduleSave();
+	}
+	updateHabitSettings(newData: Partial<Habit>): void {
+		if (!this._plugin) {
+			console.error("❌ Cannot update quest settings: Plugin instance is not available");
+			return;
+		}
+		this._plugin.habit = { ...this._plugin.habit, ...newData };
+		this._habits = this._plugin.habit;
 		this.scheduleSave();
 	}
 
@@ -148,6 +152,7 @@ class AppContextService {
 			console.error("❌ Échec de la sauvegarde :", err);
 		}
 	}
+
 	async saveQuestDataToFile() {
 		if (!this.plugin) {
 			console.error("Plugin instance is not available for saveQuestDataToFile.");
@@ -156,7 +161,6 @@ class AppContextService {
 
 		try {
 			await this.plugin.saveData(this.plugin.quest);
-			console.log("✅ Données de quête sauvegardées dans game_data.json");
 		} catch (err) {
 			console.error("❌ Échec de la sauvegarde :", err);
 		}
@@ -218,33 +222,6 @@ class AppContextService {
 		viewSyncService.emitRefreshRateChange(transformedRate);
 		this.scheduleSave();
 	}
-
-	// subscribe(listener: (context: AppContextType | null) => void): () => void {
-    //     this._listeners.add(listener);
-    //     listener(this._context);
-
-    //     // clean up function to remove the listener
-    //     return () => {
-    //         this._listeners.delete(listener);
-    //     };
-    // }
-
-    // private _notifyListeners(): void {
-    //     for (const listener of this._listeners) {
-    //         listener(this._context);
-    //     }
-    // }
-
-    // updateUserSettings(newData: Partial<UserSettings>): void {
-	// 	console.log("updateUser", newData);
-    //     if (!this._context) return;
-    //     // this._context.updateUserSettings(newData);
-    // }
-
-    // updateQuests(newQuests: QuestSettings[]): void {
-    //     if (!this._context) return;
-    //     this._context.updateQuests(newQuests);
-    // }
 }
 
 export const appContextService = AppContextService.getInstance();

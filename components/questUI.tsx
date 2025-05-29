@@ -1,12 +1,14 @@
 import { ButtonComponent, Notice } from "obsidian";
 import { Quest } from "../constants/DEFAULT";
 import { validateQuestFormData, EndButtonDeps } from "./questHelpers";
+import { dueDateInput } from "./inputs";
 
 export const endButton = ({
+	version,
 	contentEl,
-	plugin,
-	close,
-	getFormData
+	onSubmit,
+	onCancel,
+	onDelete,
 }: EndButtonDeps) => {
 	// Buttons container
 	const buttonsContainer = contentEl.createDiv({ cls: "buttons-container" });
@@ -20,58 +22,28 @@ export const endButton = ({
 	const buttonsGroup = flexContainer.createDiv({ cls: "buttons-group" });
 
 	// Cancel button
-	new ButtonComponent(buttonsGroup)
-		.setButtonText("Cancel")
-		.onClick(() => {
-			close();
-		});
-
+	if (version === "create" && onCancel) {
+		new ButtonComponent(buttonsGroup)
+			.setButtonText("Cancel")
+			.onClick(() => onCancel());
+	} else if (version === "edit" && onDelete) {
+		new ButtonComponent(buttonsGroup)
+			.setButtonText("Delete")
+			.setWarning()
+			.onClick(async () => {
+				await onDelete();
+			});
+	}
 	// Save button
 	new ButtonComponent(buttonsGroup)
 		.setButtonText("Save Quest")
 		.setCta()
 		.onClick(async () => {
-			const formData = getFormData();
-			
-			// Validate form data
-			const validationError = validateQuestFormData(formData);
-			if (validationError) {
-				new Notice(validationError);
-				return;
-			}
-
-			if (!plugin?.questService) {
-				return;
-			}
-
 			try {
-				const { title, shortDescription, description, reward_XP, require_level, require_previousQuests, difficulty, category, priority, attributeRewards } = formData;
-
-				await plugin.questService.saveQuestToJSON(
-					title,
-					shortDescription,
-					description,
-					reward_XP,
-					require_level,
-					Array.isArray(require_previousQuests) ? require_previousQuests.join(",") : require_previousQuests,
-					difficulty,
-					category,
-					priority,
-					undefined, // questId for new quests
-					attributeRewards // Pass the attribute rewards
-				);
-				close();
+				await onSubmit();
 			} catch (error) {
 				console.error("Error saving quest:", error);
 				new Notice("Failed to save quest. Check console for details.");
 			}
 		});
 };
-
-
-// export const endButtonModified = ({
-// 	contentEl,
-// 	plugin,
-// 	close,
-// 	getFormData
-// }: EndButtonDeps) => {

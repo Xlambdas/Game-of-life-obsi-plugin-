@@ -206,7 +206,10 @@ export interface Habit extends BaseTask {
 	streak: {
 		current: number;
 		best: number;
-		resetDate?: Date;
+		history: {
+			date: Date;
+			success: boolean;
+		}[];
 	};
 	penalty?: {
 		XPLoss: number;
@@ -241,7 +244,7 @@ export const DEFAULT_HABIT: Habit = {
 	streak: {
 		current: 0,
 		best: 0,
-		resetDate: new Date(),
+		history: [],
 	},
 	penalty: {
 		XPLoss: 0,

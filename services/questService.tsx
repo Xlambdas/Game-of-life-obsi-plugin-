@@ -1,23 +1,342 @@
 import { App, EventRef, Notice, Modal } from 'obsidian';
 import { Quest, DEFAULT_QUEST, StatBlock } from '../constants/DEFAULT';
 import { viewSyncService } from './syncService';
+import { DataService } from "./dataService";
+import { validateQuestFormData } from '../components/questHelpers';
+import { QuestFormData } from '../types/quest';
 
+export class QuestServices {
+    private app: App;
+    private plugin: any;
+    private dataService: DataService;
+    private quests: Quest[] = [];
+    private completedQuestIds: string[] = [];
+    private questCounter: number = 0;
+    private availableIds: Set<number> = new Set();
 
-export class markdownServices {
+    constructor(app: App, plugin: any) {
+        this.app = app;
+        this.plugin = plugin;
+        this.dataService = this.plugin.dataService;
+        this.initializeQuestCounter();
+    }
+
+    /**
+     * Gets a specific quest by ID
+     */
+    getQuestById(id: string): Quest | undefined {
+        return this.quests.find(q => q.id === id);
+    }
+
+    async handleDelete(questId: string): Promise<void> {
+        if (confirm('Are you sure you want to delete this quest? This action cannot be undone.')) {
+            try {
+                const quests = await this.dataService.loadQuestsFromFile();
+                const updatedQuests = quests.filter((q: Quest) => q.id !== questId);
+                await this.dataService.saveQuestsToFile(updatedQuests);
+                new Notice('Quest deleted successfully');
+                viewSyncService.emitStateChange({ questsUpdated: true });
+            } catch (error) {
+                console.error('Error deleting quest:', error);
+                new Notice('Failed to delete quest');
+            }
+        }
+    }
+
+    async handleSave(quest: Quest, formData: QuestFormData): Promise<void> {
+        try {
+            const validationError = validateQuestFormData(formData);
+            if (validationError) {
+                new Notice(validationError);
+                return;
+            }
+
+            formData.questId = quest.id;
+            await this.saveQuestToJSON(formData);
+
+            new Notice('Quest updated successfully');
+            viewSyncService.emitStateChange({ questsUpdated: true });
+        } catch (error) {
+            console.error('Error saving quest:', error);
+            new Notice('Failed to save quest changes');
+        }
+    }
+
+    private async initializeQuestCounter() {
+        try {
+            const questsPath = `${this.app.vault.configDir}/plugins/game-of-life/data/db/quests.json`;
+            const content = await this.app.vault.adapter.read(questsPath);
+            const quests = JSON.parse(content);
+            
+            // Initialize the counter with the highest existing ID
+            const maxId = quests.reduce((max: number, quest: Quest) => {
+                const idNum = parseInt(quest.id.replace('quest_', ''));
+                return isNaN(idNum) ? max : Math.max(max, idNum);
+            }, 0);
+            this.questCounter = maxId;
+
+            // Créer un Set des IDs utilisés
+            const usedIds = new Set<number>();
+            quests.forEach((quest: Quest) => {
+                const idNum = parseInt(quest.id.replace('quest_', ''));
+                if (!isNaN(idNum)) {
+                    usedIds.add(idNum);
+                }
+            });
+
+            // Trouver le premier ID disponible en partant de 1
+            let firstAvailableId = 1;
+            while (usedIds.has(firstAvailableId)) {
+                firstAvailableId++;
+            }
+
+            // Si le premier ID disponible est plus petit que le maxId,
+            // on l'utilise comme point de départ
+            if (firstAvailableId < maxId) {
+                this.questCounter = firstAvailableId - 1;
+            }
+        } catch (error) {
+            console.error("Error initializing quest counter:", error);
+            this.questCounter = 0;
+        }
+    }
+
+    private generateQuestId(): string {
+        // Incrémenter le compteur et retourner le nouvel ID
+        this.questCounter++;
+        return `quest_${this.questCounter}`;
+    }
+
+    async setQuestCompleted(
+        questId: string,
+        completed: boolean,
+        updateCallback: (xp: number) => Promise<void>
+    ): Promise<boolean> {
+        const quest = this.getQuestById(questId);
+        if (!quest) {
+            console.error("Quest not found:", questId);
+            return false;
+        }
+        
+        // Update local state
+        quest.progression.isCompleted = completed;
+        quest.progression.completed_at = new Date();
+        quest.progression.progress = 100;
+        
+        // Update completed quests list
+        if (completed) {
+            if (!this.completedQuestIds.includes(questId)) {
+                this.completedQuestIds.push(questId);
+                // Award XP
+                await updateCallback(quest.reward.XP);
+                new Notice(`Quest completed! Earned ${quest.reward.XP} XP`);
+            }
+        } else {
+            this.completedQuestIds = this.completedQuestIds.filter(id => id !== questId);
+            // Remove XP
+            await updateCallback(-quest.reward.XP);
+            new Notice(`Quest uncompleted. Removed ${quest.reward.XP} XP`);
+        }
+        
+        // Notify listeners about state change
+        viewSyncService.emitStateChange({ questsUpdated: true });
+        
+        return true;
+    }
+
+    getAllQuests(): Quest[] {
+        return this.quests;
+    }
+
+    private updateAttributesByCategory(category: string, currentAttributes: StatBlock): StatBlock {
+        const attributes = { ...currentAttributes };
+        
+        // Mapping des catégories vers les attributs
+        const categoryToAttribute: { [key: string]: keyof StatBlock } = {
+            'Physical': 'strength',
+            'Study': 'intelligence',
+            'Social': 'charisma',
+            'Personal': 'wisdom',
+            'Work': 'endurance',
+            'Adventure': 'agility',
+            'Exploration': 'perception'
+        };
+
+        // Si la catégorie existe dans notre mapping, on incrémente l'attribut correspondant
+        const attributeToUpdate = categoryToAttribute[category];
+        if (attributeToUpdate) {
+            attributes[attributeToUpdate] = (attributes[attributeToUpdate] || 0) + 1;
+        }
+
+        return attributes;
+    }
+
+    async saveQuestToJSON(formData: QuestFormData): Promise<Quest> {
+        try {
+            let quests = await this.dataService.loadQuestsFromFile();
+            let quest: Quest;
+            const existingQuestIndex = quests.findIndex(q => q.id === formData.questId);
+
+            // Valeurs par défaut pour les attributs
+            const defaultAttributes: StatBlock = {
+                strength: 0,
+                agility: 0,
+                endurance: 0,
+                charisma: 0,
+                wisdom: 0,
+                perception: 0,
+                intelligence: 0
+            };
+
+            // Utiliser les attributs par défaut de DEFAULT_QUEST s'ils existent
+            const defaultQuestAttributes = DEFAULT_QUEST.reward.attributes || defaultAttributes;
+
+            if (existingQuestIndex !== -1) {
+                // Update existing quest
+                quest = quests[existingQuestIndex];
+                quest.title = formData.title;
+                quest.shortDescription = formData.shortDescription;
+                quest.description = formData.description;
+                quest.settings.priority = formData.priority as "low" | "medium" | "high";
+                quest.settings.difficulty = formData.difficulty as "easy" | "medium" | "hard" | "expert";
+                quest.settings.category = formData.category;
+                quest.reward.XP = formData.reward_XP;
+                quest.progression.dueDate = formData.dueDate;
+                
+                if (!quest.requirements) {
+                    quest.requirements = { ...DEFAULT_QUEST.requirements };
+                }
+                quest.requirements.level = formData.require_level;
+                quest.requirements.previousQuests = Array.isArray(formData.require_previousQuests) 
+                    ? formData.require_previousQuests 
+                    : formData.require_previousQuests.split(',');
+                
+                // Si des attributs sont fournis manuellement, les utiliser
+                if (formData.attributeRewards) {
+                    quest.reward.attributes = {
+                        ...defaultAttributes,
+                        ...formData.attributeRewards
+                    };
+                } else {
+                    // Sinon, mettre à jour les attributs en fonction de la catégorie
+                    const currentAttributes: StatBlock = {
+                        ...defaultAttributes,
+                        ...quest.reward.attributes
+                    };
+                    const updatedAttributes = this.updateAttributesByCategory(formData.category, currentAttributes);
+                    quest.reward.attributes = updatedAttributes;
+                }
+            } else {
+                // Create new quest using DEFAULT_QUEST as base
+                const newId = this.generateQuestId();
+                
+                // Si des attributs sont fournis manuellement, les utiliser
+                let finalAttributes: StatBlock;
+                if (formData.attributeRewards) {
+                    finalAttributes = {
+                        ...defaultAttributes,
+                        ...formData.attributeRewards
+                    };
+                } else {
+                    // Sinon, mettre à jour les attributs en fonction de la catégorie
+                    const baseAttributes: StatBlock = {
+                        ...defaultAttributes
+                    };
+                    finalAttributes = this.updateAttributesByCategory(formData.category, baseAttributes);
+                }
+
+                quest = {
+                    ...DEFAULT_QUEST,
+                    id: newId,
+                    title: formData.title,
+                    shortDescription: formData.shortDescription || "",
+                    description: formData.description || "",
+                    created_at: new Date(),
+                    settings: {
+                        ...DEFAULT_QUEST.settings,
+                        priority: formData.priority as "low" | "medium" | "high",
+                        difficulty: formData.difficulty as "easy" | "medium" | "hard" | "expert",
+                        category: formData.category || DEFAULT_QUEST.settings.category,
+                    },
+                    progression: {
+                        ...DEFAULT_QUEST.progression,
+                        isCompleted: false,
+                        completed_at: new Date(0),
+                        progress: 0,
+                        dueDate: formData.dueDate || undefined,
+                    },
+                    reward: {
+                        ...DEFAULT_QUEST.reward,
+                        XP: formData.reward_XP || DEFAULT_QUEST.reward.XP,
+                        attributes: finalAttributes,
+                    },
+                    requirements: {
+                        ...DEFAULT_QUEST.requirements,
+                        level: formData.require_level,
+                        previousQuests: Array.isArray(formData.require_previousQuests) 
+                            ? formData.require_previousQuests 
+                            : formData.require_previousQuests.split(','),
+                    },
+                    isSystemQuest: false
+                };
+                quests.push(quest);
+            }
+
+            await this.dataService.saveQuestsToFile(quests);
+            new Notice('Quest saved successfully');
+            return quest;
+        } catch (error) {
+            console.error('Error saving quest:', error);
+            new Notice('Failed to save quest');
+            throw error;
+        }
+    }
+
+    /**
+     * Get completed quest IDs for saving to user settings
+     */
+    getCompletedQuestIds(): string[] {
+        return this.completedQuestIds;
+    }
+
+    /**
+     * Update completed quest IDs (e.g., from loaded user settings)
+     */
+    updateCompletedQuestIds(ids: string[]) {
+        this.completedQuestIds = ids;
+
+        // Update quest completion status
+        this.quests = this.quests.map(quest => ({
+            ...quest,
+            completed: this.completedQuestIds.includes(quest.id)
+        }));
+    }
+
+    getQuestDueDate(questId: string): Date | undefined {
+        const quest = this.getQuestById(questId);
+        if (!quest) {
+            return undefined;
+        }
+        return quest.progression.dueDate;
+    }
+
+    async createQuest(formData: QuestFormData): Promise<Quest> {
+        return this.saveQuestToJSON(formData);
+    }
+
+}
+
+export class QuestServices_old {
 	private app: App;
 	private plugin: any;
 	private quests: Quest[] = [];
 	private completedQuestIds: string[] = [];
-	private dataUser: any;
-	private markdownFileEventRef: EventRef | null = null;
 	private questCounter: number = 0;
 	private availableIds: Set<number> = new Set();
 
 	constructor(app: App, plugin: any) {
 		this.app = app;
 		this.plugin = plugin;
-		this.dataUser = JSON.parse(JSON.stringify(this.plugin.settings));
-		// this.setupMarkdownFileListener();
 		this.initializeQuestCounter();
 	}
 
@@ -124,126 +443,6 @@ export class markdownServices {
 ---
 `;
     }
-
-	/**
-	 * Loads quests from the markdown file
-	 */
-	async loadQuestFromMarkdown(): Promise<Quest[]> {
-        try {
-            const fullPath = `${this.plugin.settings.user1.settings.questsFolder}/${this.plugin.settings.user1.settings.questsFileName}`;
-            const exists = await this.app.vault.adapter.exists(fullPath);
-
-            if (!exists) {
-                console.warn("Quests file doesn't exist:", fullPath);
-                return [];
-            }
-
-            const content = await this.app.vault.adapter.read(fullPath);
-            const parsedQuests = this.parseQuestsFromMarkdown(content);
-
-            // Mark quests as completed based on user data
-            this.quests = parsedQuests.map(quest => ({
-                ...quest,
-                completed: this.completedQuestIds.includes(quest.id)
-            }));
-
-            console.log("Loaded quests:", this.quests);
-            return this.quests;
-        } catch (error) {
-            console.error("Error loading quests:", error);
-            return [];
-        }
-    }
-
-	/**
-     * Parses quests from markdown content
-     */
-    private parseQuestsFromMarkdown(content: string): Quest[] {
-        const questRegex = /## (.*?)(?=\n## |$)/g;
-        const matches = content.match(questRegex) || [];
-        const quests: Quest[] = [];
-
-        for (const match of matches) {
-            const questBlock = match.trim();
-            const titleMatch = questBlock.match(/## (.*?)(?=\n|$)/);
-            const title = titleMatch ? titleMatch[1].trim() : "Unnamed Quest";
-
-            // Extract YAML frontmatter
-            const yamlMatch = questBlock.match(/---\n([\s\S]*?)\n---/);
-            const yamlContent = yamlMatch ? yamlMatch[1] : "";
-
-            // Parse YAML content
-            const metadata: any = {};
-            yamlContent.split('\n').forEach(line => {
-                const [key, ...valueParts] = line.split(':');
-                if (key && valueParts.length > 0) {
-                    const value = valueParts.join(':').trim();
-                    // Handle arrays (tags)
-                    if (value.startsWith('[') && value.endsWith(']')) {
-                        metadata[key.trim()] = value.slice(1, -1).split(',').map(tag => tag.trim());
-                    } else {
-                        metadata[key.trim()] = value;
-                    }
-                }
-            });
-
-            // Generate a stable ID based on the counter
-            const id = this.generateQuestId();
-
-            quests.push({
-                id,
-                title,
-				shortDescription: metadata.shortDescription || "",
-                description: metadata.description || "",
-				created_at: new Date(),
-				settings: {
-					type: 'quest',
-					priority: metadata.priority || "low",
-					difficulty: metadata.difficulty || "easy",
-					category: metadata.category || "undefined",
-					isSecret: metadata.isSecret || false,
-					isTimeSensitive: metadata.isTimeSensitive || false,
-				},
-				progression: {
-					isCompleted: false,
-					completed_at: new Date(0),
-					progress: 0,
-					dueDate: metadata.dueDate || "",
-					subtasks: [],
-				},
-				reward: {
-					XP: parseInt(metadata.xp) || 1,
-					items: [],
-					attributes: {
-						strength: 0,
-						agility: 0,
-						endurance: 0,
-						charisma: 0,
-						wisdom: 0,
-						perception: 0,
-						intelligence: 0,
-					},
-					unlock: [],
-				},
-				requirements: {
-					level: 0,
-					previousQuests: [],
-					stats: {
-						strength: 0,
-						agility: 0,
-						endurance: 0,
-						charisma: 0,
-						wisdom: 0,
-						perception: 0,
-						intelligence: 0,
-					},
-				},
-				failureConsequence: metadata.failureConsequence || ""
-            });
-        }
-
-        return quests;
-	}
 
 	/**
      * Gets all quests
@@ -411,45 +610,43 @@ export class markdownServices {
         }
     }
 
+    async saveQuestToMarkdown(quest: Omit<Quest, 'id' | 'completed'>): Promise<Quest> {
+        try {
+            const fullPath = `${this.app.vault.configDir}/plugins/game-of-life/data/db/quests.md`;
+            const content = await this.app.vault.adapter.read(fullPath);
+            // Generate ID using counter
+            const id = this.generateQuestId();
 
-	async saveQuestToMarkdown(quest: Omit<Quest, 'id' | 'completed'>): Promise<Quest> {
-			try {
-				const fullPath = `${this.app.vault.configDir}/plugins/game-of-life/data/db/quests.md`;
-				const content = await this.app.vault.adapter.read(fullPath);
-				// Generate ID using counter
-				const id = this.generateQuestId();
-	
-				 // Format as markdown with YAML frontmatter
-				const questMarkdown = `
-	 ## ${quest.title}
-	 ---
-	 xp: ${quest.reward.XP}
-	 description: ${quest.description}
-	 difficulty: ${quest.settings.difficulty || 'easy'}
-	 category: ${quest.settings.category || 'uncategorized'}
-	 ${quest.settings.priority ? `priority: ${quest.settings.priority}` : ''}
-	 ${quest.progression.dueDate ? `due_date: ${quest.progression.dueDate}` : ''}
-	 ---
-	 
-	 `;
-	 
-				 // Append to file
-				 await this.app.vault.adapter.write(
-					 fullPath, 
-					 content + questMarkdown
-				 );
-	
-				 const newQuest = {
-					...DEFAULT_QUEST,
-					id,
-					reward: quest.reward,
-				 }
-	
-				 this.quests.push(newQuest);
-				
-				 new Notice("Quest created successfully!");
-				 return newQuest;
-	
+            // Format as markdown with YAML frontmatter
+            const questMarkdown = `
+ ## ${quest.title}
+ ---
+ xp: ${quest.reward.XP}
+ description: ${quest.description}
+ difficulty: ${quest.settings.difficulty || 'easy'}
+ category: ${quest.settings.category || 'uncategorized'}
+ ${quest.settings.priority ? `priority: ${quest.settings.priority}` : ''}
+ ${quest.progression.dueDate ? `due_date: ${quest.progression.dueDate}` : ''}
+ ---
+ 
+ `;
+
+            // Append to file
+            await this.app.vault.adapter.write(
+                fullPath, 
+                content + questMarkdown
+            );
+
+            const newQuest = {
+                ...DEFAULT_QUEST,
+                id,
+                reward: quest.reward,
+            }
+
+            this.quests.push(newQuest);
+            
+            new Notice("Quest created successfully!");
+            return newQuest;
 
 			} catch (error) {
 				console.error("Error saving quest:", error);
