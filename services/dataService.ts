@@ -13,7 +13,8 @@ export class DataService {
 
     async loadSettings() {
         await this.loadUser();
-		await this.loadQuests();
+        await this.loadQuests();
+        // await this.syncCompletedQuests();
     }
 
     async loadUser() {
@@ -24,7 +25,6 @@ export class DataService {
         } catch (error) {
             // If file doesn't exist, create it with default structure
             try {
-                // const pathUserDB = `${this.app.vault.configDir}/plugins/game-of-life/data/db/user.json`;
                 const dirPath = pathUserDB.substring(0, pathUserDB.lastIndexOf('/'));
                 await this.app.vault.adapter.mkdir(dirPath);
                 this.settings = DEFAULT_SETTINGS;
@@ -58,11 +58,12 @@ export class DataService {
         }
     }
 
-    // DAO function for quest operations
     async saveQuestsToFile(quests: Quest[]): Promise<void> {
         try {
             const questsPath = `${this.app.vault.configDir}/plugins/game-of-life/data/db/quests.json`;
             await this.app.vault.adapter.write(questsPath, JSON.stringify(quests, null, 2));
+            // this.quests = quests;
+            // await this.syncCompletedQuests();
         } catch (error) {
             console.error("Error saving quests:", error);
             throw error;
@@ -73,10 +74,35 @@ export class DataService {
         try {
             const questsPath = `${this.app.vault.configDir}/plugins/game-of-life/data/db/quests.json`;
             const content = await this.app.vault.adapter.read(questsPath);
-            return JSON.parse(content);
+            const quests = JSON.parse(content);
+            // this.quests = quests;
+            // await this.syncCompletedQuests();
+            return quests;
         } catch (error) {
             console.error("Error loading quests:", error);
             return [];
         }
     }
+
+//     private async syncCompletedQuests() {
+//         if (!this.settings || !this.quests) return;
+
+//         // Update quests with completion status from user settings
+//         this.quests = this.quests.map(quest => ({
+//             ...quest,
+//             progression: {
+//                 ...quest.progression,
+//                 isCompleted: this.settings.user1.completedQuests.includes(quest.id)
+//             }
+//         }));
+
+//         // Update user settings with completion status from quests
+//         this.settings.user1.completedQuests = this.quests
+//             .filter(quest => quest.progression.isCompleted)
+//             .map(quest => quest.id);
+
+//         // Save both updates
+//         await this.saveSettings();
+//         await this.saveQuestsToFile(this.quests);
+//     }
 }

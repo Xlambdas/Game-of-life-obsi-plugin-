@@ -3,6 +3,8 @@ import GOL from '../plugin';
 import { appContextService } from './appContextService';
 import { viewSyncService } from 'services/syncService';
 import { UserSettings, DEFAULT_SETTINGS } from '../constants/DEFAULT';
+import { DataService } from '../services/dataService';
+
 
 
 export interface AppContextType {
@@ -13,6 +15,7 @@ export interface AppContextType {
 	updateXP: (amount: number) => void;
 	saveData: () => Promise<void>;
 	refreshRate: number;
+    // dataService: DataService;
     // quests: QuestSettings[];
     // updateUserSettings: (newData: Partial<UserSettings>) => void;
     // updateQuests: (newQuests: QuestSettings[]) => void;
@@ -83,6 +86,7 @@ export function AppContextProvider({ children, plugin }: AppContextProviderProps
 		updateXP,
 		saveData,
 		refreshRate: appContextService.getRefreshRate(),
+		// dataService: plugin.dataService
 	}
 	
 	useEffect(() => {

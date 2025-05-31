@@ -90,19 +90,17 @@ export const QuestList = () => {
 	const [quests, setQuests] = useState<Quest[]>([]);
 	const [isOpen, setIsOpen] = useState(false);
 	const [filter, setFilter] = useState('');
-    const [activeTab, setActiveTab] = useState<'active' | 'completed' | 'all'>('active');
-    const [sortBy, setSortBy] = useState<'priority' | 'xp' | 'difficulty' | 'date'>('priority');
-
+	const [activeTab, setActiveTab] = useState<'active' | 'completed' | 'all'>('active');
+	const [sortBy, setSortBy] = useState<'priority' | 'xp' | 'difficulty' | 'date'>('priority');
+	const [error, setError] = useState<string | null>(null);
 
 	const handleToggle = (e: React.SyntheticEvent<HTMLDetailsElement, Event>) => {
         const details = e.currentTarget;
         setIsOpen(details.open);
-        // Sauvegarder l'état dans localStorage
         localStorage.setItem('questListOpen', details.open ? 'true' : 'false');
     };
 
 	useEffect(() => {
-        // Charger l'état depuis localStorage au montage du composant
         const savedState = localStorage.getItem('questListOpen');
         if (savedState !== null) {
             setIsOpen(savedState === 'true');
@@ -149,16 +147,19 @@ export const QuestList = () => {
 				console.log("Loaded quests with completion status:", formattedQuests);
 
                 setQuests(formattedQuests);
+                setError(null);
             } catch (error) {
                 console.error("Error loading quests:", error);
+                setError("Failed to load quests");
             }
         };
         if (plugin && plugin.app) {
-			loadQuests();
+        	loadQuests();
 		}
     }, [plugin]);
 
 	const handleCompleteQuest = async (quest: Quest) => {
+
 		try {
             const quests = await loadQuestsFromVault();
 			console.log("Quests loaded:", quests);
@@ -171,7 +172,6 @@ export const QuestList = () => {
                 )
             );
             
-            // Vérifier directement l'état actuel de la quête
             const isCurrentlyCompletedInUI = quest.progression.isCompleted;
             console.log(`Quest ${quest.id} UI state - Completed: ${isCurrentlyCompletedInUI}`);
 
@@ -220,14 +220,15 @@ export const QuestList = () => {
                     console.warn(`Quest ${quest.id} was already completed in data but not in UI`);
                 }
             }
+            setError(null);
         } catch (error) {
             console.error("Error handling quest completion:", error);
+            setError("Failed to update quest status");
             new Notice("Failed to update quest status");
         }
     };
 
 	const handleModifyQuest = (quest: Quest) => {
-        console.log("Modify quest clicked:", quest); // Debug log
         if (plugin) {
             try {
                 const modal = new ModifyQuestModal(plugin.app, plugin);
@@ -255,12 +256,10 @@ export const QuestList = () => {
             return matchesSearch && matchesTab;
         })
         .sort((a, b) => {
-            // First sort by completion status
             if (a.progression.isCompleted !== b.progression.isCompleted) {
                 return a.progression.isCompleted ? 1 : -1;
             }
 
-            // Then sort by selected criteria
             switch (sortBy) {
                 case 'priority':
                     const priorityOrder = { high: 0, medium: 1, low: 2 };

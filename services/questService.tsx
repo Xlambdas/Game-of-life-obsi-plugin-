@@ -57,12 +57,15 @@ export class QuestServices {
         }
     }
 
-    private async initializeQuestCounter() { // todo : use dataService (simplify)
+    private async initializeQuestCounter() {
         try {
-            // const questsPath = `${this.app.vault.configDir}/plugins/game-of-life/data/db/quests.json`;
-            // const content = await this.app.vault.adapter.read(questsPath);
-			// const quests = JSON.parse(content);
-            const quests = this.plugin.dataService.loadQuests()
+            const quests = await this.plugin.dataService.loadQuestsFromFile();
+            
+            if (!Array.isArray(quests)) {
+                console.error("Quests data is not an array:", quests);
+                this.questCounter = 0;
+                return;
+            }
             
             // Initialize the counter with the highest existing ID
             const maxId = quests.reduce((max: number, quest: Quest) => {

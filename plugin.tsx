@@ -30,24 +30,23 @@ export default class GOL extends Plugin {
 
     async onload() {
         console.warn('loading plugin');
+		await this.loadSettings();
 
         // Initialize services and load settings
-		await this.loadSettings();
         this.dataService = new DataService(this.app);
-        this.questService = new QuestServices(this.app, this);
-		this.habitService = new HabitServices(this.app, this);
-        appContextService.initialize(this);
-
-        // Load settings first
         await this.dataService.loadSettings();
-        if (this.dataService) {
+		if (this.dataService) {
             this.settings = this.dataService.settings;
         }
 
+        this.questService = new QuestServices(this.app, this);
+        this.habitService = new HabitServices(this.app, this);
+        appContextService.initialize(this);
+
         // Register views (main and side view); settings tab
-		this.viewService = new ViewService(this);
+        this.viewService = new ViewService(this);
         this.viewService.registerViews();
-		this.addSettingTab(new selfSettingTab(this.app, this));
+        this.addSettingTab(new selfSettingTab(this.app, this));
 
         // Register commands (all the commands of the plugin - ctrl + p)
         registerCommands(this, this.viewService);
@@ -62,14 +61,14 @@ export default class GOL extends Plugin {
             new Notice("Welcome Back !");
         });
 
-		this.addRibbonIcon('checkbox-glyph', 'Open Quests File', () => {
+        this.addRibbonIcon('checkbox-glyph', 'Open Quests File', () => {
             this.openQuestsFile();
         });
 
         // Set interval for periodic check
         this.autoSaveIntervalId = window.setInterval(() => {
-			appContextService.saveUserDataToFile();
-		}, appContextService.getRefreshRate());
+            appContextService.saveUserDataToFile();
+        }, appContextService.getRefreshRate());
 
         this.intervalId = window.setInterval(() => console.log('setInterval'), appContextService.getRefreshRate());
 

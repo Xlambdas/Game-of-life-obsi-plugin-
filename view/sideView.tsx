@@ -79,7 +79,7 @@ export const SideView = () => {
 
 
 	useEffect(() => {
-		console.log('SideView: Initializing with refresh rate:', appContextService.getRefreshRate());
+		// console.log('SideView: Initializing with refresh rate:', appContextService.getRefreshRate());
 		
 		const saveData = async () => {
 			await appContextService.saveUserDataToFile();
@@ -96,9 +96,9 @@ export const SideView = () => {
 		}, appContextService.getRefreshRate());
 
 		// Subscribe to refresh rate changes
-		console.log('SideView: Subscribing to refresh rate changes');
+		// console.log('SideView: Subscribing to refresh rate changes');
 		const unsubscribe = viewSyncService.onRefreshRateChange((newRate: number) => {
-			console.log('SideView received refresh rate change:', newRate);
+			// console.log('SideView received refresh rate change:', newRate);
 			clearInterval(currentInterval);
 			currentInterval = setInterval(() => {
 				saveData();
@@ -112,7 +112,7 @@ export const SideView = () => {
 		});
 
 		return () => {
-			console.log('SideView: Cleaning up interval and subscription');
+			// console.log('SideView: Cleaning up interval and subscription');
 			clearInterval(currentInterval);
 			unsubscribe();
 		};
