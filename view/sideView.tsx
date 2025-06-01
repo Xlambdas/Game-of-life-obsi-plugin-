@@ -1,5 +1,5 @@
 import React, { use, useEffect, useRef, useState } from "react";
-import { QuestList } from "../data/managers/quest_use";
+import { QuestList } from "../components/questComponents";
 import { createRoot, Root } from "react-dom/client";
 import { SIDE_VIEW } from "../constants/viewTypes";
 import { AppContextProvider, useAppContext } from '../context/appContext';

@@ -79,6 +79,23 @@ export const DEFAULT_SETTINGS: UserSettings = {
 	}
 }
 
+export const DEFAULT_CATEGORIES = [
+	'Undefined',
+	'Physical',
+	'Mental',
+	'Social',
+	'Creative',
+	'Emotional',
+	'Organizational',
+	'Exploration'
+];
+export type DefaultCategory = typeof DEFAULT_CATEGORIES[number] | string;
+
+export const DEFAULT_PRIORITIES = ['low', 'medium', 'high'] as const;
+export type DefaultPriority = typeof DEFAULT_PRIORITIES[number];
+export const DEFAULT_DIFFICULTIES = ['easy', 'medium', 'hard', 'expert'] as const;
+export type DefaultDifficulty = typeof DEFAULT_DIFFICULTIES[number];
+
 export type StatBlock = {
 	strength: number;
 	agility: number;
@@ -100,9 +117,9 @@ export interface BaseTask {
 	created_at: Date;
 	settings: {
 		type: 'quest' | 'habit';
-		priority?: 'low' | 'medium' | 'high';
-		difficulty?: 'easy' | 'medium' | 'hard' | 'expert';
-		category: 'Physical' | 'study' | 'social' | 'personal' | 'undefined' | string;
+		priority?: DefaultPriority;
+		difficulty?: DefaultDifficulty;
+		category: DefaultCategory | string;
 		isSecret?: boolean;
 		isTimeSensitive?: boolean;
 	};
@@ -146,7 +163,7 @@ export const DEFAULT_QUEST: Quest = {
 	created_at: new Date(), // Auto generated
 	settings: {
 		type: 'quest', // Auto generated
-		category: 'work', // todo: do the association between the categories and the attributes..
+		category: 'Undefined',
 		priority: 'low', // todo: do algo
 		difficulty: 'easy', // todo: do algo
 		isSecret: false, // Auto generated
@@ -231,7 +248,7 @@ export const DEFAULT_HABIT: Habit = {
 	created_at: new Date(),
 	settings: {
 		type: 'habit',
-		category: 'personal',
+		category: 'undefined',
 		priority: 'low',
 		difficulty: 'easy',
 		isSecret: false,

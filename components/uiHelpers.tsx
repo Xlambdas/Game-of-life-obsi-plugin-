@@ -1,7 +1,7 @@
 import type { Plugin } from "obsidian";
 import { Notice, ButtonComponent } from "obsidian";
 import { Quest } from "../constants/DEFAULT";
-import { validateQuestFormData, EndButtonDeps } from "../components/questHelpers";
+import { validateQuestFormData, EndButtonDeps } from "./questFormHelpers";
 
 export class DescriptionHelper {
 	private element: HTMLElement;

@@ -2,8 +2,7 @@ import { App, TextComponent, ToggleComponent } from 'obsidian';
 import GOL from '../../plugin';
 import { TitleInput, ShortDescriptionInput, DescriptionInput, rewardItemsInput, DifficultyInput, RequireLevelInput, RequirePreviousQuestsInput, PriorityInput, CategoryInput, RewardAttributeInput, dueDateInput  } from '../../components/inputs';
 import { separator, titleSection } from 'components/uiHelpers';
-import { getDescrInput, getSettingsInputs, getRequirementsInputs, getRewardInputs } from 'components/formHelpers';
-import { QuestFormData } from '../../types/quest';
+import { getDescrInput, getSettingsInputs, getRequirementsInputs, getRewardInputs, QuestFormData } from 'components/formHelpers';
 import { Quest } from '../../constants/DEFAULT';
 
 

@@ -77,3 +77,62 @@ const createXPRewardInput = (container: HTMLElement, initialValue?: number): Tex
 	}
 	return rewardXPInput;
 };
+
+
+export const updateAttributesByCategory = (category: string, attributes: StatBlock): StatBlock => {
+	const updatedAttributes: StatBlock = { ...attributes };
+
+	switch (category) {
+		case 'Physical':
+			updatedAttributes.strength += 1;
+			updatedAttributes.agility += 1;
+			updatedAttributes.endurance += 1;
+			break;
+		case 'Mental':
+			updatedAttributes.wisdom += 1;
+			updatedAttributes.perception += 1;
+			updatedAttributes.intelligence += 1;
+			break;
+		case 'Social':
+			updatedAttributes.charisma += 1;
+			updatedAttributes.intelligence += 1;
+			break;
+		case 'Creative':
+			updatedAttributes.charisma += 1;
+			updatedAttributes.perception += 1;
+			break;
+		case 'Emotional':
+			updatedAttributes.wisdom += 1;
+			updatedAttributes.charisma += 1;
+			break;
+		case 'Organizational':
+			updatedAttributes.intelligence += 1;
+			updatedAttributes.perception += 1;
+			break;
+		case 'Exploration':
+			updatedAttributes.agility += 1;
+			updatedAttributes.perception += 1;
+			updatedAttributes.intelligence += 1;
+			break;
+		default:
+			break; // No changes for undefined or other categories
+	}
+
+	return updatedAttributes;
+}
+
+
+export interface QuestFormData {
+	title: string;
+	shortDescription: string;
+	description: string;
+	reward_XP: number;
+	require_level: number;
+	require_previousQuests: string | string[];
+	priority: string;
+	difficulty: string;
+	category: string;
+	attributeRewards: any;
+	dueDate?: Date;
+	questId?: string;
+}

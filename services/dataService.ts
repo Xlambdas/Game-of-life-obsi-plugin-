@@ -22,6 +22,7 @@ export class DataService {
             const pathUserDB = `${this.app.vault.configDir}/plugins/game-of-life/data/db/user.json`;
             const content = await this.app.vault.adapter.read(pathUserDB);
             this.settings = JSON.parse(content);
+            return this.settings;
         } catch (error) {
             // If file doesn't exist, create it with default structure
             try {
@@ -29,6 +30,7 @@ export class DataService {
                 await this.app.vault.adapter.mkdir(dirPath);
                 this.settings = DEFAULT_SETTINGS;
                 await this.app.vault.adapter.write(pathUserDB, JSON.stringify(this.settings, null, 2));
+                return this.settings;
             } catch (createError) {
                 console.error("Error creating user data file:", createError);
                 throw createError;
@@ -84,25 +86,4 @@ export class DataService {
         }
     }
 
-//     private async syncCompletedQuests() {
-//         if (!this.settings || !this.quests) return;
-
-//         // Update quests with completion status from user settings
-//         this.quests = this.quests.map(quest => ({
-//             ...quest,
-//             progression: {
-//                 ...quest.progression,
-//                 isCompleted: this.settings.user1.completedQuests.includes(quest.id)
-//             }
-//         }));
-
-//         // Update user settings with completion status from quests
-//         this.settings.user1.completedQuests = this.quests
-//             .filter(quest => quest.progression.isCompleted)
-//             .map(quest => quest.id);
-
-//         // Save both updates
-//         await this.saveSettings();
-//         await this.saveQuestsToFile(this.quests);
-//     }
 }

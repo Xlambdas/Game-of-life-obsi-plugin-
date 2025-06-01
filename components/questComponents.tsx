@@ -1,226 +1,203 @@
-import { useState, useEffect } from 'react';
-import { Notice } from 'obsidian';
-import { useAppContext } from '../context/appContext';
-import { Quest } from '../constants/DEFAULT';
-import { ModifyQuestModal } from '../modales/questModal';
 
-const QuestItem = ({
-    quest,
-    onComplete,
-    onModify,
-}: {
-    quest: Quest;
-    onComplete: (quest: Quest, completed: boolean) => void,
-    onModify: (quest: Quest) => void
-}) => {
-    return (
-        <div className="quest-item">
-            <div className="quest-header">
-                <div className="quest-checkbox-section">
-                    <input
-                        type="checkbox"
-                        checked={quest.progression.isCompleted}
-                        onChange={() => onComplete(quest, !quest.progression.isCompleted)}
-                        className="quest-checkbox"
-                    />
-                    <span className={`quest-title ${quest.progression.isCompleted ? 'completed' : ''}`}>
-                        {quest.title}
-                    </span>
-                </div>
-                <button
-                    className="quest-edit-button"
-                    onClick={() => onModify(quest)}
-                    aria-label="Edit quest"
-                >
-                    ✏️
-                </button>
-            </div>
-            {quest.description && (
-                <div className="quest-description">
-                    {quest.description}
-                </div>
-            )}
-            <div className="quest-xp">
-                XP: {quest.reward.XP}
-            </div>
-        </div>
-    );
-};
+import { useState, useEffect } from 'react';
+import { pathUserDB } from '../constants/paths';
+import { useAppContext } from '../context/appContext';
+import { Notice } from 'obsidian';
+import { get } from 'http';
+import { DEFAULT_SETTINGS, Quest } from '../constants/DEFAULT';
+import { ModifyQuestModal } from '../modales/questModal';
+import { QuestSideView } from 'components/questUI';
+
 
 export const QuestList = () => {
-    const { plugin, updateXP } = useAppContext();
-    const [quests, setQuests] = useState<Quest[]>([]);
-    const [isOpen, setIsOpen] = useState(false);
-    const [filter, setFilter] = useState('');
-    const [activeTab, setActiveTab] = useState<'active' | 'completed' | 'all'>('active');
+	// return a list of quests from the quests.json file, and display them in a list.
+	const { plugin, updateXP } = useAppContext();
+	const [quests, setQuests] = useState<Quest[]>([]);
+	const [isOpen, setIsOpen] = useState(false);
+	const [filter, setFilter] = useState('');
+	const [activeTab, setActiveTab] = useState<'active' | 'completed' | 'all'>('active');
+	const [sortBy, setSortBy] = useState<'priority' | 'xp' | 'difficulty' | 'date'>('priority');
+	const [error, setError] = useState<string | null>(null);
 
-    useEffect(() => {
-        const loadQuests = async () => {
-            if (!plugin || !plugin.questService) {
-                console.warn("Quest management service not initialized");
-                return;
-            }
-            
-        };
-        
-        if (plugin) {
-            loadQuests();
-        }
-    }, [plugin]);
+	const handleToggle = (e: React.SyntheticEvent<HTMLDetailsElement, Event>) => {
+		const details = e.currentTarget;
+		setIsOpen(details.open);
+		localStorage.setItem('questListOpen', details.open ? 'true' : 'false');
+	};
 
-    const handleCompleteQuest = async (quest: Quest, completed: boolean) => {
-        try {
-            if (!plugin || !plugin.questService) {
-                console.error("Quest management service not available");
-                return;
-            }
-            
-            await plugin.questService.setQuestCompleted(
-                quest.id,
-                completed,
-                async (xpDelta: number) => {
-                    await updateXP(xpDelta);
-                }
-            );
-        } catch (error) {
-            console.error("Error handling quest completion:", error);
-            new Notice("Failed to update quest status");
-        }
-    };
+	useEffect(() => {
+		const savedState = localStorage.getItem('questListOpen');
+		if (savedState !== null) {
+			setIsOpen(savedState === 'true');
+		}
+	}, []);
 
-    const handleModifyQuest = (quest: Quest) => {
-        console.log("Modify quest clicked:", quest); // Debug log
-        if (plugin) {
-            try {
-                const modal = new ModifyQuestModal(plugin.app, plugin);
-                modal.quest = quest;
-                modal.open();
-            } catch (error) {
-                console.error("Error opening modify modal:", error);
-                new Notice("Failed to open quest editor");
-            }
-        }
-    };
+	useEffect(() => {
+		const loadQuests = async () => {
+			try {
+				const questsData = await plugin.dataService.loadQuestsFromFile();
+				setQuests(questsData);
+				setError(null);
+			} catch (error) {
+				console.error("Error loading quests:", error);
+				setError("Failed to load quests");
+			}
+		};
+		if (plugin && plugin.app) {
+			loadQuests();
+		}
+	}, [plugin]);
 
-    // Filter and sort quests
-    const filteredQuests = quests
-        .filter(quest => {
-            const matchesSearch = !filter || 
-                quest.title.toLowerCase().includes(filter.toLowerCase()) ||
-                quest.description.toLowerCase().includes(filter.toLowerCase()) ||
-                (quest.settings.category && quest.settings.category.toLowerCase().includes(filter.toLowerCase()));
-            
-            const matchesTab = activeTab === 'all' || 
-                (activeTab === 'active' && !quest.progression.isCompleted) ||
-                (activeTab === 'completed' && quest.progression.isCompleted);
-                
-            return matchesSearch && matchesTab;
-        })
-        .sort((a, b) => {
-            if (a.progression.isCompleted !== b.progression.isCompleted) {
-                return a.progression.isCompleted ? 1 : -1;
-            }
-            return b.reward.XP - a.reward.XP;
-        });
+	const handleCompleteQuest = async (quest: Quest, completed: boolean) => {
+		try {
+			const quests = await plugin.dataService.loadQuestsFromFile();
+			const userData = await plugin.dataService.loadUser();
+			
+			if (!userData || typeof userData !== 'object' || !('user1' in userData)) {
+				throw new Error("User data is missing or malformed");
+			}
 
-    if (quests.length === 0) {
-        return <div className="empty-quests">Loading quests...</div>;
-    }
+			// First update local state for immediate UI feedback
+			setQuests(prevQuests =>
+				prevQuests.map(q =>
+					q.id === quest.id ? { ...q, progression: { ...q.progression, isCompleted: !q.progression.isCompleted } } : q
+				)
+			);
 
-    return (
-        <details 
-            className="quest-list" 
-            open={isOpen} 
-            onToggle={(e) => setIsOpen(e.currentTarget.open)}
-        >
-            <summary className="accordion-title">Quests</summary>
-            
-            <div className="quest-controls">
-                <input
-                    type="text"
-                    placeholder="Search quests..."
-                    value={filter}
-                    onChange={(e) => setFilter(e.target.value)}
-                    className="quest-search"
-                />
-                
-                <div className="quest-tabs">
-                    <button 
-                        className={`quest-tab ${activeTab === 'active' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('active')}
-                    >
-                        Active
-                    </button>
-                    <button 
-                        className={`quest-tab ${activeTab === 'completed' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('completed')}
-                    >
-                        Completed
-                    </button>
-                    <button 
-                        className={`quest-tab ${activeTab === 'all' ? 'active' : ''}`}
-                        onClick={() => setActiveTab('all')}
-                    >
-                        All
-                    </button>
-                </div>
-            </div>
-            
-            {filteredQuests.length === 0 ? (
-                <div className="no-quests-message">
-                    {filter ? "No quests match your search" : "No quests available"}
-                </div>
-            ) : (
-                <div className="quests-container">
-                    {filteredQuests.map((quest) => (
-                        <QuestItem
-                            key={quest.id}
-                            quest={quest}
-                            onComplete={handleCompleteQuest}
-                            onModify={handleModifyQuest}
-                        />
-                    ))}
-                </div>
-            )}
-        </details>
-    );
-};
+			// const isCurrentlyCompletedInUI = quest.progression.isCompleted;
 
-export const QuestRecentCompletion = () => {
-    const { plugin } = useAppContext();
-    const [recentQuests, setRecentQuests] = useState<Quest[]>([]);
+			if (!completed) {
+				// Unmark as completed
+				if (userData.user1?.persona?.xp !== undefined) {
+					userData.user1.persona.xp -= quest.reward.XP;
+				}
+				if (Array.isArray(userData.user1?.completedQuests)) {
+					userData.user1.completedQuests = userData.user1.completedQuests.filter((id: string) => id !== quest.id);
+				}
+				
+				const updatedQuests = quests.map(q => 
+					q.id === quest.id ? { 
+						...q, 
+						progression: { 
+							...q.progression, 
+							isCompleted: false,
+							progress: 0,
+							completed_at: new Date(0)
+						} 
+					} : q
+				);
+				
+				await plugin.dataService.saveQuestsToFile(updatedQuests);
+				await plugin.dataService.saveSettings();
+				updateXP(-quest.reward.XP);
+				new Notice(`Quest uncompleted. Removed ${quest.reward.XP} XP`);
+			} else {
+				// Mark as completed
+				if (Array.isArray(userData.user1?.completedQuests) && !userData.user1.completedQuests.includes(quest.id)) {
+					userData.user1.completedQuests.push(quest.id);
+					if (userData.user1?.persona?.xp !== undefined) {
+						userData.user1.persona.xp += quest.reward.XP;
+					}
 
-    useEffect(() => {
-        const loadRecentQuests = async () => {
-            if (!plugin || !plugin.questService) return;
-            
-            const allQuests = plugin.questService.getAllQuests();
-            const completed = allQuests.filter(q => q.progression.isCompleted);
-            // Sort by most recently completed if we had that data
-            // For now just take the last few
-            setRecentQuests(completed.slice(-3));
-        };
-        
-        if (plugin) {
-            loadRecentQuests();
-        }
-    }, [plugin]);
+					const updatedQuests = quests.map(q => 
+						q.id === quest.id ? { 
+							...q, 
+							progression: { 
+								...q.progression, 
+								isCompleted: true,
+								progress: 100,
+								completed_at: new Date()
+							} 
+						} : q
+					);
+					
+					await plugin.dataService.saveQuestsToFile(updatedQuests);
+					await plugin.dataService.saveSettings();
+					updateXP(quest.reward.XP);
+					new Notice(`Quest completed! Earned ${quest.reward.XP} XP`);
+				}
+			}
+			setError(null);
+		} catch (error) {
+			console.error("Error handling quest completion:", error);
+			setError("Failed to update quest status");
+			new Notice("Failed to update quest status");
+			throw error;
+		}
+	};
 
-    if (recentQuests.length === 0) {
-        return null;
-    }
+	const handleModifyQuest = (quest: Quest) => {
+		if (plugin) {
+			try {
+				const modal = new ModifyQuestModal(plugin.app, plugin);
+				modal.quest = quest;
+				modal.open();
+			} catch (error) {
+				console.error("Error opening modify modal:", error);
+				new Notice("Failed to open quest editor");
+			}
+		}
+	};
 
-    return (
-        <div className="recent-completions">
-            <h4>Recent Completions</h4>
-            <div className="recent-quests">
-                {recentQuests.map(quest => (
-                    <div key={quest.id} className="recent-quest">
-                        <span className="quest-title">{quest.title}</span>
-                        <span className="quest-reward">+{quest.reward.XP} XP</span>
-                    </div>
-                ))}
-            </div>
-        </div>
-    );
+	// Filter and sort quests
+	const filteredQuests = quests
+		.filter(quest => {
+			const matchesSearch = !filter || 
+				quest.title.toLowerCase().includes(filter.toLowerCase()) ||
+				quest.description.toLowerCase().includes(filter.toLowerCase()) ||
+				(quest.settings.category && quest.settings.category.toLowerCase().includes(filter.toLowerCase()));
+			
+			const matchesTab = activeTab === 'all' || 
+				(activeTab === 'active' && !quest.progression.isCompleted) ||
+				(activeTab === 'completed' && quest.progression.isCompleted);
+				
+			return matchesSearch && matchesTab;
+		})
+		.sort((a, b) => {
+			if (a.progression.isCompleted !== b.progression.isCompleted) {
+				return a.progression.isCompleted ? 1 : -1;
+			}
+
+			switch (sortBy) {
+				case 'priority':
+					const priorityOrder = { high: 0, medium: 1, low: 2 };
+					return priorityOrder[a.settings.priority || 'low'] - priorityOrder[b.settings.priority || 'low'];
+				case 'xp':
+					return b.reward.XP - a.reward.XP;
+				case 'difficulty':
+					const difficultyOrder = { easy: 0, medium: 1, hard: 2, expert: 3 };
+					return difficultyOrder[a.settings.difficulty || 'easy'] - difficultyOrder[b.settings.difficulty || 'easy'];
+				case 'date':
+					return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+				default:
+					return 0;
+			}
+		});
+
+	if (error) {
+		return <div className="quest-error">{error}</div>;
+	}
+
+	if (quests.length === 0) {
+		return <div className="empty-quests">No quests available</div>;
+	}
+
+	return (
+		<div>
+			<QuestSideView
+				quests={quests}
+				filteredQuests={filteredQuests}
+				isOpen={isOpen}
+				filter={filter}
+				activeTab={activeTab}
+				handleToggle={handleToggle}
+				handleCompleteQuest={handleCompleteQuest}
+				setFilter={setFilter}
+				setActiveTab={setActiveTab}
+				setSortBy={setSortBy}
+				sortBy={sortBy}
+				handleModifyQuest={handleModifyQuest}
+			/>
+		</div>
+	);
 };

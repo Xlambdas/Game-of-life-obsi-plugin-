@@ -1,6 +1,7 @@
 import { TextComponent } from "obsidian";
 import GOL from "plugin";
 import { DescriptionHelper } from "./uiHelpers";
+import { DEFAULT_CATEGORIES, DEFAULT_PRIORITIES, DEFAULT_DIFFICULTIES } from "../constants/DEFAULT";
 
 
 export class TitleInput {
@@ -106,16 +107,7 @@ export class CategoryInput {
 		this.input.style.transition = "all 0.3s ease";
 		this.input.style.boxShadow = "0 2px 4px rgba(0, 0, 0, 0.1)";
 
-		const defaultCategories = [
-			"Undefined",
-			"Physical",        // strength, endurance, agility
-			"Mental",          // intelligence, wisdom, perception
-			"Social",          // charisma, leadership
-			"Creative",        // could map to intelligence + perception
-			"Emotional",       // maybe to wisdom, charisma
-			"Organizational",  // wisdom, intelligence
-			"Exploration",     // perception, endurance
-		];
+		const defaultCategories = DEFAULT_CATEGORIES;
 		const userCategories = this.plugin.settings.user1.settings.questsCategories || [];
 		const allCategories = [...new Set([...defaultCategories, ...userCategories])];
 
@@ -220,7 +212,7 @@ export class PriorityInput {
 		this.input.style.color = "var(--text-muted)";
 
 		// Add options
-		const priorities = ["low", "medium", "high"];
+		const priorities = DEFAULT_PRIORITIES;
 		priorities.forEach(priority => {
 			const option = this.input.createEl("option", {
 				text: priority.charAt(0).toUpperCase() + priority.slice(1),
@@ -259,7 +251,7 @@ export class DifficultyInput {
 		this.input.style.color = "var(--text-muted)";
 
 		// Add options
-		const difficulties = ["easy", "medium", "hard", "expert"];
+		const difficulties = DEFAULT_DIFFICULTIES;
 		difficulties.forEach(difficulty => {
 			const option = this.input.createEl("option", {
 				text: difficulty.charAt(0).toUpperCase() + difficulty.slice(1),

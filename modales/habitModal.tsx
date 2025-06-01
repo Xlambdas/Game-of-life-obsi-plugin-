@@ -7,7 +7,7 @@ import { TitleInput, ShortDescriptionInput, DescriptionInput, CategoryInput, Pri
 import { separator, createHeader, titleSection, subTitle } from "../components/uiHelpers";
 import { endButton } from "../components/questUI";
 import { getDescrInput, getSettingsInputs } from "components/formHelpers";
-import { getFormData } from "components/questHelpers";
+import { getFormData } from "components/questFormHelpers";
 
 export class CreateHabitModal extends Modal {
     private plugin: GOL;
