@@ -666,3 +666,101 @@ margin-top: 20px;
 }
 
 
+.habit-item {
+	padding: 8px 4px;
+	margin: 4px 0;
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 4px;
+	background-color: var(--background-primary);
+	position: relative;
+}
+
+.habit-checkbox-section {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	flex: 1;
+	min-width: 0;
+	position: relative;
+}
+
+.habit-checkbox {
+	margin: 0;
+	flex-shrink: 0;
+}
+
+.habit-title {
+	font-size: 0.9em;
+	font-weight: 500;
+	margin: 0;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	flex: 1;
+}
+
+.habit-title.completed {
+	text-decoration: line-through;
+	color: var(--text-muted);
+}
+
+.habit-edit-button {
+	padding: 2px 6px;
+	background: none;
+	border: none;
+	cursor: pointer;
+	font-size: 0.8em;
+	color: var(--text-muted);
+	opacity: 0.7;
+	transition: opacity 0.2s ease;
+	margin-left: auto;
+}
+
+.habit-edit-button:hover {
+	opacity: 1;
+	color: var(--text-normal);
+}
+
+.habit-details {
+	margin-top: 10px;
+	font-size: 0.9em;
+}
+
+.habit-description {
+	font-size: 0.85em;
+	color: var(--text-muted);
+	margin: 4px 0;
+	white-space: normal;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	display: -webkit-box;
+	-webkit-line-clamp: 3;
+	line-clamp: 3;
+	-webkit-box-orient: vertical;
+	line-height: 1.4;
+	max-height: 4.2em;
+}
+
+.habit-info {
+	display: flex;
+	gap: 10px;
+	align-items: center;
+}
+
+.habit-xp {
+	color: var(--text-accent);
+	font-weight: 500;
+}
+
+.habit-category {
+	color: var(--text-muted);
+	font-size: 0.9em;
+	background-color: var(--background-modifier-border);
+	padding: 2px 6px;
+	border-radius: 4px;
+}
+
+.habit-status {
+	font-size: 12px;
+	color: #bbb;
+}

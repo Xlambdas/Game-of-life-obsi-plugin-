@@ -64,7 +64,7 @@ export class QuestServices {
         }
     }
 
-    private async initializeQuestCounter() {
+    private async initializeQuestCounter(): Promise<void> {
         try {
             const quests = await this.plugin.dataService.loadQuestsFromFile();
             if (!Array.isArray(quests)) {

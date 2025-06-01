@@ -87,6 +87,7 @@ class AppContextService {
 		this._quests = this._plugin.quest;
 		this.scheduleSave();
 	}
+
 	updateHabitSettings(newData: Partial<Habit>): void {
 		if (!this._plugin) {
 			console.error("❌ Cannot update quest settings: Plugin instance is not available");

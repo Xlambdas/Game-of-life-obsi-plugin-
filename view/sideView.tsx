@@ -1,5 +1,6 @@
 import React, { use, useEffect, useRef, useState } from "react";
 import { QuestList } from "../components/questComponents";
+import { HabitList } from "../components/habitComponents";
 import { createRoot, Root } from "react-dom/client";
 import { SIDE_VIEW } from "../constants/viewTypes";
 import { AppContextProvider, useAppContext } from '../context/appContext';
@@ -141,6 +142,7 @@ export const SideView = () => {
 				{/* Habits / Quests Section */}
 				<div className="card"> {/* sinon proposé accordion ? */}
 					<QuestList />
+					<HabitList />
 				</div>
 
 				{/* Dev Tools Section (collapsible) */}

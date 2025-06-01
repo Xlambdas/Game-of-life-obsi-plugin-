@@ -15,9 +15,6 @@ export interface AppContextType {
 	updateXP: (amount: number) => void;
 	saveData: () => Promise<void>;
 	refreshRate: number;
-    // quests: QuestSettings[];
-    // updateUserSettings: (newData: Partial<UserSettings>) => void;
-    // updateQuests: (newQuests: QuestSettings[]) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);

@@ -227,6 +227,7 @@ export interface Habit extends BaseTask {
 			date: Date;
 			success: boolean;
 		}[];
+		isCompleted: boolean; // Auto generated based on history
 	};
 	penalty?: {
 		XPLoss: number;
@@ -262,6 +263,7 @@ export const DEFAULT_HABIT: Habit = {
 		current: 0,
 		best: 0,
 		history: [],
+		isCompleted: false, // Auto generated
 	},
 	penalty: {
 		XPLoss: 0,

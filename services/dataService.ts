@@ -1,11 +1,12 @@
 import { App, TFile, Notice } from 'obsidian';
-import { UserSettings, DEFAULT_SETTINGS, Quest, StatBlock } from '../constants/DEFAULT';
+import { UserSettings, DEFAULT_SETTINGS, Quest, StatBlock, Habit } from '../constants/DEFAULT';
 import { pathUserDB } from "../constants/paths";
 
 export class DataService {
     app: App;
     settings: UserSettings;
     private quests: Quest[] = [];
+	private habits: Habit[] = [];
 
     constructor(app: App) {
         this.app = app;
@@ -14,6 +15,7 @@ export class DataService {
     async loadSettings() {
         await this.loadUser();
         await this.loadQuests();
+		await this.loadHabits();
         // await this.syncCompletedQuests();
     }
 
@@ -50,6 +52,18 @@ export class DataService {
         }
     }
 
+	async loadHabits(): Promise<Habit[]> {
+		try {
+			const habitsPath = `${this.app.vault.configDir}/plugins/game-of-life/data/db/habits.json`;
+			const content = await this.app.vault.adapter.read(habitsPath);
+			this.habits = JSON.parse(content);
+			return this.habits;
+		} catch (error) {
+			console.error("Error loading habits:", error);
+			return [];
+		}
+	}
+
     async saveSettings() {
         try {
             const pathUserDB = `${this.app.vault.configDir}/plugins/game-of-life/data/db/user.json`;
@@ -85,5 +99,29 @@ export class DataService {
             return [];
         }
     }
+
+	async saveHabitsToFile(habits: Habit[]): Promise<void> {
+		try {
+			const habitsPath = `${this.app.vault.configDir}/plugins/game-of-life/data/db/habits.json`;
+			await this.app.vault.adapter.write(habitsPath, JSON.stringify(habits, null, 2));
+			this.habits = habits;
+		} catch (error) {
+			console.error("Error saving habits:", error);
+			throw error;
+		}
+	}
+	
+	async loadHabitsFromFile(): Promise<Habit[]> {
+		try {
+			const habitsPath = `${this.app.vault.configDir}/plugins/game-of-life/data/db/habits.json`;
+			const content = await this.app.vault.adapter.read(habitsPath);
+			const habits = JSON.parse(content);
+			this.habits = habits;
+			return habits;
+		} catch (error) {
+			console.error("Error loading habits:", error);
+			return [];
+		}
+	}
 
 }

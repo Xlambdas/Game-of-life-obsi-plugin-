@@ -17,6 +17,8 @@ export class CreateHabitModal extends Modal {
     private difficultyInput: DifficultyInput;
     private priorityInput: PriorityInput;
     private categoryInput: CategoryInput;
+    private intervalInput: TextComponent;
+    private unitInput: TextComponent;
 
     constructor(app: App, plugin: GOL) {
         super(app);
@@ -30,7 +32,7 @@ export class CreateHabitModal extends Modal {
         createHeader(contentEl, 'Create New Habit');
         const mainContainer = this.createMainContainer(contentEl);
         this.createAdvancedModeToggle(contentEl, mainContainer);
-        // this.createEndButtons(contentEl);
+        this.createEndButtons(contentEl);
     }
 
     onClose() {
@@ -38,16 +40,32 @@ export class CreateHabitModal extends Modal {
     }
 
     private createMainContainer(contentEl: HTMLElement): HTMLElement {
-        const mainContainer = contentEl.createDiv({ cls: "quest-form" });
+        const mainContainer = contentEl.createDiv({ cls: "habit-form" });
         this.createNormalMode(mainContainer);
         return mainContainer;
     }
 
     private createNormalMode(container: HTMLElement) {
-        const formContainer = container.createDiv({ cls: "quest-form" });
+        const formContainer = container.createDiv({ cls: "habit-form" });
         this.titleInput = new TitleInput(formContainer);
         this.shortDescriptionInput = new ShortDescriptionInput(formContainer);
         this.categoryInput = new CategoryInput(formContainer, this.plugin);
+
+        // Add recurrence inputs
+        const recurrenceContainer = formContainer.createDiv({ cls: "recurrence-container" });
+        recurrenceContainer.createEl("h4", { text: "Recurrence" });
+        
+        const intervalContainer = recurrenceContainer.createDiv({ cls: "interval-container" });
+        intervalContainer.createEl("label", { text: "Interval" });
+        this.intervalInput = new TextComponent(intervalContainer)
+            .setPlaceholder("1")
+            .setValue("1");
+
+        const unitContainer = recurrenceContainer.createDiv({ cls: "unit-container" });
+        unitContainer.createEl("label", { text: "Unit" });
+        this.unitInput = new TextComponent(unitContainer)
+            .setPlaceholder("days")
+            .setValue("days");
     }
 
     private createAdvancedModeToggle(contentEl: HTMLElement, mainContainer: HTMLElement) {
@@ -79,94 +97,36 @@ export class CreateHabitModal extends Modal {
         this.difficultyInput = difficultyInput;
     }
 
-    // private createEndButtons(contentEl: HTMLElement) {
-    //     endButton({
-	// 		version: "create",
-    //         contentEl: contentEl,
-    //         plugin: {
-    //             questService: {
-    //                 saveQuestToJSON: (
-    //                     title: string,
-    //                     shortDescription: string,
-    //                     description: string,
-    //                     reward_XP: number,
-    //                     require_level: number,
-    //                     require_previousQuests: string,
-    //                     difficulty: string,
-    //                     category: string,
-	// 					dueDate: Date | undefined,
-    //                     priority: string,
-    //                     questId: string,
-    //                     attributeRewards: any
-    //                 ) => {
-    //                     // Create a new habit object
-    //                     const habit: Habit = {
-    //                         id: `Habit_${Date.now()}`,
-    //                         title,
-    //                         shortDescription,
-    //                         description,
-    //                         created_at: new Date(),
-    //                         settings: {
-    //                             type: 'habit',
-    //                             category: category as any,
-    //                             priority: priority as any,
-    //                             difficulty: difficulty as any,
-    //                             isSecret: false,
-    //                             isTimeSensitive: false,
-    //                         },
-    //                         recurrence: {
-    //                             interval: 1,
-    //                             unit: 'days',
-    //                         },
-    //                         streak: {
-    //                             current: 0,
-    //                             best: 0,
-    //                             history: [],
-    //                         },
-    //                         penalty: {
-    //                             XPLoss: 0,
-    //                             breackStreak: false,
-    //                         },
-    //                         reward: {
-    //                             XP: reward_XP,
-    //                             attributes: attributeRewards,
-    //                             items: [],
-    //                         },
-    //                         isSystemHabit: false,
-    //                     };
+    private createEndButtons(contentEl: HTMLElement) {
+        endButton({
+            version: "create",
+            contentEl: contentEl,
+            onSubmit: async () => {
+                const formData = {
+                    title: this.titleInput.getValue().trim(),
+                    shortDescription: this.shortDescriptionInput.getValue().trim(),
+                    description: this.descriptionInput?.getValue().trim() || "",
+                    category: this.categoryInput.getValue().trim(),
+                    priority: this.priorityInput?.getValue().trim() || "low",
+                    difficulty: this.difficultyInput?.getValue().trim() || "easy",
+                    interval: parseInt(this.intervalInput.getValue()) || 1,
+                    unit: this.unitInput.getValue().trim() || "days",
+                    reward_XP: 10, // Default XP reward
+                };
 
-    //                     // Save the habit
-    //                     return this.plugin.questService.saveQuestToJSON(
-    //                         title,
-    //                         shortDescription,
-    //                         description,
-    //                         reward_XP,
-    //                         require_level,
-    //                         require_previousQuests,
-    //                         difficulty,
-    //                         category,
-    //                         undefined,
-    //                         priority,
-    //                         habit.id,
-    //                         attributeRewards
-    //                     );
-    //                 }
-    //             }
-    //         },
-    //         close: () => this.close(),
-            // getFormData: () => {
-            //     const formData = getFormData({
-            //         titleInput: this.titleInput,
-            //         shortDescriptionInput: this.shortDescriptionInput,
-            //         descriptionInput: this.descriptionInput,
-            //         priorityInput: this.priorityInput,
-            //         difficultyInput: this.difficultyInput,
-            //         categoryInput: this.categoryInput,
-            //     });
-            //     return formData;
-    //         }
-    //     });
-    // }
+                try {
+                    await this.plugin.habitService.saveHabitToJSON(formData);
+                    new Notice('Habit created successfully');
+                    viewSyncService.emitStateChange({ habitsUpdated: true });
+                    this.close();
+                } catch (error) {
+                    console.error('Error creating habit:', error);
+                    new Notice('Failed to create habit');
+                }
+            },
+            onCancel: () => this.close(),
+        });
+    }
 }
 
 export class ModifyHabitModal extends Modal {
@@ -178,6 +138,8 @@ export class ModifyHabitModal extends Modal {
     private difficultyInput: DifficultyInput;
     private priorityInput: PriorityInput;
     private categoryInput: CategoryInput;
+    private intervalInput: TextComponent;
+    private unitInput: TextComponent;
 
     constructor(app: App, plugin: GOL) {
         super(app);
@@ -190,14 +152,35 @@ export class ModifyHabitModal extends Modal {
         createHeader(contentEl, 'Modify Habit');
         separator(contentEl);
         subTitle(contentEl, 'General');
+        
         this.titleInput = new TitleInput(contentEl, this.habit.title);
         this.shortDescriptionInput = new ShortDescriptionInput(contentEl, this.habit.shortDescription);
         this.descriptionInput = new DescriptionInput(contentEl, this.habit.description);
         this.categoryInput = new CategoryInput(contentEl, this.plugin, this.habit.settings.category);
-        const { priorityInput, difficultyInput } = getSettingsInputs(contentEl, this.habit.settings.priority, this.habit.settings.difficulty);
+        
+        // Add recurrence inputs
+        const recurrenceContainer = contentEl.createDiv({ cls: "recurrence-container" });
+        recurrenceContainer.createEl("h4", { text: "Recurrence" });
+        
+        const intervalContainer = recurrenceContainer.createDiv({ cls: "interval-container" });
+        intervalContainer.createEl("label", { text: "Interval" });
+        this.intervalInput = new TextComponent(intervalContainer)
+            .setValue(this.habit.recurrence.interval.toString());
+
+        const unitContainer = recurrenceContainer.createDiv({ cls: "unit-container" });
+        unitContainer.createEl("label", { text: "Unit" });
+        this.unitInput = new TextComponent(unitContainer)
+            .setValue(this.habit.recurrence.unit);
+
+        const { priorityInput, difficultyInput } = getSettingsInputs(
+            contentEl, 
+            this.habit.settings.priority, 
+            this.habit.settings.difficulty
+        );
         this.priorityInput = priorityInput;
         this.difficultyInput = difficultyInput;
-        this.endButton(contentEl);
+
+        this.createEndButtons(contentEl);
     }
 
     onClose() {
@@ -205,63 +188,38 @@ export class ModifyHabitModal extends Modal {
         contentEl.empty();
     }
 
-    private endButton(contentEl: HTMLElement) {
-        const buttonContainer = contentEl.createDiv({cls: "button-container"});
-        const flexContainer = buttonContainer.createDiv({ cls: "buttons-flex-container" });
-        const noteContainer = flexContainer.createDiv({ cls: "required-note-container" });
-        noteContainer.createEl("p", { text: '* Required fields', cls: 'required-note' });
+    private createEndButtons(contentEl: HTMLElement) {
+        endButton({
+            version: "edit",
+            contentEl: contentEl,
+            onSubmit: async () => {
+                const formData = {
+                    habitId: this.habit.id,
+                    title: this.titleInput.getValue().trim(),
+                    shortDescription: this.shortDescriptionInput.getValue().trim(),
+                    description: this.descriptionInput.getValue().trim(),
+                    category: this.categoryInput.getValue().trim(),
+                    priority: this.priorityInput.getValue().trim(),
+                    difficulty: this.difficultyInput.getValue().trim(),
+                    interval: parseInt(this.intervalInput.getValue()) || 1,
+                    unit: this.unitInput.getValue().trim() || "days",
+                    reward_XP: this.habit.reward?.XP || 10,
+                };
 
-        const buttonsGroup = flexContainer.createDiv({ cls: "buttons-group" });
-
-        new ButtonComponent(buttonsGroup)
-            .setButtonText("save")
-            .onClick(async () => {
                 try {
-                    // Create updated habit object
-                    const updatedHabit: Habit = {
-                        ...this.habit,
-                        title: this.titleInput.getValue().trim(),
-                        shortDescription: this.shortDescriptionInput.getValue().trim(),
-                        description: this.descriptionInput.getValue().trim(),
-                        settings: {
-                            ...this.habit.settings,
-                            category: this.categoryInput.getValue().trim() as any,
-                            priority: this.priorityInput.getValue().trim() as any,
-                            difficulty: this.difficultyInput.getValue().trim() as any,
-                        }
-                    };
-
+                    await this.plugin.habitService.saveHabitToJSON(formData);
                     new Notice('Habit updated successfully');
-                    viewSyncService.emitStateChange({ questsUpdated: true });
+                    viewSyncService.emitStateChange({ habitsUpdated: true });
                     this.close();
                 } catch (error) {
-                    console.error('Error saving habit:', error);
-                    new Notice('Failed to save habit changes');
+                    console.error('Error updating habit:', error);
+                    new Notice('Failed to update habit');
                 }
-            });
-
-        new ButtonComponent(buttonsGroup)
-            .setButtonText("Delete")
-            .setWarning()
-            .onClick(async () => {
-                if (confirm('Are you sure you want to delete this habit? This action cannot be undone.')) {
-                    try {
-                        const questsPath = `${this.app.vault.configDir}/plugins/game-of-life/data/db/quests.json`;
-                        const content = await this.app.vault.adapter.read(questsPath);
-                        const quests = JSON.parse(content);
-                        
-                        const updatedQuests = quests.filter((q: any) => q.id !== this.habit.id);
-                        
-                        await this.app.vault.adapter.write(questsPath, JSON.stringify(updatedQuests, null, 2));
-                        
-                        new Notice('Habit deleted successfully');
-                        viewSyncService.emitStateChange({ questsUpdated: true });
-                        this.close();
-                    } catch (error) {
-                        console.error('Error deleting habit:', error);
-                        new Notice('Failed to delete habit');
-                    }
-                }
-            });
+            },
+            onDelete: async () => {
+                await this.plugin.habitService.handleDelete(this.habit.id);
+                this.close();
+            },
+        });
     }
 }
