@@ -14,6 +14,7 @@ import { QuestServices } from './services/questService';
 import { CreateQuestModal, ModifyQuestModal } from './modales/questModal';
 import { CreateHabitModal } from './modales/habitModal';
 import { HabitServices } from './services/habitService';
+import './styles/calendarView.css';
 
 
 export default class GOL extends Plugin {

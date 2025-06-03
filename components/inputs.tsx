@@ -1,7 +1,7 @@
 import { TextComponent } from "obsidian";
 import GOL from "plugin";
 import { DescriptionHelper } from "./uiHelpers";
-import { DEFAULT_CATEGORIES, DEFAULT_PRIORITIES, DEFAULT_DIFFICULTIES } from "../constants/DEFAULT";
+import { DEFAULT_CATEGORIES, DEFAULT_PRIORITIES, DEFAULT_DIFFICULTIES, StatBlock } from "../constants/DEFAULT";
 
 
 export class TitleInput {
@@ -18,7 +18,7 @@ export class TitleInput {
 		if (initialValue) {
 			this.input.setValue(initialValue);
 		}
-		this.description = new DescriptionHelper(titleContainer, "A clear and concise title helps you stay focused on your quest's main objective.");
+		this.description = new DescriptionHelper(titleContainer, "A clear and concise title helps you stay focused on your main objective.");
 	}
 
 	getValue(): string {
@@ -71,7 +71,7 @@ export class DescriptionInput {
 			this.input.value = initialValue;
 		}
 		
-		this.description = new DescriptionHelper(descriptionContainer, "The more vivid and detailed your quest is, the more powerful and motivating it becomes. Add purpose, emotion, and clarity!");
+		this.description = new DescriptionHelper(descriptionContainer, "The more vivid and detailed your description is, the more powerful and motivating it becomes. Add purpose, emotion, and clarity!");
 	}
 
 	getValue(): string {
@@ -557,7 +557,7 @@ export class RewardAttributeInput {
 
 
 
-export class rewardItemsInput {
+export class RewardItemsInput {
 	private input: HTMLTextAreaElement;
 	private description: DescriptionHelper;
 
@@ -583,3 +583,85 @@ export class rewardItemsInput {
 	}
 }
 
+export class RecurrenceUnitInput {
+	private input: HTMLSelectElement;
+	private description: DescriptionHelper;
+
+	constructor(container: HTMLElement, initialValue?: string) {
+		const recurrenceContainer = container.createDiv({ cls: "form-group" });
+		recurrenceContainer.style.display = "flex";
+		recurrenceContainer.style.alignItems = "center";
+		recurrenceContainer.style.gap = "10px";
+
+		const label = recurrenceContainer.createEl("label", { text: "Unit: " });
+		label.style.marginBottom = "0";
+		label.style.minWidth = "120px";
+
+		this.input = recurrenceContainer.createEl("select", {
+			cls: "recurrence-unit-select"
+		}) as HTMLSelectElement;
+		this.input.style.width = "80px";
+		this.input.style.height = "30px";
+		this.input.style.borderRadius = "5px";
+		this.input.style.border = "1px solid var(--input-border)";
+		this.input.style.padding = "5px";
+		this.input.style.marginBottom = "0";
+		this.input.style.fontSize = "14px";
+		this.input.style.fontWeight = "normal";
+		this.input.style.color = "var(--text-muted)";
+
+		const units = ["days", "weeks", "months"];
+		units.forEach(unit => {
+			const option = this.input.createEl("option", {
+				text: unit.charAt(0).toUpperCase() + unit.slice(1),
+				value: unit
+			});
+			if (initialValue === unit) option.selected = true;
+		});
+	}
+
+	getValue(): string {
+		return this.input.value;
+	}
+}
+export class RecurrenceIntervalInput {
+	private input: HTMLInputElement;
+	private description: DescriptionHelper;
+
+	constructor(container: HTMLElement, initialValue?: number) {
+		const intervalContainer = container.createDiv({ cls: "form-group" });
+		intervalContainer.style.display = "flex";
+		intervalContainer.style.alignItems = "center";
+		intervalContainer.style.gap = "10px";
+
+		const label = intervalContainer.createEl("label", { text: "Interval: " });
+		label.style.marginBottom = "0";
+		label.style.minWidth = "120px";
+
+		this.input = intervalContainer.createEl("input", {
+			type: "text",
+			cls: "recurrence-interval-input"
+		}) as HTMLInputElement;
+		this.input.setAttribute("min", "1");
+		this.input.setAttribute("max", "365");
+		this.input.style.width = "40px";
+		this.input.style.textAlign = "center";
+		this.input.style.marginBottom = "0";
+		this.input.value = (initialValue || 1).toString();
+
+		this.input.addEventListener("input", (e) => {
+			const value = this.input.value;
+			this.input.value = value.replace(/[^0-9]/g, "");
+
+			const numValue = parseInt(this.input.value, 10);
+			if (numValue < 1) this.input.value = "1";
+			if (numValue > 365) this.input.value = "365";
+		});
+
+	}
+
+	getValue(): number {
+		const value = parseInt(this.input.value, 10);
+		return isNaN(value) ? 1 : value;
+	}
+}

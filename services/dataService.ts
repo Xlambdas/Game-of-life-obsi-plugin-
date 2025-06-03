@@ -91,8 +91,6 @@ export class DataService {
             const questsPath = `${this.app.vault.configDir}/plugins/game-of-life/data/db/quests.json`;
             const content = await this.app.vault.adapter.read(questsPath);
             const quests = JSON.parse(content);
-            // this.quests = quests;
-            // await this.syncCompletedQuests();
             return quests;
         } catch (error) {
             console.error("Error loading quests:", error);

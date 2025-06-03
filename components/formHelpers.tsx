@@ -1,4 +1,4 @@
-import { DescriptionInput, PriorityInput, DifficultyInput,  RequireLevelInput, RequirePreviousQuestsInput, RewardAttributeInput, rewardItemsInput, dueDateInput } from "./inputs";
+import { DescriptionInput, PriorityInput, DifficultyInput,  RequireLevelInput, RequirePreviousQuestsInput, RewardAttributeInput, RewardItemsInput, dueDateInput, RecurrenceIntervalInput, RecurrenceUnitInput } from "./inputs";
 import type GOL from "../plugin";
 import { separator, subTitle, DescriptionHelper } from "./uiHelpers";
 import { TextComponent } from "obsidian";
@@ -16,13 +16,15 @@ interface RequirementsSection {
 
 interface RewardsSection {
     rewardAttributeInput: RewardAttributeInput;
-    rewardItemsInput: rewardItemsInput;
+    rewardItemsInput: RewardItemsInput;
     rewardXPInput: TextComponent;
 }
 
-export const getDescrInput = (container: HTMLElement): DescriptionInput => {
-    return new DescriptionInput(container);
-};
+interface RecurrenceSection {
+	intervalInput: RecurrenceIntervalInput;
+	unitInput: RecurrenceUnitInput;
+}
+
 
 export const getSettingsInputs = (container: HTMLElement, priority?: string, difficulty?: string): SettingsSection => {
     separator(container);
@@ -54,7 +56,7 @@ export const getRewardInputs = (container: HTMLElement, plugin: GOL, reward_attr
                 ? Object.entries(reward_attribute).map(([attribute, xp]) => ({ attribute, xp }))
                 : undefined
         ),
-        rewardItemsInput: new rewardItemsInput(container),
+        rewardItemsInput: new RewardItemsInput(container),
         rewardXPInput: createXPRewardInput(container, reward_XP)
     };
 };
@@ -121,6 +123,15 @@ export const updateAttributesByCategory = (category: string, attributes: StatBlo
 	return updatedAttributes;
 }
 
+export const getRecurrenceInputs = (container: HTMLElement, initial_unit?: string, initial_interval?: number): RecurrenceSection => {
+	separator(container);
+	subTitle(container, "Recurrence");
+	return {
+		intervalInput: new RecurrenceIntervalInput(container, initial_interval),
+		unitInput: new RecurrenceUnitInput(container, initial_unit),
+	};
+}
+
 
 export interface QuestFormData {
 	title: string;
@@ -135,4 +146,20 @@ export interface QuestFormData {
 	attributeRewards: any;
 	dueDate?: Date;
 	questId?: string;
+}
+
+export interface HabitFormData {
+	title: string;
+	shortDescription: string;
+	description: string;
+	reward_XP: number;
+	require_level: number;
+	require_previousQuests: string | string[];
+	priority: string;
+	difficulty: string;
+	category: string;
+	attributeRewards: any;
+	recurrence_unit?: string;
+	recurrence_interval?: number;
+	habitId?: string;
 }

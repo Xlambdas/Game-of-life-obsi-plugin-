@@ -1,8 +1,10 @@
 import { App, Notice } from 'obsidian';
-import { Habit, StatBlock, DEFAULT_HABIT } from '../constants/DEFAULT';
+import { Habit, StatBlock, DEFAULT_HABIT, DefaultPriority, DefaultDifficulty, DefaultCategory } from '../constants/DEFAULT';
 import { viewSyncService } from './syncService';
 import { DataService } from './dataService';
 import GOL from '../plugin';
+import { updateAttributesByCategory } from 'components/formHelpers';
+import { validateHabitFormData, HabitFormData } from 'components/habitFormHelpers';
 
 export class HabitServices {
 	private app: App;
@@ -18,6 +20,46 @@ export class HabitServices {
 		this.plugin = plugin;
 		this.dataService = this.plugin.dataService;
 		this.initializeHabitCounter();
+	}
+
+	getAllHabits(): Habit[] {
+		return this.habits;
+	}
+
+	getHabitById(id: string): Habit | undefined {
+		return this.habits.find(h => h.id === id);
+	}
+
+	async handleDelete(habitId: string): Promise<void> {
+		if (confirm('Are you sure you want to delete this habit? This action cannot be undone.')) {
+			try {
+				const habits = await this.dataService.loadHabitsFromFile();
+				const updatedHabits = habits.filter((h: Habit) => h.id !== habitId);
+				await this.dataService.saveHabitsToFile(updatedHabits);
+				new Notice('Habit deleted successfully');
+				viewSyncService.emitStateChange({ habitsUpdated: true });
+			} catch (error) {
+				console.error('Error deleting habit:', error);
+				new Notice('Failed to delete habit');
+			}
+		}
+	}
+
+	async handleSave(habit: Habit, formData: HabitFormData): Promise<void> {
+		try {
+			const validationError = validateHabitFormData(formData);
+			if (validationError) {
+				new Notice(validationError);
+				return;
+			}
+			formData.habitId = habit.id;
+			await this.saveHabitToJSON(formData);
+			new Notice('Habit saved successfully');
+			viewSyncService.emitStateChange({ habitsUpdated: true });
+		} catch (error) {
+			console.error('Error saving habit:', error);
+			new Notice('Failed to save habit');
+		}
 	}
 
 	private async initializeHabitCounter(): Promise<void> {
@@ -51,11 +93,19 @@ export class HabitServices {
 		return `habit_${newId}`;
 	}
 
-	async saveHabitToJSON(formData: any): Promise<Habit> {
+	async saveHabitToJSON(formData: HabitFormData): Promise<Habit> {
 		try {
 			let habits = await this.dataService.loadHabitsFromFile();
 			let habit: Habit;
 			const existingHabitIndex = habits.findIndex(h => h.id === formData.habitId);
+
+			// Valeurs par défaut pour les attributs
+            const defaultAttributes = updateAttributesByCategory(
+                formData.category,
+				DEFAULT_HABIT.reward.attributes ?? {} as StatBlock
+            ) || (DEFAULT_HABIT.reward.attributes ?? {} as StatBlock);
+
+			const defaultHabitAttributes = DEFAULT_HABIT.reward?.attributes || defaultAttributes;
 
 			if (existingHabitIndex !== -1) {
 				// Update existing habit
@@ -63,23 +113,44 @@ export class HabitServices {
 				habit.title = formData.title;
 				habit.shortDescription = formData.shortDescription;
 				habit.description = formData.description;
-				habit.settings.priority = formData.priority;
-				habit.settings.difficulty = formData.difficulty;
-				habit.settings.category = formData.category;
-				if (habit.reward) {
-					habit.reward.XP = formData.reward_XP;
-					if (formData.attributeRewards) {
-						habit.reward.attributes = {
-							...(DEFAULT_HABIT.reward?.attributes || {}),
-							...formData.attributeRewards
-						};
-					}
-				}
-				habit.recurrence.interval = formData.interval || 1;
-				habit.recurrence.unit = formData.unit || 'days';
+				habit.settings.priority = formData.priority as DefaultPriority;
+				habit.settings.difficulty = formData.difficulty as DefaultDifficulty;
+				habit.settings.category = formData.category as DefaultCategory | string;
+
+				habit.recurrence.interval = formData.recurrence_interval;
+				habit.recurrence.unit = formData.recurrence_unit as "day" | "week" | "month";
+
+                // if attributes are provided manually, use them
+                if (formData.attributeRewards) {
+                    habit.reward.attributes = {
+                        ...defaultAttributes,
+                        ...formData.attributeRewards
+                    };
+                } else {
+                    const currentAttributes: StatBlock = {
+                        ...defaultAttributes,
+                        ...defaultHabitAttributes
+                    };
+                    const updatedAttributes = updateAttributesByCategory(formData.category, currentAttributes);
+                    habit.reward.attributes = updatedAttributes;
+                }
 			} else {
+				// Create new habit
 				const newId = this.generateHabitId();
-				
+				let finalAttributes: StatBlock;
+				if (formData.attributeRewards) {
+                    finalAttributes = {
+                        ...defaultAttributes,
+                        ...formData.attributeRewards
+                    };
+                } else {
+                    // Sinon, mettre à jour les attributs en fonction de la catégorie
+                    const baseAttributes: StatBlock = {
+                        ...defaultAttributes
+                    };
+                    finalAttributes = updateAttributesByCategory(formData.category, baseAttributes);
+                }
+
 				habit = {
 					...DEFAULT_HABIT,
 					id: newId,
@@ -94,18 +165,20 @@ export class HabitServices {
 						category: formData.category || DEFAULT_HABIT.settings.category,
 					},
 					recurrence: {
-						interval: formData.interval || 1,
-						unit: formData.unit || 'days',
+						interval: formData.recurrence_interval,
+						unit: (formData.recurrence_unit as "day" | "week" | "month") || "day",
 					},
 					streak: {
 						current: 0,
 						best: 0,
 						history: [],
+						isCompletedToday: false,
+						nextDate: new Date()
 					},
 					reward: {
-						...(DEFAULT_HABIT.reward || { XP: 0, attributes: {}, items: [] }),
-						XP: formData.reward_XP || (DEFAULT_HABIT.reward?.XP || 0),
-						attributes: formData.attributeRewards || (DEFAULT_HABIT.reward?.attributes || {}),
+						XP: formData.reward_XP || 0,
+						attributes: finalAttributes,
+						items: []
 					},
 					isSystemHabit: false
 				};
@@ -122,7 +195,7 @@ export class HabitServices {
 		}
 	}
 
-	async handleCompleteHabit(habit: Habit, plugin: GOL, setHabits: any, setError: any, updateXP: any) {
+	async handleCompleteHabit(habit: Habit, plugin: GOL, setHabits: any, setError: any, updateXP: any, completed: boolean, date?: Date) {
 		try {
 			const habits = await plugin.dataService.loadHabitsFromFile();
 			const userData = await plugin.dataService.loadUser();
@@ -131,6 +204,20 @@ export class HabitServices {
 				throw new Error("User data is missing or malformed");
 			}
 
+			const targetDate = date ? new Date(date) : new Date();
+			const historyEntry = { 
+				date: targetDate,
+				success: completed 
+			};
+
+			// S'assurer que toutes les dates dans l'historique sont des objets Date valides
+			const sanitizeHistory = (history: { date: Date; success: boolean }[]) => {
+				return history.map(entry => ({
+					...entry,
+					date: new Date(entry.date)
+				}));
+			};
+
 			// Update local state for immediate UI feedback
 			setHabits((prevHabits: Habit[]) =>
 				prevHabits.map(h =>
@@ -138,9 +225,13 @@ export class HabitServices {
 						...h, 
 						streak: {
 							...h.streak,
-							current: h.streak.current + 1,
-							best: Math.max(h.streak.current + 1, h.streak.best),
-							history: [...h.streak.history, { date: new Date(), success: true }]
+							current: completed ? h.streak.current + 1 : Math.max(0, h.streak.current - 1),
+							best: Math.max(h.streak.best, completed ? h.streak.current + 1 : h.streak.current - 1),
+							history: completed 
+								? sanitizeHistory([...h.streak.history, historyEntry])
+								: sanitizeHistory(h.streak.history.filter(entry => 
+									new Date(entry.date).toDateString() !== targetDate.toDateString()
+								))
 						}
 					} : h
 				)
@@ -148,7 +239,7 @@ export class HabitServices {
 
 			// Update user data and save
 			if (userData.user1?.persona?.xp !== undefined && habit.reward) {
-				userData.user1.persona.xp += habit.reward.XP;
+				userData.user1.persona.xp += completed ? habit.reward.XP : -habit.reward.XP;
 			}
 
 			const updatedHabits = habits.map(h => 
@@ -156,9 +247,13 @@ export class HabitServices {
 					...h, 
 					streak: {
 						...h.streak,
-						current: h.streak.current + 1,
-						best: Math.max(h.streak.current + 1, h.streak.best),
-						history: [...h.streak.history, { date: new Date(), success: true }]
+						current: completed ? h.streak.current + 1 : Math.max(0, h.streak.current - 1),
+						best: Math.max(h.streak.best, completed ? h.streak.current + 1 : h.streak.current - 1),
+						history: completed 
+							? sanitizeHistory([...h.streak.history, historyEntry])
+							: sanitizeHistory(h.streak.history.filter(entry => 
+								new Date(entry.date).toDateString() !== targetDate.toDateString()
+							))
 					}
 				} : h
 			);
@@ -166,8 +261,11 @@ export class HabitServices {
 			await plugin.dataService.saveHabitsToFile(updatedHabits);
 			await plugin.dataService.saveSettings();
 			if (habit.reward) {
-				updateXP(habit.reward.XP);
-				new Notice(`Habit completed! Earned ${habit.reward.XP} XP`);
+				updateXP(completed ? habit.reward.XP : -habit.reward.XP);
+				new Notice(completed 
+					? `Habit completed! Earned ${habit.reward.XP} XP`
+					: `Habit uncompleted! Lost ${habit.reward.XP} XP`
+				);
 			}
 			setError(null);
 		} catch (error) {
@@ -178,26 +276,4 @@ export class HabitServices {
 		}
 	}
 
-	async handleDelete(habitId: string): Promise<void> {
-		if (confirm('Are you sure you want to delete this habit? This action cannot be undone.')) {
-			try {
-				const habits = await this.dataService.loadHabitsFromFile();
-				const updatedHabits = habits.filter((h: Habit) => h.id !== habitId);
-				await this.dataService.saveHabitsToFile(updatedHabits);
-				new Notice('Habit deleted successfully');
-				viewSyncService.emitStateChange({ habitsUpdated: true });
-			} catch (error) {
-				console.error('Error deleting habit:', error);
-				new Notice('Failed to delete habit');
-			}
-		}
-	}
-
-	getAllHabits(): Habit[] {
-		return this.habits;
-	}
-
-	getHabitById(id: string): Habit | undefined {
-		return this.habits.find(h => h.id === id);
-	}
 }

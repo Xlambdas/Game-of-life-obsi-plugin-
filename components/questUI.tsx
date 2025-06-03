@@ -4,7 +4,7 @@ import { validateQuestFormData, EndButtonDeps } from "./questFormHelpers";
 import { dueDateInput } from "./inputs";
 // import { QuestItem } from './questComponents';
 
-export const endButton = ({
+export const endQuestButton = ({
 	version,
 	contentEl,
 	onSubmit,

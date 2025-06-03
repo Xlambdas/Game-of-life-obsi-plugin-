@@ -95,6 +95,8 @@ export const DEFAULT_PRIORITIES = ['low', 'medium', 'high'] as const;
 export type DefaultPriority = typeof DEFAULT_PRIORITIES[number];
 export const DEFAULT_DIFFICULTIES = ['easy', 'medium', 'hard', 'expert'] as const;
 export type DefaultDifficulty = typeof DEFAULT_DIFFICULTIES[number];
+export const DEFAULT_RECURRENCES = ['day', 'week', 'month'] as const;
+export type DefaultRecurrence = typeof DEFAULT_RECURRENCES[number];
 
 export type StatBlock = {
 	strength: number;
@@ -218,7 +220,7 @@ export interface Habit extends BaseTask {
 	settings: {type: 'habit'} & BaseTask['settings'];
 	recurrence: {
 		interval: number;
-		unit: "days" | "weeks" | "months";
+		unit: "day" | "week" | "month";
 	};
 	streak: {
 		current: number;
@@ -227,13 +229,14 @@ export interface Habit extends BaseTask {
 			date: Date;
 			success: boolean;
 		}[];
-		isCompleted: boolean; // Auto generated based on history
+		isCompletedToday: boolean; // Auto generated based on history
+		nextDate: Date; // Auto generated based on recurrence
 	};
 	penalty?: {
 		XPLoss: number;
 		breackStreak: boolean;
 	};
-	reward?: {
+	reward: {
 		XP: number;
 		attributes?: StatBlock;
 		items?: string[];
@@ -243,8 +246,8 @@ export interface Habit extends BaseTask {
 
 export const DEFAULT_HABIT: Habit = {
 	id: "Habit_0",
-	title: "Tutorial",
-	shortDescription: "This is your first habit.",
+	title: "drink water",
+	shortDescription: "Stay hydrated",
 	description: "This is your first habit.",
 	created_at: new Date(),
 	settings: {
@@ -257,13 +260,14 @@ export const DEFAULT_HABIT: Habit = {
 	},
 	recurrence: {
 		interval: 1,
-		unit: 'days',
+		unit: 'day',
 	},
 	streak: {
 		current: 0,
 		best: 0,
 		history: [],
-		isCompleted: false, // Auto generated
+		isCompletedToday: false, // Auto generated
+		nextDate: new Date(), // Auto generated based on recurrence
 	},
 	penalty: {
 		XPLoss: 0,

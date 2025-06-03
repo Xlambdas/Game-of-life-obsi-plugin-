@@ -15,7 +15,7 @@ If your plugin does not need CSS, delete this file.
 	margin-bottom: 20px;
 }
 
-.quest-form {
+.form {
 	margin-bottom: 20px;
 }
 
@@ -366,6 +366,7 @@ margin-top: 20px;
     margin-top: 4px;
     flex-wrap: wrap;
     padding: 0 2px;
+    align-items: stretch;
 }
 
 .quest-item {
@@ -480,81 +481,13 @@ margin-top: 20px;
     padding: 8px;
 }
 
-.quest-filter-dropdown {
-    position: relative;
-    display: block;
-    margin-top: 4px;
-    width: 100%;
-}
-
-.quest-filter-button {
-    padding: 6px 8px;
-    background-color: var(--background-primary);
-    border: 1px solid var(--background-modifier-border);
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.9em;
-    width: 100%;
-    text-align: left;
-    position: relative;
-    box-sizing: border-box;
-}
-
-.quest-filter-button::after {
-    content: '▼';
-    position: absolute;
-    right: 8px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 0.8em;
-}
-
-.quest-filter-options {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background-color: var(--background-primary);
-    border: 1px solid var(--background-modifier-border);
-    border-radius: 4px;
-    margin-top: 2px;
-    z-index: 1000;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    width: 100%;
-}
-
-.quest-filter-dropdown:hover .quest-filter-options {
-    display: block;
-}
-
-.quest-filter-option {
-    display: block;
-    width: 100%;
-    padding: 6px 8px;
-    border: none;
-    background: none;
-    text-align: left;
-    cursor: pointer;
-    font-size: 0.9em;
-    color: var(--text-normal);
-}
-
-.quest-filter-option:hover {
-    background-color: var(--background-modifier-hover);
-}
-
-.quest-filter-option.active {
-    background-color: var(--interactive-accent);
-    color: var(--text-on-accent);
-}
-
 .quest-filter-dropdown,
 .quest-sort-dropdown {
     position: relative;
-    display: block;
+    display: flex;
     flex: 1;
-    min-width: 120px;
+    min-width: 100px;
+    height: 100%;
 }
 
 .quest-filter-button,
@@ -569,6 +502,9 @@ margin-top: 20px;
     text-align: left;
     position: relative;
     box-sizing: border-box;
+    height: 100%;
+    display: flex;
+    align-items: center;
 }
 
 .quest-filter-button::after,
@@ -634,6 +570,7 @@ margin-top: 20px;
     .quest-filter-dropdown,
     .quest-sort-dropdown {
         width: 100%;
+        min-width: unset;
     }
 }
 
@@ -763,4 +700,479 @@ margin-top: 20px;
 .habit-status {
 	font-size: 12px;
 	color: #bbb;
+}
+
+/* Habit Styles */
+.habit-list {
+    margin: 0;
+    padding: 0;
+}
+
+.habit-controls {
+    margin: 5px 0;
+    padding: 0 2px;
+}
+
+.habit-controls-row {
+    display: flex;
+    gap: 4px;
+    margin-top: 4px;
+    flex-wrap: wrap;
+    padding: 0 2px;
+    align-items: stretch;
+}
+
+.habit-search {
+    width: 100%;
+    margin-bottom: 4px;
+    padding: 4px;
+    font-size: 0.9em;
+}
+
+.habit-filter-dropdown,
+.habit-sort-dropdown {
+    position: relative;
+    display: flex;
+    flex: 1;
+    min-width: 120px;
+    height: 100%;
+}
+
+.habit-filter-button,
+.habit-sort-button {
+    padding: 6px 8px;
+    background-color: var(--background-primary);
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+    width: 100%;
+    text-align: left;
+    position: relative;
+    box-sizing: border-box;
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.habit-filter-button::after,
+.habit-sort-button::after {
+    content: '▼';
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.8em;
+}
+
+.habit-filter-options,
+.habit-sort-options {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: var(--background-primary);
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 4px;
+    margin-top: 2px;
+    z-index: 1000;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 100%;
+}
+
+.habit-filter-dropdown:hover .habit-filter-options,
+.habit-sort-dropdown:hover .habit-sort-options {
+    display: block;
+}
+
+.habit-filter-option,
+.habit-sort-option {
+    display: block;
+    width: 100%;
+    padding: 6px 8px;
+    border: none;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+    font-size: 0.9em;
+    color: var(--text-normal);
+}
+
+.habit-filter-option:hover,
+.habit-sort-option:hover {
+    background-color: var(--background-modifier-hover);
+}
+
+.habit-filter-option.active,
+.habit-sort-option.active {
+    background-color: var(--interactive-accent);
+    color: var(--text-on-accent);
+}
+
+@media (max-width: 400px) {
+    .habit-controls-row {
+        flex-direction: column;
+    }
+    
+    .habit-filter-dropdown,
+    .habit-sort-dropdown {
+        width: 100%;
+    }
+}
+
+.habit-system-badge {
+    font-size: 0.7em;
+    background-color: var(--background-modifier-border);
+    padding: 2px 4px;
+    border-radius: 3px;
+    margin-left: 6px;
+}
+
+.habits-container {
+    margin: 0;
+    padding: 0;
+}
+
+.no-habits-message {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.9em;
+    padding: 8px;
+}
+
+.habit-filter-dropdown {
+    position: relative;
+    display: block;
+    margin-top: 4px;
+    width: 100%;
+}
+
+.habit-filter-button {
+    padding: 6px 8px;
+    background-color: var(--background-primary);
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+    width: 100%;
+    text-align: left;
+    position: relative;
+    box-sizing: border-box;
+}
+
+.habit-filter-button::after {
+    content: '▼';
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.8em;
+}
+
+.habit-filter-options {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: var(--background-primary);
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 4px;
+    margin-top: 2px;
+    z-index: 1000;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 100%;
+}
+
+.habit-filter-dropdown:hover .habit-filter-options {
+    display: block;
+}
+
+.habit-filter-option {
+    display: block;
+    width: 100%;
+    padding: 6px 8px;
+    border: none;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+    font-size: 0.9em;
+    color: var(--text-normal);
+}
+
+.habit-filter-option:hover {
+    background-color: var(--background-modifier-hover);
+}
+
+.habit-filter-option.active {
+    background-color: var(--interactive-accent);
+    color: var(--text-on-accent);
+}
+
+.habit-sort-dropdown {
+    position: relative;
+    display: block;
+    flex: 1;
+    min-width: 120px;
+}
+
+.habit-sort-button {
+    padding: 6px 8px;
+    background-color: var(--background-primary);
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+    width: 100%;
+    text-align: left;
+    position: relative;
+    box-sizing: border-box;
+}
+
+.habit-sort-button::after {
+    content: '▼';
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.8em;
+}
+
+.habit-sort-options {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: var(--background-primary);
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 4px;
+    margin-top: 2px;
+    z-index: 1000;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 100%;
+}
+
+.habit-sort-dropdown:hover .habit-sort-options {
+    display: block;
+}
+
+.habit-sort-option {
+    display: block;
+    width: 100%;
+    padding: 6px 8px;
+    border: none;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+    font-size: 0.9em;
+    color: var(--text-normal);
+}
+
+.habit-sort-option:hover {
+    background-color: var(--background-modifier-hover);
+}
+
+.habit-sort-option.active {
+    background-color: var(--interactive-accent);
+    color: var(--text-on-accent);
+}
+
+.habit-next-occurrence {
+    font-size: 0.8em;
+    color: var(--text-muted);
+    background-color: var(--background-modifier-border);
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.habit-checkbox:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Calendar View Styles */
+.calendar-view {
+    margin: 10px 0;
+    padding: 10px;
+    background: var(--background-primary);
+    border-radius: 6px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.calendar-header h2 {
+    font-size: 1em;
+    margin: 0;
+    font-weight: 500;
+}
+
+.calendar-nav-button {
+    padding: 2px 6px;
+    background: var(--background-modifier-border);
+    color: var(--text-normal);
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.9em;
+    line-height: 1;
+}
+
+.calendar-nav-button:hover {
+    background: var(--interactive-accent);
+    color: var(--text-on-accent);
+}
+
+.calendar-grid {
+    width: 100%;
+}
+
+.calendar-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    font-size: 0.8em;
+    color: var(--text-muted);
+    margin-bottom: 2px;
+}
+
+.calendar-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1px;
+}
+
+.calendar-day {
+    aspect-ratio: 1;
+    padding: 2px;
+    border: 1px solid var(--background-modifier-border);
+    border-radius: 3px;
+    cursor: pointer;
+    position: relative;
+    min-height: 24px;
+    font-size: 0.8em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.calendar-day:hover {
+    background: var(--background-modifier-hover);
+}
+
+.calendar-day.empty {
+    background: var(--background-secondary);
+    cursor: default;
+}
+
+.calendar-day.selected {
+    background: var(--interactive-accent);
+    color: var(--text-on-accent);
+}
+
+.calendar-day.has-habits {
+    font-weight: normal;
+}
+
+.habits-dot {
+    position: absolute;
+    bottom: 1px;
+    width: 3px;
+    height: 3px;
+    background: var(--interactive-accent);
+    border-radius: 50%;
+    opacity: 0.8;
+}
+
+.calendar-day.selected .habits-dot {
+    background: var(--text-on-accent);
+    opacity: 1;
+}
+
+.selected-date-habits {
+    margin-top: 10px;
+    padding: 10px;
+    background: var(--background-secondary);
+    border-radius: 4px;
+    font-size: 0.9em;
+}
+
+.selected-date-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.selected-date-header h3 {
+    margin: 0;
+    font-size: 0.9em;
+    color: var(--text-normal);
+}
+
+.close-selection {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    font-size: 1.2em;
+    padding: 0;
+    line-height: 1;
+}
+
+.close-selection:hover {
+    color: var(--text-normal);
+}
+
+.selected-date-habits ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.selected-date-habits li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 0;
+    border-bottom: 1px solid var(--background-modifier-border);
+    font-size: 0.9em;
+}
+
+.selected-date-habits li:last-child {
+    border-bottom: none;
+}
+
+.undo-complete {
+    padding: 2px 6px;
+    background: var(--text-error);
+    color: var(--text-on-accent);
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.8em;
+}
+
+.undo-complete:hover {
+    background: var(--text-error-hover);
+}
+
+.calendar-day.today {
+    border: 2px solid var(--interactive-accent);
+    font-weight: 500;
+}
+
+.calendar-day.today .habits-dot {
+    opacity: 1;
+}
+
+.calendar-day.today.selected {
+    border-color: var(--text-on-accent);
 }

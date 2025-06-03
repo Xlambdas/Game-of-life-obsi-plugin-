@@ -1,20 +1,21 @@
-import { Quest } from "../constants/DEFAULT";
+import { Habit, DefaultPriority, DefaultDifficulty } from "../constants/DEFAULT";
 import { TextComponent } from "obsidian";
 import { RewardAttributeInput, RewardItemsInput, dueDateInput } from "../components/inputs";
 
-export interface QuestFormData {
+export interface HabitFormData {
 	title: string;
 	shortDescription: string;
 	description: string;
 	reward_XP: number;
 	require_level: number;
 	require_previousQuests: string | string[];
-	priority: string;
-	difficulty: string;
+	priority: DefaultPriority;
+	difficulty: DefaultDifficulty;
 	category: string;
 	attributeRewards: any;
-	dueDate?: Date;
-	questId?: string;
+	recurrence_interval: number;
+	recurrence_unit: string;
+	habitId?: string;
 }
 
 export interface FormInputs {
@@ -48,44 +49,40 @@ export type EndButtonDeps = {
 	onDelete?: () => Promise<void>;
 };
 
-export const createQuestFromFormData = (formData: QuestFormData): Omit<Quest, 'id'> => {
-	const { title, shortDescription, description, reward_XP, require_level, require_previousQuests, difficulty, category, priority, attributeRewards } = formData;
+export const createHabitFromFormData = (formData: HabitFormData): Omit<Habit, 'id'> => {
+	const { title, shortDescription, description, reward_XP, require_level, require_previousQuests, difficulty, category, priority, attributeRewards, recurrence_interval, recurrence_unit } = formData;
 
 	return {
 		title,
 		shortDescription,
 		description,
 		created_at: new Date(),
-		reward: {
-			XP: reward_XP,
-			attributes: {
-				strength: attributeRewards.strength || 0,
-				agility: attributeRewards.agility || 0,
-				endurance: attributeRewards.endurance || 0,
-				charisma: attributeRewards.charisma || 0,
-				wisdom: attributeRewards.wisdom || 0,
-				perception: attributeRewards.perception || 0,
-				intelligence: attributeRewards.intelligence || 0
-			}
-		},
 		settings: {
-			type: 'quest',
+			type: 'habit',
 			priority: priority as "low" | "medium" | "high",
 			difficulty: difficulty as "easy" | "medium" | "hard" | "expert",
 			category: category || "Undefined",
 			isSecret: false,
 			isTimeSensitive: false
 		},
-		progression: {
-			isCompleted: false,
-			completed_at: new Date(0),
-			progress: 0,
-			subtasks: []
+		recurrence: {
+			interval: recurrence_interval,
+			unit: recurrence_unit as "day" | "week" | "month"
 		},
-		requirements: {
-			level: require_level,
-			previousQuests: Array.isArray(require_previousQuests) ? require_previousQuests : [],
-			stats: {
+		streak: {
+			current: 0,
+			best: 0,
+			history: [],
+			isCompletedToday: false,
+			nextDate: new Date()
+		},
+		penalty: {
+			XPLoss: 0,
+			breackStreak: false
+		},
+		reward: {
+			XP: 0,
+			attributes: {
 				strength: 0,
 				agility: 0,
 				endurance: 0,
@@ -94,16 +91,15 @@ export const createQuestFromFormData = (formData: QuestFormData): Omit<Quest, 'i
 				perception: 0,
 				intelligence: 0
 			}
-		},
-		isSystemQuest: false
+		}
 	};
 };
 
-export const validateQuestFormData = (formData: QuestFormData): string | null => {
+export const validateHabitFormData = (formData: HabitFormData): string | null => {
 	const { title, shortDescription, reward_XP, require_level } = formData;
 
 	if (!title) {
-		return "Quest title is required!";
+		return "Habit title is required!";
 	}
 	if (!shortDescription) {
 		return "Short description is required!";
@@ -130,7 +126,8 @@ export function getFormData(inputs: {
 	difficultyInput?: { getValue: () => string };
 	categoryInput?: { getValue: () => string };
 	rewardAttributeInput?: { getStatBlock?: () => any };
-	dueDateInput?: { getValue: () => Date | undefined };
+	recurrenceIntervalInput?: { getValue: () => number };
+	recurrenceUnitInput?: { getValue: () => string };
 }) {
 	const formData = {
 		title: inputs.titleInput.getValue().trim(),
@@ -142,7 +139,6 @@ export function getFormData(inputs: {
 		priority: inputs.priorityInput?.getValue() || "low",
 		difficulty: inputs.difficultyInput?.getValue() || "easy",
 		category: inputs.categoryInput?.getValue() || "",
-		dueDate: inputs.dueDateInput?.getValue(),
 		attributeRewards: inputs.rewardAttributeInput?.getStatBlock?.() || {
 			strength: 0,
 			agility: 0,
@@ -151,7 +147,9 @@ export function getFormData(inputs: {
 			wisdom: 0,
 			perception: 0,
 			intelligence: 0
-		}
+		},
+		recurrence_interval: inputs.recurrenceIntervalInput ? inputs.recurrenceIntervalInput.getValue() : 1,
+		recurrence_unit: inputs.recurrenceUnitInput ? inputs.recurrenceUnitInput.getValue() : "day"
 	};
 	return formData;
 }

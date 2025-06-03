@@ -41,22 +41,20 @@ export const HabitList = () => {
 		}
 	}, [plugin]);
 
-	const handleCompleteHabit = async (habit: Habit) => {
+	const handleCompleteHabit = async (habit: Habit, completed: boolean, date?: Date) => {
 		try {
-			const habits = await plugin.dataService.loadHabitsFromFile();
-			const userData = await plugin.dataService.loadUser();
-			
-			if (!userData || typeof userData !== 'object' || !('user1' in userData)) {
-				throw new Error("User data is missing or malformed");
-			}
-
-			// Update local state for immediate UI feedback
-			setHabits(prevHabits =>
-				prevHabits.map(h => h.id === habit.id ? { ...h, streak: { ...h.streak, current: h.streak.current + 1 } } : h)
+			await plugin.habitService.handleCompleteHabit(
+				habit,
+				plugin,
+				setHabits,
+				setError,
+				updateXP,
+				completed,
+				date
 			);
-
 		} catch (error) {
 			console.error("Error completing habit:", error);
+			setError("Failed to update habit status");
 		}
 	};
 
@@ -75,7 +73,17 @@ export const HabitList = () => {
 		.filter(habit => {
 			const today = new Date();
 			const lastCompleted = habit.streak.history[habit.streak.history.length - 1]?.date;
-			return !lastCompleted || (lastCompleted.getDate() !== today.getDate() || lastCompleted.getMonth() !== today.getMonth() || lastCompleted.getFullYear() !== today.getFullYear());
+			
+			if (!lastCompleted || !(lastCompleted instanceof Date) || isNaN(lastCompleted.getTime())) {
+				return true;
+			}
+
+			const lastCompletedDate = new Date(lastCompleted);
+			return !lastCompletedDate || (
+				lastCompletedDate.getDate() !== today.getDate() ||
+				lastCompletedDate.getMonth() !== today.getMonth() ||
+				lastCompletedDate.getFullYear() !== today.getFullYear()
+			);
 		});
 
 

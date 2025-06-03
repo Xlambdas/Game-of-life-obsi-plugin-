@@ -236,8 +236,8 @@ export class QuestServices {
                     quest.requirements = { ...DEFAULT_QUEST.requirements };
                 }
                 quest.requirements.level = formData.require_level;
-                quest.requirements.previousQuests = Array.isArray(formData.require_previousQuests) 
-                    ? formData.require_previousQuests 
+                quest.requirements.previousQuests = Array.isArray(formData.require_previousQuests)
+                    ? formData.require_previousQuests
                     : formData.require_previousQuests.split(',');
                 
                 // if attributes are provided manually, use them

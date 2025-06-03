@@ -2,7 +2,7 @@ import { App, Modal, Notice } from "obsidian";
 import GOL from "../plugin";
 import { Quest } from '../constants/DEFAULT';
 import { createHeader } from "../components/uiHelpers";
-import { endButton } from "../components/questUI";
+import { endQuestButton } from "../components/questUI";
 import { QuestFormManager } from "../data/managers/formManager";
 
 /*
@@ -23,7 +23,7 @@ export class CreateQuestModal extends Modal {
 
 		const headerEl = contentEl.createDiv({ cls: "header-container" });
 		createHeader(headerEl, 'Create New Quest');
-		const formContainer = contentEl.createDiv({ cls: "quest-form" });
+		const formContainer = contentEl.createDiv({ cls: "form" });
 		this.formManager = new QuestFormManager(formContainer, headerEl, this.plugin)
 		this.createEndButtons(contentEl);
 	}
@@ -33,11 +33,12 @@ export class CreateQuestModal extends Modal {
 	}
 
 	private createEndButtons(contentEl: HTMLElement) {
-		endButton({
+		endQuestButton({
 			version: 'create',
 			contentEl: contentEl,
 			onSubmit: async () => {
 				const formData = this.formManager.getFormData();
+				if (!this.formManager.validateForm(formData)) {return; }
 				await this.plugin.questService.saveQuestToJSON(formData);
 				this.close();
 			},
@@ -66,7 +67,7 @@ export class ModifyQuestModal extends Modal {
 
 		const headerEl = contentEl.createDiv({ cls: "header-container" });
 		createHeader(headerEl, 'Modify Quest');
-		const formContainer = contentEl.createDiv({ cls: "quest-form" });
+		const formContainer = contentEl.createDiv({ cls: "form" });
 		this.formManager = new QuestFormManager(formContainer, headerEl, this.plugin, this.quest);
 		this.createEndButtons(contentEl);
 	}
@@ -76,7 +77,7 @@ export class ModifyQuestModal extends Modal {
 	}
 
 	private createEndButtons(contentEl: HTMLElement) {
-		endButton({
+		endQuestButton({
 			version: 'edit',
 			contentEl: contentEl,
 			onSubmit: async () => {
