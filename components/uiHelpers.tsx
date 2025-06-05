@@ -61,3 +61,43 @@ export const subTitle = (container: HTMLElement, title: string) => {
 	return titleEl;
 };
 
+export const endButton = ({
+	version = 'create',
+	contentEl,
+	onSubmit,
+	onCancel,
+	onDelete,
+}: EndButtonDeps) => {
+	const buttonContainer = contentEl.createDiv({ cls: "buttons-container" });
+
+	const flexContainer = buttonContainer.createDiv({ cls: "buttons-flex-container" });
+	const noteContainer = flexContainer.createDiv({ cls: "required-note-container" });
+	noteContainer.createEl("p", { text: '* Required fields', cls: 'required-note' });
+	const buttonGroup = flexContainer.createDiv({ cls: "buttons-group" });
+
+	// cancel button
+	if (version === 'create' && onCancel) {
+		new ButtonComponent(buttonGroup)
+			.setButtonText("Cancel")
+			.onClick(() => onCancel());
+	} else if (version === 'edit' && onDelete) {
+		new ButtonComponent(buttonGroup)
+			.setButtonText("Delete")
+			.setWarning()
+			.onClick(async () => {
+				await onDelete();
+		});
+	}
+	
+	new ButtonComponent(buttonGroup)
+		.setButtonText("Save Habit")
+		.setCta()
+		.onClick(async () => {
+			try {
+				await onSubmit();
+			} catch (error) {
+				console.error("Error saving habit:", error);
+				new Notice("Failed to save habit. Check console for details.");
+			}
+		});
+}

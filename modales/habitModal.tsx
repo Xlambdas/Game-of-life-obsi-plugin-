@@ -4,8 +4,7 @@ import GOL from "../plugin";
 import { Habit } from '../constants/DEFAULT';
 import { viewSyncService } from '../services/syncService';
 import { TitleInput, ShortDescriptionInput, DescriptionInput, CategoryInput, PriorityInput, DifficultyInput, RecurrenceUnitInput, RecurrenceIntervalInput } from "../components/inputs";
-import { separator, createHeader, titleSection, subTitle } from "../components/uiHelpers";
-import { endHabitButton } from "../components/habitUI";
+import { separator, createHeader, titleSection, subTitle, endButton } from "../components/uiHelpers";
 import { getSettingsInputs } from "components/formHelpers";
 import { getFormData, HabitFormData } from "components/habitFormHelpers";
 import { HabitFormManager } from "data/managers/formManager";
@@ -14,7 +13,6 @@ import { HabitFormManager } from "data/managers/formManager";
 export class CreateHabitModal extends Modal {
     private plugin: GOL;
 	private formManager: HabitFormManager;
-
 
     constructor(app: App, plugin: GOL) {
         super(app);
@@ -37,7 +35,7 @@ export class CreateHabitModal extends Modal {
     }
 
     private createEndButtons(contentEl: HTMLElement) {
-        endHabitButton({
+        endButton({
             version: "create",
             contentEl: contentEl,
             onSubmit: async () => {
@@ -82,7 +80,7 @@ export class ModifyHabitModal extends Modal {
 	}
 
 	private createEndButtons(contentEl: HTMLElement) {
-		endHabitButton({
+		endButton({
 			version: 'edit',
 			contentEl: contentEl,
 			onSubmit: async () => {

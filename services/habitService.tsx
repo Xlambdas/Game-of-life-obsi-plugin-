@@ -173,7 +173,7 @@ export class HabitServices {
 						best: 0,
 						history: [],
 						isCompletedToday: false,
-						nextDate: new Date()
+						nextDate: new Date(0),
 					},
 					reward: {
 						XP: formData.reward_XP || 0,
@@ -274,6 +274,50 @@ export class HabitServices {
 			new Notice("Failed to update habit status");
 			throw error;
 		}
+	}
+
+
+	async validateHabit(habitId: string): Promise<void> {
+		const habits = await this.dataService.loadHabitsFromFile();
+        const habit = habits.find(h => h.id === habitId);
+		if (!habit) return;
+
+		const today = new Date();
+		const todayISO = today.toISOString().split('T')[0];
+
+		habit.streak.isCompletedToday = true;
+
+		if (!habit.streak.history) habit.streak.history = [];
+		if (!habit.streak.history.some(entry => entry.date.toISOString().split('T')[0] === todayISO)) {
+			habit.streak.history.push({
+				date: today,
+				success: true
+			});
+			habit.streak.nextDate = await this.calculateNextDate(habit.recurrence, today);
+			habit.streak.current += 1;
+			habit.streak.best = Math.max(habit.streak.best, habit.streak.current);
+		
+		await this.dataService.saveHabitsToFile(habits);
+		}
+
+	}
+
+	async calculateNextDate(recurrence: { interval: number; unit: "day" | "week" | "month" }, currentDate: Date): Promise<Date> {
+		let nextDate = new Date(currentDate);
+		switch (recurrence.unit) {
+			case "day":
+				nextDate.setDate(currentDate.getDate() + recurrence.interval);
+				break;
+			case "week":
+				nextDate.setDate(currentDate.getDate() + (recurrence.interval * 7));
+				break;
+			case "month":
+				nextDate.setMonth(currentDate.getMonth() + recurrence.interval);
+				break;
+			default:
+				throw new Error("Invalid recurrence unit");
+		}
+		return nextDate;
 	}
 
 }

@@ -1,8 +1,7 @@
 import { App, Modal, Notice } from "obsidian";
 import GOL from "../plugin";
 import { Quest } from '../constants/DEFAULT';
-import { createHeader } from "../components/uiHelpers";
-import { endQuestButton } from "../components/questUI";
+import { createHeader, endButton } from "../components/uiHelpers";
 import { QuestFormManager } from "../data/managers/formManager";
 
 /*
@@ -33,7 +32,7 @@ export class CreateQuestModal extends Modal {
 	}
 
 	private createEndButtons(contentEl: HTMLElement) {
-		endQuestButton({
+		endButton({
 			version: 'create',
 			contentEl: contentEl,
 			onSubmit: async () => {
@@ -77,7 +76,7 @@ export class ModifyQuestModal extends Modal {
 	}
 
 	private createEndButtons(contentEl: HTMLElement) {
-		endQuestButton({
+		endButton({
 			version: 'edit',
 			contentEl: contentEl,
 			onSubmit: async () => {
