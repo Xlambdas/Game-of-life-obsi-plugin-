@@ -95,7 +95,7 @@ export const DEFAULT_PRIORITIES = ['low', 'medium', 'high'] as const;
 export type DefaultPriority = typeof DEFAULT_PRIORITIES[number];
 export const DEFAULT_DIFFICULTIES = ['easy', 'medium', 'hard', 'expert'] as const;
 export type DefaultDifficulty = typeof DEFAULT_DIFFICULTIES[number];
-export const DEFAULT_RECURRENCES = ['day', 'week', 'month'] as const;
+export const DEFAULT_RECURRENCES = ['days', 'weeks', 'months'] as const;
 export type DefaultRecurrence = typeof DEFAULT_RECURRENCES[number];
 
 export type StatBlock = {
@@ -220,7 +220,7 @@ export interface Habit extends BaseTask {
 	settings: {type: 'habit'} & BaseTask['settings'];
 	recurrence: {
 		interval: number;
-		unit: "day" | "week" | "month";
+		unit: DefaultRecurrence;
 	};
 	streak: {
 		current: number;
@@ -260,7 +260,7 @@ export const DEFAULT_HABIT: Habit = {
 	},
 	recurrence: {
 		interval: 1,
-		unit: 'day',
+		unit: 'days',
 	},
 	streak: {
 		current: 0,

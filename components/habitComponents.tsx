@@ -65,6 +65,7 @@ export const HabitList = () => {
 			
 			new Notice(result.message);
 		} else {
+			
 			new Notice(result.message);
 		}
 	} catch (error) {
@@ -254,15 +255,19 @@ export const HabitList = () => {
 
 		// Calculer la prochaine date selon la récurrence
 		const calculateNextDate = (): Date => {
+			if (!completed) {
+				// Si décoché, la prochaine occurrence doit être aujourd'hui
+				const now = new Date();
+				now.setHours(0,0,0,0);
+				return now;
+			}
 			const now = new Date();
 			const { interval, unit } = habit.recurrence;
-			
 			const multiplier = {
-				'day': 1,
-				'week': 7,
-				'month': 30 // Approximation
+				'days': 1,
+				'weeks': 7,
+				'months': 30 // Approximation
 			}[unit];
-
 			return new Date(now.getTime() + interval * multiplier * 24 * 60 * 60 * 1000);
 		};
 
@@ -452,40 +457,57 @@ export const HabitList = () => {
  * Obtient la prochaine occurrence d'une habitude
  */
 export const getNextOccurrence = (habit: Habit): Date => {
-	const now = new Date();
-	
-	// Si pas d'historique, retourner aujourd'hui
-	if (!habit.streak.history || habit.streak.history.length === 0) {
-		return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+	const now = new Date(Date.now());
+	console.log(`Calculating next occurrence for habit: ${now}`);
+	now.setHours(0,0,0,0);
+
+	let lastCompleted: Date | null = null;
+	if (!habit.streak.history || habit.streak.history.length === 0 || habit.streak.history.length === 1 && !habit.streak.history[0].success) {
+		lastCompleted = now;
+	} else {
+		// Find the most recent successful completion in the history
+		for (let i = habit.streak.history.length - 1; i >= 0; i--) {
+			if (habit.streak.history[i].success) {
+				lastCompleted = new Date(habit.streak.history[i].date);
+				lastCompleted.setHours(0, 0, 0, 0);
+				break;
+			}
+		}
+		if (!lastCompleted) {
+			lastCompleted = now;
+		}
+		console.log(`Last completed date: ${lastCompleted}`);
 	}
-	
-	const lastCompletion = new Date(habit.streak.history[habit.streak.history.length - 1].date);
-	
-	// Convertir l'intervalle en millisecondes
+
+	if (!habit.recurrence || !habit.recurrence.interval || !habit.recurrence.unit) {
+		console.warn("Habit recurrence is not defined, defaulting to daily recurrence.");
+		habit.recurrence = { interval: 1, unit: 'days' }; // Default to daily if not set
+	}
+
 	let intervalMs: number;
 	switch (habit.recurrence.unit) {
-		case 'day':
+		case 'days':
 			intervalMs = habit.recurrence.interval * 24 * 60 * 60 * 1000;
 			break;
-		case 'week':
+		case 'weeks':
 			intervalMs = habit.recurrence.interval * 7 * 24 * 60 * 60 * 1000;
 			break;
-		case 'month':
+		case 'months':
 			intervalMs = habit.recurrence.interval * 30 * 24 * 60 * 60 * 1000;
 			break;
 		default:
 			intervalMs = 24 * 60 * 60 * 1000;
 	}
 
-	let nextOccurrence = new Date(lastCompletion.getTime() + intervalMs);
-	
-	if (nextOccurrence < now) {
-		const timeSinceLast = now.getTime() - lastCompletion.getTime();
-		const intervalsPassed = Math.floor(timeSinceLast / intervalMs);
-		nextOccurrence = new Date(lastCompletion.getTime() + (intervalsPassed + 1) * intervalMs);
+	let nextDate = new Date(lastCompleted.getTime() + intervalMs) ;
+	if (nextDate < now) {
+		nextDate = now;
+	} if (habit.streak.history.length === 1 && !habit.streak.history[0].success) {
+		nextDate = now;
 	}
+	habit.streak.nextDate = nextDate;
 
-	return nextOccurrence;
+	return nextDate;
 };
 
 /**
@@ -523,9 +545,9 @@ export const isCompletedToday = (habit: Habit): boolean => {
  * Normalise une habitude (met à jour les champs calculés)
  */
 export const normalizeHabit = (habit: Habit): Habit => {
-	const nextDate = getNextOccurrence(habit);
+	let nextDate = getNextOccurrence(habit);
+	nextDate = new Date(nextDate.getFullYear(), nextDate.getMonth(), nextDate.getDate(), 0, 0, 0, 0); // force minuit
 	const completedToday = isCompletedToday(habit);
-	
 	return {
 		...habit,
 		streak: {

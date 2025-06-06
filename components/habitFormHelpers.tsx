@@ -1,4 +1,4 @@
-import { Habit, DefaultPriority, DefaultDifficulty } from "../constants/DEFAULT";
+import { Habit, DefaultPriority, DefaultDifficulty, DefaultRecurrence } from "../constants/DEFAULT";
 import { TextComponent } from "obsidian";
 import { RewardAttributeInput, RewardItemsInput, dueDateInput } from "../components/inputs";
 
@@ -59,15 +59,15 @@ export const createHabitFromFormData = (formData: HabitFormData): Omit<Habit, 'i
 		created_at: new Date(),
 		settings: {
 			type: 'habit',
-			priority: priority as "low" | "medium" | "high",
-			difficulty: difficulty as "easy" | "medium" | "hard" | "expert",
+			priority: priority as DefaultPriority,
+			difficulty: difficulty as DefaultDifficulty,
 			category: category || "Undefined",
 			isSecret: false,
 			isTimeSensitive: false
 		},
 		recurrence: {
 			interval: recurrence_interval,
-			unit: recurrence_unit as "day" | "week" | "month"
+			unit: recurrence_unit as DefaultRecurrence
 		},
 		streak: {
 			current: 0,

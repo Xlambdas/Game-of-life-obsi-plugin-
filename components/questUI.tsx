@@ -140,7 +140,7 @@ const QuestItem = ({
 	onComplete: (quest: Quest, completed: boolean) => void;
 	onModify: (quest: Quest) => void;
 }) => {
-	const isEditable = !quest.isSystemQuest;
+	const isEditable = !quest.progression.isCompleted && !quest.isSystemQuest;
 
 	return (
 		<div className="quest-item">

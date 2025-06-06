@@ -16,9 +16,9 @@
       "name": "testttt",
       "class": "user",
       "health": 100,
-      "xp": 5307,
+      "xp": 5317,
       "level": 14,
-      "newXp": 500,
+      "newXp": 510,
       "lvlThreshold": 1058
     },
     "attribute": {

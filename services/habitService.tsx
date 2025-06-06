@@ -1,5 +1,5 @@
 import { App, Notice } from 'obsidian';
-import { Habit, StatBlock, DEFAULT_HABIT, DefaultPriority, DefaultDifficulty, DefaultCategory } from '../constants/DEFAULT';
+import { Habit, StatBlock, DEFAULT_HABIT, DefaultPriority, DefaultDifficulty, DefaultCategory, DefaultRecurrence } from '../constants/DEFAULT';
 import { viewSyncService } from './syncService';
 import { DataService } from './dataService';
 import GOL from '../plugin';
@@ -118,7 +118,7 @@ export class HabitServices {
 				habit.settings.category = formData.category as DefaultCategory | string;
 
 				habit.recurrence.interval = formData.recurrence_interval;
-				habit.recurrence.unit = formData.recurrence_unit as "day" | "week" | "month";
+				habit.recurrence.unit = formData.recurrence_unit as DefaultRecurrence;
 
                 // if attributes are provided manually, use them
                 if (formData.attributeRewards) {
@@ -166,14 +166,14 @@ export class HabitServices {
 					},
 					recurrence: {
 						interval: formData.recurrence_interval,
-						unit: (formData.recurrence_unit as "day" | "week" | "month") || "day",
+						unit: formData.recurrence_unit as DefaultRecurrence,
 					},
 					streak: {
 						current: 0,
 						best: 0,
 						history: [],
 						isCompletedToday: false,
-						nextDate: new Date(0),
+						nextDate: new Date(),
 					},
 					reward: {
 						XP: formData.reward_XP || 0,
@@ -302,16 +302,16 @@ export class HabitServices {
 
 	}
 
-	async calculateNextDate(recurrence: { interval: number; unit: "day" | "week" | "month" }, currentDate: Date): Promise<Date> {
+	async calculateNextDate(recurrence: { interval: number; unit: DefaultRecurrence }, currentDate: Date): Promise<Date> {
 		let nextDate = new Date(currentDate);
 		switch (recurrence.unit) {
-			case "day":
+			case "days":
 				nextDate.setDate(currentDate.getDate() + recurrence.interval);
 				break;
-			case "week":
+			case "weeks":
 				nextDate.setDate(currentDate.getDate() + (recurrence.interval * 7));
 				break;
-			case "month":
+			case "months":
 				nextDate.setMonth(currentDate.getMonth() + recurrence.interval);
 				break;
 			default:

@@ -10,6 +10,16 @@ import { endButton } from "./uiHelpers";
 
 
 
+// Utilitaire pour calculer le nombre de jours entre deux dates (en ignorant l'heure)
+function getDaysUntil(today: Date, nextDate: Date): number {
+
+	const a = new Date(today);
+	a.setHours(0,0,0,0);
+	const b = new Date(nextDate);
+	b.setHours(0,0,0,0);
+	return Math.round((b.getTime() - a.getTime()) / (1000 * 60 * 60 * 24));
+}
+
 interface HabitSideViewProps {
 	plugin: GOL;
 	isOpen: boolean;
@@ -90,6 +100,7 @@ export function HabitSideView(props: HabitSideViewProps) {
 	const [todayOnly, setTodayOnly] = useState<boolean>(true); // Ajout du filtre
 	const [loading, setLoading] = useState(true);
 	const [error, setError] = useState<string | null>(null);
+	const [refreshKey, setRefreshKey] = useState(0); // Ajout d'une clé pour forcer le rechargement
 
 	// Fonction pour charger les habitudes
 	const loadHabits = async () => {
@@ -126,10 +137,42 @@ export function HabitSideView(props: HabitSideViewProps) {
 		}
 	};
 
-	// Charger les habitudes au montage du composant
+	// Charger les habitudes au montage du composant et lors d'un refresh
 	useEffect(() => {
 		loadHabits();
-	}, [plugin]);
+	}, [plugin, refreshKey]);
+
+	useEffect(() => {
+		// Patch: pour chaque habit, si la date du jour == nextDate et pas d'entrée today dans history, ajouter {date: today, success: false}
+		const today = new Date();
+		today.setHours(0,0,0,0);
+		let patched = false;
+		const patchedHabits = allHabits.map(habit => {
+			const nextDate = new Date(getNextOccurrence(habit));
+			nextDate.setHours(0,0,0,0);
+			const hasToday = Array.isArray(habit.streak.history) && habit.streak.history.some(h => {
+				if (!h.date) return false;
+				const histDate = new Date(h.date);
+				histDate.setHours(0,0,0,0);
+				return histDate.getTime() === today.getTime();
+			});
+			if (nextDate.getTime() === today.getTime() && !hasToday) {
+				patched = true;
+				return {
+					...habit,
+					streak: {
+						...habit.streak,
+						history: [...habit.streak.history, { date: new Date(today), success: false }]
+					}
+				};
+			}
+			return habit;
+		});
+		if (patched) {
+			setAllHabits(patchedHabits);
+		}
+	// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [allHabits]);
 
 	const filteredHabits = allHabits.filter(habit =>
 		habit.title.toLowerCase().includes(filter.toLowerCase()) ||
@@ -149,7 +192,7 @@ export function HabitSideView(props: HabitSideViewProps) {
 		try {
 			await handleCompleteHabit(habit, completed);
 			// Recharger les habitudes après la completion
-			await loadHabits();
+			setRefreshKey(k => k + 1); // Force le rechargement
 		} catch (error) {
 			console.error("Error completing habit:", error);
 		}
@@ -201,7 +244,7 @@ export function HabitSideView(props: HabitSideViewProps) {
 				/>
 				<div className="habit-controls-row">
 					<div className="habit-sort-dropdown">
-						<button className="habit-sort-button">
+						{/* <button className="habit-sort-button">
 							Sort: {getSortText(sortBy)}
 						</button>
 						<div className="habit-sort-options">
@@ -241,7 +284,7 @@ export function HabitSideView(props: HabitSideViewProps) {
 							>
 								Date
 							</button>
-						</div>
+						</div> */}
 					</div>
 					{/* Bouton de bascule pour le filtre aujourd'hui/à venir */}
 					<button
@@ -254,9 +297,9 @@ export function HabitSideView(props: HabitSideViewProps) {
 			</div>
 
 			{/* Bouton pour rafraîchir manuellement */}
-			<button onClick={loadHabits} className="refresh-button">
+			{/* <button onClick={loadHabits} className="refresh-button">
 				🔄 Rafraîchir
-			</button>
+			</button> */}
 
 			{/* Indicateur du mode de tri actuel */}
 			<div className="sort-indicator">
@@ -305,13 +348,13 @@ const HabitItem = ({
 	onModify: (habit: Habit) => void,
 	nextOccurrence: Date
 }) => {
-	const isEditable = !habit.streak.isCompletedToday && !habit.isSystemHabit;
+	const isEditable = !habit.isSystemHabit;
 	const isDueTodayFlag = isDueToday(habit);
 	const today = new Date();
 	today.setHours(0,0,0,0);
 	const nextDate = new Date(nextOccurrence);
 	nextDate.setHours(0,0,0,0);
-	const daysUntilNext = Math.ceil((nextOccurrence.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+	const daysUntilNext = getDaysUntil(today, nextDate);
 
 	// Vérifie si une date dans history correspond à aujourd'hui
 	const hasHistoryToday = Array.isArray(habit.streak.history) && habit.streak.history.some(h => {
@@ -322,7 +365,7 @@ const HabitItem = ({
 	});
 
 	// Désactive la checkbox si la prochaine occurrence est dans le futur ET qu'elle n'est pas cochée aujourd'hui ET qu'il n'y a pas d'entrée dans l'historique pour aujourd'hui
-	const disableCheckbox = (nextDate > today) && !habit.streak.isCompletedToday && !hasHistoryToday;
+	const disableCheckbox = !isTodayHabit(habit);
 
 	return (
 		<div className="habit-item">
@@ -330,21 +373,14 @@ const HabitItem = ({
 				<div className="habit-checkbox-section">
 					<input
 						type="checkbox"
-						checked={habit.streak.isCompletedToday}
+						checked={isHabitCompleted(habit)}
 						onChange={() => onComplete(habit, !habit.streak.isCompletedToday)}
 						className="habit-checkbox"
 						disabled={disableCheckbox}
 					/>
-					<span className={`habit-title ${habit.streak.isCompletedToday ? 'completed' : ''}`}>
+					<span className={`habit-title ${habit.streak.isCompletedToday ? 'completed' : ''}`}> 
 						{habit.title}
 						{habit.isSystemHabit && <span className="habit-system-badge">System</span>}
-						{!isDueTodayFlag && (
-							<span className="habit-timing-badge">
-								{daysUntilNext === 0 ? '📅 Today' : 
-								 daysUntilNext === 1 ? '📆 Tomorrow' : 
-								 `📆 In ${daysUntilNext} days`}
-							</span>
-						)}
 					</span>
 					{isEditable && (
 						<button
@@ -357,14 +393,28 @@ const HabitItem = ({
 					)}
 				</div>
 			</div>
+
 			{habit.shortDescription && (
 				<div className="habit-description">
 					{habit.shortDescription}
 				</div>
 			)}
-			{/* Ajout du texte pour la prochaine occurrence */}
-			<div className="habit-next-occurrence-text">
-				Prochaine occurrence : {nextOccurrence.toLocaleString()}
+
+			<div className="habit-info-row">
+				<div className="habit-streak">
+					🔥 Streak: <b>{habit.streak.current}</b> (Best: {habit.streak.best})
+				</div>
+				<div className="habit-next-occurrence-text">
+					{daysUntilNext === 0 || habit.streak.history.length === 0 || habit.streak.history.length === 1 && !habit.streak.history[0].success ? (
+						<span className="habit-timing-badge">📅 Today</span>
+					) : daysUntilNext === 1 ? (
+						<span className="habit-timing-badge">📆 Tomorrow</span>
+					) : daysUntilNext > 1 ? (
+						<span className="habit-timing-badge">📆 In {daysUntilNext} days</span>
+					) : daysUntilNext < 0 ? (
+						<span className="habit-timing-badge">⏳ Overdue</span>
+					) : null}
+				</div>
 			</div>
 		</div>
 	);
@@ -373,8 +423,136 @@ const HabitItem = ({
 // -------------------------------------
 
 
+function isHabitCompleted(habit: Habit): boolean {
+	const today = new Date();
+	today.setHours(0, 0, 0, 0);
+	const nextDate = new Date(getNextOccurrence(habit));
+	nextDate.setHours(0, 0, 0, 0);
+
+	if (nextDate.getTime() > today.getTime()) {
+
+
+	}
+
+
+	// Check if the habit is completed in the data (event if nextDate is in the future)
+	if (habit.streak.isCompletedToday) {
+		return true;
+	}
+	// check if there is a history entry and if today is in the history
+	if (Array.isArray(habit.streak.history)) {
+		
+		today.setHours(0, 0, 0, 0);
+		return habit.streak.history.some(h => {
+			if (!h.date) return false;
+			const histDate = new Date(h.date);
+			histDate.setHours(0, 0, 0, 0);
+			return histDate.getTime() === today.getTime() && !!h.success;
+		}) ? true : false;
+	}
+
+	// check if there is recurrence and compare the last history entry with the habit.recurrence.unit and habit.recurrence.interval to know if the habit is completed
+	if (
+		habit.recurrence &&
+		Array.isArray(habit.streak.history) &&
+		(habit.streak.history as { date?: string | Date; success?: boolean }[]).length > 0
+	) {
+		// Find the latest date in history (not just the last entry)
+		const historyArray = habit.streak.history as { date?: string | Date; success?: boolean }[];
+		const historyDates = historyArray
+			.filter(h => h.date)
+			.map(h => new Date(h.date!));
+		if (historyDates.length === 0) return false;
+		const lastDate = new Date(Math.max(...historyDates.map(d => d.getTime())));
+		lastDate.setHours(0, 0, 0, 0);
+
+		// Calculate the expected next date by adding recurrence interval/unit to lastDate
+		let expectedNextDate = new Date(lastDate);
+		const { interval, unit } = habit.recurrence;
+		switch (unit) {
+			case 'days':
+				expectedNextDate.setDate(expectedNextDate.getDate() + interval);
+				break;
+			case 'weeks':
+				expectedNextDate.setDate(expectedNextDate.getDate() + interval * 7);
+				break;
+			case 'months':
+				expectedNextDate.setMonth(expectedNextDate.getMonth() + interval);
+				break;
+			default:
+				break;
+		}
+		expectedNextDate.setHours(0, 0, 0, 0);
+
+		const nextDate = new Date(getNextOccurrence(habit));
+		nextDate.setHours(0, 0, 0, 0);
+
+		// Renvoie true si la prochaine occurrence attendue est aujourd'hui ou dans le passé (donc la tâche peut être considérée comme complétée)
+		return lastDate.getTime() === nextDate.getTime();
+	}
+	return false;
+
+
+}
+
+
+
 // -------------------------------------
 
+export function canEditHabit(habit: Habit): boolean {
+    // Si c'est un habit système, il ne peut pas être modifié
+    if (habit.isSystemHabit) {
+        return false;
+    }
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const nextDate = new Date(habit.streak.nextDate);
+    nextDate.setHours(0, 0, 0, 0);
+
+    // Si nextDate est dans le futur, on ne peut pas modifier
+    if (nextDate > today) {
+        return false;
+    }
+
+    // Vérifier si l'entrée la plus ancienne dans l'historique respecte la récurrence
+    if (habit.streak.history && habit.streak.history.length > 0) {
+        // Trier l'historique par date (du plus ancien au plus récent)
+        const sortedHistory = [...habit.streak.history].sort((a, b) => 
+            new Date(a.date).getTime() - new Date(b.date).getTime()
+        );
+        
+        const oldestEntry = sortedHistory[0];
+        const oldestDate = new Date(oldestEntry.date);
+        oldestDate.setHours(0, 0, 0, 0);
+
+        // Calculer la durée minimum requise selon la récurrence
+        const minimumAgeInDays = getMinimumAgeInDays(habit.recurrence.interval, habit.recurrence.unit);
+        
+        // Calculer l'âge de l'entrée la plus ancienne en jours
+        const ageInDays = Math.floor((today.getTime() - oldestDate.getTime()) / (1000 * 60 * 60 * 24));
+        
+        // Si l'entrée la plus ancienne n'est pas assez ancienne, on ne peut pas modifier
+        if (ageInDays < minimumAgeInDays) {
+            return false;
+        }
+    }
+
+    return true;
+}
+function getMinimumAgeInDays(interval: number, unit: 'days' | 'weeks' | 'months'): number {
+    switch (unit) {
+        case 'days':
+            return interval;
+        case 'weeks':
+            return interval * 7;
+        case 'months':
+            return interval * 30; // Approximation de 30 jours par mois
+        default:
+            return interval;
+    }
+}
 
 
 const getTodayHabitsOnly = async (plugin: any): Promise<Habit[]> => {
@@ -456,6 +634,8 @@ function isTodayHabit(habit: Habit): boolean {
     const nextDate = new Date(getNextOccurrence(habit));
     nextDate.setHours(0,0,0,0);
     if (nextDate.getTime() === today.getTime()) return true;
+	if (habit.streak.history.length === 0) return true;
+	if (habit.streak.history.length === 1 && !habit.streak.history[0].success ) return true;
     // Check history
     if (Array.isArray(habit.streak.history)) {
         for (const h of habit.streak.history) {

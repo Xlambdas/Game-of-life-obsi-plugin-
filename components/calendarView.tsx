@@ -29,11 +29,11 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ habits, onCompleteHa
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
         switch (habit.recurrence.unit) {
-            case 'day':
+            case 'days':
                 return diffDays % habit.recurrence.interval === 0;
-            case 'week':
+            case 'weeks':
                 return diffDays % (habit.recurrence.interval * 7) === 0;
-            case 'month':
+            case 'months':
                 const monthsDiff = (date.getFullYear() - habitDate.getFullYear()) * 12 + 
                                  (date.getMonth() - habitDate.getMonth());
                 return monthsDiff % habit.recurrence.interval === 0 && 

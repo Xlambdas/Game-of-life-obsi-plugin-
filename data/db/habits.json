@@ -1,716 +1,5 @@
 [
   {
-    "id": "habit_2",
-    "title": "nouveau habit",
-    "shortDescription": "test",
-    "description": "",
-    "created_at": "2025-06-01T16:29:59.858Z",
-    "settings": {
-      "type": "habit",
-      "category": "Undefined",
-      "priority": "low",
-      "difficulty": "easy",
-      "isSecret": false,
-      "isTimeSensitive": false
-    },
-    "recurrence": {
-      "interval": 2,
-      "unit": "days"
-    },
-    "streak": {
-      "current": 1,
-      "best": 1,
-      "history": [
-        {
-          "date": "2025-06-02T22:00:00.000Z",
-          "success": true
-        }
-      ],
-      "isCompletedToday": true,
-      "nextDate": "2025-06-04T22:00:00.000Z"
-    },
-    "penalty": {
-      "XPLoss": 0,
-      "breackStreak": false
-    },
-    "reward": {
-      "XP": 10,
-      "attributes": {
-        "strength": 0,
-        "agility": 0,
-        "endurance": 1,
-        "charisma": 0,
-        "wisdom": 0,
-        "perception": 0,
-        "intelligence": 0
-      },
-      "items": []
-    },
-    "isSystemHabit": false
-  },
-  {
-    "id": "habit_3",
-    "title": "occurrence",
-    "shortDescription": "test de la recurrence d'un habit",
-    "description": "",
-    "created_at": "2025-06-01T17:09:57.348Z",
-    "settings": {
-      "type": "habit",
-      "category": "Undefined",
-      "priority": "low",
-      "difficulty": "easy",
-      "isSecret": false,
-      "isTimeSensitive": false
-    },
-    "recurrence": {
-      "interval": 1,
-      "unit": "days"
-    },
-    "streak": {
-      "current": 1,
-      "best": 2,
-      "history": [
-        {
-          "date": "2025-06-04T11:18:43.245Z",
-          "success": false
-        },
-        {
-          "date": "2025-06-04T11:18:46.970Z",
-          "success": true
-        }
-      ],
-      "isCompletedToday": false,
-      "nextDate": null
-    },
-    "penalty": {
-      "XPLoss": 0,
-      "breackStreak": false
-    },
-    "reward": {
-      "XP": 10,
-      "attributes": {
-        "strength": 0,
-        "agility": 0,
-        "endurance": 1,
-        "charisma": 0,
-        "wisdom": 0,
-        "perception": 0,
-        "intelligence": 0
-      },
-      "items": []
-    },
-    "isSystemHabit": false
-  },
-  {
-    "id": "habit_4",
-    "title": "test",
-    "shortDescription": "vedrf",
-    "description": "",
-    "created_at": "2025-06-02T06:35:15.901Z",
-    "settings": {
-      "type": "habit",
-      "category": "Physical",
-      "priority": "low",
-      "difficulty": "expert",
-      "isSecret": false,
-      "isTimeSensitive": false
-    },
-    "recurrence": {
-      "interval": 1,
-      "unit": "days"
-    },
-    "streak": {
-      "current": 0,
-      "best": 1,
-      "history": [
-        {
-          "date": "2025-06-04T15:16:37.873Z",
-          "success": false
-        }
-      ],
-      "isCompletedToday": false,
-      "nextDate": null
-    },
-    "penalty": {
-      "XPLoss": 0,
-      "breackStreak": false
-    },
-    "reward": {
-      "XP": 1,
-      "attributes": {
-        "strength": 1,
-        "agility": 1,
-        "endurance": 2,
-        "charisma": 0,
-        "wisdom": 0,
-        "perception": 0,
-        "intelligence": 0
-      },
-      "items": []
-    },
-    "isSystemHabit": false
-  },
-  {
-    "id": "habit_9",
-    "title": "a\"e",
-    "shortDescription": "qaze\"r",
-    "description": "",
-    "created_at": "2025-06-03T16:01:10.712Z",
-    "settings": {
-      "type": "habit",
-      "category": "Undefined",
-      "priority": "normal",
-      "difficulty": "easy",
-      "isSecret": false,
-      "isTimeSensitive": false
-    },
-    "recurrence": {
-      "interval": 1,
-      "unit": "days"
-    },
-    "streak": {
-      "current": 0,
-      "best": 0,
-      "history": [
-        {
-          "date": "2025-06-04T13:19:57.032Z",
-          "success": false
-        }
-      ],
-      "isCompletedToday": false,
-      "nextDate": "2025-07-04T13:19:57.032Z"
-    },
-    "penalty": {
-      "XPLoss": 0,
-      "breackStreak": false
-    },
-    "reward": {
-      "XP": 1,
-      "attributes": {},
-      "items": []
-    },
-    "isSystemHabit": false
-  },
-  {
-    "id": "habit_10",
-    "title": "zer",
-    "shortDescription": "zer",
-    "description": "",
-    "created_at": "2025-06-03T16:08:47.431Z",
-    "settings": {
-      "type": "habit",
-      "category": "Undefined",
-      "priority": "normal",
-      "difficulty": "easy",
-      "isSecret": false,
-      "isTimeSensitive": false
-    },
-    "recurrence": {
-      "interval": 1,
-      "unit": "days"
-    },
-    "streak": {
-      "current": 1,
-      "best": 1,
-      "history": [
-        {
-          "date": "2025-06-04T19:53:42.192Z",
-          "success": true
-        }
-      ],
-      "isCompletedToday": true,
-      "nextDate": null
-    },
-    "penalty": {
-      "XPLoss": 0,
-      "breackStreak": false
-    },
-    "reward": {
-      "XP": 1,
-      "attributes": {},
-      "items": []
-    },
-    "isSystemHabit": false
-  },
-  {
-    "id": "habit_11",
-    "title": "qz",
-    "shortDescription": "qzer",
-    "description": "",
-    "created_at": "2025-06-03T16:08:59.056Z",
-    "settings": {
-      "type": "habit",
-      "category": "Undefined",
-      "priority": "normal",
-      "difficulty": "easy",
-      "isSecret": false,
-      "isTimeSensitive": false
-    },
-    "recurrence": {
-      "interval": 1,
-      "unit": "days"
-    },
-    "streak": {
-      "current": 1,
-      "best": 1,
-      "history": [
-        {
-          "date": "2025-06-04T20:07:43.148Z",
-          "success": true
-        }
-      ],
-      "isCompletedToday": true,
-      "nextDate": null
-    },
-    "penalty": {
-      "XPLoss": 0,
-      "breackStreak": false
-    },
-    "reward": {
-      "XP": 1,
-      "attributes": {},
-      "items": []
-    },
-    "isSystemHabit": false
-  },
-  {
-    "id": "habit_12",
-    "title": "afd",
-    "shortDescription": "\"er",
-    "description": "",
-    "created_at": "2025-06-03T16:14:57.850Z",
-    "settings": {
-      "type": "habit",
-      "category": "Undefined",
-      "priority": "normal",
-      "difficulty": "easy",
-      "isSecret": false,
-      "isTimeSensitive": false
-    },
-    "recurrence": {
-      "interval": 1,
-      "unit": "days"
-    },
-    "streak": {
-      "current": 0,
-      "best": 0,
-      "history": [],
-      "isCompletedToday": false,
-      "nextDate": "2025-06-03T16:14:57.850Z"
-    },
-    "penalty": {
-      "XPLoss": 0,
-      "breackStreak": false
-    },
-    "reward": {
-      "XP": 1,
-      "attributes": {},
-      "items": []
-    },
-    "isSystemHabit": false
-  },
-  {
-    "id": "habit_13",
-    "title": "titel",
-    "shortDescription": "short descr",
-    "description": "",
-    "created_at": "2025-06-03T19:48:59.266Z",
-    "settings": {
-      "type": "habit",
-      "category": "Physical",
-      "priority": "low",
-      "difficulty": "easy",
-      "isSecret": false,
-      "isTimeSensitive": false
-    },
-    "recurrence": {
-      "interval": 1,
-      "unit": "days"
-    },
-    "streak": {
-      "current": 1,
-      "best": 1,
-      "history": [
-        {
-          "date": "2025-06-04T19:50:08.973Z",
-          "success": true
-        }
-      ],
-      "isCompletedToday": true,
-      "nextDate": null
-    },
-    "penalty": {
-      "XPLoss": 0,
-      "breackStreak": false
-    },
-    "reward": {
-      "XP": 1,
-      "attributes": {
-        "strength": 0,
-        "agility": 0,
-        "endurance": 0,
-        "charisma": 0,
-        "wisdom": 0,
-        "perception": 0,
-        "intelligence": 0
-      },
-      "items": []
-    },
-    "isSystemHabit": false
-  },
-  {
-    "id": "habit_14",
-    "title": "rfhca",
-    "shortDescription": "test attribute",
-    "description": "",
-    "created_at": "2025-06-03T19:53:29.215Z",
-    "settings": {
-      "type": "habit",
-      "category": "Physical",
-      "priority": "normal",
-      "difficulty": "easy",
-      "isSecret": false,
-      "isTimeSensitive": false
-    },
-    "recurrence": {
-      "interval": 1,
-      "unit": "days"
-    },
-    "streak": {
-      "current": 1,
-      "best": 1,
-      "history": [
-        {
-          "date": "2025-06-04T19:48:27.931Z",
-          "success": true
-        }
-      ],
-      "isCompletedToday": true,
-      "nextDate": null
-    },
-    "penalty": {
-      "XPLoss": 0,
-      "breackStreak": false
-    },
-    "reward": {
-      "XP": 1,
-      "attributes": {},
-      "items": []
-    },
-    "isSystemHabit": false
-  },
-  {
-    "id": "habit_15",
-    "title": "new habit",
-    "shortDescription": "short descr",
-    "description": "",
-    "created_at": "2025-06-03T20:04:57.384Z",
-    "settings": {
-      "type": "habit",
-      "category": "Physical",
-      "priority": "normal",
-      "difficulty": "easy",
-      "isSecret": false,
-      "isTimeSensitive": false
-    },
-    "recurrence": {
-      "interval": 3,
-      "unit": "weeks"
-    },
-    "streak": {
-      "current": 0,
-      "best": 0,
-      "history": [
-        {
-          "date": "2025-06-04T13:46:39.124Z",
-          "success": true
-        },
-        {
-          "date": "2025-06-04T13:55:56.903Z",
-          "success": false
-        }
-      ],
-      "isCompletedToday": false,
-      "nextDate": "2025-09-02T13:55:56.903Z"
-    },
-    "penalty": {
-      "XPLoss": 0,
-      "breackStreak": false
-    },
-    "reward": {
-      "XP": 1,
-      "attributes": {},
-      "items": []
-    },
-    "isSystemHabit": false
-  },
-  {
-    "id": "habit_16",
-    "title": "title",
-    "shortDescription": "short descr",
-    "description": "",
-    "created_at": "2025-06-03T20:06:04.937Z",
-    "settings": {
-      "type": "habit",
-      "category": "Mental",
-      "priority": "normal",
-      "difficulty": "easy",
-      "isSecret": false,
-      "isTimeSensitive": false
-    },
-    "recurrence": {
-      "interval": 1,
-      "unit": "days"
-    },
-    "streak": {
-      "current": 0,
-      "best": 1,
-      "history": [
-        {
-          "date": "2025-06-04T15:20:49.166Z",
-          "success": false
-        }
-      ],
-      "isCompletedToday": false,
-      "nextDate": null
-    },
-    "penalty": {
-      "XPLoss": 0,
-      "breackStreak": false
-    },
-    "reward": {
-      "XP": 1,
-      "attributes": {},
-      "items": []
-    },
-    "isSystemHabit": false
-  },
-  {
-    "id": "habit_17",
-    "title": "attribute",
-    "shortDescription": "test categories and attribute",
-    "description": "",
-    "created_at": "2025-06-03T21:04:35.760Z",
-    "settings": {
-      "type": "habit",
-      "category": "Physical",
-      "priority": "low",
-      "difficulty": "easy",
-      "isSecret": false,
-      "isTimeSensitive": false
-    },
-    "recurrence": {
-      "interval": 1,
-      "unit": "day"
-    },
-    "streak": {
-      "current": 0,
-      "best": 0,
-      "history": [
-        {
-          "date": "2025-06-04T13:46:08.664Z",
-          "success": true
-        },
-        {
-          "date": "2025-06-04T13:46:11.078Z",
-          "success": false
-        }
-      ],
-      "isCompletedToday": false,
-      "nextDate": "2025-06-05T13:46:11.078Z"
-    },
-    "penalty": {
-      "XPLoss": 0,
-      "breackStreak": false
-    },
-    "reward": {
-      "XP": 0,
-      "attributes": {},
-      "items": []
-    },
-    "isSystemHabit": false
-  },
-  {
-    "id": "habit_18",
-    "title": "qsdfb",
-    "shortDescription": "sdxf",
-    "description": "",
-    "created_at": "2025-06-03T21:06:05.454Z",
-    "settings": {
-      "type": "habit",
-      "category": "Physical",
-      "priority": "low",
-      "difficulty": "easy",
-      "isSecret": false,
-      "isTimeSensitive": false
-    },
-    "recurrence": {
-      "interval": 1,
-      "unit": "day"
-    },
-    "streak": {
-      "current": 1,
-      "best": 1,
-      "history": [
-        {
-          "date": "2025-06-04T15:20:36.554Z",
-          "success": true
-        }
-      ],
-      "isCompletedToday": true,
-      "nextDate": "2025-06-05T15:20:36.554Z"
-    },
-    "penalty": {
-      "XPLoss": 0,
-      "breackStreak": false
-    },
-    "reward": {
-      "XP": 0,
-      "attributes": {},
-      "items": []
-    },
-    "isSystemHabit": false
-  },
-  {
-    "id": "habit_19",
-    "title": "attribute",
-    "shortDescription": "test attribute",
-    "description": "",
-    "created_at": "2025-06-03T21:18:14.024Z",
-    "settings": {
-      "type": "habit",
-      "category": "Physical",
-      "priority": "low",
-      "difficulty": "easy",
-      "isSecret": false,
-      "isTimeSensitive": false
-    },
-    "recurrence": {
-      "interval": 4,
-      "unit": "day"
-    },
-    "streak": {
-      "current": 1,
-      "best": 1,
-      "history": [
-        {
-          "date": "2025-06-04T15:17:04.528Z",
-          "success": true
-        }
-      ],
-      "isCompletedToday": true,
-      "nextDate": "2025-06-08T15:17:04.528Z"
-    },
-    "penalty": {
-      "XPLoss": 0,
-      "breackStreak": false
-    },
-    "reward": {
-      "XP": 0,
-      "attributes": {
-        "strength": 1,
-        "agility": 1,
-        "endurance": 2,
-        "charisma": 0,
-        "wisdom": 0,
-        "perception": 0,
-        "intelligence": 0
-      },
-      "items": []
-    },
-    "isSystemHabit": false
-  },
-  {
-    "id": "habit_20",
-    "title": "attribute",
-    "shortDescription": "test attribute n404",
-    "description": "",
-    "created_at": "2025-06-03T21:30:28.393Z",
-    "settings": {
-      "type": "habit",
-      "category": "Physical",
-      "priority": "low",
-      "difficulty": "easy",
-      "isSecret": false,
-      "isTimeSensitive": false
-    },
-    "recurrence": {
-      "interval": 4,
-      "unit": "day"
-    },
-    "streak": {
-      "current": 0,
-      "best": 1,
-      "history": [
-        {
-          "date": "2025-06-04T14:10:18.931Z",
-          "success": false
-        }
-      ],
-      "isCompletedToday": false,
-      "nextDate": "2025-06-08T14:20:50.625Z"
-    },
-    "penalty": {
-      "XPLoss": 0,
-      "breackStreak": false
-    },
-    "reward": {
-      "XP": 0,
-      "attributes": {},
-      "items": []
-    },
-    "isSystemHabit": false
-  },
-  {
-    "id": "habit_21",
-    "title": "attr²",
-    "shortDescription": "jgvlhn,",
-    "description": "",
-    "created_at": "2025-06-03T21:32:39.693Z",
-    "settings": {
-      "type": "habit",
-      "category": "Physical",
-      "priority": "low",
-      "difficulty": "easy",
-      "isSecret": false,
-      "isTimeSensitive": false
-    },
-    "recurrence": {
-      "interval": 1,
-      "unit": "day"
-    },
-    "streak": {
-      "current": 0,
-      "best": 2,
-      "history": [
-        {
-          "date": "2025-06-04T14:09:53.861Z",
-          "success": false
-        }
-      ],
-      "isCompletedToday": false,
-      "nextDate": "2025-06-05T14:10:16.451Z"
-    },
-    "penalty": {
-      "XPLoss": 0,
-      "breackStreak": false
-    },
-    "reward": {
-      "XP": 0,
-      "attributes": {
-        "strength": 1,
-        "agility": 1,
-        "endurance": 2,
-        "charisma": 0,
-        "wisdom": 0,
-        "perception": 0,
-        "intelligence": 0
-      },
-      "items": []
-    },
-    "isSystemHabit": false
-  },
-  {
     "id": "habit_22",
     "title": "getData",
     "shortDescription": "test si toutes les data sont bien save",
@@ -726,19 +15,19 @@
     },
     "recurrence": {
       "interval": 3,
-      "unit": "week"
+      "unit": "weeks"
     },
     "streak": {
-      "current": 0,
-      "best": 3,
+      "current": 2,
+      "best": 2,
       "history": [
         {
-          "date": "2025-06-04T15:16:43.797Z",
-          "success": false
+          "date": "2025-06-02T07:29:48.458Z",
+          "success": true
         }
       ],
-      "isCompletedToday": false,
-      "nextDate": "2025-06-25T19:48:05.246Z"
+      "isCompletedToday": true,
+      "nextDate": "2025-06-27T13:09:19.390Z"
     },
     "penalty": {
       "XPLoss": 0,
@@ -753,55 +42,6 @@
         "charisma": 0,
         "wisdom": 1,
         "perception": 1,
-        "intelligence": 1
-      },
-      "items": []
-    },
-    "isSystemHabit": false
-  },
-  {
-    "id": "habit_23",
-    "title": "test",
-    "shortDescription": "cyvubii",
-    "description": "",
-    "created_at": "2025-06-04T17:18:36.812Z",
-    "settings": {
-      "type": "habit",
-      "category": "Social",
-      "priority": "low",
-      "difficulty": "easy",
-      "isSecret": false,
-      "isTimeSensitive": false
-    },
-    "recurrence": {
-      "interval": 2,
-      "unit": "days"
-    },
-    "streak": {
-      "current": 0,
-      "best": 1,
-      "history": [
-        {
-          "date": "2025-06-04T17:18:53.435Z",
-          "success": false
-        }
-      ],
-      "isCompletedToday": false,
-      "nextDate": null
-    },
-    "penalty": {
-      "XPLoss": 0,
-      "breackStreak": false
-    },
-    "reward": {
-      "XP": 0,
-      "attributes": {
-        "strength": 0,
-        "agility": 0,
-        "endurance": 1,
-        "charisma": 1,
-        "wisdom": 0,
-        "perception": 0,
         "intelligence": 1
       },
       "items": []
@@ -827,20 +67,24 @@
       "unit": "days"
     },
     "streak": {
-      "current": 1,
-      "best": 1,
+      "current": 0,
+      "best": 2,
       "history": [
         {
           "date": "2025-06-04T17:40:51.945Z",
-          "success": false
+          "success": true
         },
         {
           "date": "2025-06-05T06:48:04.504Z",
-          "success": true
+          "success": false
+        },
+        {
+          "date": "2025-06-06T08:53:59.714Z",
+          "success": false
         }
       ],
-      "isCompletedToday": true,
-      "nextDate": null
+      "isCompletedToday": false,
+      "nextDate": "2025-06-05T22:00:00.000Z"
     },
     "penalty": {
       "XPLoss": 0,
@@ -880,16 +124,179 @@
       "unit": "days"
     },
     "streak": {
-      "current": 1,
-      "best": 1,
+      "current": 0,
+      "best": 2,
       "history": [
         {
-          "date": "2025-06-05T06:47:31.304Z",
+          "date": "2025-06-04T06:47:31.304Z",
           "success": true
         }
       ],
-      "isCompletedToday": true,
-      "nextDate": null
+      "isCompletedToday": false,
+      "nextDate": "2025-06-05T22:00:00.000Z"
+    },
+    "penalty": {
+      "XPLoss": 0,
+      "breackStreak": false
+    },
+    "reward": {
+      "XP": 0,
+      "attributes": {
+        "strength": 0,
+        "agility": 0,
+        "endurance": 1,
+        "charisma": 0,
+        "wisdom": 0,
+        "perception": 0,
+        "intelligence": 0
+      },
+      "items": []
+    },
+    "isSystemHabit": false
+  },
+  {
+    "id": "habit_5",
+    "title": "days or day",
+    "shortDescription": "xcfvbhjl",
+    "description": "",
+    "created_at": "2025-06-04T07:08:49.459Z",
+    "settings": {
+      "type": "habit",
+      "category": "Undefined",
+      "priority": "low",
+      "difficulty": "easy",
+      "isSecret": false,
+      "isTimeSensitive": false
+    },
+    "recurrence": {
+      "interval": 1,
+      "unit": "days"
+    },
+    "streak": {
+      "current": 0,
+      "best": 4,
+      "history": [
+        {
+          "date": "2025-06-02T08:55:54.069Z",
+          "success": true
+        },
+        {
+          "date": "2025-06-03T07:54:29.718Z",
+          "success": true
+        },
+        {
+          "date": "2025-06-04T07:19:19.403Z",
+          "success": true
+        },
+        {
+          "date": "2025-06-05T08:55:54.069Z",
+          "success": false
+        },
+        {
+          "date": "2025-06-06T08:53:52.200Z",
+          "success": false
+        }
+      ],
+      "isCompletedToday": false,
+      "nextDate": "2025-06-05T22:00:00.000Z"
+    },
+    "penalty": {
+      "XPLoss": 0,
+      "breackStreak": false
+    },
+    "reward": {
+      "XP": 0,
+      "attributes": {
+        "strength": 0,
+        "agility": 0,
+        "endurance": 1,
+        "charisma": 0,
+        "wisdom": 0,
+        "perception": 0,
+        "intelligence": 0
+      },
+      "items": []
+    },
+    "isSystemHabit": false
+  },
+  {
+    "id": "habit_2",
+    "title": "newdate",
+    "shortDescription": "test about the date",
+    "description": "",
+    "created_at": "2025-06-05T12:18:05.402Z",
+    "settings": {
+      "type": "habit",
+      "category": "Creative",
+      "priority": "low",
+      "difficulty": "easy",
+      "isSecret": false,
+      "isTimeSensitive": false
+    },
+    "recurrence": {
+      "interval": 1,
+      "unit": "weeks"
+    },
+    "streak": {
+      "current": 0,
+      "best": 1,
+      "history": [
+        {
+          "date": "2025-06-05T14:53:30.508Z",
+          "success": true
+        }
+      ],
+      "isCompletedToday": false,
+      "nextDate": "2025-06-05T22:00:00.000Z"
+    },
+    "penalty": {
+      "XPLoss": 0,
+      "breackStreak": false
+    },
+    "reward": {
+      "XP": 0,
+      "attributes": {
+        "strength": 0,
+        "agility": 0,
+        "endurance": 1,
+        "charisma": 1,
+        "wisdom": 0,
+        "perception": 1,
+        "intelligence": 0
+      },
+      "items": []
+    },
+    "isSystemHabit": false
+  },
+  {
+    "id": "habit_3",
+    "title": "newDate /2",
+    "shortDescription": "test about the date and next date init",
+    "description": "",
+    "created_at": "2025-06-05T12:23:42.899Z",
+    "settings": {
+      "type": "habit",
+      "category": "Undefined",
+      "priority": "low",
+      "difficulty": "easy",
+      "isSecret": false,
+      "isTimeSensitive": false
+    },
+    "recurrence": {
+      "interval": 1,
+      "unit": "months"
+    },
+    "streak": {
+      "current": 0,
+      "best": 1,
+      "history": [
+        {
+          "date": "2025-06-06T15:13:14.075Z",
+          "success": false
+        }
+      ],
+      "isCompletedToday": false,
+      "nextDate": "2025-06-05T22:00:00.000Z"
     },
     "penalty": {
       "XPLoss": 0,
