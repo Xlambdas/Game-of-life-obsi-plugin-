@@ -185,7 +185,7 @@ export const QuestList = () => {
 	return (
 		<div>
 			<QuestSideView
-				quests={quests}
+				// quests={quests}
 				filteredQuests={filteredQuests}
 				isOpen={isOpen}
 				filter={filter}

@@ -346,32 +346,6 @@ export const HabitList = () => {
 		}
 	};
 
-	// Fonction utilitaire pour obtenir les statistiques d'une habitude
-	const getHabitStats = (habit: Habit) => {
-		const { history } = habit.streak;
-		const totalDays = history.length;
-		const completedDays = history.filter(entry => entry.success).length;
-		const completionRate = totalDays > 0 ? (completedDays / totalDays) * 100 : 0;
-		
-		// Calculer la streak de cette semaine
-		const thisWeek = new Date();
-		thisWeek.setDate(thisWeek.getDate() - 7);
-		const thisWeekEntries = history.filter(entry => 
-			new Date(entry.date) >= thisWeek
-		);
-		const thisWeekCompleted = thisWeekEntries.filter(entry => entry.success).length;
-		
-		return {
-			totalDays,
-			completedDays,
-			completionRate: Math.round(completionRate * 100) / 100,
-			currentStreak: habit.streak.current,
-			bestStreak: habit.streak.best,
-			thisWeekCompleted,
-			isCompletedToday: habit.streak.isCompletedToday
-		};
-	};
-
 	const handleModifyHabit = async (habit: Habit) => {
 		try {
 			const modal = new ModifyHabitModal(plugin.app, plugin);
@@ -383,7 +357,7 @@ export const HabitList = () => {
 		}
 	};
 
-	const filteredHabits = habits
+	const filteredHabits_old = habits
 		.filter(habit => {
 			const today = new Date();
 			const lastCompleted = habit.streak.history[habit.streak.history.length - 1]?.date;
@@ -401,6 +375,49 @@ export const HabitList = () => {
 		});
 
 
+
+	const filteredHabits = habits
+		.filter(habit => {
+			const today = new Date();
+			const lastCompleted = habit.streak.history[habit.streak.history.length - 1]?.date;
+			
+			if (!lastCompleted || !(lastCompleted instanceof Date) || isNaN(lastCompleted.getTime())) {
+				return true;
+			}
+
+			const lastCompletedDate = new Date(lastCompleted);
+			return !lastCompletedDate || (
+				lastCompletedDate.getDate() !== today.getDate() ||
+				lastCompletedDate.getMonth() !== today.getMonth() ||
+				lastCompletedDate.getFullYear() !== today.getFullYear()
+			);
+		})
+		.sort((a, b) => {
+			// Trier par complétion aujourd'hui
+			if (a.streak.isCompletedToday !== b.streak.isCompletedToday) {
+				return a.streak.isCompletedToday ? 1 : -1;
+			}
+
+			switch (sortBy) {
+				case 'priority': {
+					const priorityOrder = { high: 0, medium: 1, low: 2 };
+					return priorityOrder[a.settings.priority || 'low'] - priorityOrder[b.settings.priority || 'low'];
+				}
+				case 'xp':
+					return b.reward.XP - a.reward.XP;
+				case 'difficulty': {
+					const difficultyOrder = { easy: 0, medium: 1, hard: 2, expert: 3 };
+					return difficultyOrder[a.settings.difficulty || 'easy'] - difficultyOrder[b.settings.difficulty || 'easy'];
+				}
+				case 'date':
+					return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+				default:
+					return 0;
+			}
+		});
+
+
+
 	if (error) {
 		return <div className="quest-error">{error}</div>;
 	}
@@ -413,6 +430,7 @@ export const HabitList = () => {
 		<div>
 			<HabitSideView
 				plugin={plugin}
+				filteredHabits={filteredHabits}
 				isOpen={isOpen}
 				filter={filter}
 				handleToggle={handleToggle}
@@ -426,31 +444,6 @@ export const HabitList = () => {
 	);
 }
 
-
-/**
- * Met à jour l'historique d'une habitude sans créer de doublons de dates
- * @param habit - L'habitude à mettre à jour
- * @param completed - Si l'habitude a été complétée ou non
- * @param targetDate - La date pour laquelle mettre à jour (par défaut aujourd'hui)
- * @returns L'habitude mise à jour avec l'historique actualisé
- */
-
- // Assurez-vous que le chemin est correct
-
-/**
- * Version asynchrone pour mettre à jour et sauvegarder l'habitude
- * @param habitId - L'ID de l'habitude à mettre à jour
- * @param completed - Si l'habitude a été complétée ou non
- * @param targetDate - La date pour laquelle mettre à jour (par défaut aujourd'hui)
- * @param plugin - L'instance du plugin pour accéder aux services de données
- * @returns Promise qui se résout quand la mise à jour est terminée
- */
-
-
-// export { updateHabitHistory, updateHabitHistoryAndSave, getHabitStats };
-
-
-
 // ------------------------------------------------
 
 /**
@@ -458,7 +451,7 @@ export const HabitList = () => {
  */
 export const getNextOccurrence = (habit: Habit): Date => {
 	const now = new Date(Date.now());
-	console.log(`Calculating next occurrence for habit: ${now}`);
+	// console.log(`Calculating next occurrence for habit: ${now}`);
 	now.setHours(0,0,0,0);
 
 	let lastCompleted: Date | null = null;
@@ -476,7 +469,7 @@ export const getNextOccurrence = (habit: Habit): Date => {
 		if (!lastCompleted) {
 			lastCompleted = now;
 		}
-		console.log(`Last completed date: ${lastCompleted}`);
+		// console.log(`Last completed date: ${lastCompleted}`);
 	}
 
 	if (!habit.recurrence || !habit.recurrence.interval || !habit.recurrence.unit) {

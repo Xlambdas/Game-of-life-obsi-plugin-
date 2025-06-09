@@ -67,7 +67,7 @@
       "unit": "days"
     },
     "streak": {
-      "current": 0,
+      "current": 1,
       "best": 2,
       "history": [
         {
@@ -80,11 +80,11 @@
         },
         {
           "date": "2025-06-06T08:53:59.714Z",
-          "success": false
+          "success": true
         }
       ],
-      "isCompletedToday": false,
-      "nextDate": "2025-06-05T22:00:00.000Z"
+      "isCompletedToday": true,
+      "nextDate": "2025-06-07T17:13:47.965Z"
     },
     "penalty": {
       "XPLoss": 0,
@@ -287,16 +287,16 @@
       "unit": "months"
     },
     "streak": {
-      "current": 0,
+      "current": 1,
       "best": 1,
       "history": [
         {
           "date": "2025-06-06T15:13:14.075Z",
-          "success": false
+          "success": true
         }
       ],
-      "isCompletedToday": false,
-      "nextDate": "2025-06-05T22:00:00.000Z"
+      "isCompletedToday": true,
+      "nextDate": "2025-07-06T17:13:46.517Z"
     },
     "penalty": {
       "XPLoss": 0,

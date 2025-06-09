@@ -1026,9 +1026,9 @@
       "isTimeSensitive": false
     },
     "progression": {
-      "isCompleted": false,
-      "completed_at": "1970-01-01T00:00:00.000Z",
-      "progress": 0,
+      "isCompleted": true,
+      "completed_at": "2025-06-06T17:30:45.940Z",
+      "progress": 100,
       "subtasks": []
     },
     "reward": {

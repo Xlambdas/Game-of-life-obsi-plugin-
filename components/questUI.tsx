@@ -2,24 +2,12 @@ import { ButtonComponent, Notice } from "obsidian";
 import { Quest } from "../constants/DEFAULT";
 import { validateQuestFormData, EndButtonDeps } from "./questFormHelpers";
 import { dueDateInput } from "./inputs";
-// import { QuestItem } from './questComponents';
+import { QuestSideViewProps } from "./props";
 
-export function QuestSideView(props: {
-	quests: Quest[],
-	filteredQuests: Quest[],
-	isOpen: boolean,
-	filter: string,
-	activeTab: 'active' | 'completed' | 'all',
-	handleToggle: (e: React.SyntheticEvent<HTMLDetailsElement, Event>) => void,
-	handleCompleteQuest: (quest: Quest, completed: boolean) => void,
-	setFilter: (value: string) => void,
-	setActiveTab: (tab: 'active' | 'completed' | 'all') => void,
-	setSortBy: (sortBy: 'priority' | 'xp' | 'difficulty' | 'date') => void,
-	sortBy: 'priority' | 'xp' | 'difficulty' | 'date',
-	handleModifyQuest: (quest: Quest) => void
-}) {
+
+export function QuestSideView(props: QuestSideViewProps) {
 	const {
-		quests,
+		// quests,
 		filteredQuests,
 		isOpen,
 		filter,

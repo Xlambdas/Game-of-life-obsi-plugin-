@@ -7,12 +7,12 @@ import React, {useState, useEffect} from "react";
 import GOL from "plugin";
 import {loadTodayHabits, getNextOccurrence, isDueToday, isCompletedToday, normalizeHabit} from "./habitComponents";
 import { endButton } from "./uiHelpers";
+import { HabitSideViewProps } from "./props";
 
 
 
 // Utilitaire pour calculer le nombre de jours entre deux dates (en ignorant l'heure)
 function getDaysUntil(today: Date, nextDate: Date): number {
-
 	const a = new Date(today);
 	a.setHours(0,0,0,0);
 	const b = new Date(nextDate);
@@ -20,17 +20,7 @@ function getDaysUntil(today: Date, nextDate: Date): number {
 	return Math.round((b.getTime() - a.getTime()) / (1000 * 60 * 60 * 24));
 }
 
-interface HabitSideViewProps {
-	plugin: GOL;
-	isOpen: boolean;
-	filter: string;
-	handleToggle: (e: React.SyntheticEvent<HTMLDetailsElement, Event>) => void;
-	handleCompleteHabit: (habit: Habit, completed: boolean) => void;
-	setFilter: (value: string) => void;
-	setSortBy: (sortBy: 'priority' | 'xp' | 'difficulty' | 'date'| 'today' | 'upcoming') => void;
-	sortBy: 'priority' | 'xp' | 'difficulty' | 'date' | 'today' | 'upcoming';
-	handleModifyHabit: (habit: Habit) => void;
-}
+
 
 // Fonction utilitaire pour trier les habitudes
 const sortHabits = (habits: Habit[], sortBy: string): Habit[] => {
@@ -55,36 +45,24 @@ const sortHabits = (habits: Habit[], sortBy: string): Habit[] => {
 			});
 		case 'date':
 			return sorted.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-		case 'today':
-			// Trier pour afficher d'abord les habitudes dues aujourd'hui
-			return sorted.sort((a, b) => {
-				const aDueToday = isDueToday(a);
-				const bDueToday = isDueToday(b);
-				if (aDueToday && !bDueToday) return -1;
-				if (!aDueToday && bDueToday) return 1;
-				return 0;
-			});
-		case 'upcoming':
-			// Trier pour afficher d'abord les habitudes des prochains jours
-			return sorted.sort((a, b) => {
-				const aDueToday = isDueToday(a);
-				const bDueToday = isDueToday(b);
-				if (!aDueToday && bDueToday) return -1;
-				if (aDueToday && !bDueToday) return 1;
-				// Si les deux sont dans la même catégorie, trier par prochaine occurrence
-				const aNext = getNextOccurrence(a);
-				const bNext = getNextOccurrence(b);
-				return aNext.getTime() - bNext.getTime();
-			});
 		default:
 			return sorted;
 	}
 };
 
 
+
+// ------------------------------------------------
+// Composant principal pour afficher les habitudes
+// ------------------------------------------------
+
+
+
+
 export function HabitSideView(props: HabitSideViewProps) {
 	const {
 		plugin,
+		filteredHabits,
 		isOpen,
 		filter,
 		handleToggle,
@@ -174,7 +152,7 @@ export function HabitSideView(props: HabitSideViewProps) {
 	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [allHabits]);
 
-	const filteredHabits = allHabits.filter(habit =>
+	const filteredHabits_old = allHabits.filter(habit =>
 		habit.title.toLowerCase().includes(filter.toLowerCase()) ||
 		habit.shortDescription.toLowerCase().includes(filter.toLowerCase())
 	);
@@ -230,7 +208,11 @@ export function HabitSideView(props: HabitSideViewProps) {
 	}
 
 	return (
-		<details className="habit-list" open={isOpen} onToggle={handleToggle}>
+		<details
+			className="habit-list"
+			open={isOpen}
+			onToggle={handleToggle}
+		>
 			<summary className="accordion-title">
 				Habits ({sortedHabits.length})
 			</summary>
@@ -286,7 +268,6 @@ export function HabitSideView(props: HabitSideViewProps) {
 							</button>
 						</div> */}
 					</div>
-					{/* Bouton de bascule pour le filtre aujourd'hui/à venir */}
 					<button
 						className="habit-filter-toggle"
 						onClick={() => setTodayOnly(v => !v)}
