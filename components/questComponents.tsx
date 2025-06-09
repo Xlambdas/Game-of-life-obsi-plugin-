@@ -48,11 +48,14 @@ export const QuestList = () => {
 		}
 	}, [plugin]);
 
+	/* * Handle quest completion logic
+	* This function handles marking a quest as completed or uncompleted
+	* It updates the quest's progression, user data, and saves changes to the file.
+	*/
 	const handleCompleteQuest = async (quest: Quest, completed: boolean) => {
 		try {
 			const quests = await plugin.dataService.loadQuestsFromFile();
 			const userData = await plugin.dataService.loadUser();
-			
 			if (!userData || typeof userData !== 'object' || !('user1' in userData)) {
 				throw new Error("User data is missing or malformed");
 			}
@@ -63,8 +66,6 @@ export const QuestList = () => {
 					q.id === quest.id ? { ...q, progression: { ...q.progression, isCompleted: !q.progression.isCompleted } } : q
 				)
 			);
-
-			// const isCurrentlyCompletedInUI = quest.progression.isCompleted;
 
 			if (!completed) {
 				// Unmark as completed
@@ -83,10 +84,10 @@ export const QuestList = () => {
 							isCompleted: false,
 							progress: 0,
 							completed_at: new Date(0)
-						} 
+						}
 					} : q
 				);
-				
+
 				await plugin.dataService.saveQuestsToFile(updatedQuests);
 				await plugin.dataService.saveSettings();
 				updateXP(-quest.reward.XP);
@@ -99,18 +100,17 @@ export const QuestList = () => {
 						userData.user1.persona.xp += quest.reward.XP;
 					}
 
-					const updatedQuests = quests.map(q => 
-						q.id === quest.id ? { 
-							...q, 
-							progression: { 
-								...q.progression, 
+					const updatedQuests = quests.map(q =>
+						q.id === quest.id ? {
+							...q,
+							progression: {
+								...q.progression,
 								isCompleted: true,
 								progress: 100,
 								completed_at: new Date()
-							} 
+							}
 						} : q
 					);
-					
 					await plugin.dataService.saveQuestsToFile(updatedQuests);
 					await plugin.dataService.saveSettings();
 					updateXP(quest.reward.XP);

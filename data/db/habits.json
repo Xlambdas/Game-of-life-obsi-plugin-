@@ -67,7 +67,7 @@
       "unit": "days"
     },
     "streak": {
-      "current": 1,
+      "current": 2,
       "best": 2,
       "history": [
         {
@@ -81,10 +81,14 @@
         {
           "date": "2025-06-06T08:53:59.714Z",
           "success": true
+        },
+        {
+          "date": "2025-06-09T12:47:28.322Z",
+          "success": true
         }
       ],
       "isCompletedToday": true,
-      "nextDate": "2025-06-07T17:13:47.965Z"
+      "nextDate": "2025-06-10T16:17:14.271Z"
     },
     "penalty": {
       "XPLoss": 0,
@@ -130,10 +134,14 @@
         {
           "date": "2025-06-04T06:47:31.304Z",
           "success": true
+        },
+        {
+          "date": "2025-06-09T12:47:26.935Z",
+          "success": false
         }
       ],
       "isCompletedToday": false,
-      "nextDate": "2025-06-05T22:00:00.000Z"
+      "nextDate": "2025-06-08T22:00:00.000Z"
     },
     "penalty": {
       "XPLoss": 0,
@@ -157,14 +165,14 @@
   {
     "id": "habit_5",
     "title": "days or day",
-    "shortDescription": "xcfvbhjl",
+    "shortDescription": "real short descr",
     "description": "",
     "created_at": "2025-06-04T07:08:49.459Z",
     "settings": {
       "type": "habit",
-      "category": "Undefined",
-      "priority": "low",
-      "difficulty": "easy",
+      "category": "Social",
+      "priority": "high",
+      "difficulty": "expert",
       "isSecret": false,
       "isTimeSensitive": false
     },
@@ -195,10 +203,14 @@
         {
           "date": "2025-06-06T08:53:52.200Z",
           "success": false
+        },
+        {
+          "date": "2025-06-09T12:47:17.631Z",
+          "success": false
         }
       ],
       "isCompletedToday": false,
-      "nextDate": "2025-06-05T22:00:00.000Z"
+      "nextDate": "2025-06-08T22:00:00.000Z"
     },
     "penalty": {
       "XPLoss": 0,
@@ -210,10 +222,10 @@
         "strength": 0,
         "agility": 0,
         "endurance": 1,
-        "charisma": 0,
+        "charisma": 1,
         "wisdom": 0,
         "perception": 0,
-        "intelligence": 0
+        "intelligence": 1
       },
       "items": []
     },
@@ -246,7 +258,7 @@
           "success": true
         }
       ],
-      "isCompletedToday": false,
+      "isCompletedToday": true,
       "nextDate": "2025-06-05T22:00:00.000Z"
     },
     "penalty": {
@@ -297,6 +309,104 @@
       ],
       "isCompletedToday": true,
       "nextDate": "2025-07-06T17:13:46.517Z"
+    },
+    "penalty": {
+      "XPLoss": 0,
+      "breackStreak": false
+    },
+    "reward": {
+      "XP": 0,
+      "attributes": {
+        "strength": 0,
+        "agility": 0,
+        "endurance": 1,
+        "charisma": 0,
+        "wisdom": 0,
+        "perception": 0,
+        "intelligence": 0
+      },
+      "items": []
+    },
+    "isSystemHabit": false
+  },
+  {
+    "id": "habit_4",
+    "title": "edtryb",
+    "shortDescription": "edrftgy",
+    "description": "",
+    "created_at": "2025-06-09T12:49:31.368Z",
+    "settings": {
+      "type": "habit",
+      "category": "Undefined",
+      "priority": "low",
+      "difficulty": "easy",
+      "isSecret": false,
+      "isTimeSensitive": false
+    },
+    "recurrence": {
+      "interval": 5,
+      "unit": "days"
+    },
+    "streak": {
+      "current": 1,
+      "best": 1,
+      "history": [
+        {
+          "date": "2025-06-09T12:49:39.377Z",
+          "success": true
+        }
+      ],
+      "isCompletedToday": true,
+      "nextDate": "2025-06-14T16:22:57.406Z"
+    },
+    "penalty": {
+      "XPLoss": 0,
+      "breackStreak": false
+    },
+    "reward": {
+      "XP": 0,
+      "attributes": {
+        "strength": 0,
+        "agility": 0,
+        "endurance": 1,
+        "charisma": 0,
+        "wisdom": 0,
+        "perception": 0,
+        "intelligence": 0
+      },
+      "items": []
+    },
+    "isSystemHabit": false
+  },
+  {
+    "id": "habit_6",
+    "title": "sdfg",
+    "shortDescription": "g\"gehtfch ug ju;ju ;jut a",
+    "description": "",
+    "created_at": "2025-06-09T13:13:47.700Z",
+    "settings": {
+      "type": "habit",
+      "category": "Undefined",
+      "priority": "low",
+      "difficulty": "easy",
+      "isSecret": false,
+      "isTimeSensitive": false
+    },
+    "recurrence": {
+      "interval": 3,
+      "unit": "days"
+    },
+    "streak": {
+      "current": 1,
+      "best": 1,
+      "history": [
+        {
+          "date": "2025-06-09T13:13:58.804Z",
+          "success": true
+        }
+      ],
+      "isCompletedToday": true,
+      "nextDate": "2025-06-12T16:06:27.109Z"
     },
     "penalty": {
       "XPLoss": 0,
