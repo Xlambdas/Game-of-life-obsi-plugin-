@@ -56,7 +56,7 @@ export const HabitItem: React.FC<HabitItemProps> = ({
 			)}
 			<div className="habit-info-row">
 				<div className="habit-streak">
-					🔥 Streak: <b>{habit.streak.current}</b> (Best: {habit.streak.best})
+					🔥 Streak: <b>{habit.streak.current}</b>
 				</div>
 				<div className="habit-next-occurrence-text">
 					{daysUntilNext === 0 ||
