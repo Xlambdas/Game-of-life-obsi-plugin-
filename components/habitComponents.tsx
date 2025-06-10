@@ -6,6 +6,133 @@ import { HabitSideView } from './habitUI';
 import { ModifyHabitModal } from '../modales/habitModal';
 import GOL from '../plugin';
 
+
+const calculateCurrentStreak = (habit: Habit): number => {
+	if (!habit.streak.history || habit.streak.history.length === 0) return 0;
+	
+	// Trier l'historique par date (du plus ancien au plus récent)
+	const sortedHistory = [...habit.streak.history].sort(
+		(a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+	);
+	
+	// Obtenir l'intervalle de récurrence en millisecondes
+	const { interval, unit } = habit.recurrence || { interval: 1, unit: 'days' };
+	const multiplier = {
+		'days': 1,
+		'weeks': 7,
+		'months': 30
+	}[unit] || 1;
+	const intervalMs = interval * multiplier * 24 * 60 * 60 * 1000;
+	
+	// Trouver la streak actuelle en partant de la fin
+	let currentStreak = 0;
+	let lastSuccessDate: Date | null = null;
+	
+	// 1. Parcourir depuis la fin pour trouver la série actuelle de succès
+	for (let i = sortedHistory.length - 1; i >= 0; i--) {
+		const entry = sortedHistory[i];
+		const entryDate = new Date(entry.date);
+		entryDate.setHours(0, 0, 0, 0);
+		
+		if (entry.success) {
+			if (lastSuccessDate === null) {
+				// Premier succès trouvé (le plus récent)
+				currentStreak = 1;
+				lastSuccessDate = entryDate;
+			} else {
+				// Calculer la date attendue pour le succès précédent
+				const expectedPreviousDate = new Date(lastSuccessDate.getTime() - intervalMs);
+				const tolerance = 12 * 60 * 60 * 1000; // 12h de tolérance
+				
+				// Vérifier si ce succès est à la bonne date
+				if (Math.abs(entryDate.getTime() - expectedPreviousDate.getTime()) <= tolerance) {
+					currentStreak++;
+					lastSuccessDate = entryDate;
+				} else {
+					// Gap trop important, arrêter le comptage
+					break;
+				}
+			}
+		} else {
+			// Échec trouvé
+			if (lastSuccessDate !== null) {
+				// Calculer la date attendue pour cette entrée
+				const expectedDate = new Date(lastSuccessDate.getTime() - intervalMs);
+				const tolerance = 12 * 60 * 60 * 1000;
+				
+				// Si cet échec correspond à la date attendue, la streak est interrompue
+				if (Math.abs(entryDate.getTime() - expectedDate.getTime()) <= tolerance) {
+					break;
+				}
+				// Sinon, continuer à chercher des succès plus anciens
+			}
+		}
+	}
+	
+	// 2. Vérification supplémentaire : s'assurer qu'il n'y a pas d'échec récent qui interrompt
+	if (currentStreak > 0 && lastSuccessDate) {
+		// Vérifier s'il y a des échecs après le dernier succès de la streak
+		const streakEndDate = new Date(lastSuccessDate.getTime() + (currentStreak - 1) * intervalMs);
+		
+		for (const entry of sortedHistory) {
+			const entryDate = new Date(entry.date);
+			entryDate.setHours(0, 0, 0, 0);
+			
+			// Si c'est un échec après la fin de la streak calculée
+			if (!entry.success && entryDate.getTime() > streakEndDate.getTime()) {
+				// Vérifier si cet échec devrait interrompre la streak
+				const daysSinceStreakEnd = Math.floor((entryDate.getTime() - streakEndDate.getTime()) / (24 * 60 * 60 * 1000));
+				
+				// Si l'échec est dans la période où l'habitude aurait dû être faite
+				if (daysSinceStreakEnd > 0 && daysSinceStreakEnd <= interval) {
+					// Recalculer la streak jusqu'à ce point
+					const cutoffDate = entryDate;
+					let recalculatedStreak = 0;
+					let checkDate: Date | null = null;
+					
+					for (let i = sortedHistory.length - 1; i >= 0; i--) {
+						const checkEntry = sortedHistory[i];
+						const checkEntryDate = new Date(checkEntry.date);
+						checkEntryDate.setHours(0, 0, 0, 0);
+						
+						if (checkEntryDate.getTime() >= cutoffDate.getTime()) continue;
+						
+						if (checkEntry.success) {
+							if (checkDate === null) {
+								recalculatedStreak = 1;
+								checkDate = checkEntryDate;
+							} else {
+								const expectedPrevDate = new Date(checkDate.getTime() - intervalMs);
+								const tolerance = 12 * 60 * 60 * 1000;
+								
+								if (Math.abs(checkEntryDate.getTime() - expectedPrevDate.getTime()) <= tolerance) {
+									recalculatedStreak++;
+									checkDate = checkEntryDate;
+								} else {
+									break;
+								}
+							}
+						} else if (checkDate !== null) {
+							const expectedDate = new Date(checkDate.getTime() - intervalMs);
+							const tolerance = 12 * 60 * 60 * 1000;
+							
+							if (Math.abs(checkEntryDate.getTime() - expectedDate.getTime()) <= tolerance) {
+								break;
+							}
+						}
+					}
+					
+					currentStreak = recalculatedStreak;
+					break;
+				}
+			}
+		}
+	}
+	
+	return currentStreak;
+};
+
+
 export const HabitList = () => {
 	const { plugin, updateXP } = useAppContext();
 	const [habits, setHabits] = useState<Habit[]>([]);
@@ -32,7 +159,10 @@ export const HabitList = () => {
 		const loadHabits = async () => {
 			try {
 				const habitsData = await plugin.dataService.loadHabitsFromFile();
-				setHabits(habitsData);
+				// Normalize habits to ensure they have the correct structure
+				const normalizedHabits = habitsData.map(habit => normalizeHabit(habit));
+				setHabits(normalizedHabits);
+				await plugin.dataService.saveHabitsToFile(normalizedHabits);
 				setError(null)
 			} catch (error) {
 				console.error("Error loading habits:", error);
@@ -107,36 +237,67 @@ export const HabitList = () => {
 
 		updatedHistory.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
-		const calculateCurrentStreak = (history: typeof updatedHistory): number => {
-			if (history.length === 0) return 0;
-			let currentStreak = 0;
-			for (let i = history.length - 1; i >= 0; i--) {
-				if (history[i].success) {
-					currentStreak++;
-				} else {
-					break;
-				}
-			}
-			return currentStreak;
-		};
+		const tempHabit = { ...habit, streak: { ...habit.streak, history: updatedHistory } };
+		const currentStreak = calculateCurrentStreak(tempHabit);
 
 		// Calculate the best streak
-		const calculateBestStreak = (history: typeof updatedHistory): number => {
-			if (history.length === 0) return 0;
-
+		const calculateBestStreak = (habit: Habit): number => {
+			if (!habit.streak.history || habit.streak.history.length === 0) return 0;
+			
+			const { interval, unit } = habit.recurrence || { interval: 1, unit: 'days' };
+			const multiplier = {
+				'days': 1,
+				'weeks': 7,
+				'months': 30
+			}[unit] || 1;
+			const intervalMs = interval * multiplier * 24 * 60 * 60 * 1000;
+			
+			const sortedHistory = [...habit.streak.history].sort(
+				(a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+			);
+			
 			let bestStreak = 0;
-			let currentStreak = 0;
-
-			for (const entry of history) {
+			let currentStreakCount = 0;
+			let lastSuccessDate: Date | null = null;
+			
+			for (const entry of sortedHistory) {
+				const entryDate = new Date(entry.date);
+				entryDate.setHours(0, 0, 0, 0);
+				
 				if (entry.success) {
-					currentStreak++;
-					bestStreak = Math.max(bestStreak, currentStreak);
-			} else {
-					currentStreak = 0;
+					if (lastSuccessDate === null) {
+						currentStreakCount = 1;
+						lastSuccessDate = entryDate;
+					} else {
+						const expectedNextDate = new Date(lastSuccessDate.getTime() + intervalMs);
+						const tolerance = 24 * 60 * 60 * 1000;
+						
+						if (Math.abs(entryDate.getTime() - expectedNextDate.getTime()) <= tolerance) {
+							currentStreakCount++;
+							lastSuccessDate = entryDate;
+						} else {
+							bestStreak = Math.max(bestStreak, currentStreakCount);
+							currentStreakCount = 1;
+							lastSuccessDate = entryDate;
+						}
+					}
+				} else if (lastSuccessDate !== null) {
+					const expectedNextDate = new Date(lastSuccessDate.getTime() + intervalMs);
+					const tolerance = 24 * 60 * 60 * 1000;
+					
+					if (Math.abs(entryDate.getTime() - expectedNextDate.getTime()) <= tolerance) {
+						bestStreak = Math.max(bestStreak, currentStreakCount);
+						currentStreakCount = 0;
+						lastSuccessDate = null;
+					}
 				}
 			}
-			return bestStreak;
+			
+			return Math.max(bestStreak, currentStreakCount);
 		};
+
+		const bestStreak = Math.max(calculateBestStreak(tempHabit), habit.streak.best);
+
 
 		// Calculate the next occurrence date based on the habit's recurrence settings
 		const calculateNextDate = (): Date => {
@@ -165,12 +326,12 @@ export const HabitList = () => {
 			return todayEntry?.success || false;
 		};
 
-		const currentStreak = calculateCurrentStreak(updatedHistory);
-		const bestStreak = Math.max(calculateBestStreak(updatedHistory), habit.streak.best);
+		// const currentStreak = calculateCurrentStreak(updatedHistory);
+		// const bestStreak = Math.max(calculateBestStreak(updatedHistory), habit.streak.best);
 
 		return {
 			...habit,
-						streak: {
+			streak: {
 				...habit.streak,
 				current: currentStreak,
 				best: bestStreak,
@@ -269,7 +430,6 @@ export const HabitList = () => {
  */
 export const getNextOccurrence = (habit: Habit): Date => {
 	const now = new Date(Date.now());
-	// console.log(`Calculating next occurrence for habit: ${now}`);
 	now.setHours(0,0,0,0);
 
 	let lastCompleted: Date | null = null;
@@ -287,12 +447,11 @@ export const getNextOccurrence = (habit: Habit): Date => {
 		if (!lastCompleted) {
 			lastCompleted = now;
 		}
-		// console.log(`Last completed date: ${lastCompleted}`);
 	}
 
 	if (!habit.recurrence || !habit.recurrence.interval || !habit.recurrence.unit) {
 		console.warn("Habit recurrence is not defined, defaulting to daily recurrence.");
-		habit.recurrence = { interval: 1, unit: 'days' }; // Default to daily if not set
+		habit.recurrence = { interval: 1, unit: 'days' };
 	}
 
 	let intervalMs: number;
@@ -311,12 +470,12 @@ export const getNextOccurrence = (habit: Habit): Date => {
 	}
 
 	let nextDate = new Date(lastCompleted.getTime() + intervalMs) ;
-	if (nextDate < now) {
-		nextDate = now;
-	} if (habit.streak.history.length === 1 && !habit.streak.history[0].success) {
-		nextDate = now;
-	}
-	habit.streak.nextDate = nextDate;
+	// if (nextDate < now) {
+	// 	nextDate = now;
+	// } if (habit.streak.history.length === 1 && !habit.streak.history[0].success) {
+	// 	nextDate = now;
+	// }
+	// habit.streak.nextDate = nextDate;
 
 	return nextDate;
 };
@@ -343,19 +502,55 @@ export const isCompletedToday = (habit: Habit): boolean => {
  * Normalise une habitude (met à jour les champs calculés)
  */
 export const normalizeHabit = (habit: Habit): Habit => {
+	const today = new Date(Date.now());
+	today.setHours(0, 0, 0, 0); // force midnight
 	let nextDate = getNextOccurrence(habit);
-	nextDate = new Date(nextDate.getFullYear(), nextDate.getMonth(), nextDate.getDate(), 0, 0, 0, 0); // force minuit
-	const completedToday = isCompletedToday(habit);
+	nextDate = new Date(nextDate.getFullYear(), nextDate.getMonth(), nextDate.getDate(), 0, 0, 0, 0); // force midnight
+	// console.log("Next date for habit", habit.title, "is", nextDate);
+	let completedToday = isCompletedToday(habit);
+
+	if (!completedToday && nextDate > today) {
+		// Vérifier s'il y a une completion récente
+		const lastSuccessfulEntry = habit.streak.history
+			.filter(entry => entry.success)
+			.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
+		
+		if (lastSuccessfulEntry) {
+			const lastSuccessDate = new Date(lastSuccessfulEntry.date);
+			lastSuccessDate.setHours(0, 0, 0, 0);
+			
+			// Si la dernière completion + l'intervalle de récurrence est dans le futur par rapport à aujourd'hui
+			// alors l'habitude est considérée comme "complétée" pour aujourd'hui
+			const { interval, unit } = habit.recurrence || { interval: 1, unit: 'days' };
+			const multiplier = {
+				'days': 1,
+				'weeks': 7,
+				'months': 30
+			}[unit] || 1;
+			
+			const nextDueDate = new Date(lastSuccessDate.getTime() + interval * multiplier * 24 * 60 * 60 * 1000);
+			
+			if (nextDueDate > today) {
+				completedToday = true;
+			}
+		}
+	}
+
+	if (nextDate < today) {
+		nextDate = today;
+		completedToday = false;
+	}
+
 	return {
 		...habit,
 		streak: {
 			...habit.streak,
+			current: calculateCurrentStreak(habit),
 			isCompletedToday: completedToday,
 			nextDate: nextDate
 		}
 	};
 };
-
 
 
 // Utilitaire pour calculer le nombre de jours entre deux dates (en ignorant l'heure)
@@ -364,6 +559,9 @@ export function getDaysUntil(today: Date, nextDate: Date): number {
 	a.setHours(0,0,0,0);
 	const b = new Date(nextDate);
 	b.setHours(0,0,0,0);
+	if (a.getTime() > b.getTime()) {
+		return 0; // Si la date de début est après la date de fin, retourne 0
+	}
 	return Math.round((b.getTime() - a.getTime()) / (1000 * 60 * 60 * 24));
 }
 
@@ -395,4 +593,33 @@ export const sortHabits = (habits: Habit[], sortBy: string): Habit[] => {
 		default:
 			return sorted;
 	}
+};
+
+
+// Helper function to check if a habit is due today
+export const isTodayHabit = (habit: Habit): boolean => {
+	const today = new Date();
+	today.setHours(0, 0, 0, 0);
+	// const nextDate = new Date(getNextOccurrence(habit));
+	// nextDate.setHours(0, 0, 0, 0);
+	const normalizedHabit = normalizeHabit(habit);
+	if (normalizedHabit.streak.nextDate.getTime() <= today.getTime()) return true;
+	if (normalizedHabit.streak.history.length === 0) return true;
+	if (normalizedHabit.streak.history.length === 1 && !normalizedHabit.streak.history[0].success) return true;
+	
+	if (normalizedHabit.streak.isCompletedToday && normalizedHabit.streak.history.length > 0 ) {
+		return normalizedHabit.streak.history.some((h) => {
+			if (!h.date) return false;
+			const histDate = new Date(h.date);
+			histDate.setHours(0, 0, 0, 0);
+			return histDate.getTime() === today.getTime();
+		});
+	};
+
+	return normalizedHabit.streak.history.some((h) => {
+		if (!h.date) return false;
+		const histDate = new Date(h.date);
+		histDate.setHours(0, 0, 0, 0);
+		return histDate.getTime() === today.getTime();
+	});
 };

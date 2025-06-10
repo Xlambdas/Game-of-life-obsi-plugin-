@@ -1176,3 +1176,28 @@ margin-top: 20px;
 .calendar-day.today.selected {
     border-color: var(--text-on-accent);
 }
+
+.habit-stats {
+    padding: 10px;
+    margin: 10px 0;
+    background-color: var(--background-secondary);
+    border-radius: 5px;
+    border: 1px solid var(--background-modifier-border);
+}
+
+.stats-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 0;
+}
+
+.stats-label {
+    font-weight: 500;
+    color: var(--text-muted);
+}
+
+.stats-value {
+    font-weight: 600;
+    color: var(--text-normal);
+}

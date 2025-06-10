@@ -146,11 +146,9 @@ export const QuestList = () => {
 				quest.title.toLowerCase().includes(filter.toLowerCase()) ||
 				quest.description.toLowerCase().includes(filter.toLowerCase()) ||
 				(quest.settings.category && quest.settings.category.toLowerCase().includes(filter.toLowerCase()));
-			
-			const matchesTab = activeTab === 'all' || 
+			const matchesTab = activeTab === 'all' ||
 				(activeTab === 'active' && !quest.progression.isCompleted) ||
 				(activeTab === 'completed' && quest.progression.isCompleted);
-				
 			return matchesSearch && matchesTab;
 		})
 		.sort((a, b) => {
