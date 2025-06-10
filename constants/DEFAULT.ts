@@ -18,6 +18,7 @@ export interface UserSettings {
 			health: number;
 			xp: number;
 			level: number;
+			maxLevel: number;
 			newXp: number;
 			lvlThreshold: number;
 		};
@@ -57,6 +58,7 @@ export const DEFAULT_SETTINGS: UserSettings = {
 			health: 100,
 			xp: 0,
 			level: 1,
+			maxLevel: 1,
 			newXp: 0,
 			lvlThreshold: 100,
 		},

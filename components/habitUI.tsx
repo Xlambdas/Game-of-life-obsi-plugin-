@@ -83,7 +83,16 @@ export function HabitSideView({
 	const habitsToShow = todayOnly
 		? filteredHabits.filter(isTodayHabit)
 		: filteredHabits.filter((habit) => !isTodayHabit(habit));
-	const sortedHabits = sortHabits(habitsToShow, sortBy);
+
+	// Apply search filter
+	const filteredBySearch = filter
+		? habitsToShow.filter(habit => 
+			habit.title.toLowerCase().includes(filter.toLowerCase()) ||
+			(habit.shortDescription && habit.shortDescription.toLowerCase().includes(filter.toLowerCase()))
+		)
+		: habitsToShow;
+
+	const sortedHabits = sortHabits(filteredBySearch, sortBy);
 
 	// Handle habit completion with UI refresh
 	const handleCompleteHabitWithRefresh = async (habit: Habit, completed: boolean) => {
