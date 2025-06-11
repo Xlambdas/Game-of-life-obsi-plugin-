@@ -6,20 +6,23 @@
       "language": "en",
       "questsFolder": "",
       "questsFileName": "Quests.md",
-      "refreshRate": 60000,
+      "refreshRate": 5000,
       "questsCategories": [
-        "test",
-        "caca"
+        "Work",
+        "Study",
+        "Social",
+        "Other"
       ]
     },
     "persona": {
-      "name": "testttt",
+      "name": "User",
       "class": "user",
       "health": 100,
-      "xp": 5314,
-      "level": 14,
-      "newXp": 507,
-      "lvlThreshold": 1058
+      "xp": 370,
+      "level": 4,
+      "maxLevel": 1,
+      "newXp": 6,
+      "lvlThreshold": 172
     },
     "attribute": {
       "strength": 10,

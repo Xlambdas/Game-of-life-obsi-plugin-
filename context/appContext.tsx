@@ -13,6 +13,11 @@ export interface AppContextType {
     settings: UserSettings;
 	updateSettings: (newData: Partial<UserSettings>) => void;
 	updateXP: (amount: number) => void;
+	setXp: (newXp: number) => void;           // Nouvelle
+    resetXp: () => void;                      // Nouvelle
+    getCurrentXp: () => number;               // Nouvelle
+    getCurrentLevel: () => number;            // Nouvelle
+    getXpProgress: () => { current: number; needed: number; percentage: number };
 	saveData: () => Promise<void>;
 	refreshRate: number;
 }
@@ -73,6 +78,7 @@ export function AppContextProvider({ children, plugin }: AppContextProviderProps
     const saveData = async () => {
         await appContextService.saveUserDataToFile();
 		await appContextService.saveQuestDataToFile();
+		await appContextService.saveHabitDataToFile();
     };
 
 	const contextValue: AppContextType = {
@@ -80,10 +86,15 @@ export function AppContextProvider({ children, plugin }: AppContextProviderProps
 		settings,
 		updateSettings,
 		updateXP,
+        setXp: appContextService.setXp ?? (() => {}),
+        resetXp: appContextService.resetXp ?? (() => {}),
+        getCurrentXp: appContextService.getCurrentXp ?? (() => 0),
+        getCurrentLevel: appContextService.getCurrentLevel ?? (() => 0),
+		getXpProgress: appContextService.getXpProgress ?? (() => ({ current: 0, needed: 0, percentage: 0 })),
 		saveData,
 		refreshRate: appContextService.getRefreshRate(),
 	}
-	
+
 	useEffect(() => {
         // subscribe to changes in the viewSyncService
         const stateUnsubscribe = viewSyncService.onStateChange((newSettings) => {
@@ -102,10 +113,6 @@ export function AppContextProvider({ children, plugin }: AppContextProviderProps
         </AppContext.Provider>
     );
 }
-
-// export const TestuseAppContext = () => useContext(AppContext);
-
-
 
 // --------------------------
 // Hook to use the AppContext

@@ -4,6 +4,7 @@ import GOL from "../plugin";
 import { viewSyncService } from "services/syncService";
 import { Notice } from "obsidian";
 import { Quest, UserSettings, Habit  } from "../constants/DEFAULT";
+import { XpService } from "services/xpService";
 
 
 // Singleton service to manage the application context
@@ -14,6 +15,7 @@ class AppContextService {
 	private _settings: UserSettings | null = null;
 	private _quests: Quest | null = null;
 	private _habits: Habit | null = null;
+	private _xpService: XpService | null = null;
 	private saveDebounceTimout: NodeJS.Timeout | null = null;
 	private readonly SAVE_DELAY: number = 2000; // 2 second delay for saving
 	// private _listeners: Set<(context: AppContextType | null) => void> = new Set();
@@ -39,6 +41,10 @@ class AppContextService {
 	get habits(): Habit | null {
 		return this._habits;
 	}
+	get xpService(): XpService | null {
+		return this._xpService;
+	}
+
 	set plugin(plugin: GOL | null) {
 		this._plugin = plugin;
 		console.log("✅ Plugin instance set in AppContextService");
@@ -49,6 +55,8 @@ class AppContextService {
 		this._settings = plugin.settings;
 		this._quests = plugin.quest;
 		this._habits = plugin.habit;
+
+		this._xpService = new XpService(plugin.app, plugin);
     }
 
 	getContext(): AppContextType | null {
@@ -100,43 +108,124 @@ class AppContextService {
 
 	// Mettre à jour spécifiquement l'XP
     async updateXP(amount: number): Promise<void> {
-        if (!this._plugin || !this._plugin.settings?.user1?.persona) {
-			console.error("Plugin instance or user settings are not available.");
-			return;
-		}
-		const persona = this._plugin.settings.user1.persona;
+		if (!this._xpService) {
+            console.error("XpService is not available.");
+            return;
+        }
 
-		persona.xp = Math.max(0, persona.xp + amount);
+        try {
+            const result = this._xpService.addXp(amount);
+            
+            // Emit level update if leveled up
+            if (result.leveledUp) {
+                viewSyncService.emitLevelUpdate(result.level);
+            }
+            
+            // Always emit state change to update UI
+            viewSyncService.emitStateChange(this._settings);
+            
+            // Schedule save
+            this.scheduleSave();
+            
+            console.log(`✅ XP updated: +${amount} (Level: ${result.level}, XP: ${this._xpService.getCurrentXp()})`);
+        } catch (error) {
+            console.error("❌ Failed to update XP:", error);
+        }
+
+        // if (!this._plugin || !this._plugin.settings?.user1?.persona) {
+		// 	console.error("Plugin instance or user settings are not available.");
+		// 	return;
+		// }
+		// const persona = this._plugin.settings.user1.persona;
+
+		// const attribute = this._plugin.settings.user1.attribute;
+		// const totalAttribute = Object.values(attribute).reduce((sum, val) => sum + (typeof val === "number" ? val : 0), 0);
+		// persona.xp = Math.max(0, persona.xp + amount);
 
 
-		const calcul = this.CalculLevel(persona.xp, persona.level);
-		persona.level = calcul.level;
-		persona.newXp = calcul.newXp;
-		persona.lvlThreshold = calcul.lvlSeuil;
-		viewSyncService.emitLevelUpdate(persona.level);
-		viewSyncService.emitStateChange(this._settings);
+		// const calcul = this.CalculLevel(persona.xp, persona.level);
+		// persona.level = calcul.level;
+		// persona.newXp = calcul.newXp;
+		// persona.lvlThreshold = calcul.lvlSeuil;
+		// viewSyncService.emitLevelUpdate(persona.level);
+		// viewSyncService.emitStateChange(this._settings);
 
-        // Planifier une sauvegarde
-        this.scheduleSave();
+        // // Planifier une sauvegarde
+        // this.scheduleSave();
+    }
+
+	getCurrentXp(): number {
+        return this._xpService?.getCurrentXp() ?? 0;
+    }
+
+    getCurrentLevel(): number {
+        return this._xpService?.getCurrentLevel() ?? 1;
+    }
+
+    setXp(newXp: number): void {
+        if (!this._xpService) {
+            console.error("❌ XpService is not available.");
+            return;
+        }
+
+        try {
+            const result = this._xpService.setXp(newXp);
+            
+            if (result.leveledUp) {
+                viewSyncService.emitLevelUpdate(result.level);
+            }
+            
+            viewSyncService.emitStateChange(this._settings);
+            this.scheduleSave();
+        } catch (error) {
+            console.error("❌ Failed to set XP:", error);
+        }
+    }
+
+    resetXp(): void {
+        if (!this._xpService) {
+            console.error("❌ XpService is not available.");
+            return;
+        }
+
+        try {
+            this._xpService.resetXp();
+            viewSyncService.emitStateChange(this._settings);
+            this.scheduleSave();
+        } catch (error) {
+            console.error("❌ Failed to reset XP:", error);
+        }
+    }
+
+    getXpProgress(): { current: number; needed: number; percentage: number } {
+        if (!this._xpService) {
+            return { current: 0, needed: 100, percentage: 0 };
+        }
+
+        return {
+            current: this._xpService.getCurrentXp(),
+            needed: this._xpService.getXpForNextLevel(),
+            percentage: this._xpService.getProgressToNextLevel()
+        };
     }
 
     // Vérifier si l'utilisateur doit monter de niveau
-	private CalculLevel(xp: number, level: number): { level: number, newXp: number, lvlSeuil: number } {
-		if (!this._plugin || !this._plugin.settings?.user1?.persona) return { level, newXp: xp, lvlSeuil: 100 };
+	// private CalculLevel(xp: number, level: number): { level: number, newXp: number, lvlSeuil: number } {
+	// 	if (!this._plugin || !this._plugin.settings?.user1?.persona) return { level, newXp: xp, lvlSeuil: 100 };
 
-		let lvl = 1;
-		let seuil = 100;
+	// 	let lvl = 1;
+	// 	let seuil = 100;
 
-		while (xp >= seuil) {
-			if (lvl === level) {
-				new Notice("Level up!");
-			}
-			xp -= seuil;
-			seuil = Math.trunc(seuil * 1.2);
-			lvl++;
-		}
-		return { level: lvl, newXp: xp, lvlSeuil: seuil };
-	}
+	// 	while (xp >= seuil) {
+	// 		if (lvl === level) {
+	// 			new Notice("Level up!");
+	// 		}
+	// 		xp -= seuil;
+	// 		seuil = Math.trunc(seuil * 1.2);
+	// 		lvl++;
+	// 	}
+	// 	return { level: lvl, newXp: xp, lvlSeuil: seuil };
+	// }
 
 	async saveUserDataToFile() {
 		if (!this.plugin) {
@@ -167,6 +256,19 @@ class AppContextService {
 		}
 	}
 
+	async saveHabitDataToFile() {
+		if (!this.plugin) {
+			console.error("Plugin instance is not available for saveHabitDataToFile.");
+			return;
+		}
+
+		try {
+			await this.plugin.saveData(this.plugin.habit);
+		} catch (err) {
+			console.error("❌ Échec de la sauvegarde :", err);
+		}
+	}
+
 	private async saveToVaultFile() {
 		if (!this.plugin) {
 			console.error("Plugin instance is not available for saveToVaultFile.");
@@ -180,7 +282,7 @@ class AppContextService {
 
 			const path = `${this.plugin.app.vault.configDir}/plugins/game-of-life/data/db/user.json`;
 			await adapter.write(path, JSON.stringify(this.plugin.settings, null, 2));
-			console.log("✅ Données utilisateur sauvegardées dans user.json", JSON.stringify(this.plugin.settings, null, 2));
+			// console.log("✅ Données utilisateur sauvegardées dans user.json", JSON.stringify(this.plugin.settings, null, 2));
 		} catch (err) {
 			console.error("❌ Échec de la sauvegarde dans user.json :", err);
 		}

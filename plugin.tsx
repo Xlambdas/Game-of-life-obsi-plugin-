@@ -15,6 +15,7 @@ import { CreateQuestModal, ModifyQuestModal } from './modales/questModal';
 import { CreateHabitModal } from './modales/habitModal';
 import { HabitServices } from './services/habitService';
 import './styles/calendarView.css';
+import { XpService } from 'services/xpService';
 
 
 export default class GOL extends Plugin {
@@ -28,6 +29,7 @@ export default class GOL extends Plugin {
     viewService: ViewService;
     dataService: DataService;
 	autoSaveIntervalId: number | undefined;
+	xpService: XpService;
 
     async onload() {
         console.warn('loading plugin');
@@ -39,6 +41,7 @@ export default class GOL extends Plugin {
 		if (this.dataService) {
             this.settings = this.dataService.settings;
         }
+		this.xpService = new XpService(this.app, this);
 
         this.questService = new QuestServices(this.app, this);
         this.habitService = new HabitServices(this.app, this);

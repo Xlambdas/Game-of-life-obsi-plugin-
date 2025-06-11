@@ -116,7 +116,7 @@
       "isTimeSensitive": false
     },
     "progression": {
-      "isCompleted": true,
+      "isCompleted": false,
       "completed_at": "1970-01-01T00:00:00.000Z",
       "progress": 0,
       "dueDate": "",
@@ -167,9 +167,9 @@
       "isTimeSensitive": false
     },
     "progression": {
-      "isCompleted": true,
-      "completed_at": "2025-05-31T10:24:35.917Z",
-      "progress": 100,
+      "isCompleted": false,
+      "completed_at": "1970-01-01T00:00:00.000Z",
+      "progress": 0,
       "dueDate": "",
       "subtasks": []
     },
@@ -218,7 +218,7 @@
       "isTimeSensitive": false
     },
     "progression": {
-      "isCompleted": true,
+      "isCompleted": false,
       "completed_at": "1970-01-01T00:00:00.000Z",
       "progress": 0,
       "dueDate": "",
@@ -269,7 +269,7 @@
       "isTimeSensitive": false
     },
     "progression": {
-      "isCompleted": true,
+      "isCompleted": false,
       "completed_at": "1970-01-01T00:00:00.000Z",
       "progress": 0,
       "subtasks": []
@@ -319,9 +319,9 @@
       "isTimeSensitive": false
     },
     "progression": {
-      "isCompleted": true,
-      "completed_at": "2025-05-31T15:32:23.308Z",
-      "progress": 100,
+      "isCompleted": false,
+      "completed_at": "1970-01-01T00:00:00.000Z",
+      "progress": 0,
       "dueDate": "",
       "subtasks": []
     },
@@ -370,9 +370,9 @@
       "isTimeSensitive": false
     },
     "progression": {
-      "isCompleted": true,
-      "completed_at": "2025-06-06T14:54:00.229Z",
-      "progress": 100,
+      "isCompleted": false,
+      "completed_at": "1970-01-01T00:00:00.000Z",
+      "progress": 0,
       "dueDate": "",
       "subtasks": []
     },
@@ -421,9 +421,9 @@
       "isTimeSensitive": false
     },
     "progression": {
-      "isCompleted": true,
-      "completed_at": "2025-06-09T13:23:11.832Z",
-      "progress": 100,
+      "isCompleted": false,
+      "completed_at": "1970-01-01T00:00:00.000Z",
+      "progress": 0,
       "dueDate": "",
       "subtasks": []
     },
@@ -472,7 +472,7 @@
       "isTimeSensitive": false
     },
     "progression": {
-      "isCompleted": true,
+      "isCompleted": false,
       "completed_at": "1970-01-01T00:00:00.000Z",
       "progress": 0,
       "dueDate": "",
@@ -523,9 +523,9 @@
       "isTimeSensitive": false
     },
     "progression": {
-      "isCompleted": true,
-      "completed_at": "2025-05-16T17:32:54.697Z",
-      "progress": 100,
+      "isCompleted": false,
+      "completed_at": "1970-01-01T00:00:00.000Z",
+      "progress": 0,
       "dueDate": "",
       "subtasks": []
     },
@@ -574,9 +574,9 @@
       "isTimeSensitive": false
     },
     "progression": {
-      "isCompleted": true,
-      "completed_at": "2025-05-16T12:29:32.052Z",
-      "progress": 100,
+      "isCompleted": false,
+      "completed_at": "1970-01-01T00:00:00.000Z",
+      "progress": 0,
       "dueDate": "",
       "subtasks": []
     },
@@ -726,9 +726,9 @@
       "isTimeSensitive": false
     },
     "progression": {
-      "isCompleted": true,
-      "completed_at": "2025-05-31T10:24:56.139Z",
-      "progress": 100,
+      "isCompleted": false,
+      "completed_at": "1970-01-01T00:00:00.000Z",
+      "progress": 0,
       "subtasks": []
     },
     "reward": {
@@ -1026,9 +1026,9 @@
       "isTimeSensitive": false
     },
     "progression": {
-      "isCompleted": true,
-      "completed_at": "2025-06-06T17:30:45.940Z",
-      "progress": 100,
+      "isCompleted": false,
+      "completed_at": "1970-01-01T00:00:00.000Z",
+      "progress": 0,
       "subtasks": []
     },
     "reward": {
