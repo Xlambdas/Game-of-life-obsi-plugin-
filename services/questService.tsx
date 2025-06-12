@@ -6,11 +6,13 @@ import { validateQuestFormData, QuestFormData } from '../components/questFormHel
 import { updateAttributesByCategory } from '../components/formHelpers';
 import GOL from '../plugin';
 import { useAppContext } from 'context/appContext';
+import { appContextService } from 'context/appContextService';
 
 export class QuestServices {
     private app: App;
     private plugin: GOL;
     private dataService: DataService;
+
     private quests: Quest[] = [];
     private completedQuestIds: string[] = [];
     private questCounter: number = 0;
@@ -19,7 +21,7 @@ export class QuestServices {
     constructor(app: App, plugin: any) {
         this.app = app;
         this.plugin = plugin;
-        this.dataService = this.plugin.dataService;
+        this.dataService = appContextService.dataService;
         this.initializeQuestCounter();
     }
 
@@ -66,7 +68,7 @@ export class QuestServices {
 
     private async initializeQuestCounter(): Promise<void> {
         try {
-            const quests = await this.plugin.dataService.loadQuestsFromFile();
+            const quests = await appContextService.dataService.loadQuestsFromFile();
             if (!Array.isArray(quests)) {
                 console.error("Quests data is not an array:", quests);
                 this.questCounter = 0;
@@ -132,7 +134,7 @@ export class QuestServices {
 
 		// Save the updated quest data
 		try {
-			await this.plugin.dataService.saveQuestsToFile(this.quests);
+			await this.dataService.saveQuestsToFile(this.quests);
 		} catch (error)	 {
 			console.error('Error saving quest completion status:', error);
 			return false;
@@ -146,9 +148,9 @@ export class QuestServices {
 
 	async handleCompleteQuest(quest: Quest, plugin: any, setQuests: any, setError: any, updateXP: any) {
 		try {
-			const quests = await this.plugin.dataService.loadQuests();
+			const quests = await this.dataService.loadQuests();
 			console.log("Quests loaded:", quests);
-            const userData: any = await this.plugin.dataService.loadUser();
+            const userData: any = await this.dataService.loadUser();
             if (userData == null || userData.user1 == null) {
                 throw new Error("User data is missing or malformed");
             }
@@ -173,8 +175,8 @@ export class QuestServices {
 				const updatedQuests = quests.map((q: Quest) =>
 					q.id === quest.id ? { ...q, progression: { ...q.progression, isCompleted: false, progress: 0, completed_at: new Date(0) } } : q
 				);
-				await this.plugin.dataService.saveQuestsToFile(updatedQuests);
-				await this.plugin.dataService.saveSettings();
+				await this.dataService.saveQuestsToFile(updatedQuests);
+				await this.dataService.saveSettings();
 				updateXP(-quest.reward.XP);
 				new Notice(`Quest uncompleted. Removed ${quest.reward.XP} XP`);
 			} else {
@@ -188,8 +190,8 @@ export class QuestServices {
 					const updatedQuests = quests.map((q: Quest) =>
 						q.id === quest.id ? { ...q, progression: { ...q.progression, isCompleted: true, progress: 100, completed_at: new Date() } } : q
 					);
-					await this.plugin.dataService.saveQuestsToFile(updatedQuests);
-					await this.plugin.dataService.saveSettings();
+					await this.dataService.saveQuestsToFile(updatedQuests);
+					await this.dataService.saveSettings();
 					updateXP(quest.reward.XP);
 					new Notice(`Quest completed! Earned ${quest.reward.XP} XP`);
 				} else {

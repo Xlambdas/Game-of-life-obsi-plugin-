@@ -5,103 +5,7 @@ import { Habit } from '../constants/DEFAULT';
 import { HabitSideView } from './habitUI';
 import { ModifyHabitModal } from '../modales/habitModal';
 import GOL from '../plugin';
-
-
-/**
- * Calculate the current streak of a habit.
- * The streak is the number of consecutive successful completions, considering the recurrence interval.
- */
-const calculateCurrentStreak = (habit: Habit): number => {
-	if (!habit.streak.history || habit.streak.history.length === 0) return 0;
-
-	const sortedHistory = [...habit.streak.history].sort(
-		(a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-	);
-
-	const { interval = 1, unit = 'days' } = habit.recurrence || {};
-	const unitToDays = { days: 1, weeks: 7, months: 30 };
-	const intervalMs = interval * (unitToDays[unit] || 1) * 24 * 60 * 60 * 1000;
-
-	let currentStreak = 0;
-	let lastSuccessDate: Date | null = null;
-
-	for (let i = sortedHistory.length - 1; i >= 0; i--) {
-		const entry = sortedHistory[i];
-		const entryDate = new Date(entry.date);
-		entryDate.setHours(0, 0, 0, 0);
-
-		if (entry.success) {
-			if (!lastSuccessDate) {
-				currentStreak = 1;
-				lastSuccessDate = entryDate;
-			} else {
-				const expectedPrevDate = new Date(lastSuccessDate.getTime() - intervalMs);
-				const tolerance = 12 * 60 * 60 * 1000;
-				if (Math.abs(entryDate.getTime() - expectedPrevDate.getTime()) <= tolerance) {
-					currentStreak++;
-					lastSuccessDate = entryDate;
-				} else {
-					break;
-				}
-			}
-		} else if (lastSuccessDate) {
-			const expectedDate = new Date(lastSuccessDate.getTime() - intervalMs);
-			const tolerance = 12 * 60 * 60 * 1000;
-			if (Math.abs(entryDate.getTime() - expectedDate.getTime()) <= tolerance) {
-				break;
-			}
-		}
-	}
-
-	// Check for recent failures that may interrupt the streak
-	if (currentStreak > 0 && lastSuccessDate) {
-		const streakEndDate = new Date(lastSuccessDate.getTime() + (currentStreak - 1) * intervalMs);
-		for (const entry of sortedHistory) {
-			const entryDate = new Date(entry.date);
-			entryDate.setHours(0, 0, 0, 0);
-			if (!entry.success && entryDate.getTime() > streakEndDate.getTime()) {
-				const daysSinceStreakEnd = Math.floor((entryDate.getTime() - streakEndDate.getTime()) / (24 * 60 * 60 * 1000));
-				if (daysSinceStreakEnd > 0 && daysSinceStreakEnd <= interval) {
-					// Recalculate streak up to this failure
-					let recalculatedStreak = 0;
-					let checkDate: Date | null = null;
-					for (let i = sortedHistory.length - 1; i >= 0; i--) {
-						const checkEntry = sortedHistory[i];
-						const checkEntryDate = new Date(checkEntry.date);
-						checkEntryDate.setHours(0, 0, 0, 0);
-						if (checkEntryDate.getTime() >= entryDate.getTime()) continue;
-						if (checkEntry.success) {
-							if (!checkDate) {
-								recalculatedStreak = 1;
-								checkDate = checkEntryDate;
-							} else {
-								const expectedPrevDate = new Date(checkDate.getTime() - intervalMs);
-								const tolerance = 12 * 60 * 60 * 1000;
-								if (Math.abs(checkEntryDate.getTime() - expectedPrevDate.getTime()) <= tolerance) {
-									recalculatedStreak++;
-									checkDate = checkEntryDate;
-								} else {
-									break;
-								}
-							}
-						} else if (checkDate) {
-							const expectedDate = new Date(checkDate.getTime() - intervalMs);
-							const tolerance = 12 * 60 * 60 * 1000;
-							if (Math.abs(checkEntryDate.getTime() - expectedDate.getTime()) <= tolerance) {
-								break;
-							}
-						}
-					}
-					currentStreak = recalculatedStreak;
-					break;
-				}
-			}
-		}
-	}
-
-	return currentStreak;
-};
-
+import { appContextService } from 'context/appContextService';
 
 export const HabitList = () => {
 	const { plugin, updateXP } = useAppContext();
@@ -128,15 +32,10 @@ export const HabitList = () => {
 	useEffect(() => {
 		const loadHabits = async () => {
 			try {
-				const habitsData = await plugin.dataService.loadHabitsFromFile();
-				// Normalize habits to ensure they have the correct structure
-				const normalizedHabits = habitsData.map(habit => normalizeHabit(habit));
-				setHabits(normalizedHabits);
-				await plugin.dataService.saveHabitsToFile(normalizedHabits);
-				setError(null)
+				const habitsData = await appContextService.dataService.loadHabitsFromFile();
+				setHabits(habitsData);
 			} catch (error) {
 				console.error("Error loading habits:", error);
-				setError("Failed to load habits");
 			}
 		};
 		if (plugin && plugin.app) {
@@ -144,148 +43,231 @@ export const HabitList = () => {
 		}
 	}, [plugin]);
 
-	/* * Handle habit completion logic
-	* This function handles marking an habit as completed or uncompleted
-	* It updates the habit's progression, and saves changes to the file.
-	*/
 	const handleCompleteHabit = async (habit: Habit, completed: boolean, date?: Date) => {
 		try {
-			const habits = await plugin.dataService.loadHabitsFromFile();
-			const habitIndex = habits.findIndex(h => h.id === habit.id);
-			if (habitIndex === -1) {
-				throw new Error("Habit not found");
-			}
-			const originalHabit = habits[habitIndex];
-			const updatedHabit = updateHabitHistory(originalHabit, completed, date);
-			habits[habitIndex] = updatedHabit;
-			await plugin.dataService.saveHabitsToFile(habits);
+			const result = await updateHabitHistoryAndSave(
+			habit.id, 
+			completed, 
+			plugin, 
+			date
+		);
+		
+		if (result.success) {
+			// Mettre à jour l'état local
 			setHabits(prevHabits =>
-				prevHabits.map(h => (h.id === habit.id ? updatedHabit : h))
+				prevHabits.map(h =>
+					h.id === habit.id ? result.updatedHabit! : h
+				)
 			);
-			const action = completed ? 'completed' : 'uncompleted';
+			
+			// Mettre à jour l'XP
 			const xpChange = completed ? habit.reward.XP : -habit.reward.XP;
-			if (completed) {
-				updateXP(habit.reward.XP);
-			} else {
-				updateXP(-habit.reward.XP);
-			}
-			new Notice(`Habit ${action}, ${completed ? 'Added' : 'Removed'} ${Math.abs(xpChange)} XP`);
-		} catch (error) {
-			console.error("Error completing habit:", error);
-			setError("Failed to update habit status");
+			updateXP(xpChange);
+			
+			new Notice(result.message);
+		} else {
+			new Notice(result.message);
 		}
+	} catch (error) {
+		console.error("Error:", error);
+		setError("Failed to update habit");
+	}
+			// const habits = await plugin.dataService.loadHabitsFromFile();
+			// const userData = await plugin.dataService.loadUser();
+			// if (!userData || typeof userData !== 'object' || !('user1' in userData)) {
+			// 	throw new Error("User data is missing or malformed");
+			// }
+
+			// const targetDate = date || new Date();
+
+			// // Vérifier si la date existe déjà dans l'historique
+			// const isDateInHistory = (history: { date: Date; success: boolean }[], date: Date) => {
+			// 	return history.some(entry => {
+			// 		const entryDate = new Date(entry.date);
+			// 		return entryDate.toDateString() === date.toDateString();
+			// 	});
+			// };
+
+			// const calculateNextDate = (recurrence: any) => {
+			// 	const now = new Date();
+			// 	const multiplier = recurrence.unit === 'day' ? 1 : recurrence.unit === 'week' ? 7 : 30;
+			// 	return new Date(now.getTime() + recurrence.interval * multiplier * 24 * 60 * 60 * 1000);
+			// };
+
+			// const newHistoryEntry = {date: targetDate, success: completed};
+			// const nextDate = calculateNextDate(habit.recurrence);
+
+			// const updatedHabit = {
+			// 	...habit,
+			// 	streak: {
+			// 		...habit.streak,
+			// 		isCompletedToday: completed,
+			// 		history: [...habit.streak.history, newHistoryEntry],
+			// 		nextDate: nextDate
+			// 	}
+			// };
+
+			// const updatedHabits = habits.map(h =>
+			// 	h.id === habit.id ? updatedHabit : h
+			// );
+
+			// const xpChange = completed ? habit.reward.XP : -habit.reward.XP;
+			// if (userData.user1?.persona?.xp !== undefined) {
+			// 	userData.user1.persona.xp += xpChange;
+			// }
+
+			// setHabits(prevHabits =>
+			// 	prevHabits.map(h =>
+			// 		h.id === habit.id ? updatedHabit : h
+			// 	)
+			// );
+
+			// await Promise.all([
+			// 	plugin.dataService.saveHabitsToFile(updatedHabits),
+			// 	plugin.dataService.saveSettings()
+			// ]);
+
+			// const action = completed ? 'completed' : 'uncompleted';
+			// const xpAction = completed ? 'Added' : 'Removed';
+			// new Notice(`Habit ${action}, ${xpAction} ${Math.abs(xpChange)} XP`);
+
+			// if (completed) {
+			// 	updateXP(habit.reward.XP);
+			// } else {
+			// 	updateXP(-habit.reward.XP);
+			// }
+
+			// if (!completed) {
+			// 	habit.streak.isCompletedToday = false;
+			// 	userData.user1.persona.xp -= habit.reward.XP;
+			
+			// 	const updatedHabits = habits.map(h =>
+			// 		h.id === habit.id ? {
+			// 			...h,
+			// 			streak: {
+			// 				...h.streak,
+			// 				isCompletedToday: false,
+			// 				history: [...h.streak.history, { date: targetDate, success: completed }],
+			// 				nextDate: new Date(new Date().getTime() + h.recurrence.interval * (h.recurrence.unit === 'day' ? 24 * 60 * 60 * 1000 : h.recurrence.unit === 'week' ? 7 * 24 * 60 * 60 * 1000 : 30 * 24 * 60 * 60 * 1000))
+			// 			}
+			// 		} : h
+			// 	);
+
+			// 	await plugin.dataService.saveHabitsToFile(updatedHabits);
+			// 	await plugin.dataService.saveSettings();
+			// 	new Notice(`Habit uncompleted, Remove ${habit.reward.XP} XP`);
+			// } else {
+			// 	if (userData.user1?.persona?.xp !== undefined) {
+			// 		userData.user1.persona.xp += habit.reward.XP;
+			// 	}
+			// 	const updatedHabits = habits.map(h =>
+			// 		h.id === habit.id ? {
+			// 			...h,
+			// 			streak: {
+			// 				...h.streak,
+			// 				isCompletedToday: true,
+			// 				history: [...h.streak.history, { date: targetDate, success: completed }],
+			// 				nextDate: new Date(new Date().getTime() + h.recurrence.interval * (h.recurrence.unit === 'day' ? 24 * 60 * 60 * 1000 : h.recurrence.unit === 'week' ? 7 * 24 * 60 * 60 * 1000 : 30 * 24 * 60 * 60 * 1000))
+			// 			}
+			// 		} : h
+			// 	);
+
+			// 	await plugin.dataService.saveHabitsToFile(updatedHabits);
+			// 	await plugin.dataService.saveSettings();
+			// 	updateXP(habit.reward.XP);
+			// 	new Notice(`Habit completed, Added ${habit.reward.XP} XP`);
+			// }
+
+		// } catch (error) {
+		// 	console.error("Error completing habit:", error);
+		// 	setError("Failed to update habit status");
+		// }
 	};
 
-	/** update habit history
-	 * This function updates the habit's history with the completion status for today or a specified date.
-	 * It also calculates the current and best streaks, and updates the next occurrence date.
-	 */
-	// Note: This function assumes that the habit object is already normalized and has a valid streak history.
 	const updateHabitHistory = (habit: Habit, completed: boolean, targetDate?: Date): Habit => {
 		const dateToUpdate = targetDate || new Date();
+
+		// Normaliser la date pour éviter les problèmes de comparaison d'heures
 		const normalizeDate = (date: Date): string => {
 			return new Date(date).toDateString();
 		};
+
 		const targetDateString = normalizeDate(dateToUpdate);
+
+		// Vérifier si une entrée existe déjà pour cette date
 		const existingEntryIndex = habit.streak.history.findIndex(entry => {
 			const entryDate = new Date(entry.date);
 			return normalizeDate(entryDate) === targetDateString;
 		});
 
 		let updatedHistory = [...habit.streak.history];
-		if (existingEntryIndex !== -1) { // update existing entry
+
+		if (existingEntryIndex !== -1) {
+			// Mettre à jour l'entrée existante
 			updatedHistory[existingEntryIndex] = {
 				...updatedHistory[existingEntryIndex],
 				success: completed
 			};
-		} else { // add new entry if it doesn't exist
+		} else {
+			// Ajouter une nouvelle entrée
 			updatedHistory.push({
 				date: dateToUpdate,
 				success: completed
 			});
 		}
 
+		// Trier l'historique par date (plus ancien au plus récent)
 		updatedHistory.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
-		const tempHabit = { ...habit, streak: { ...habit.streak, history: updatedHistory } };
-		const currentStreak = calculateCurrentStreak(tempHabit);
+		// Calculer la streak actuelle
+		const calculateCurrentStreak = (history: typeof updatedHistory): number => {
+			if (history.length === 0) return 0;
 
-		// Calculate the best streak
-		const calculateBestStreak = (habit: Habit): number => {
-			if (!habit.streak.history || habit.streak.history.length === 0) return 0;
-
-			const { interval, unit } = habit.recurrence || { interval: 1, unit: 'days' };
-			const multiplier = {
-				'days': 1,
-				'weeks': 7,
-				'months': 30
-			}[unit] || 1;
-			const intervalMs = interval * multiplier * 24 * 60 * 60 * 1000;
-
-			const sortedHistory = [...habit.streak.history].sort(
-				(a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
-			);
-
-			let bestStreak = 0;
-			let currentStreakCount = 0;
-			let lastSuccessDate: Date | null = null;
-
-			for (const entry of sortedHistory) {
-				const entryDate = new Date(entry.date);
-				entryDate.setHours(0, 0, 0, 0);
-
-				if (entry.success) {
-					if (lastSuccessDate === null) {
-						currentStreakCount = 1;
-						lastSuccessDate = entryDate;
-					} else {
-						const expectedNextDate = new Date(lastSuccessDate.getTime() + intervalMs);
-						const tolerance = 24 * 60 * 60 * 1000;
-						if (Math.abs(entryDate.getTime() - expectedNextDate.getTime()) <= tolerance) {
-							currentStreakCount++;
-							lastSuccessDate = entryDate;
-						} else {
-							bestStreak = Math.max(bestStreak, currentStreakCount);
-							currentStreakCount = 1;
-							lastSuccessDate = entryDate;
-						}
-					}
-				} else if (lastSuccessDate !== null) {
-					const expectedNextDate = new Date(lastSuccessDate.getTime() + intervalMs);
-					const tolerance = 24 * 60 * 60 * 1000;
-					if (Math.abs(entryDate.getTime() - expectedNextDate.getTime()) <= tolerance) {
-						bestStreak = Math.max(bestStreak, currentStreakCount);
-						currentStreakCount = 0;
-						lastSuccessDate = null;
-					}
+			let currentStreak = 0;
+			// Parcourir l'historique à l'envers pour calculer la streak actuelle
+			for (let i = history.length - 1; i >= 0; i--) {
+				if (history[i].success) {
+					currentStreak++;
+				} else {
+					break;
 				}
 			}
-			bestStreak = Math.max(bestStreak, currentStreakCount);
+			return currentStreak;
+		};
+
+		// Calculer la meilleure streak
+		const calculateBestStreak = (history: typeof updatedHistory): number => {
+			if (history.length === 0) return 0;
+
+			let bestStreak = 0;
+			let currentStreak = 0;
+
+			for (const entry of history) {
+				if (entry.success) {
+					currentStreak++;
+					bestStreak = Math.max(bestStreak, currentStreak);
+			} else {
+					currentStreak = 0;
+				}
+			}
 			return bestStreak;
 		};
 
-		const bestStreak = calculateBestStreak(tempHabit);
-
-
-		// Calculate the next occurrence date based on the habit's recurrence settings
+		// Calculer la prochaine date selon la récurrence
 		const calculateNextDate = (): Date => {
-			if (!completed) {
-				// If the habit is not completed, return today at midnight
-				const now = new Date();
-				now.setHours(0,0,0,0);
-				return now;
-			}
 			const now = new Date();
 			const { interval, unit } = habit.recurrence;
+			
 			const multiplier = {
 				'days': 1,
 				'weeks': 7,
 				'months': 30 // Approximation
 			}[unit];
+
 			return new Date(now.getTime() + interval * multiplier * 24 * 60 * 60 * 1000);
 		};
 
-		// Check if the habit is completed today
+		// Vérifier si l'habitude est complétée aujourd'hui
 		const isCompletedToday = (): boolean => {
 			const today = normalizeDate(new Date());
 			const todayEntry = updatedHistory.find(entry => 
@@ -294,12 +276,12 @@ export const HabitList = () => {
 			return todayEntry?.success || false;
 		};
 
-		// const currentStreak = calculateCurrentStreak(updatedHistory);
-		// const bestStreak = Math.max(calculateBestStreak(updatedHistory), habit.streak.best);
+		const currentStreak = calculateCurrentStreak(updatedHistory);
+		const bestStreak = Math.max(calculateBestStreak(updatedHistory), habit.streak.best);
 
 		return {
 			...habit,
-			streak: {
+						streak: {
 				...habit.streak,
 				current: currentStreak,
 				best: bestStreak,
@@ -310,17 +292,91 @@ export const HabitList = () => {
 		};
 	};
 
-	const handleModifyHabit = async (habit: Habit) => {
-		if (plugin) {
-			try {
-				const modal = new ModifyHabitModal(plugin.app, plugin);
-				modal.habit = habit;
-				modal.open();
-			} catch (error) {
-				console.error("Error modifying habit:", error);
-				new Notice("Failed to modify habit. Check console for details.");
+	const updateHabitHistoryAndSave = async (
+		habitId: string, 
+		completed: boolean,
+		plugin: GOL, // Remplacer par le type approprié du plugin
+
+		targetDate?: Date,
+	): Promise<{ success: boolean; message: string; updatedHabit?: Habit }> => {
+		try {
+			// Charger les habitudes
+			const habits = await appContextService.dataService.loadHabitsFromFile();
+			const habitIndex = habits.findIndex((h: Habit) => h.id === habitId);
+			
+			if (habitIndex === -1) {
+				return { success: false, message: "Habit not found" };
 			}
+
+			const originalHabit = habits[habitIndex];
+			
+			// Vérifier si la date est déjà dans l'historique (pour éviter les doublons)
+			const dateToCheck = targetDate || new Date();
+			const dateString = new Date(dateToCheck).toDateString();
+			const existingEntry = originalHabit.streak.history.find((entry: any) => 
+				new Date(entry.date).toDateString() === dateString
+			);
+
+			// Mettre à jour l'habitude
+			const updatedHabit = updateHabitHistory(originalHabit, completed, targetDate);
+			habits[habitIndex] = updatedHabit;
+
+			// Sauvegarder
+			await appContextService.dataService.saveHabitsToFile(habits);
+
+			const action = completed ? "completed" : "uncompleted";
+			const isUpdate = existingEntry ? "updated" : "recorded";
+			
+			return { 
+				success: true, 
+				message: `Habit ${action} and ${isUpdate} successfully`,
+				updatedHabit 
+			};
+
+		} catch (error) {
+			console.error("Error updating habit history:", error);
+			return { 
+				success: false, 
+				message: "Failed to update habit history" 
+			};
+		}
+	};
+
+	// Fonction utilitaire pour obtenir les statistiques d'une habitude
+	const getHabitStats = (habit: Habit) => {
+		const { history } = habit.streak;
+		const totalDays = history.length;
+		const completedDays = history.filter(entry => entry.success).length;
+		const completionRate = totalDays > 0 ? (completedDays / totalDays) * 100 : 0;
+		
+		// Calculer la streak de cette semaine
+		const thisWeek = new Date();
+		thisWeek.setDate(thisWeek.getDate() - 7);
+		const thisWeekEntries = history.filter(entry => 
+			new Date(entry.date) >= thisWeek
+		);
+		const thisWeekCompleted = thisWeekEntries.filter(entry => entry.success).length;
+		
+		return {
+			totalDays,
+			completedDays,
+			completionRate: Math.round(completionRate * 100) / 100,
+			currentStreak: habit.streak.current,
+			bestStreak: habit.streak.best,
+			thisWeekCompleted,
+			isCompletedToday: habit.streak.isCompletedToday
 		};
+	};
+
+	const handleModifyHabit = async (habit: Habit) => {
+		try {
+			const modal = new ModifyHabitModal(plugin.app, plugin);
+			modal.habit = habit;
+			modal.open();
+		} catch (error) {
+			console.error("Error modifying habit:", error);
+			new Notice("Failed to modify habit. Check console for details.");
+		}
 	};
 
 	const filteredHabits = habits
@@ -376,7 +432,6 @@ export const HabitList = () => {
 		<div>
 			<HabitSideView
 				plugin={plugin}
-				filteredHabits={filteredHabits}
 				isOpen={isOpen}
 				filter={filter}
 				handleToggle={handleToggle}
@@ -385,10 +440,13 @@ export const HabitList = () => {
 				setSortBy={setSortBy}
 				sortBy={sortBy}
 				handleModifyHabit={handleModifyHabit}
+				filteredHabits={filteredHabits}
 			/>
 		</div>
 	);
 }
+
+
 
 
 // ------------------------------------------------
@@ -448,6 +506,19 @@ export const getNextOccurrence = (habit: Habit): Date => {
 	return nextDate;
 };
 
+/**
+ * Vérifie si une habitude est due aujourd'hui
+ */
+export const isDueToday = (habit: Habit): boolean => {
+	const nextOccurrence = getNextOccurrence(habit);
+	const today = new Date(Date.now());
+	
+	return (
+		nextOccurrence.getDate() === today.getDate() &&
+		nextOccurrence.getMonth() === today.getMonth() &&
+		nextOccurrence.getFullYear() === today.getFullYear()
+	);
+};
 
 /**
  * Vérifie si une habitude a été complétée aujourd'hui
@@ -457,7 +528,7 @@ export const isCompletedToday = (habit: Habit): boolean => {
 		return false;
 	}
 
-	const today = new Date();
+	const today = new Date(Date.now());
 	const todayString = today.toDateString();
 	
 	return habit.streak.history.some(entry => {
@@ -475,6 +546,20 @@ export const normalizeHabit = (habit: Habit): Habit => {
 	let nextDate = getNextOccurrence(habit);
 	nextDate = new Date(nextDate.getFullYear(), nextDate.getMonth(), nextDate.getDate(), 0, 0, 0, 0); // force midnight
 	// console.log("Next date for habit", habit.title, "is", nextDate);
+
+	// Calculate current streak
+	const calculateCurrentStreak = (habit: Habit): number => {
+		if (!habit.streak.history || habit.streak.history.length === 0) return 0;
+		let currentStreak = 0;
+		for (let i = habit.streak.history.length - 1; i >= 0; i--) {
+			if (habit.streak.history[i].success) {
+				currentStreak++;
+			} else {
+				break;
+			}
+		}
+		return currentStreak;
+	};
 	const currentStreak = calculateCurrentStreak(habit);
 
 	// Calculate best streak
@@ -574,6 +659,7 @@ export const normalizeHabit = (habit: Habit): Habit => {
 };
 
 
+
 // Utilitaire pour calculer le nombre de jours entre deux dates (en ignorant l'heure)
 export function getDaysUntil(today: Date, nextDate: Date): number {
 	const a = new Date(today);
@@ -586,6 +672,35 @@ export function getDaysUntil(today: Date, nextDate: Date): number {
 	return Math.round((b.getTime() - a.getTime()) / (1000 * 60 * 60 * 24));
 }
 
+
+
+// Helper function to check if a habit is due today
+// export const isTodayHabit = (habit: Habit): boolean => {
+// 	const today = new Date();
+// 	today.setHours(0, 0, 0, 0);
+// 	// const nextDate = new Date(getNextOccurrence(habit));
+// 	// nextDate.setHours(0, 0, 0, 0);
+// 	const normalizedHabit = normalizeHabit(habit);
+// 	if (normalizedHabit.streak.nextDate.getTime() <= today.getTime()) return true;
+// 	if (normalizedHabit.streak.history.length === 0) return true;
+// 	if (normalizedHabit.streak.history.length === 1 && !normalizedHabit.streak.history[0].success) return true;
+	
+// 	if (normalizedHabit.streak.isCompletedToday && normalizedHabit.streak.history.length > 0 ) {
+// 		return normalizedHabit.streak.history.some((h) => {
+// 			if (!h.date) return false;
+// 			const histDate = new Date(h.date);
+// 			histDate.setHours(0, 0, 0, 0);
+// 			return histDate.getTime() === today.getTime();
+// 		});
+// 	};
+
+// 	return normalizedHabit.streak.history.some((h) => {
+// 		if (!h.date) return false;
+// 		const histDate = new Date(h.date);
+// 		histDate.setHours(0, 0, 0, 0);
+// 		return histDate.getTime() === today.getTime();
+// 	});
+// };
 
 
 // Fonction utilitaire pour trier les habitudes

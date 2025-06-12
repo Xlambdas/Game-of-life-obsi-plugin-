@@ -33,7 +33,7 @@ export class XpService {
 			user.attribute.wisdom = wisdom;
 			user.attribute.perception = perception;
 			user.attribute.intelligence = intelligence;
-			this.plugin.dataService.saveSettings();
+            this.plugin.saveSettings();
 		} else {
 			console.error("User or persona settings are not available.");
 		}

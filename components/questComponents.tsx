@@ -7,6 +7,7 @@ import { get } from 'http';
 import { DEFAULT_SETTINGS, Quest } from '../constants/DEFAULT';
 import { ModifyQuestModal } from '../modales/questModal';
 import { QuestSideView } from 'components/questUI';
+import { appContextService } from 'context/appContextService';
 
 
 export const QuestList = () => {
@@ -35,7 +36,10 @@ export const QuestList = () => {
 	useEffect(() => {
 		const loadQuests = async () => {
 			try {
-				const questsData = await plugin.dataService.loadQuestsFromFile();
+				if (!appContextService.dataService) {
+					throw new Error("Data service is not available");
+				}
+				const questsData = await appContextService.dataService.loadQuestsFromFile();
 				setQuests(questsData);
 				setError(null);
 			} catch (error) {
@@ -54,8 +58,11 @@ export const QuestList = () => {
 	*/
 	const handleCompleteQuest = async (quest: Quest, completed: boolean) => {
 		try {
-			const quests = await plugin.dataService.loadQuestsFromFile();
-			const userData = await plugin.dataService.loadUser();
+			if (!appContextService.dataService) {
+				throw new Error("Data service is not available");
+			}
+			const quests = await appContextService.dataService.loadQuestsFromFile();
+			const userData = await appContextService.dataService.loadUser();
 			if (!userData || typeof userData !== 'object' || !('user1' in userData)) {
 				throw new Error("User data is missing or malformed");
 			}
@@ -88,8 +95,8 @@ export const QuestList = () => {
 					} : q
 				);
 
-				await plugin.dataService.saveQuestsToFile(updatedQuests);
-				await plugin.dataService.saveSettings();
+				await appContextService.dataService.saveQuestsToFile(updatedQuests);
+				await appContextService.dataService.saveSettings();
 				updateXP(-quest.reward.XP);
 				new Notice(`Quest uncompleted. Removed ${quest.reward.XP} XP`);
 			} else {
@@ -111,8 +118,8 @@ export const QuestList = () => {
 							}
 						} : q
 					);
-					await plugin.dataService.saveQuestsToFile(updatedQuests);
-					await plugin.dataService.saveSettings();
+					await appContextService.dataService.saveQuestsToFile(updatedQuests);
+					await appContextService.dataService.saveSettings();
 					updateXP(quest.reward.XP);
 					new Notice(`Quest completed! Earned ${quest.reward.XP} XP`);
 				}

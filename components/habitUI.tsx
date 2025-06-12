@@ -4,6 +4,7 @@ import { Notice } from "obsidian";
 import { HabitSideViewProps } from "./props";
 import { getNextOccurrence, normalizeHabit, sortHabits, isTodayHabit } from "./habitComponents";
 import { HabitItem } from "./habitItem";
+import { appContextService } from "context/appContextService";
 
 
 export function HabitSideView({
@@ -29,7 +30,10 @@ export function HabitSideView({
 		try {
 			setLoading(true);
 			setError(null);
-			const rawHabits: Habit[] = await plugin.dataService.loadHabitsFromFile();
+			if (!appContextService.dataService) {
+				throw new Error("Data service is not available.");
+			}
+			const rawHabits: Habit[] = await appContextService.dataService.loadHabitsFromFile();
 			const normalizedHabits = rawHabits.map(normalizeHabit);
 			setAllHabits(normalizedHabits);
 			
@@ -47,7 +51,7 @@ export function HabitSideView({
 
 	// Update habits with today's entries if needed
 	useEffect(() => {
-		const today = new Date();
+		const today = new Date(Date.now());
 		today.setHours(0, 0, 0, 0);
 		
 		const patchedHabits = allHabits.map((habit) => {

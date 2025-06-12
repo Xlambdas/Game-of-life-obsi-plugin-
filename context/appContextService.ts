@@ -5,17 +5,19 @@ import { viewSyncService } from "services/syncService";
 import { Notice } from "obsidian";
 import { Quest, UserSettings, Habit  } from "../constants/DEFAULT";
 import { XpService } from "services/xpService";
+import { DataService } from "services/dataService";
 
 
 // Singleton service to manage the application context
 class AppContextService {
     private static instance: AppContextService;
-    private context: AppContextType | null = null;
-	private _plugin: GOL | null = null;
-	private _settings: UserSettings | null = null;
-	private _quests: Quest | null = null;
-	private _habits: Habit | null = null;
-	private _xpService: XpService | null = null;
+    private context: AppContextType;
+	private _dataService: DataService;
+	private _plugin: GOL;
+	private _settings: UserSettings;
+	private _quests: Quest;
+	private _habits: Habit;
+	private _xpService: XpService;
 	private saveDebounceTimout: NodeJS.Timeout | null = null;
 	private readonly SAVE_DELAY: number = 2000; // 2 second delay for saving
 	// private _listeners: Set<(context: AppContextType | null) => void> = new Set();
@@ -29,30 +31,36 @@ class AppContextService {
         return AppContextService.instance;
     }
 
-	get plugin(): GOL | null {
+	get plugin(): GOL {
 		return this._plugin;
 	}
-	get settings(): UserSettings | null {
+	get settings(): UserSettings {
 		return this._settings;
 	}
-	get quests(): Quest | null {
+	get dataService(): DataService {
+		return this._dataService;
+	}
+	get quests(): Quest {
 		return this._quests;
 	}
-	get habits(): Habit | null {
+	get habits(): Habit {
 		return this._habits;
 	}
-	get xpService(): XpService | null {
+	get xpService(): XpService {
 		return this._xpService;
 	}
 
-	set plugin(plugin: GOL | null) {
+	set plugin(plugin: GOL) {
 		this._plugin = plugin;
 		console.log("✅ Plugin instance set in AppContextService");
 	}
 
-    initialize(plugin: GOL): void {
+    async initialize(plugin: GOL): Promise<void> {
 		this._plugin = plugin;
-		this._settings = plugin.settings;
+		this._dataService = new DataService(plugin.app);
+		await this._dataService.loadSettings();
+
+		this._settings = this._dataService.settings || plugin.settings;
 		this._quests = plugin.quest;
 		this._habits = plugin.habit;
 
@@ -72,23 +80,35 @@ class AppContextService {
 		}, this.plugin?.settings.user1.settings.refreshRate);
 	}
 
-	updateUserSettings(newData: Partial<UserSettings>): void {
-		if (!this._plugin) {
-			console.error("❌ Cannot update user settings: Plugin instance is not available");
+	private async saveData(): Promise<void> {
+		try {
+			await Promise.all([
+				this.saveUserDataToFile(),
+				this.saveQuestDataToFile(),
+				this.saveHabitDataToFile()
+			]);
+			console.log("All data saved successfully");
+		} catch (error) {
+			console.error("Error saving data:", error);
+		}
+	}
+
+	async updateUserSettings(newData: Partial<UserSettings>): Promise<void> {
+		if (!this._dataService || !this._plugin) {
+			console.error("Cannot update user settings: DataService or Plugin instance is not available");
 			return;
 		}
 
 		this._plugin.settings = { ...this._plugin.settings, ...newData };
 		this._settings = this._plugin.settings;
-		this._quests = this._plugin.quest;
-		this._habits = this._plugin.habit;
+		this._dataService.settings = this._settings;
         viewSyncService.emitStateChange(this._settings);
 		this.scheduleSave();
 	}
 
-	updateQuestSettings(newData: Partial<Quest>): void {
+	async updateQuestSettings(newData: Partial<Quest>): Promise<void> {
 		if (!this._plugin) {
-			console.error("❌ Cannot update quest settings: Plugin instance is not available");
+			console.error("Cannot update quest settings: Plugin instance is not available");
 			return;
 		}
 		this._plugin.quest = { ...this._plugin.quest, ...newData };
@@ -96,9 +116,9 @@ class AppContextService {
 		this.scheduleSave();
 	}
 
-	updateHabitSettings(newData: Partial<Habit>): void {
+	async updateHabitSettings(newData: Partial<Habit>): Promise<void> {
 		if (!this._plugin) {
-			console.error("❌ Cannot update quest settings: Plugin instance is not available");
+			console.error("Cannot update quest settings: Plugin instance is not available");
 			return;
 		}
 		this._plugin.habit = { ...this._plugin.habit, ...newData };
@@ -228,46 +248,95 @@ class AppContextService {
 	// }
 
 	async saveUserDataToFile() {
-		if (!this.plugin) {
-			console.error("Plugin instance is not available for saveUserDataToFile.");
+		if (!this.plugin || !this._dataService) {
+			console.error("DataService or Plugin instance is not available for saveUserDataToFile.");
 			return;
 		}
 
 		try {
-			await this.plugin.saveData(this.plugin.settings);
-			// console.log("✅ Données utilisateur sauvegardées dans game_data.json");
-			this.saveToVaultFile();
+			await this._dataService.saveSettings();
+			await this._plugin?.saveData(this._plugin.settings);
+			await this.saveToVaultFile();
+
 			viewSyncService.emitDataSaved();
 		} catch (err) {
-			console.error("❌ Échec de la sauvegarde :", err);
+			console.error("Failed to save user data:", err);
 		}
 	}
 
 	async saveQuestDataToFile() {
-		if (!this.plugin) {
-			console.error("Plugin instance is not available for saveQuestDataToFile.");
+		if (!this.plugin || !this._dataService) {
+			console.error("DataService or Plugin instance is not available for saveQuestDataToFile.");
 			return;
 		}
 
 		try {
-			await this.plugin.saveData(this.plugin.quest);
+			if (!this._plugin) {
+				throw new Error("Plugin instance is not available.");
+			}
+			const questsArray = Array.isArray(this._plugin.quest) ? this._plugin.quest : [this._plugin.quest];
+			await this._dataService.saveQuestsToFile(questsArray);
+			await this._plugin.saveData(this._plugin.quest);
 		} catch (err) {
-			console.error("❌ Échec de la sauvegarde :", err);
+			console.error("Failed to save Quest data:", err);
 		}
 	}
 
 	async saveHabitDataToFile() {
-		if (!this.plugin) {
-			console.error("Plugin instance is not available for saveHabitDataToFile.");
-			return;
-		}
+		if (!this._dataService || !this._plugin) {
+            console.error("DataService or Plugin instance is not available for saveHabitDataToFile.");
+            return;
+        }
 
-		try {
-			await this.plugin.saveData(this.plugin.habit);
+        try {
+            const habitsArray = Array.isArray(this._plugin.habit) ? this._plugin.habit : [this._plugin.habit];
+            await this._dataService.saveHabitsToFile(habitsArray);
+
+            await this._plugin.saveData(this._plugin.habit);
 		} catch (err) {
-			console.error("❌ Échec de la sauvegarde :", err);
+			console.error("Failed to save Habit data:", err);
 		}
 	}
+
+	async loadAllData(): Promise<void> {
+        if (!this._dataService) {
+            console.error("DataService is not available for loadAllData.");
+            return;
+        }
+
+        try {
+            await this._dataService.loadSettings();
+            this._settings = this._dataService.settings;
+            
+            // Synchroniser avec le plugin
+            if (this._plugin) {
+                this._plugin.settings = this._settings;
+            }
+            
+            viewSyncService.emitStateChange(this._settings);
+            console.log("✅ All data loaded successfully");
+        } catch (error) {
+            console.error("❌ Failed to load data:", error);
+        }
+    }
+
+    // Méthodes pour les quests et habits via DataService
+    async loadQuests(): Promise<Quest[]> {
+        if (!this._dataService) {
+            console.error("DataService is not available.");
+            return [];
+        }
+        return await this._dataService.loadQuestsFromFile();
+    }
+
+    async loadHabits(): Promise<Habit[]> {
+        if (!this._dataService) {
+            console.error("DataService is not available.");
+            return [];
+        }
+        return await this._dataService.loadHabitsFromFile();
+    }
+
 
 	private async saveToVaultFile() {
 		if (!this.plugin) {
@@ -284,7 +353,7 @@ class AppContextService {
 			await adapter.write(path, JSON.stringify(this.plugin.settings, null, 2));
 			// console.log("✅ Données utilisateur sauvegardées dans user.json", JSON.stringify(this.plugin.settings, null, 2));
 		} catch (err) {
-			console.error("❌ Échec de la sauvegarde dans user.json :", err);
+			console.error("Failed to save to user.json :", err);
 		}
 	}
 
@@ -298,7 +367,7 @@ class AppContextService {
 		
 		// Ensure the value is a positive number and within reasonable bounds
 		const transformedRate = Math.max(1000, Math.min(300000, refreshRate));
-		
+		console.log('Current refresh rate:', transformedRate, 'ms and original value:', refreshRate);
 		// If the value is not a number or is invalid, return default
 		if (isNaN(transformedRate)) {
 			return 5000;

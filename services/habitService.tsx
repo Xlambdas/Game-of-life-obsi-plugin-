@@ -5,6 +5,7 @@ import { DataService } from './dataService';
 import GOL from '../plugin';
 import { updateAttributesByCategory } from 'components/formHelpers';
 import { validateHabitFormData, HabitFormData } from 'components/habitFormHelpers';
+import { appContextService } from 'context/appContextService';
 
 export class HabitServices {
 	private app: App;
@@ -18,7 +19,7 @@ export class HabitServices {
 	constructor(app: App, plugin: any) {
 		this.app = app;
 		this.plugin = plugin;
-		this.dataService = this.plugin.dataService;
+		this.dataService = appContextService.dataService;
 		this.initializeHabitCounter();
 	}
 
@@ -64,7 +65,7 @@ export class HabitServices {
 
 	private async initializeHabitCounter(): Promise<void> {
 		try {
-			const habits = await this.plugin.dataService.loadHabitsFromFile();
+			const habits = await this.dataService.loadHabitsFromFile();
 			if (!Array.isArray(habits)) {
 				console.error("Habits data is not an array:", habits);
 				this.habitCounter = 0;
@@ -197,8 +198,8 @@ export class HabitServices {
 
 	async handleCompleteHabit(habit: Habit, plugin: GOL, setHabits: any, setError: any, updateXP: any, completed: boolean, date?: Date) {
 		try {
-			const habits = await plugin.dataService.loadHabitsFromFile();
-			const userData = await plugin.dataService.loadUser();
+			const habits = await this.dataService.loadHabitsFromFile();
+			const userData = await this.dataService.loadUser();
 			
 			if (!userData || typeof userData !== 'object' || !('user1' in userData)) {
 				throw new Error("User data is missing or malformed");
@@ -258,8 +259,8 @@ export class HabitServices {
 				} : h
 			);
 
-			await plugin.dataService.saveHabitsToFile(updatedHabits);
-			await plugin.dataService.saveSettings();
+			await this.dataService.saveHabitsToFile(updatedHabits);
+			await this.dataService.saveSettings();
 			if (habit.reward) {
 				updateXP(completed ? habit.reward.XP : -habit.reward.XP);
 				new Notice(completed 

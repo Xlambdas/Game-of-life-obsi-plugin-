@@ -218,9 +218,9 @@
       "isTimeSensitive": false
     },
     "progression": {
-      "isCompleted": false,
-      "completed_at": "1970-01-01T00:00:00.000Z",
-      "progress": 0,
+      "isCompleted": true,
+      "completed_at": "2025-06-11T14:21:21.279Z",
+      "progress": 100,
       "dueDate": "",
       "subtasks": []
     },
@@ -269,9 +269,9 @@
       "isTimeSensitive": false
     },
     "progression": {
-      "isCompleted": false,
-      "completed_at": "1970-01-01T00:00:00.000Z",
-      "progress": 0,
+      "isCompleted": true,
+      "completed_at": "2025-06-11T14:21:19.634Z",
+      "progress": 100,
       "subtasks": []
     },
     "reward": {
@@ -370,9 +370,9 @@
       "isTimeSensitive": false
     },
     "progression": {
-      "isCompleted": false,
-      "completed_at": "1970-01-01T00:00:00.000Z",
-      "progress": 0,
+      "isCompleted": true,
+      "completed_at": "2025-06-11T14:21:23.410Z",
+      "progress": 100,
       "dueDate": "",
       "subtasks": []
     },
@@ -976,9 +976,9 @@
       "isTimeSensitive": false
     },
     "progression": {
-      "isCompleted": false,
-      "completed_at": "1970-01-01T00:00:00.000Z",
-      "progress": 0,
+      "isCompleted": true,
+      "completed_at": "2025-06-11T14:21:28.632Z",
+      "progress": 100,
       "subtasks": []
     },
     "reward": {
@@ -1026,9 +1026,9 @@
       "isTimeSensitive": false
     },
     "progression": {
-      "isCompleted": false,
-      "completed_at": "1970-01-01T00:00:00.000Z",
-      "progress": 0,
+      "isCompleted": true,
+      "completed_at": "2025-06-11T14:21:29.039Z",
+      "progress": 100,
       "subtasks": []
     },
     "reward": {
@@ -1076,9 +1076,9 @@
       "isTimeSensitive": false
     },
     "progression": {
-      "isCompleted": false,
-      "completed_at": "1970-01-01T00:00:00.000Z",
-      "progress": 0,
+      "isCompleted": true,
+      "completed_at": "2025-06-11T14:21:29.297Z",
+      "progress": 100,
       "subtasks": []
     },
     "reward": {
@@ -3118,6 +3118,56 @@
         "strength": 1,
         "agility": 1,
         "endurance": 1,
+        "charisma": 0,
+        "wisdom": 0,
+        "perception": 0,
+        "intelligence": 1
+      },
+      "unlock": []
+    },
+    "requirements": {
+      "level": 0,
+      "previousQuests": [],
+      "stats": {
+        "strength": 0,
+        "agility": 0,
+        "endurance": 0,
+        "charisma": 0,
+        "wisdom": 0,
+        "perception": 0,
+        "intelligence": 0
+      }
+    },
+    "failureConsequence": "You failed the quest.",
+    "isSystemQuest": false
+  },
+  {
+    "id": "quest_60",
+    "title": "sdf",
+    "shortDescription": "qsdtyhuj",
+    "description": "",
+    "created_at": "2025-06-11T14:19:43.430Z",
+    "settings": {
+      "type": "quest",
+      "category": "Undefined",
+      "priority": "normal",
+      "difficulty": "easy",
+      "isSecret": false,
+      "isTimeSensitive": false
+    },
+    "progression": {
+      "isCompleted": true,
+      "completed_at": "2025-06-11T14:20:51.917Z",
+      "progress": 100,
+      "subtasks": []
+    },
+    "reward": {
+      "XP": 1,
+      "items": [],
+      "attributes": {
+        "strength": 0,
+        "agility": 0,
+        "endurance": 0,
         "charisma": 0,
         "wisdom": 0,
         "perception": 0,
