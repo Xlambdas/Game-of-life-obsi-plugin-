@@ -6,6 +6,7 @@ import { Notice } from "obsidian";
 import { Quest, UserSettings, Habit  } from "../constants/DEFAULT";
 import { XpService } from "services/xpService";
 import { DataService } from "services/dataService";
+import { DEFAULT_SETTINGS } from "../constants/DEFAULT";
 
 
 // Singleton service to manage the application context
@@ -98,13 +99,72 @@ class AppContextService {
 			console.error("Cannot update user settings: DataService or Plugin instance is not available");
 			return;
 		}
+		try {
+			const updatedSettings = this.deepMerge(this._settings || this._plugin.settings, newData);
 
-		this._plugin.settings = { ...this._plugin.settings, ...newData };
-		this._settings = this._plugin.settings;
-		this._dataService.settings = this._settings;
+			this._plugin.settings = updatedSettings;
+            this._settings = updatedSettings;
+            this._dataService.settings = updatedSettings;
+
+            await this.saveUserDataToFile();
+
+            viewSyncService.emitStateChange(this._settings);
+			console.log('Settings updated successfully:', updatedSettings);
+		} catch (error) {
+			console.error("Error updating user settings:", error);
+            await this.loadAllData();
+		}
+		const updatedSettings = { ...this._plugin.settings, ...newData };
+        
+        // Mettez à jour toutes les références
+        this._plugin.settings = updatedSettings;
+        this._settings = updatedSettings;
+        this._dataService.settings = updatedSettings;
+        
+        // Émettez le changement
         viewSyncService.emitStateChange(this._settings);
-		this.scheduleSave();
+
+
+		await this.saveUserDataToFile();
+        
+        console.log('Settings updated successfully:', updatedSettings);
+		// this._plugin.settings = { ...this._plugin.settings, ...newData };
+		// this._settings = this._plugin.settings;
+		// this._dataService.settings = this._settings;
+        // viewSyncService.emitStateChange(this._settings);
+		// this.scheduleSave();
 	}
+	// Méthode helper pour fusion profonde des objets
+    private deepMerge(target: any, source: any): any {
+        const result = { ...target };
+        
+        for (const key in source) {
+            if (source[key] !== null && typeof source[key] === 'object' && !Array.isArray(source[key])) {
+                result[key] = this.deepMerge(target[key] || {}, source[key]);
+            } else {
+                result[key] = source[key];
+            }
+        }
+        
+        return result;
+    }
+
+	// Méthode pour forcer la synchronisation depuis le fichier
+    async forceReloadFromFile(): Promise<void> {
+        try {
+            await this._dataService.loadSettings();
+            const fileSettings = this._dataService.settings;
+            
+            if (fileSettings) {
+                this._plugin.settings = fileSettings;
+                this._settings = fileSettings;
+                viewSyncService.emitStateChange(this._settings);
+                console.log('✅ Settings force-reloaded from file');
+            }
+        } catch (error) {
+            console.error('❌ Failed to force reload settings:', error);
+        }
+    }
 
 	async updateQuestSettings(newData: Partial<Quest>): Promise<void> {
 		if (!this._plugin) {
@@ -256,7 +316,7 @@ class AppContextService {
 		try {
 			await this._dataService.saveSettings();
 			await this._plugin?.saveData(this._plugin.settings);
-			await this.saveToVaultFile();
+			// await this.saveToVaultFile();
 
 			viewSyncService.emitDataSaved();
 		} catch (err) {
@@ -394,6 +454,27 @@ class AppContextService {
 		viewSyncService.emitRefreshRateChange(transformedRate);
 		this.scheduleSave();
 	}
+
+	async synchronizeSettings(): Promise<void> {
+        try {
+            await this._dataService.loadSettings();
+            const loadedSettings = this._dataService.settings;
+            
+            if (loadedSettings) {
+                this._plugin.settings = loadedSettings;
+                this._settings = loadedSettings;
+                viewSyncService.emitStateChange(this._settings);
+                console.log("✅ Settings synchronized");
+            }
+        } catch (error) {
+            console.error("❌ Failed to synchronize settings:", error);
+        }
+    }
+
+    // SOLUTION 6: Getter pour toujours obtenir les settings à jour
+    get currentSettings(): UserSettings {
+        return this._settings || this._plugin?.settings || DEFAULT_SETTINGS;
+    }
 }
 
 export const appContextService = AppContextService.getInstance();

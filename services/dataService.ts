@@ -23,7 +23,12 @@ export class DataService {
         try {
             const pathUserDB = `${this.app.vault.configDir}/plugins/game-of-life/data/db/user.json`;
             const content = await this.app.vault.adapter.read(pathUserDB);
-            this.settings = JSON.parse(content);
+            const loadedSettings = JSON.parse(content);
+			if (loadedSettings._lastSaved) {
+                delete loadedSettings._lastSaved;
+            }
+			this.settings = loadedSettings;
+
             return this.settings;
         } catch (error) {
             // If file doesn't exist, create it with default structure
@@ -67,7 +72,15 @@ export class DataService {
     async saveSettings() {
         try {
             const pathUserDB = `${this.app.vault.configDir}/plugins/game-of-life/data/db/user.json`;
-            await this.app.vault.adapter.write(pathUserDB, JSON.stringify(this.settings, null, 2));
+			if (!this.settings) {
+                console.error('No settings to save');
+                return;
+            }
+			const settingsWithTimestamp = {
+                ...this.settings,
+                _lastSaved: Date.now()
+            };
+            await this.app.vault.adapter.write(pathUserDB, JSON.stringify(settingsWithTimestamp, null, 2));
         } catch (error) {
             console.error("Error saving settings:", error);
             new Notice("Failed to save settings");
@@ -121,5 +134,23 @@ export class DataService {
 			return [];
 		}
 	}
+
+	async verifyDataIntegrity(): Promise<boolean> {
+        try {
+            const fileData = await this.loadSettings();
+            const pluginData = this.settings;
+            
+            // Comparez les timestamps ou versions si disponibles
+            if (JSON.stringify(fileData) !== JSON.stringify(pluginData)) {
+                console.warn("⚠️ Data inconsistency detected");
+                return false;
+            }
+            
+            return true;
+        } catch (error) {
+            console.error("❌ Error verifying data integrity:", error);
+            return false;
+        }
+    }
 
 }

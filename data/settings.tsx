@@ -6,19 +6,19 @@ import { RuleModal, difficultyModal, tutorialModal } from '../modales/settingMod
 import { DEFAULT_SETTINGS, UserSettings } from '../constants/DEFAULT';
 import { TFolder } from 'obsidian';
 import { appContextService } from '../context/appContextService';
+import GOL from '../plugin';
 
 
 export class selfSettingTab extends PluginSettingTab {
 	// Initialize and show the settings
 	settings: UserSettings;
-	plugin: any;
+	plugin: GOL;
 	dataUser: any;
 
 
-	constructor(app: App, plugin: any) {
+	constructor(app: App, plugin: GOL) {
 		super(app, plugin);
 		this.plugin = plugin;
-		this.dataUser = JSON.parse(JSON.stringify(this.plugin.settings));
 	}
 
 	display(): void {
@@ -85,23 +85,24 @@ export class selfSettingTab extends PluginSettingTab {
 					hard: 'hard',
 					platinium: 'platinium',
 				});
-				dropdown.setValue(this.plugin.settings.user1.settings.difficulty || DEFAULT_SETTINGS.user1.settings.difficulty);
-				const difficulty = dropdown.getValue();
-				console.log('diff value', difficulty)
-				dropdown.onChange(async (diffValue) => {
-					const modal = new difficultyModal(this.app);
-					modal.openAndWait().then((value) => {
-						console.log("Difficulty(file:settings.tsx)=>value get :", value);
-						if (value == true) {
-							this.plugin.settings.user1.settings.difficulty = diffValue;
-							this.plugin.saveSettings();
-							console.log('Difficulty(file:settings.tsx)=> Selected if :', value, diffValue);
-						} else {
-							this.plugin.saveSettings();
-							console.log('Difficulty(file:settings.tsx)=> save settings :', value);
-						}
-					});
-				});
+				const currentSettings = appContextService.settings;
+                dropdown.setValue(currentSettings.user1.settings.difficulty || DEFAULT_SETTINGS.user1.settings.difficulty);
+                dropdown.onChange(async (diffValue) => {
+                    const modal = new difficultyModal(this.app);
+                    modal.openAndWait().then(async (value) => {
+                        if (value == true) {
+                            await appContextService.updateUserSettings({
+                                user1: {
+                                    ...currentSettings.user1,
+                                    settings: {
+                                        ...currentSettings.user1.settings,
+                                        difficulty: diffValue
+                                    }
+                                }
+                            });
+                        }
+                    });
+                });
 			});
 
 		// choose name :
@@ -110,11 +111,19 @@ export class selfSettingTab extends PluginSettingTab {
 			.setDesc('This name will be used for your persona.')
 			.addText(text =>
 				text
-					.setValue(this.plugin.settings.user1.persona.name)
-					.onChange(async (value) => {
-						this.plugin.settings.user1.persona.name = value;
-						await this.plugin.saveSettings();
-					})
+					.setValue(appContextService.settings.user1.persona.name)
+                    .onChange(async (value) => {
+                        const currentSettings = appContextService.settings;
+                        await appContextService.updateUserSettings({
+                            user1: {
+                                ...currentSettings.user1,
+                                persona: {
+                                    ...currentSettings.user1.persona,
+                                    name: value
+                                }
+                            }
+                        });
+                    })
 			);
 
 		// choose class :
@@ -129,124 +138,110 @@ export class selfSettingTab extends PluginSettingTab {
 					rogue: 'rogue',
 					healer: 'healer',
 				});
-				dropdown.setValue(this.plugin.settings.user1.persona.class || DEFAULT_SETTINGS.user1.persona.class);
-				const classValue = dropdown.getValue();
-				console.log('classe value', classValue)
-				dropdown.onChange(async (classValue) => {
-					this.plugin.settings.user1.persona.class = classValue;
-					this.plugin.saveSettings();
-				});
+				const currentSettings = appContextService.settings;
+                dropdown.setValue(currentSettings.user1.persona.class || DEFAULT_SETTINGS.user1.persona.class);
+                dropdown.onChange(async (classValue) => {
+                    await appContextService.updateUserSettings({
+                        user1: {
+                            ...currentSettings.user1,
+                            persona: {
+                                ...currentSettings.user1.persona,
+                                class: classValue
+                            }
+                        }
+                    });
+                });
 			});
 
 		/** Final settings : quests file path and folder */
 		containerEl.createEl('h4', { text: 'Final Settings' });
 
 		// quests file path
-		new Setting(containerEl)
-			.setName('Quests file')
-			.setDesc('Path to the markdown file where quests are stored')
-			.addText(text => text
-				.setPlaceholder('Quests.md')
-				.setValue(this.plugin.settings.questsFilePath || 'Quests.md')
-				.onChange(async (value) => {
-					this.plugin.settings.questsFilePath = value;
-					await this.plugin.saveSettings();
-				})
-			);
+		// new Setting(containerEl)
+		// 	.setName('Quests file')
+		// 	.setDesc('Path to the markdown file where quests are stored')
+		// 	.addText(text => text
+		// 		.setPlaceholder('Quests.md')
+		// 		.setValue(this.plugin.settings.user1.settings.questsFileName || 'Quests.md')
+		// 		.onChange(async (value) => {
+		// 			this.plugin.settings.user1.settings.questsFileName = value;
+		// 			await appContextService.dataService.saveSettings();
+		// 		})
+		// 	);
 
 		// quests folder
-		new Setting(containerEl)
-			.setName('Quests folder')
-			.setDesc('Select a folder for quests file')
-			.addDropdown(async (dropdown) => {
-				// Get all folders in the vault
-				const folders = this.app.vault.getAllLoadedFiles()
-					.filter(file => file instanceof TFolder)
-					.map(folder => folder.path);
+		// new Setting(containerEl)
+		// 	.setName('Quests folder')
+		// 	.setDesc('Select a folder for quests file')
+		// 	.addDropdown(async (dropdown) => {
+		// 		// Get all folders in the vault
+		// 		const folders = this.app.vault.getAllLoadedFiles()
+		// 			.filter(file => file instanceof TFolder)
+		// 			.map(folder => folder.path);
 
-				// Add root folder option
-				dropdown.addOption('', 'Root (/)');
+		// 		// Add root folder option
+		// 		dropdown.addOption('', 'Root (/)');
 
-				// Add all other folders
-				folders.forEach(folder => {
-					dropdown.addOption(folder, folder);
-				});
+		// 		// Add all other folders
+		// 		folders.forEach(folder => {
+		// 			dropdown.addOption(folder, folder);
+		// 		});
 
-				// Set current value
-				dropdown.setValue(this.plugin.settings.user1.settings.questsFolder || '');
+		// 		// Set current value
+		// 		dropdown.setValue(this.plugin.settings.user1.settings.questsFolder || '');
 
-				// Handle change
-				dropdown.onChange(async (value) => {
-					this.plugin.settings.user1.settings.questsFolder = value;
-					await this.plugin.saveSettings();
-				});
-			});
+		// 		// Handle change
+		// 		dropdown.onChange(async (value) => {
+		// 			this.plugin.settings.user1.settings.questsFolder = value;
+		// 			await appContextService.dataService.saveSettings();
+		// 		});
+		// 	});
 
 		const refreshRateSetting = new Setting(containerEl)
 			.setName('Refresh Rate')
 			.setDesc('Refresh rate in seconds (min: 1, max: 300)');
 
+
 		refreshRateSetting
-			.addText((text: TextComponent) => text
-				.setPlaceholder('Enter refresh rate in seconds')
-				.setValue((this.plugin.settings.user1.settings.refreshRate / 1000).toString())
-				.onChange(async (value: string) => {
-					const seconds = parseFloat(value);
-					if (!isNaN(seconds) && seconds >= 1 && seconds <= 300) {
-						if (this.plugin.settings.user1.settings) {
-							const milliseconds = Math.round(seconds * 1000);
-							console.log('Settings: Updating refresh rate to:', seconds, 'seconds (', milliseconds, 'ms)');
-							appContextService.updateRefreshRate(milliseconds);
-							await this.plugin.saveSettings();
-						}
+            .addText((text: TextComponent) => text
+                .setPlaceholder('Enter refresh rate in seconds')
+                .setValue((appContextService.settings.user1.settings.refreshRate / 1000).toString())
+                .onChange(async (value: string) => {
+                    const seconds = parseFloat(value);
+                    if (!isNaN(seconds) && seconds >= 1 && seconds <= 300) {
+                        const milliseconds = Math.round(seconds * 1000);
+                        // console.log('Settings: Updating refresh rate to:', seconds, 'seconds');
+                        appContextService.updateRefreshRate(milliseconds);
 					}
 				})
 			)
-			.addExtraButton((button: ExtraButtonComponent) => {
-				button
-					.setIcon('refresh-cw')
-					.setTooltip('Reset to default (5 seconds)')
-					.onClick(async () => {
-						if (this.plugin.settings.user1.settings) {
-							console.log('Settings: Resetting refresh rate to 5 seconds');
-							appContextService.updateRefreshRate(5000);
-							await this.plugin.saveSettings();
-							this.display();
-						}
-					});
-			});
+			// .addExtraButton((button: ExtraButtonComponent) => {
+			// 	button
+			// 		.setIcon('refresh-cw')
+			// 		.setTooltip('Reset to default (5 seconds)')
+			// 		.onClick(async () => {
+			// 			if (this.plugin.settings.user1.settings) {
+			// 				// console.log('Settings: Resetting refresh rate to 5 seconds');
+			// 				appContextService.updateRefreshRate(5000);
+			// 				this.display();
+			// 			}
+			// 		});
+			// });
 
-		// reset game settings
-		new Setting(containerEl)
-			.setName('Reset Game Settings')
-			.setDesc('Click to restart the settings to default. Be careful, all your game data may be erased... If so close this window after clicking this button.')
-			.addButton(button => {
-				button
-					.setButtonText('reset')
-					.onClick(async () => {
-						this.plugin.settings = { ...DEFAULT_SETTINGS};
-						console.log('settings reset', this.plugin.settings);
-						// useEffect(() => {}, [this.plugin.settings]);
-						await this.plugin.saveSettings();
-					})
-					.buttonEl.style.backgroundColor = '#cb2d06';
-			});
-
-		// ---------- | dev part | ---------------
-		containerEl.createEl('h4', { text: 'Debug' });
-		new Setting(containerEl)
-			.setName('Xp')
-			.addText(text =>
-				text
-					.setValue(this.plugin.settings.user1.persona.xp.toString())
-					.onChange(async (value) => {
-						const xpValue = parseInt(value, 10);
-						if (!isNaN(xpValue)) {
-							this.plugin.settings.user1.persona.xp = xpValue;
-							await this.plugin.saveSettings();
-						}
-					})
-					.inputEl.setAttr('type', 'number')
-			);
+        // Reset settings
+        new Setting(containerEl)
+            .setName('Reset Game Settings')
+            .setDesc('Click to restart the settings to default.')
+            .addButton(button => {
+                button
+                    .setButtonText('reset')
+                    .onClick(async () => {
+                        // Utilisez appContextService pour reset
+                        await appContextService.updateUserSettings(DEFAULT_SETTINGS);
+                        // Rechargez l'affichage
+                        this.display();
+                    })
+                    .buttonEl.style.backgroundColor = '#cb2d06';
+            });
 	}
 }

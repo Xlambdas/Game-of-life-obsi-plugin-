@@ -1,12 +1,12 @@
 {
   "user1": {
     "settings": {
-      "difficulty": "easy",
+      "difficulty": "platinium",
       "theme": "default",
       "language": "en",
       "questsFolder": "",
       "questsFileName": "Quests.md",
-      "refreshRate": 1000,
+      "refreshRate": 10000,
       "questsCategories": [
         "Work",
         "Study",
@@ -15,14 +15,14 @@
       ]
     },
     "persona": {
-      "name": "User",
-      "class": "user",
+      "name": "Use me",
+      "class": "mage",
       "health": 100,
-      "xp": 545,
-      "level": 5,
+      "xp": 90,
+      "level": 1,
       "maxLevel": 1,
-      "newXp": 9,
-      "lvlThreshold": 206
+      "newXp": 90,
+      "lvlThreshold": 100
     },
     "attribute": {
       "strength": 10,
@@ -40,5 +40,6 @@
     "quests": {},
     "completedQuests": [],
     "skills": {}
-  }
+  },
+  "_lastSaved": 1749731407662
 }
