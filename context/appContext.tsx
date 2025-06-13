@@ -1,23 +1,32 @@
 import React, { createContext, useContext } from "react";
 // from file :
 import { AppContextService } from "./appContextService";
+import { DataService } from "./services/dataService";
 
-const AppContext = createContext<AppContextService | null>(null);
+type AppContextType = {
+	appService: AppContextService;
+};
 
-export const AppProvider = ({ children }: { children: React.ReactNode }) => {
-	const service = AppContextService.getInstance();
+const AppContext = createContext<AppContextType | null>(null);
 
+export const AppProvider = ({
+	children,
+	appService,
+}: {
+	children: React.ReactNode;
+	appService: AppContextService;
+}) => {
 	return (
-		<AppContext.Provider value={service}>
+		<AppContext.Provider value={{ appService }}>
 			{children}
 		</AppContext.Provider>
 	);
 }
 
-export const useApp = () => {
+export const useAppContext = (): AppContextService => {
 	const context = useContext(AppContext);
 	if (!context) {
 		throw new Error("useApp must be used within an AppProvider");
 	}
-	return context;
+	return context.appService;
 }

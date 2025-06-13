@@ -1,13 +1,16 @@
 import { Vault } from "obsidian";
 import { DataService } from "./services/dataService";
+import { Quest } from "data/DEFAULT";
+import { v4 as uuid } from 'uuid';
+
 
 export class AppContextService {
 	private static _instance: AppContextService;
 	private dataService: DataService;
+	// private quests: Quest[] = [];
 
 	private constructor(vault: Vault) {
 		this.dataService = new DataService(vault);
-		this.dataService.load();
 	}
 
 	static async init(vault: Vault) {
@@ -23,11 +26,21 @@ export class AppContextService {
 		return this._instance;
 	}
 
-	getData(key: string): any {
-		return this.dataService.get(key);
+	// DataService methods (for user management)
+	getUserData(key: string): any {
+		return this.dataService.getUser(key);
 	}
 
-	setData(key: string, value: any): void {
-		this.dataService.set(key, value);
+	setUserData(key: string, value: any): void {
+		this.dataService.setUser(key, value);
+	}
+
+	// DataService methods (for quests management)
+	getQuests() {
+		return this.dataService.getQuests();
+	}
+
+	setQuests(quests: Quest[]): void {
+		this.dataService.setQuests(quests);
 	}
 }

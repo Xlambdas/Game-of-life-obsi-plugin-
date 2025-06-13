@@ -1,41 +1,48 @@
 import React, { useState, useEffect } from "react";
-import { useApp } from "../context/appContext";
+import { useAppContext } from "../context/appContext";
+import { Quest } from "../data/DEFAULT";
 
 export const QuestList = () => {
-  const app = useApp();
-  const [quests, setQuests] = useState<string[]>([]);
-  const [newQuest, setNewQuest] = useState("");
+	const app = useAppContext();
 
-  // Charge les quêtes au démarrage
-  useEffect(() => {
-    const loaded = app.getData("quests") || [];
-    setQuests(loaded);
-  }, []);
+	const [quests, setQuests] = useState<Quest[]>([]);
+	const [newQuest, setNewQuest] = useState("");
 
-  // Ajoute une nouvelle quête
-  const addQuest = () => {
-    const updated = [...quests, newQuest];
-    setQuests(updated);
-    app.setData("quests", updated);
-    setNewQuest("");
-  };
+	useEffect(() => {
+		const loadedObj = app.getQuests() || [];
+		const loaded = Array.isArray(loadedObj) ? loadedObj : Object.values(loadedObj);
+		setQuests(loaded);
+	}, []);
 
-  return (
-    <div>
-      <h2>Quests</h2>
-      <ul>
-        {quests.map((q, i) => (
-          <li key={i}>🗡️ {q}</li>
-        ))}
-      </ul>
+	const addQuest = () => {
+		if (!newQuest.trim()) return;
+		const newQuestObj: Quest = {
+			id: Date.now().toString(),
+			title: newQuest.trim(),
+			done: false,
+		};
+		const updated = [...quests, newQuestObj];
+		app.setQuests(updated);
+		setQuests(updated);
+		setNewQuest("");
+	};
 
-      <input
-        type="text"
-        value={newQuest}
-        onChange={(e) => setNewQuest(e.target.value)}
-        placeholder="New quest"
-      />
-      <button onClick={addQuest}>Add</button>
-    </div>
-  );
+	return (
+		<div>
+			<h2>Quests</h2>
+			<ul>
+				{quests.map((q, i) => (
+					<li key={i}>🗡️ {q.title}</li>
+				))}
+			</ul>
+
+			<input
+				type="text"
+				value={newQuest}
+				onChange={(e) => setNewQuest(e.target.value)}
+				placeholder="New quest"
+			/>
+			<button onClick={addQuest}>Add</button>
+		</div>
+	);
 };

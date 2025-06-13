@@ -50,7 +50,7 @@ export const DEFAULT_SETTINGS: UserSettings = {
 			questsFolder: '',
 			questsFileName: 'Quests.md',
 			refreshRate: 100,
-			questsCategories: ['Work', 'Study', 'Social', 'Other'],
+			questsCategories: [],
 		},
 		persona: {
 			name: "User",
@@ -130,11 +130,17 @@ export interface BaseTask {
 }
 
 
+export interface Quest {
+    id: string;
+    title: string;
+    done: boolean;
+}
+
 
 /*
 * Quest Default Settings
 */
-export interface Quest extends BaseTask {
+export interface Quest_old extends BaseTask {
 	settings: {type: 'quest'} & BaseTask['settings'];
 	progression: {
 		isCompleted: boolean;
@@ -159,7 +165,7 @@ export interface Quest extends BaseTask {
 	isSystemQuest?: boolean;
 }
 
-export const DEFAULT_QUEST: Quest = {
+export const DEFAULT_QUEST: Quest_old = {
 	id: "Quest_0",
 	title: "Tutorial",
 	shortDescription: "This is your first quest.",

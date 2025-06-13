@@ -1,7 +1,7 @@
 import { Plugin } from 'obsidian';
 // from files :
 import { AppContextService } from './context/appContextService';
-import { QuestModal } from './modal/questModal';
+import { QuestModal, CreateQuestModal } from './modal/questModal';
 
 
 export default class GOL extends Plugin {
@@ -12,6 +12,9 @@ export default class GOL extends Plugin {
 
 		this.addRibbonIcon("dice", "Open Quest Panel", () => {
 			new QuestModal(this.app, appContext).open();
+		});
+		this.addRibbonIcon("plus", "Create New Quest", () => {
+			new CreateQuestModal(this.app, appContext).open();
 		});
 	}
 
