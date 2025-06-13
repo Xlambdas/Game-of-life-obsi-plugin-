@@ -23,7 +23,7 @@
 		"resolveJsonModule": true
 	},
 	"include": [
-		"**/*.ts", "**/*.tsx", "main.tsx", "constants/DEFAULT.ts"  ],
+		"**/*.ts", "**/*.tsx", "main.tsx", "constants/DEFAULT.ts", "modal"  ],
 	"exclude": ["node_modules"]
 }
 
