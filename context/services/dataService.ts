@@ -1,13 +1,13 @@
 import { Vault, TFile, normalizePath } from 'obsidian';
 // from files :
-import { DEFAULT_SETTINGS } from '../../data/DEFAULT';
+import { UserSettings, DEFAULT_SETTINGS, Quest, DEFAULT_QUEST } from '../../data/DEFAULT';
 
 export class DataService {
 	private userPath: string;
 	private questsPath: string;
 	private vault: Vault;
-	private data: Record<string, any> = {};
-	private quests: Record<string, any> = {};
+	private user: UserSettings = DEFAULT_SETTINGS;
+	private quests: Record<string, Quest> = {};
 
 	constructor(vault: Vault) {
 		this.vault = vault;
@@ -26,7 +26,7 @@ export class DataService {
 		if (type === 'user') {
 			const folder = this.userPath.substring(0, this.userPath.lastIndexOf("/"));
 			await this.vault.adapter.mkdir(folder);
-			const content = JSON.stringify(this.data, null, 2);
+			const content = JSON.stringify(this.user, null, 2);
 			await this.vault.adapter.write(this.userPath, content);
 		} else if (type === 'quests') {
 			const folder = this.questsPath.substring(0, this.questsPath.lastIndexOf("/"));
@@ -45,7 +45,7 @@ export class DataService {
 	}
 
 	async resetData(): Promise<void> {
-		this.data = DEFAULT_SETTINGS;
+		this.user = DEFAULT_SETTINGS;
 		this.quests = {};
 		await this.save('user');
 		await this.save('quests');
@@ -57,19 +57,30 @@ export class DataService {
 		await this.ensureDataFile();
 		const content = await this.vault.adapter.read(this.userPath);
 		try {
-			this.data = JSON.parse(content);
+			const parsed = JSON.parse(content);
+			// Vérification basique : doit être un objet non null et non array
+			if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
+				throw new Error("Invalid user data format");
+			}
+			// Vérifie que tous les champs de DEFAULT_SETTINGS sont présents
+			for (const key of Object.keys(DEFAULT_SETTINGS)) {
+				if (!(key in parsed)) {
+					throw new Error(`Missing user data field: ${key}`);
+				}
+			}
+			this.user = parsed;
 		} catch {
 			console.warn("Corrupted user data file, resetting to default structure...");
 			await this.resetData();
 		}
 	}
 
-	getUser(key: string): any {
-		return this.data[key];
+	getUser(): UserSettings {
+		return this.user;
 	}
 
 	async setUser(key: string, value: any): Promise<void> {
-		this.data[key] = value;
+		(this.user as any)[key] = value;
 		await this.save();
 	}
 

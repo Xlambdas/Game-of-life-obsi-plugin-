@@ -16,6 +16,22 @@ export default class GOL extends Plugin {
 		this.addRibbonIcon("plus", "Create New Quest", () => {
 			new CreateQuestModal(this.app, appContext).open();
 		});
+		this.addCommand({
+			id: 'show-user-data',
+			name: 'Show User Data',
+			callback: () => {
+				const userData = appContext.getUserData();
+				console.log(`User Data: ${JSON.stringify(userData, null, 2)}`);
+			}
+		});
+		this.addCommand({
+			id: 'reload-user-data',
+			name: 'Reload User Data',
+			callback: () => {
+				appContext.reloadUserData();
+				console.log('User data reloaded');
+			}
+		});
 	}
 
 	onunload() {

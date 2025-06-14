@@ -7,7 +7,6 @@ import { v4 as uuid } from 'uuid';
 export class AppContextService {
 	private static _instance: AppContextService;
 	private dataService: DataService;
-	// private quests: Quest[] = [];
 
 	private constructor(vault: Vault) {
 		this.dataService = new DataService(vault);
@@ -27,12 +26,18 @@ export class AppContextService {
 	}
 
 	// DataService methods (for user management)
-	getUserData(key: string): any {
-		return this.dataService.getUser(key);
+	getUserData(): any {
+		return this.dataService.getUser();
 	}
 
 	setUserData(key: string, value: any): void {
 		this.dataService.setUser(key, value);
+	}
+
+	reloadUserData(): void {
+		this.dataService.loadUser().catch(err => {
+			console.error("Failed to reload user data:", err);
+		});
 	}
 
 	// DataService methods (for quests management)

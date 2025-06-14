@@ -2,84 +2,196 @@
 * User Default Settings
 */
 export interface UserSettings {
-	user1: {
-		settings: {
-			difficulty: string;
-			theme: string;
-			language: string;
-			questsFolder: string;
-			questsFileName: string;
-			refreshRate: number;
-			questsCategories: string[];
+	settings: {
+		difficulty: 'easy' | 'normal' | 'hard' | 'expert' | string;
+		theme: string;
+		language: string;
+		refreshRate: number;
+		addedCategories: string[];
+		dataVersion: number;
+	};
+	persona: {
+		name: string;
+		class: string;
+		health: number;
+		maxHealth: number;
+		mana?: number;
+		maxMana?: number;
+		energy?: number;
+		maxEnergy?: number;
+		alignment?: {
+			order: 'good' | 'neutral' | 'evil';
+			chaos: 'lawful' | 'neutral' | 'chaotic';
 		};
-		persona: {
-			name: string;
-			class: string;
-			health: number;
-			xp: number;
+		titles?: string[];
+		reputation?: {
+			guilds: Record<string, number>; // Guild name and reputation score
+			factions: Record<string, number>; // Faction name and reputation score
+			kingdoms: Record<string, number>; // Kingdom name and reputation score
+			individuals: Record<string, number>; // Individual name and reputation score
+			events: Record<string, number>; // Event name and reputation score
+			locations: Record<string, number>; // Location name and reputation score
+			quests: Record<string, number>; // Quest name and reputation score
+			achievements: Record<string, number>; // Achievement name and reputation score
+		};
+		achievements?: string[]; // List of achievement IDs
+		traits?: string[]; // List of trait IDs
+		abilities?: string[]; // List of ability IDs
+	}
+	xpDetails: {
+		xp: number;
+		level: number;
+		maxLevel: number;
+		newXp: number;
+		lvlThreshold: number;
+		freePts: number;
+	};
+	attribute: AttributeBlock;
+	skills: {
+		[key: string]: {
 			level: number;
 			maxLevel: number;
-			newXp: number;
-			lvlThreshold: number;
+			xp: number;
 		};
-		attribute: {
-			strength: number;
-			agility: number;
-			endurance: number;
-			charisma: number;
-			wisdom: number;
-			perception: number;
-			intelligence: number;
+	};
+	habits: {
+		[id: string]: {
+			level: number;
+			maxLevel: number;
+			xp: number;
 		};
-		free_pts: number;
-		inventory: {};
-		equipment: {};
-		habits: {};
-		quests: {};
-		completedQuests: string[],
-		skills: {};
+	};
+	quests: {
+		[id: string]: {
+			level: number;
+			maxLevel: number;
+			xp: number;
+		};
+	};
+	completedQuests: string[];
+	objectives: string[];
+	challenges: string[];
+	buffs: {
+		[id: string]: {
+			duration: number; // in seconds
+			effect: string; // Description of the buff effect
+		};
+	};
+	debuffs: {
+		[id: string]: {
+			duration: number; // in seconds
+			effect: string; // Description of the debuff effect
+		};
+	};
+	
+	achievements: {
+		[id: string]: {
+			title: string;
+			description: string;
+			date: Date;
+		};
+	};
+	lastLogin: Date;
+	sessionTime: number; // in seconds
+	activityLog: {
+		date: Date;
+		action: string; // Description of the action
+	}[];
+	notifications: {
+		id: string;
+		message: string;
+		date: Date;
+		read: boolean;
+	}[];
+	journalNotes: {
+	[id: string]: {
+			title: string;
+			content: string;
+			date: Date;
+	};
+	};
+	questsProgress: {
+		[id: string]: {
+			progress: number;
+			isCompleted: boolean;
+			completedAt: Date | null;
+		};
 	}
 }
 
 export const DEFAULT_SETTINGS: UserSettings = {
-	user1: {
-		settings: {
-			difficulty: 'easy',
-			theme: 'default',
-			language: 'en',
-			questsFolder: '',
-			questsFileName: 'Quests.md',
-			refreshRate: 100,
-			questsCategories: [],
+	settings: {
+		difficulty: 'normal',
+		theme: 'light',
+		language: 'en',
+		refreshRate: 60, // in seconds
+		addedCategories: [],
+		dataVersion: 1, // Increment this when changing the data structure
+	},
+	persona: {
+		name: 'Hero',
+		class: 'Warrior',
+		health: 100,
+		maxHealth: 100,
+		mana: 50,
+		maxMana: 50,
+		energy: 100,
+		maxEnergy: 100,
+		alignment: {
+			order: 'good',
+			chaos: 'lawful',
 		},
-		persona: {
-			name: "User",
-			class: "user",
-			health: 100,
-			xp: 0,
-			level: 1,
-			maxLevel: 1,
-			newXp: 0,
-			lvlThreshold: 100,
+		titles: [],
+		reputation: {
+			guilds: {},
+			factions: {},
+			kingdoms: {},
+			individuals: {},
+			events: {},
+			locations: {},
+			quests: {},
+			achievements: {},
 		},
-		attribute: {
-			strength: 10,
-			agility: 10,
-			endurance: 10,
-			charisma: 10,
-			wisdom: 10,
-			perception: 10,
-			intelligence: 10
-		},
-		free_pts: 0,
-		inventory: {},
-		equipment: {},
-		habits: {},
-		quests: {},
-		completedQuests: [],
-		skills: {},
-	}
-}
+	},
+	xpDetails: {
+		xp: 0,
+		level: 1,
+		maxLevel: 100,
+		newXp: 0,
+		lvlThreshold: 100,
+		freePts: 0,
+	},
+	attribute: {
+		strength: 0,
+		agility: 0,
+		endurance: 0,
+		charisma: 0,
+		wisdom: 0,
+		perception: 0,
+		intelligence: 0,
+		willpower: 0,
+		spirit: 0,
+		flow: 0,
+		reputation: 0,
+		resilience: 0
+	},
+	skills: {},
+	habits: {},
+	quests: {},
+	completedQuests: [],
+	objectives: [],
+	challenges: [],
+	buffs: {},
+	debuffs: {},
+	achievements: {},
+	lastLogin: new Date(),
+	sessionTime: 0, // in seconds
+	activityLog: [],
+	notifications: [],
+	journalNotes: {},
+	questsProgress: {}
+};
+
 
 export const DEFAULT_CATEGORIES = [
 	'Undefined',
@@ -100,14 +212,19 @@ export type DefaultDifficulty = typeof DEFAULT_DIFFICULTIES[number];
 export const DEFAULT_RECURRENCES = ['days', 'weeks', 'months'] as const;
 export type DefaultRecurrence = typeof DEFAULT_RECURRENCES[number];
 
-export type StatBlock = {
-	strength: number;
-	agility: number;
-	endurance: number;
-	charisma: number;
-	wisdom: number;
-	perception: number;
-	intelligence: number;
+export type AttributeBlock = {
+  strength: number;
+  agility: number;
+  endurance: number;
+  charisma: number;
+  wisdom: number;
+  perception: number;
+  intelligence: number;
+  willpower: number;
+  spirit: number;
+  flow: number;
+  reputation: number;
+  resilience: number;
 }
 
 
@@ -123,7 +240,7 @@ export interface BaseTask {
 		type: 'quest' | 'habit';
 		priority?: DefaultPriority;
 		difficulty?: DefaultDifficulty;
-		category: DefaultCategory | string;
+		category: DefaultCategory;
 		isSecret?: boolean;
 		isTimeSensitive?: boolean;
 	};
@@ -152,13 +269,13 @@ export interface Quest_old extends BaseTask {
 	reward: {
 		XP: number;
 		items?: string[];
-		attributes?: StatBlock;
+		attributes?: AttributeBlock;
 		unlock?: string[];
 	}
 	requirements: {
 		level: number;
 		previousQuests?: string[];
-		stats: StatBlock;
+		stats: AttributeBlock;
 	};
 	// recurrence: never;
 	failureConsequence?: string;
@@ -197,6 +314,11 @@ export const DEFAULT_QUEST: Quest_old = {
 			wisdom: 0,
 			perception: 0,
 			intelligence: 1,
+			willpower: 0,
+			spirit: 0,
+			flow: 0,
+			reputation: 0,
+			resilience: 0
 		},
 		unlock: [], // todo: do algo
 	},
@@ -211,6 +333,11 @@ export const DEFAULT_QUEST: Quest_old = {
 			wisdom: 0,
 			perception: 0,
 			intelligence: 0,
+			willpower: 0,
+			spirit: 0,
+			flow: 0,
+			reputation: 0,
+			resilience: 0
 		},
 	},
 	// recurrence: undefined, // Auto generated // todo: do algo
@@ -246,7 +373,7 @@ export interface Habit extends BaseTask {
 	};
 	reward: {
 		XP: number;
-		attributes?: StatBlock;
+		attributes?: AttributeBlock;
 		items?: string[];
 	};
 	isSystemHabit?: boolean;
@@ -291,6 +418,11 @@ export const DEFAULT_HABIT: Habit = {
 			wisdom: 0,
 			perception: 0,
 			intelligence: 0,
+			willpower: 0,
+			spirit: 0,
+			flow: 0,
+			reputation: 0,
+			resilience: 0
 		},
 		items: [],
 	},

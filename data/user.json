@@ -1,39 +1,72 @@
 {
-  "user1": {
-    "settings": {
-      "difficulty": "easy",
-      "theme": "default",
-      "language": "en",
-      "questsFolder": "",
-      "questsFileName": "Quests.md",
-      "refreshRate": 100,
-      "questsCategories": []
+  "settings": {
+    "difficulty": "normal",
+    "theme": "light",
+    "language": "en",
+    "refreshRate": 60,
+    "addedCategories": [],
+    "dataVersion": 1
+  },
+  "persona": {
+    "name": "Hero",
+    "class": "Warrior",
+    "health": 100,
+    "maxHealth": 100,
+    "mana": 50,
+    "maxMana": 50,
+    "energy": 100,
+    "maxEnergy": 100,
+    "alignment": {
+      "order": "good",
+      "chaos": "lawful"
     },
-    "persona": {
-      "name": "User",
-      "class": "user",
-      "health": 100,
-      "xp": 0,
-      "level": 1,
-      "maxLevel": 1,
-      "newXp": 0,
-      "lvlThreshold": 100
-    },
-    "attribute": {
-      "strength": 10,
-      "agility": 10,
-      "endurance": 10,
-      "charisma": 10,
-      "wisdom": 10,
-      "perception": 10,
-      "intelligence": 10
-    },
-    "free_pts": 0,
-    "inventory": {},
-    "equipment": {},
-    "habits": {},
-    "quests": {},
-    "completedQuests": [],
-    "skills": {}
-  }
+    "titles": [],
+    "reputation": {
+      "guilds": {},
+      "factions": {},
+      "kingdoms": {},
+      "individuals": {},
+      "events": {},
+      "locations": {},
+      "quests": {},
+      "achievements": {}
+    }
+  },
+  "xpDetails": {
+    "xp": 0,
+    "level": 1,
+    "maxLevel": 100,
+    "newXp": 0,
+    "lvlThreshold": 100,
+    "freePts": 0
+  },
+  "attribute": {
+    "strength": 0,
+    "agility": 0,
+    "endurance": 0,
+    "charisma": 0,
+    "wisdom": 0,
+    "perception": 0,
+    "intelligence": 0,
+    "willpower": 0,
+    "spirit": 0,
+    "flow": 0,
+    "reputation": 0,
+    "resilience": 0
+  },
+  "skills": {},
+  "habits": {},
+  "quests": {},
+  "completedQuests": [],
+  "objectives": [],
+  "challenges": [],
+  "buffs": {},
+  "debuffs": {},
+  "achievements": {},
+  "lastLogin": "2025-06-14T10:11:49.437Z",
+  "sessionTime": 0,
+  "activityLog": [],
+  "notifications": [],
+  "journalNotes": {},
+  "questsProgress": {}
 }
