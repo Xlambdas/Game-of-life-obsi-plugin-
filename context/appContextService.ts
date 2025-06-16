@@ -2,6 +2,7 @@ import { Vault } from "obsidian";
 import { DataService } from "./services/dataService";
 import { Quest } from "data/DEFAULT";
 import { v4 as uuid } from 'uuid';
+import { UserSettings } from "data/DEFAULT";
 
 
 export class AppContextService {
@@ -25,10 +26,24 @@ export class AppContextService {
 		return this._instance;
 	}
 
-	// DataService methods (for user management)
-	getUserData(): any {
+	// data management methods
+	async get(key: 'user' | 'quests') {
+		if (key !== 'user' && key !== 'quests') {
+			throw new Error(`Invalid key: ${key}. Expected 'user' or 'quests'.`);
+		}
+		if (key === 'quests') {
+			return this.dataService.getQuests();
+		}
+		if (key === 'user') {
+			return this.dataService.getUser();
+		}
+		throw new Error(`Unknown key: ${key}`);
+	}
+
+	getUser(): UserSettings {
 		return this.dataService.getUser();
 	}
+
 
 	setUserData(key: string, value: any): void {
 		this.dataService.setUser(key, value);
@@ -40,12 +55,14 @@ export class AppContextService {
 		});
 	}
 
-	// DataService methods (for quests management)
-	getQuests() {
-		return this.dataService.getQuests();
+	updateUserData(newData: Partial<UserSettings>): void {
+		this.dataService.updateUser(newData);
 	}
 
 	setQuests(quests: Quest[]): void {
 		this.dataService.setQuests(quests);
+	}
+	getQuests(): Record<string, Quest> {
+		return this.dataService.getQuests();
 	}
 }

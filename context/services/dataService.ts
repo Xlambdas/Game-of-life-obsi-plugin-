@@ -22,6 +22,23 @@ export class DataService {
 		await this.loadQuests();
 	}
 
+	async ensureDataFile(): Promise<void> {
+		const exists = await this.vault.adapter.exists(this.userPath);
+		if (!exists) {
+			console.warn("User data file not found, initializing with default structure...");
+			await this.resetData();
+		}
+	}
+
+	async resetData(): Promise<void> {
+		this.user = DEFAULT_SETTINGS;
+		this.quests = {};
+		await this.save('user');
+		await this.save('quests');
+	}
+
+	// -----------------------
+	// common methods
 	private async save(type: 'user' | 'quests' = 'user'): Promise<void> {
 		if (type === 'user') {
 			const folder = this.userPath.substring(0, this.userPath.lastIndexOf("/"));
@@ -36,19 +53,14 @@ export class DataService {
 		}
 	}
 
-	async ensureDataFile(): Promise<void> {
-		const exists = await this.vault.adapter.exists(this.userPath);
-		if (!exists) {
-			console.warn("User data file not found, initializing with default structure...");
-			await this.resetData();
+	get(key: 'user' | 'quests'): UserSettings | Record<string, Quest> {
+		if (key === 'user') {
+			return this.user;
 		}
-	}
-
-	async resetData(): Promise<void> {
-		this.user = DEFAULT_SETTINGS;
-		this.quests = {};
-		await this.save('user');
-		await this.save('quests');
+		if (key === 'quests') {
+			return this.quests;
+		}
+		throw new Error(`Unknown key: ${key}`);
 	}
 
 	// -----------------------
@@ -75,13 +87,17 @@ export class DataService {
 		}
 	}
 
-	getUser(): UserSettings {
-		return this.user;
-	}
-
 	async setUser(key: string, value: any): Promise<void> {
 		(this.user as any)[key] = value;
 		await this.save();
+	}
+	async updateUser(newData: Partial<UserSettings>): Promise<void> {
+		this.user = { ...this.user, ...newData };
+		await this.save();
+	}
+
+	getUser(): UserSettings {
+		return this.user;
 	}
 
 	// ------------------------
@@ -97,13 +113,13 @@ export class DataService {
 		this.quests = JSON.parse(content);
 	}
 
-	getQuests(): Record<string, any> {
-		return this.quests;
-	}
-
 	async setQuests(quests: Record<string, any>): Promise<void> {
 		this.quests = quests;
 		await this.save('quests');
+	}
+
+	getQuests(): Record<string, Quest> {
+		return this.quests;
 	}
 
 }

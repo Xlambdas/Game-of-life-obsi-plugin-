@@ -121,7 +121,7 @@ export interface UserSettings {
 
 export const DEFAULT_SETTINGS: UserSettings = {
 	settings: {
-		difficulty: 'normal',
+		difficulty: 'easy',
 		theme: 'light',
 		language: 'en',
 		refreshRate: 60, // in seconds
@@ -130,7 +130,7 @@ export const DEFAULT_SETTINGS: UserSettings = {
 	},
 	persona: {
 		name: 'Hero',
-		class: 'Warrior',
+		class: 'user',
 		health: 100,
 		maxHealth: 100,
 		mana: 50,
@@ -247,12 +247,151 @@ export interface BaseTask {
 }
 
 
-export interface Quest {
-    id: string;
-    title: string;
-    done: boolean;
+export interface Quest extends BaseTask {
+	settings: { type: 'quest' } & BaseTask['settings'];
+
+	progression: {
+		isCompleted: boolean;
+		completedAt: Date | null;
+		progress: number; // 0 to 100
+		dueDate?: Date;
+		startedAt?: Date;
+		lastUpdated?: Date;
+		subtasks?: string[];
+		attempts?: number;
+		failures?: number;
+		timeSpentMinutes?: number;
+	};
+
+	reward: {
+		XP: number;
+		items?: string[];
+		attributes?: Partial<AttributeBlock>; // gains in stats
+		unlocks?: string[];
+		badges?: string[]; // achievements
+		title?: string; // e.g. "Beast of Discipline"
+		spiritBoost?: number; // motivation reward
+	};
+
+	requirements: {
+		level: number;
+		previousQuests?: string[];
+		attributes?: Partial<AttributeBlock>; // minimum stats
+		timeAvailableMinutes?: number; // practical constraint
+		tagsRequired?: string[]; // e.g. ['outdoor', 'focus']
+	};
+
+	meta: {
+		difficulty: 'easy' | 'medium' | 'hard' | 'epic';
+		category: 'physical' | 'mental' | 'social' | 'creative' | 'discipline' | 'undefined' | string;
+		tags?: string[];
+		isSystemQuest?: boolean;
+		createdBy?: 'system' | 'user' | 'plugin';
+		linkedToGoal?: string; // goal ID or label
+		estimatedDurationMinutes?: number;
+		recommendedTimeOfDay?: 'morning' | 'afternoon' | 'evening' | 'any';
+		energyRequired?: number; // spirit cost
+		willpowerRequired?: number;
+	};
+
+	failureConsequence?: {
+		description?: string;
+		spiritLoss?: number;
+		XPLoss?: number;
+		lockoutTimeMinutes?: number;
+	};
+
+	notes?: string;
 }
 
+export const DEFAULT_QUEST: Quest = {
+	id: "Quest_0",
+	title: "Tutorial Quest",
+	shortDescription: "Learn the basics of the game.",
+	description: "This is your first quest. Complete it to understand how the game works.",
+	created_at: new Date(), // Auto generated
+	settings: {
+		type: 'quest', // Auto generated
+		category: 'Undefined',
+		priority: 'low', // todo: do algo
+		difficulty: 'easy', // todo: do algo
+		isSecret: false, // Auto generated
+		isTimeSensitive: false, // Auto generated // todo: do algo to set the limit time
+	},
+	progression: {
+		isCompleted: false,
+		completedAt: null, // Auto generated
+		progress: 0, // Auto generated (0-100) // todo: do algo
+		dueDate: new Date(0), // todo do algo
+		startedAt: new Date(0), // todo do algo
+		lastUpdated: new Date(0), // todo do algo
+		subtasks: [], // todo: do algo
+		attempts: 0, // Auto generated
+		failures: 0, // Auto generated
+		timeSpentMinutes: 0, // Auto generated
+	},
+	reward: {
+		XP: 10, // todo: do algo
+		items: [], // todo: do algo
+		attributes: {
+			strength: 0,
+			agility: 0,
+			endurance: 0,
+			charisma: 0,
+			wisdom: 0,
+			perception: 0,
+			intelligence: 1,
+			willpower: 0,
+			spirit: 0,
+			flow: 0,
+			reputation: 0,
+			resilience: 0
+		},
+		unlocks: [], // todo: do algo
+		badges: [], // todo: do algo
+		title: "Novice Adventurer", // e.g. "Beast of Discipline"
+		spiritBoost: 0, // motivation reward
+	},
+	requirements: { // todo: do algo
+		level: 0,
+		previousQuests: [], // todo: do algo
+		attributes: {
+			strength: 0,
+			agility: 0,
+			endurance: 0,
+			charisma: 0,
+			wisdom: 0,
+			perception: 0,
+			intelligence: 0,
+			willpower: 0,
+			spirit: 0,
+			flow: 0,
+			reputation: 0,
+			resilience: 0
+		},
+		timeAvailableMinutes: 30, // practical constraint
+		tagsRequired: [], // e.g. ['outdoor', 'focus']
+	},
+	meta: {
+		difficulty: 'easy',
+		category: 'Undefined',
+		tags: [],
+		isSystemQuest: false,
+		createdBy: 'system', // 'user' or 'plugin'
+		linkedToGoal: '', // goal ID or label
+		estimatedDurationMinutes: 30, // estimated time to complete
+		recommendedTimeOfDay: 'any', // 'morning', 'afternoon', 'evening', 'any'
+		energyRequired: 0, // spirit cost
+		willpowerRequired: 0, // willpower cost
+	},
+	failureConsequence: {
+		description: "You failed the quest. Try again!",
+		spiritLoss: 0, // spirit cost
+		XPLoss: 0, // XP cost
+		lockoutTimeMinutes: 0, // time before you can retry
+	},
+	notes: "This is a system-generated quest to help you get started. Complete it to unlock more features.",
+};
 
 /*
 * Quest Default Settings
@@ -282,7 +421,7 @@ export interface Quest_old extends BaseTask {
 	isSystemQuest?: boolean;
 }
 
-export const DEFAULT_QUEST: Quest_old = {
+export const DEFAULT_QUEST_old: Quest_old = {
 	id: "Quest_0",
 	title: "Tutorial",
 	shortDescription: "This is your first quest.",

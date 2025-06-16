@@ -1,8 +1,8 @@
 import { Plugin } from 'obsidian';
 // from files :
 import { AppContextService } from './context/appContextService';
-import { QuestModal, CreateQuestModal } from './modal/questModal';
-
+import { CreateQuestModal } from './modal/questModal';
+import { selfSettingsTab } from './UI/settingsTab';
 
 export default class GOL extends Plugin {
 	async onload() {
@@ -11,7 +11,7 @@ export default class GOL extends Plugin {
 		const appContext = AppContextService.getInstance();
 
 		this.addRibbonIcon("dice", "Open Quest Panel", () => {
-			new QuestModal(this.app, appContext).open();
+			console.log("Opening Quest Panel");
 		});
 		this.addRibbonIcon("plus", "Create New Quest", () => {
 			new CreateQuestModal(this.app, appContext).open();
@@ -20,7 +20,7 @@ export default class GOL extends Plugin {
 			id: 'show-user-data',
 			name: 'Show User Data',
 			callback: () => {
-				const userData = appContext.getUserData();
+				const userData = appContext.getUser();
 				console.log(`User Data: ${JSON.stringify(userData, null, 2)}`);
 			}
 		});
@@ -32,6 +32,9 @@ export default class GOL extends Plugin {
 				console.log('User data reloaded');
 			}
 		});
+		this.addSettingTab(
+			new selfSettingsTab(this.app, this)
+		);
 	}
 
 	onunload() {

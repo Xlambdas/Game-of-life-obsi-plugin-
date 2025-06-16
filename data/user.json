@@ -1,6 +1,6 @@
 {
   "settings": {
-    "difficulty": "normal",
+    "difficulty": "easy",
     "theme": "light",
     "language": "en",
     "refreshRate": 60,
@@ -9,7 +9,7 @@
   },
   "persona": {
     "name": "Hero",
-    "class": "Warrior",
+    "class": "user",
     "health": 100,
     "maxHealth": 100,
     "mana": 50,
@@ -63,7 +63,7 @@
   "buffs": {},
   "debuffs": {},
   "achievements": {},
-  "lastLogin": "2025-06-14T10:11:49.437Z",
+  "lastLogin": "2025-06-16T09:15:18.943Z",
   "sessionTime": 0,
   "activityLog": [],
   "notifications": [],
