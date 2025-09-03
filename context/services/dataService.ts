@@ -113,6 +113,12 @@ export class DataService {
 		this.quests = JSON.parse(content);
 	}
 
+	async addQuest(questData: Partial<Quest>): Promise<void> {
+		const id = Object.keys(this.quests).length + 1;
+		this.quests[id] = { ...DEFAULT_QUEST, ...questData };
+		await this.save('quests');
+	}
+
 	async setQuests(quests: Record<string, any>): Promise<void> {
 		this.quests = quests;
 		await this.save('quests');

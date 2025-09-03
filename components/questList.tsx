@@ -14,18 +14,38 @@ export const QuestList = () => {
 		setQuests(loaded);
 	}, []);
 
-	const addQuest = () => {
-		if (!newQuest.trim()) return;
-		const newQuestObj: Quest = {
-			id: Date.now().toString(),
-			title: newQuest.trim(),
-			done: false,
-		};
-		const updated = [...quests, newQuestObj];
-		app.setQuests(updated);
-		setQuests(updated);
-		setNewQuest("");
-	};
+	// const addQuest = () => {
+	// 	if (!newQuest.trim()) return;
+	// 	const newQuestObj: Quest = {
+	// 		settings: {
+	// 			type: 'quest',
+	// 			category: 'Undefined',
+	// 			priority: 'low',
+	// 			difficulty: 'easy',
+	// 			isSecret: false,
+	// 			isTimeSensitive: false,
+	// 		},
+	// 		progression: {
+	// 			isCompleted: false,
+	// 			completedAt: null,
+	// 			progress: 0,
+	// 		},
+	// 		reward: {
+	// 			XP: 0,
+	// 		},
+	// 		requirements: {
+	// 			level: 1,
+	// 		},
+	// 		meta: {
+	// 			difficulty: 'easy',
+	// 			category: 'Undefined',
+	// 		},
+	// 	};
+	// 	const updated = [...quests, newQuestObj];
+	// 	app.setQuests(updated);
+	// 	setQuests(updated);
+	// 	setNewQuest("");
+	// };
 
 	return (
 		<div>
@@ -36,13 +56,13 @@ export const QuestList = () => {
 				))}
 			</ul>
 
-			<input
+			{/* <input
 				type="text"
 				value={newQuest}
 				onChange={(e) => setNewQuest(e.target.value)}
 				placeholder="New quest"
 			/>
-			<button onClick={addQuest}>Add</button>
+			<button onClick={addQuest}>Add</button> */}
 		</div>
 	);
 };

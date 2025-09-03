@@ -1,7 +1,7 @@
 import { App, Plugin, PluginSettingTab, Setting } from "obsidian";
 import { mainTitle, titleSection, DescriptionHelper } from "./UIHelpers";
 import GOL from "../plugin";
-import { TutorialModal } from "../modal/TutorialModal";
+import { TutorialModal } from "../modal/tutorialModal";
 import { RuleModal } from "../modal/ruleModal";
 import { AppContextService } from "../context/appContextService";
 import { difficultyModal } from "../modal/diffModal";
@@ -108,7 +108,6 @@ export class selfSettingsTab extends PluginSettingTab {
 					.onChange(async (value) => {
 						const currentSettings = this.contextService.getUser();
 						await this.contextService.updateUserData({
-							...currentSettings,
 							persona: {
 								...currentSettings.persona,
 								name: value

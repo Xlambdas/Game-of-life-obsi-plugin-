@@ -55,8 +55,8 @@ export class AppContextService {
 		});
 	}
 
-	updateUserData(newData: Partial<UserSettings>): void {
-		this.dataService.updateUser(newData);
+	updateUserData(newData: Partial<UserSettings>): Promise<void> {
+		return this.dataService.updateUser(newData);
 	}
 
 	setQuests(quests: Quest[]): void {
@@ -64,5 +64,8 @@ export class AppContextService {
 	}
 	getQuests(): Record<string, Quest> {
 		return this.dataService.getQuests();
+	}
+	addQuest(quest: Quest): Promise<void> {
+		return this.dataService.addQuest(quest);
 	}
 }
