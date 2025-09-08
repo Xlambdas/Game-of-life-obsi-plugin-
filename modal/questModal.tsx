@@ -8,7 +8,7 @@ import { QuestList } from '../components/questList';
 import { CreateQuestModalUI } from '../UI/questUIHelpers';
 
 export class CreateQuestModal extends Modal {
-	constructor(app: App, appContext: AppContextService) {
+	constructor(app: App) {
 		super(app);
 	}
 
@@ -17,16 +17,18 @@ export class CreateQuestModal extends Modal {
 		contentEl.empty();
 		const root = ReactDOM.createRoot(contentEl);
 		const service = AppContextService.getInstance();
+		const handleSuccess = () => {
+			this.close();
+		};
 		root.render(
 			<AppProvider appService={service}>
-				<CreateQuestModalUI />
+				<CreateQuestModalUI onSuccess={handleSuccess} onCancel={() => this.close()} />
 			</AppProvider>
 		);
 	}
 
 	onClose() {
-		const { contentEl } = this;
-		contentEl.empty();
+		this.contentEl.empty();
 	}
 }
 

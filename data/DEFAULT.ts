@@ -237,7 +237,7 @@ export interface BaseTask {
 	description: string;
 	created_at: Date;
 	settings: {
-		type: 'quest' | 'habit';
+		type: TaskType;
 		priority?: DefaultPriority;
 		difficulty?: DefaultDifficulty;
 		category: DefaultCategory;

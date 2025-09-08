@@ -4,11 +4,10 @@ import { QuestForm } from 'components/questForm';
 import { QuestList } from 'components/questList';
 import { AppProvider } from 'context/appContext';
 
-export function CreateQuestModalUI() {
+export function CreateQuestModalUI({ onSuccess, onCancel }: { onSuccess: () => void, onCancel: () => void }) {
 	return (
 			<div className="quest-modal">
-				<h1>Create a New Quest</h1>
-				<QuestForm />
+				<QuestForm onSuccess={onSuccess} onCancel={onCancel} />
 			</div>
 	);
 }

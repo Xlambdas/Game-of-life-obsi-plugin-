@@ -14,7 +14,7 @@ export default class QuestService {
 	}
 
 	async createQuest(app: App): Promise<void> {
-		await new CreateQuestModal(app, this.appContext).open();
+		new CreateQuestModal(app).open();
 	}
 
 	async saveQuest(quest: Quest): Promise<void> {

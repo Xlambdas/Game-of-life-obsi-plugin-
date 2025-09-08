@@ -114,7 +114,8 @@ export class DataService {
 	}
 
 	async addQuest(questData: Partial<Quest>): Promise<void> {
-		const id = Object.keys(this.quests).length + 1;
+		
+		const id = questData.id || `quest_${Object.keys(this.quests).length + 1}`;
 		this.quests[id] = { ...DEFAULT_QUEST, ...questData };
 		await this.save('quests');
 	}
