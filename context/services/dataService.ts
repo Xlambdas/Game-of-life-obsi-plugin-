@@ -125,8 +125,8 @@ export class DataService {
 		await this.save('quests');
 	}
 
-	getQuests(): Record<string, Quest> {
-		return this.quests;
+	async getQuests(): Promise<Record<string, Quest>> {
+		return (await this.quests) || {};
 	}
 
 }

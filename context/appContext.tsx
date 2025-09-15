@@ -3,6 +3,9 @@ import React, { createContext, useContext } from "react";
 import { AppContextService } from "./appContextService";
 import { DataService } from "./services/dataService";
 
+// Responsabilité : exposer via React Context un appService prêt à utiliser pour tous les composants.
+// Ne fait pas de calcul métier complexe.
+
 type AppContextType = {
 	appService: AppContextService;
 };

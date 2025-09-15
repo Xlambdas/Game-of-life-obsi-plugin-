@@ -9,7 +9,7 @@
   },
   "persona": {
     "name": "Hero",
-    "class": "rogue",
+    "class": "user",
     "health": 100,
     "maxHealth": 100,
     "mana": 50,
@@ -63,7 +63,7 @@
   "buffs": {},
   "debuffs": {},
   "achievements": {},
-  "lastLogin": "2025-09-08T16:52:16.499Z",
+  "lastLogin": "2025-09-15T14:48:56.875Z",
   "sessionTime": 0,
   "activityLog": [],
   "notifications": [],

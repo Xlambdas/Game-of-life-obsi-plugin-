@@ -4,6 +4,8 @@ import { Quest } from "data/DEFAULT";
 import { v4 as uuid } from 'uuid';
 import { UserSettings } from "data/DEFAULT";
 
+// gérer la data globale, CRUD, sauvegarde/reload, accès aux services (dataService, questService, etc.).
+// Ce fichier ne doit pas toucher à React ni à l’UI.
 
 export class AppContextService {
 	private static _instance: AppContextService;
@@ -62,10 +64,36 @@ export class AppContextService {
 	setQuests(quests: Quest[]): void {
 		this.dataService.setQuests(quests);
 	}
-	getQuests(): Record<string, Quest> {
+	async getQuests(): Promise<Record<string, Quest>> {
 		return this.dataService.getQuests();
 	}
 	addQuest(quest: Quest): Promise<void> {
 		return this.dataService.addQuest(quest);
+	}
+	async updateQuest(updatedQuest: Quest): Promise<void> {
+		const questsObj = await this.getQuests();
+		const questsArr = Object.values(questsObj);
+		const index = questsArr.findIndex(q => q.id === updatedQuest.id);
+		if (index === -1) {
+			return Promise.reject(new Error(`Quest with id ${updatedQuest.id} does not exist`));
+		}
+		questsArr[index] = updatedQuest;
+		// Convert array back to object for storage
+		const updatedQuestsObj: Record<string, Quest> = {};
+		for (const quest of questsArr) {
+			updatedQuestsObj[quest.id] = quest;
+		}
+		return this.dataService.setQuests(updatedQuestsObj);
+	}
+	// 	const existingQuests = await this.dataService.getQuests();
+	// 	if (!existingQuests[updatedQuest.id]) {
+	// 		return Promise.reject(new Error(`Quest with id ${updatedQuest.id} does not exist`));
+	// 	}
+	// 	existingQuests[updatedQuest.id] = updatedQuest;
+	// 	return this.dataService.setQuests(existingQuests);
+	// }
+	async getQuestById(id: string): Promise<Quest | null> {
+		const quests = await this.getQuests();
+		return quests[id] || null;
 	}
 }

@@ -41,6 +41,23 @@ export default class QuestService {
 		const user = this.appContext.getUser();
 		return user.settings.addedCategories || [];
 	}
+	async toggleQuestCompletion(quest: Quest): Promise<Quest> {
+    // Cloner l'objet pour éviter les mutations directes
+    const updatedQuest: Quest = {
+      ...quest,
+      progression: {
+        ...quest.progression,
+        isCompleted: !quest.progression.isCompleted,
+        progress: !quest.progression.isCompleted ? 100 : 0,
+        completedAt: !quest.progression.isCompleted ? new Date() : null,
+        lastUpdated: new Date(),
+      },
+    };
 
+    // Sauvegarde en DB via AppContextService
+    await this.appContext.updateQuest(updatedQuest);
+
+    return updatedQuest;
+  }
 }
 
