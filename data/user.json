@@ -33,10 +33,10 @@
     }
   },
   "xpDetails": {
-    "xp": 0,
+    "xp": 20,
     "level": 1,
     "maxLevel": 100,
-    "newXp": 0,
+    "newXp": 20,
     "lvlThreshold": 100,
     "freePts": 0
   },
@@ -57,13 +57,16 @@
   "skills": {},
   "habits": {},
   "quests": {},
-  "completedQuests": [],
+  "completedQuests": [
+    "quest_1",
+    "quest_2"
+  ],
   "objectives": [],
   "challenges": [],
   "buffs": {},
   "debuffs": {},
   "achievements": {},
-  "lastLogin": "2025-09-15T14:48:56.875Z",
+  "lastLogin": "2025-09-15T15:34:23.419Z",
   "sessionTime": 0,
   "activityLog": [],
   "notifications": [],

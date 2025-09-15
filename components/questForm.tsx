@@ -5,15 +5,15 @@ import { v4 as uuid } from "uuid";
 import { DEFAULT_QUEST } from "../data/DEFAULT";
 import { Notice } from "obsidian";
 
-export const QuestForm = ({onSuccess, onCancel}: {onSuccess: () => void, onCancel: () => void}) => {
-    const [title, setTitle] = useState("");
-	const [shortDescription, setShortDescription] = useState("");
+export const QuestForm = ({onSuccess, onCancel, existingQuest}: {onSuccess: () => void, onCancel: () => void, existingQuest?: any}) => {
+    const [title, setTitle] = useState(existingQuest?.title || "");
+	const [shortDescription, setShortDescription] = useState(existingQuest?.shortDescription || "");
 	const [showAdvanced, setShowAdvanced] = useState(false);
-	const [description, setDescription] = useState("");
-	const [category, setCategory] = useState("");
-	const [priority, setPriority] = useState("");
-	const [difficulty, setDifficulty] = useState("");
-	const [dueDate, setDueDate] = useState("");
+	const [description, setDescription] = useState(existingQuest?.description || "");
+	const [category, setCategory] = useState(existingQuest?.category || "");
+	const [priority, setPriority] = useState(existingQuest?.priority || "");
+	const [difficulty, setDifficulty] = useState(existingQuest?.difficulty || "");
+	const [dueDate, setDueDate] = useState(existingQuest?.dueDate || "");
 
 	const [error, setError] = useState<{[key: string]: string}>({}); // Initialize error state
 	const appContext = useAppContext();
@@ -44,15 +44,43 @@ export const QuestForm = ({onSuccess, onCancel}: {onSuccess: () => void, onCance
 		}
 		setError({}); // Clear errors if validation passes
 
-		const quests = appContext.getQuests();
-		const existingIds = Object.keys(quests)
-			.map(id => parseInt(id.replace("quest_", ""), 10))
-			.filter(num => !isNaN(num));
-		let nextNum = 1;
-		while (existingIds.includes(nextNum)) {
-			nextNum++;
+		if (existingQuest) {
+			const updatedQuest = {
+			...existingQuest,
+			title: title.trim(),
+			shortDescription: shortDescription.trim(),
+			description: description.trim() || "",
+			settings: {
+				...existingQuest.settings,
+				category: category.trim() || existingQuest.settings.category,
+				priority: (["low","medium","high"].includes(priority.trim()) 
+				? priority.trim()
+				: existingQuest.settings.priority) as "low" | "medium" | "high",
+				difficulty: (["easy", "medium", "hard", "expert"].includes(difficulty.trim())
+					? difficulty.trim()
+					: existingQuest.settings.difficulty) as "easy" | "medium" | "hard" | "expert",
+				isTimeSensitive: !!dueDate,
+			},
+			progression: {
+				...existingQuest.progression,
+				dueDate: dueDate ? new Date(dueDate) : undefined,
+				lastUpdated: new Date(),
+			},
+			};
+			await appContext.updateQuest(updatedQuest);
+			onSuccess();
+			return;
+		} else {
+
+		const questsObj = await appContext.getQuests();
+		const quests = Object.values(questsObj);
+		const usedIds = quests.map((q: any) => q.id);
+		let nextIdNum = 1;
+		let nextId = `quest_${nextIdNum}`;
+		while (usedIds.includes(nextId)) {
+			nextIdNum++;
+			nextId = `quest_${nextIdNum}`;
 		}
-		const nextId = `quest_${nextNum}`;
 
         const newQuest = {
             ...DEFAULT_QUEST,
@@ -81,7 +109,7 @@ export const QuestForm = ({onSuccess, onCancel}: {onSuccess: () => void, onCance
 		new Notice(`Quest "${newQuest.title}" created successfully!`);
 		onSuccess();
     };
-
+	};
     return (
         <form onSubmit={handleSubmit} className="quest-form">
 			{/* Header */}

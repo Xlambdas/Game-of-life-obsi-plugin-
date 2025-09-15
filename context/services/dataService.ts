@@ -129,4 +129,8 @@ export class DataService {
 		return (await this.quests) || {};
 	}
 
+	async deleteAllQuests(): Promise<void> {
+		this.quests = {};
+		await this.save('quests');
+	}
 }

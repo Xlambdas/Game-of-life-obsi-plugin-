@@ -196,6 +196,7 @@ export class selfSettingsTab extends PluginSettingTab {
                     .setButtonText('reset')
                     .onClick(async () => {
                         await this.contextService.updateUserData(DEFAULT_SETTINGS);
+						await this.contextService.deleteAllQuests();
                         this.display();
                     })
                     .buttonEl.style.backgroundColor = '#cb2d06';

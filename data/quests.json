@@ -1,113 +1,24 @@
 {
-  "quest_15": {
-    "id": "quest_15",
-    "title": "test",
-    "shortDescription": "sdc",
+  "quest_1": {
+    "id": "quest_1",
+    "title": "nouvelle quest v2",
+    "shortDescription": "test about create a new",
     "description": "",
-    "created_at": "2025-09-08T15:06:30.986Z",
+    "created_at": "2025-09-15T16:57:09.980Z",
     "settings": {
       "type": "quest",
-      "category": "Social",
+      "category": "Undefined",
       "priority": "low",
       "difficulty": "easy",
       "isSecret": false,
       "isTimeSensitive": false
     },
     "progression": {
-      "isCompleted": false,
-      "completedAt": null,
-      "progress": 0,
-      "dueDate": "1970-01-01T00:00:00.000Z",
+      "isCompleted": true,
+      "completedAt": "2025-09-15T18:53:38.042Z",
+      "progress": 100,
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-09-15T14:59:23.855Z",
-      "subtasks": [],
-      "attempts": 0,
-      "failures": 0,
-      "timeSpentMinutes": 0
-    },
-    "reward": {
-      "XP": 10,
-      "items": [],
-      "attributes": {
-        "strength": 0,
-        "agility": 0,
-        "endurance": 0,
-        "charisma": 0,
-        "wisdom": 0,
-        "perception": 0,
-        "intelligence": 1,
-        "willpower": 0,
-        "spirit": 0,
-        "flow": 0,
-        "reputation": 0,
-        "resilience": 0
-      },
-      "unlocks": [],
-      "badges": [],
-      "title": "Novice Adventurer",
-      "spiritBoost": 0
-    },
-    "requirements": {
-      "level": 0,
-      "previousQuests": [],
-      "attributes": {
-        "strength": 0,
-        "agility": 0,
-        "endurance": 0,
-        "charisma": 0,
-        "wisdom": 0,
-        "perception": 0,
-        "intelligence": 0,
-        "willpower": 0,
-        "spirit": 0,
-        "flow": 0,
-        "reputation": 0,
-        "resilience": 0
-      },
-      "timeAvailableMinutes": 30,
-      "tagsRequired": []
-    },
-    "meta": {
-      "difficulty": "easy",
-      "category": "Undefined",
-      "tags": [],
-      "isSystemQuest": false,
-      "createdBy": "system",
-      "linkedToGoal": "",
-      "estimatedDurationMinutes": 30,
-      "recommendedTimeOfDay": "any",
-      "energyRequired": 0,
-      "willpowerRequired": 0
-    },
-    "failureConsequence": {
-      "description": "You failed the quest. Try again!",
-      "spiritLoss": 0,
-      "XPLoss": 0,
-      "lockoutTimeMinutes": 0
-    },
-    "notes": "This is a system-generated quest to help you get started. Complete it to unlock more features."
-  },
-  "quest_1": {
-    "id": "quest_1",
-    "title": "test",
-    "shortDescription": "category, diff, priority",
-    "description": "",
-    "created_at": "2025-09-08T15:36:14.242Z",
-    "settings": {
-      "type": "quest",
-      "category": "Social",
-      "priority": "medium",
-      "difficulty": "hard",
-      "isSecret": false,
-      "isTimeSensitive": false
-    },
-    "progression": {
-      "isCompleted": false,
-      "completedAt": null,
-      "progress": 0,
-      "dueDate": "1970-01-01T00:00:00.000Z",
-      "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-09-15T14:59:23.164Z",
+      "lastUpdated": "2025-09-15T18:53:38.042Z",
       "subtasks": [],
       "attempts": 0,
       "failures": 0,
@@ -178,9 +89,9 @@
   "quest_2": {
     "id": "quest_2",
     "title": "test",
-    "shortDescription": "rien remplir dans le delire",
+    "shortDescription": "test... vraiment ?",
     "description": "",
-    "created_at": "2025-09-08T15:36:45.445Z",
+    "created_at": "2025-09-15T17:40:31.766Z",
     "settings": {
       "type": "quest",
       "category": "Undefined",
@@ -190,12 +101,11 @@
       "isTimeSensitive": false
     },
     "progression": {
-      "isCompleted": false,
-      "completedAt": null,
-      "progress": 0,
-      "dueDate": "1970-01-01T00:00:00.000Z",
+      "isCompleted": true,
+      "completedAt": "2025-09-15T18:53:40.981Z",
+      "progress": 100,
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-09-15T14:59:24.665Z",
+      "lastUpdated": "2025-09-15T18:53:40.981Z",
       "subtasks": [],
       "attempts": 0,
       "failures": 0,
@@ -265,185 +175,10 @@
   },
   "quest_3": {
     "id": "quest_3",
-    "title": "test date",
-    "shortDescription": "date",
+    "title": "fcgvhbjn",
+    "shortDescription": "dxfghj trdf gv  frtbg dtfhgb",
     "description": "",
-    "created_at": "2025-09-08T15:58:58.296Z",
-    "settings": {
-      "type": "quest",
-      "category": "Undefined",
-      "priority": "low",
-      "difficulty": "easy",
-      "isSecret": false,
-      "isTimeSensitive": false
-    },
-    "progression": {
-      "isCompleted": false,
-      "completedAt": null,
-      "progress": 0,
-      "dueDate": "2025-11-30T00:00:00.000Z",
-      "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-09-15T14:10:37.209Z",
-      "subtasks": [],
-      "attempts": 0,
-      "failures": 0,
-      "timeSpentMinutes": 0
-    },
-    "reward": {
-      "XP": 10,
-      "items": [],
-      "attributes": {
-        "strength": 0,
-        "agility": 0,
-        "endurance": 0,
-        "charisma": 0,
-        "wisdom": 0,
-        "perception": 0,
-        "intelligence": 1,
-        "willpower": 0,
-        "spirit": 0,
-        "flow": 0,
-        "reputation": 0,
-        "resilience": 0
-      },
-      "unlocks": [],
-      "badges": [],
-      "title": "Novice Adventurer",
-      "spiritBoost": 0
-    },
-    "requirements": {
-      "level": 0,
-      "previousQuests": [],
-      "attributes": {
-        "strength": 0,
-        "agility": 0,
-        "endurance": 0,
-        "charisma": 0,
-        "wisdom": 0,
-        "perception": 0,
-        "intelligence": 0,
-        "willpower": 0,
-        "spirit": 0,
-        "flow": 0,
-        "reputation": 0,
-        "resilience": 0
-      },
-      "timeAvailableMinutes": 30,
-      "tagsRequired": []
-    },
-    "meta": {
-      "difficulty": "easy",
-      "category": "Undefined",
-      "tags": [],
-      "isSystemQuest": false,
-      "createdBy": "system",
-      "linkedToGoal": "",
-      "estimatedDurationMinutes": 30,
-      "recommendedTimeOfDay": "any",
-      "energyRequired": 0,
-      "willpowerRequired": 0
-    },
-    "failureConsequence": {
-      "description": "You failed the quest. Try again!",
-      "spiritLoss": 0,
-      "XPLoss": 0,
-      "lockoutTimeMinutes": 0
-    },
-    "notes": "This is a system-generated quest to help you get started. Complete it to unlock more features."
-  },
-  "quest_4": {
-    "id": "quest_4",
-    "title": "test descr",
-    "shortDescription": "this is a test for the full description",
-    "description": "test zeyqfp iuz ef\nzr o^v j\nzrej vg\nôZJ\nVGR\n<ZRKP \nFV z\n\n\nök \nOJPJE%RG ?L%KS?ETR%GH OER\n\n\nOER GPOERQppordj gmoqerg\nùqpeorj gF",
-    "created_at": "2025-09-08T16:46:08.452Z",
-    "settings": {
-      "type": "quest",
-      "category": "Undefined",
-      "priority": "high",
-      "difficulty": "medium",
-      "isSecret": false,
-      "isTimeSensitive": false
-    },
-    "progression": {
-      "isCompleted": false,
-      "completedAt": null,
-      "progress": 0,
-      "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-09-15T14:59:22.055Z",
-      "subtasks": [],
-      "attempts": 0,
-      "failures": 0,
-      "timeSpentMinutes": 0
-    },
-    "reward": {
-      "XP": 10,
-      "items": [],
-      "attributes": {
-        "strength": 0,
-        "agility": 0,
-        "endurance": 0,
-        "charisma": 0,
-        "wisdom": 0,
-        "perception": 0,
-        "intelligence": 1,
-        "willpower": 0,
-        "spirit": 0,
-        "flow": 0,
-        "reputation": 0,
-        "resilience": 0
-      },
-      "unlocks": [],
-      "badges": [],
-      "title": "Novice Adventurer",
-      "spiritBoost": 0
-    },
-    "requirements": {
-      "level": 0,
-      "previousQuests": [],
-      "attributes": {
-        "strength": 0,
-        "agility": 0,
-        "endurance": 0,
-        "charisma": 0,
-        "wisdom": 0,
-        "perception": 0,
-        "intelligence": 0,
-        "willpower": 0,
-        "spirit": 0,
-        "flow": 0,
-        "reputation": 0,
-        "resilience": 0
-      },
-      "timeAvailableMinutes": 30,
-      "tagsRequired": []
-    },
-    "meta": {
-      "difficulty": "easy",
-      "category": "Undefined",
-      "tags": [],
-      "isSystemQuest": false,
-      "createdBy": "system",
-      "linkedToGoal": "",
-      "estimatedDurationMinutes": 30,
-      "recommendedTimeOfDay": "any",
-      "energyRequired": 0,
-      "willpowerRequired": 0
-    },
-    "failureConsequence": {
-      "description": "You failed the quest. Try again!",
-      "spiritLoss": 0,
-      "XPLoss": 0,
-      "lockoutTimeMinutes": 0
-    },
-    "notes": "This is a system-generated quest to help you get started. Complete it to unlock more features."
-  },
-  "quest_5": {
-    "id": "quest_5",
-    "title": "test notice",
-    "shortDescription": "this is a test for notice feedback",
-    "description": "",
-    "created_at": "2025-09-08T16:48:22.529Z",
+    "created_at": "2025-09-15T17:51:06.774Z",
     "settings": {
       "type": "quest",
       "category": "Undefined",
@@ -457,94 +192,7 @@
       "completedAt": null,
       "progress": 0,
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-09-15T14:10:36.454Z",
-      "subtasks": [],
-      "attempts": 0,
-      "failures": 0,
-      "timeSpentMinutes": 0
-    },
-    "reward": {
-      "XP": 10,
-      "items": [],
-      "attributes": {
-        "strength": 0,
-        "agility": 0,
-        "endurance": 0,
-        "charisma": 0,
-        "wisdom": 0,
-        "perception": 0,
-        "intelligence": 1,
-        "willpower": 0,
-        "spirit": 0,
-        "flow": 0,
-        "reputation": 0,
-        "resilience": 0
-      },
-      "unlocks": [],
-      "badges": [],
-      "title": "Novice Adventurer",
-      "spiritBoost": 0
-    },
-    "requirements": {
-      "level": 0,
-      "previousQuests": [],
-      "attributes": {
-        "strength": 0,
-        "agility": 0,
-        "endurance": 0,
-        "charisma": 0,
-        "wisdom": 0,
-        "perception": 0,
-        "intelligence": 0,
-        "willpower": 0,
-        "spirit": 0,
-        "flow": 0,
-        "reputation": 0,
-        "resilience": 0
-      },
-      "timeAvailableMinutes": 30,
-      "tagsRequired": []
-    },
-    "meta": {
-      "difficulty": "easy",
-      "category": "Undefined",
-      "tags": [],
-      "isSystemQuest": false,
-      "createdBy": "system",
-      "linkedToGoal": "",
-      "estimatedDurationMinutes": 30,
-      "recommendedTimeOfDay": "any",
-      "energyRequired": 0,
-      "willpowerRequired": 0
-    },
-    "failureConsequence": {
-      "description": "You failed the quest. Try again!",
-      "spiritLoss": 0,
-      "XPLoss": 0,
-      "lockoutTimeMinutes": 0
-    },
-    "notes": "This is a system-generated quest to help you get started. Complete it to unlock more features."
-  },
-  "quest_6": {
-    "id": "quest_6",
-    "title": "test V2 notice",
-    "shortDescription": "this is the second version of the notice test",
-    "description": "",
-    "created_at": "2025-09-08T16:49:11.830Z",
-    "settings": {
-      "type": "quest",
-      "category": "Undefined",
-      "priority": "low",
-      "difficulty": "easy",
-      "isSecret": false,
-      "isTimeSensitive": false
-    },
-    "progression": {
-      "isCompleted": false,
-      "completedAt": null,
-      "progress": 0,
-      "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-09-15T13:57:26.230Z",
+      "lastUpdated": "2025-09-15T18:53:51.661Z",
       "subtasks": [],
       "attempts": 0,
       "failures": 0,

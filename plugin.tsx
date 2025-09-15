@@ -12,7 +12,7 @@ export default class GOL extends Plugin {
 
 	async onload() {
 		console.warn('Game of Life plugin loaded');
-		await AppContextService.init(this.app.vault);
+		await AppContextService.init(this.app.vault, this.app);
 		const appContext = AppContextService.getInstance();
 		this.viewService = new ViewService(this.app);
 		this.viewService.registerViews(this);

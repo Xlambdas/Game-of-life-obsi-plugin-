@@ -5,6 +5,7 @@ import { addXP } from "../context/services/xpService";
 import { Notice } from "obsidian";
 import QuestService from "../context/services/questService";
 import { QuestSideView } from "./questSideView";
+import { ModifyQuestModal } from "modal/questModal";
 
 interface QuestListProps {
 	quests: Quest[];
@@ -23,6 +24,20 @@ export const QuestList: React.FC<QuestListProps> = ({ quests, onQuestUpdate, onU
 	const [filter, setFilter] = useState("");
 	const [activeTab, setActiveTab] = useState<"active" | "completed" | "all">("active");
 	const [sortBy, setSortBy] = useState<"priority" | "xp" | "difficulty" | "date">("priority");
+	useEffect(() => {
+		const savedOpen = localStorage.getItem("questListOpen");
+		const savedFilter = localStorage.getItem("questListFilter");
+		const savedTab = localStorage.getItem("questListActiveTab");
+		const savedSort = localStorage.getItem("questListSortBy");
+		if (savedOpen) setIsOpen(savedOpen === "true");
+		if (savedFilter) setFilter(savedFilter);
+		if (savedTab === "active" || savedTab === "completed" || savedTab === "all") {
+			setActiveTab(savedTab);
+		}
+		if (savedSort === "priority" || savedSort === "xp" || savedSort === "difficulty" || savedSort === "date") {
+			setSortBy(savedSort);
+		}
+	}, []);
 
 	useEffect(() => {
 		setQuestState(quests); // sync quand props changent
@@ -32,6 +47,21 @@ export const QuestList: React.FC<QuestListProps> = ({ quests, onQuestUpdate, onU
 		const details = e.currentTarget;
 		setIsOpen(details.open);
 		localStorage.setItem("questListOpen", details.open ? "true" : "false");
+	};
+
+	const handleSetFilter = (value: string) => {
+		setFilter(value);
+		localStorage.setItem("questListFilter", value);
+	};
+
+	const handleSetActiveTab = (tab: "active" | "completed" | "all") => {
+		setActiveTab(tab);
+		localStorage.setItem("questListActiveTab", tab);
+	};
+
+	const handleSetSortBy = (sort: "priority" | "xp" | "difficulty" | "date") => {
+		setSortBy(sort);
+		localStorage.setItem("questListSortBy", sort);
 	};
 
 	// Gestion complétion
@@ -87,7 +117,8 @@ export const QuestList: React.FC<QuestListProps> = ({ quests, onQuestUpdate, onU
 	};
 
 	const handleModifyQuest = (quest: Quest) => {
-		console.log("TODO: open modal to edit quest", quest);
+		new Notice("Modify quest feature coming soon!");
+		new ModifyQuestModal(appService.getApp(), quest).open();
 	};
 
 	// Filtrage & tri (sur questState uniquement)
@@ -130,12 +161,12 @@ export const QuestList: React.FC<QuestListProps> = ({ quests, onQuestUpdate, onU
 			isOpen={isOpen}
 			filter={filter}
 			activeTab={activeTab}
+			sortBy={sortBy}
 			handleToggle={handleToggle}
 			handleCompleteQuest={handleCompleteQuest}
-			setFilter={setFilter}
-			setActiveTab={setActiveTab}
-			setSortBy={setSortBy}
-			sortBy={sortBy}
+			setFilter={handleSetFilter}
+			setActiveTab={handleSetActiveTab}
+			setSortBy={handleSetSortBy}
 			handleModifyQuest={handleModifyQuest}
 		/>
 	);

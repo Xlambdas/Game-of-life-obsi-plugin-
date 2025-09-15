@@ -3,6 +3,7 @@ import { DataService } from "./services/dataService";
 import { Quest } from "data/DEFAULT";
 import { v4 as uuid } from 'uuid';
 import { UserSettings } from "data/DEFAULT";
+import { App } from "obsidian";
 
 // gérer la data globale, CRUD, sauvegarde/reload, accès aux services (dataService, questService, etc.).
 // Ce fichier ne doit pas toucher à React ni à l’UI.
@@ -10,13 +11,19 @@ import { UserSettings } from "data/DEFAULT";
 export class AppContextService {
 	private static _instance: AppContextService;
 	private dataService: DataService;
+	private app: App;
 
-	private constructor(vault: Vault) {
+	private constructor(vault: Vault, app: App) {
 		this.dataService = new DataService(vault);
+		this.app = app;
 	}
 
-	static async init(vault: Vault) {
-		const instance = new AppContextService(vault);
+	public getApp(): App {
+		return this.app;
+	}
+
+	static async init(vault: Vault, app: App) {
+		const instance = new AppContextService(vault, app);
 		await instance.dataService.load();
 		this._instance = instance;
 	}
@@ -95,5 +102,8 @@ export class AppContextService {
 	async getQuestById(id: string): Promise<Quest | null> {
 		const quests = await this.getQuests();
 		return quests[id] || null;
+	}
+	async deleteAllQuests(): Promise<void> {
+		return this.dataService.deleteAllQuests();
 	}
 }
