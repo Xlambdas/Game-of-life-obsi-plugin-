@@ -4,25 +4,40 @@ import { AppContextService } from './context/appContextService';
 import { CreateQuestModal } from './modal/questModal';
 import { selfSettingsTab } from './UI/settingsTab';
 import { ViewService } from './context/services/viewService';
+import { CreateHabitModal } from 'modal/habitModal';
+import { HabitService } from 'context/services/habitService';
 
 
 export default class GOL extends Plugin {
 	private viewService!: ViewService;
 	private appService!: AppContextService;
+	private habitService!: HabitService;
 
 	async onload() {
 		console.warn('Game of Life plugin loaded');
+
+		// Initialize data service and app context
 		await AppContextService.init(this.app.vault, this.app);
-		const appContext = AppContextService.getInstance();
+		this.appService = AppContextService.getInstance();
+
+		// Initialize services
+		this.habitService = new HabitService(this.appService);
+
+		// Initialize view service
 		this.viewService = new ViewService(this.app);
 		this.viewService.registerViews(this);
 
+		// Add ribbon icons and commands
+		this.addCommands();
+	}
+
+	private addCommands() {
 
 		this.addRibbonIcon("dice", "Open sideView", () => {
 			this.viewService.openSideView();
 		});
-		this.addRibbonIcon("plus", "Create New Quest", () => {
-			new CreateQuestModal(this.app).open();
+		this.addRibbonIcon("plus", "Create New Habit", () => {
+			new CreateHabitModal(this.app).open();
 		});
 		this.addCommand({
 			id: 'create-new-quest',
@@ -32,10 +47,18 @@ export default class GOL extends Plugin {
 			}
 		});
 		this.addCommand({
+			id: 'create-new-habit',
+			name: 'Create New Habit',
+			callback: () => {
+				new CreateHabitModal(this.app).open();
+			}
+		});
+
+		this.addCommand({
 			id: 'show-user-data',
 			name: 'Show User Data',
 			callback: () => {
-				const userData = appContext.getUser();
+				const userData = this.appService.getUser();
 				console.log(`User Data: ${JSON.stringify(userData, null, 2)}`);
 			}
 		});
@@ -43,7 +66,7 @@ export default class GOL extends Plugin {
 			id: 'reload-user-data',
 			name: 'Reload User Data',
 			callback: () => {
-				appContext.reloadUserData();
+				this.appService.reloadUserData();
 				console.log('User data reloaded');
 			}
 		});

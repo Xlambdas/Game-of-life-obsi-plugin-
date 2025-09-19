@@ -1,9 +1,6 @@
-import { Vault } from "obsidian";
+import { Vault, App } from "obsidian";
 import { DataService } from "./services/dataService";
-import { Quest } from "data/DEFAULT";
-import { v4 as uuid } from 'uuid';
-import { UserSettings } from "data/DEFAULT";
-import { App } from "obsidian";
+import { Habit, Quest, UserSettings } from "data/DEFAULT";
 
 // gérer la data globale, CRUD, sauvegarde/reload, accès aux services (dataService, questService, etc.).
 // Ce fichier ne doit pas toucher à React ni à l’UI.
@@ -22,6 +19,7 @@ export class AppContextService {
 		return this.app;
 	}
 
+	// Singleton init
 	static async init(vault: Vault, app: App) {
 		const instance = new AppContextService(vault, app);
 		await instance.dataService.load();
@@ -35,24 +33,30 @@ export class AppContextService {
 		return this._instance;
 	}
 
-	// data management methods
-	async get(key: 'user' | 'quests') {
-		if (key !== 'user' && key !== 'quests') {
-			throw new Error(`Invalid key: ${key}. Expected 'user' or 'quests'.`);
+	// ----------------------
+	// Generic access
+	async get(key: 'user' | 'quests' | 'habits'): Promise<any> {
+		switch (key) {
+			case "user":
+				return this.dataService.getUser();
+			case "quests":
+				return this.dataService.getQuests();
+			case "habits":
+				return this.dataService.getHabits();
+			default:
+				throw new Error(`Invalid key: ${key}. Expected 'user', 'quests' or 'habits'.`);
 		}
-		if (key === 'quests') {
-			return this.dataService.getQuests();
-		}
-		if (key === 'user') {
-			return this.dataService.getUser();
-		}
-		throw new Error(`Unknown key: ${key}`);
 	}
 
+	// ----------------------
+	// User
 	getUser(): UserSettings {
 		return this.dataService.getUser();
 	}
 
+	saveUser(user: UserSettings): void {
+		this.dataService.saveUser(user);
+	}
 
 	setUserData(key: string, value: any): void {
 		this.dataService.setUser(key, value);
@@ -68,42 +72,59 @@ export class AppContextService {
 		return this.dataService.updateUser(newData);
 	}
 
-	setQuests(quests: Quest[]): void {
-		this.dataService.setQuests(quests);
-	}
+	// -----------------------
+	// Quests
 	async getQuests(): Promise<Record<string, Quest>> {
 		return this.dataService.getQuests();
 	}
+
 	addQuest(quest: Quest): Promise<void> {
 		return this.dataService.addQuest(quest);
 	}
+
 	async updateQuest(updatedQuest: Quest): Promise<void> {
-		const questsObj = await this.getQuests();
-		const questsArr = Object.values(questsObj);
-		const index = questsArr.findIndex(q => q.id === updatedQuest.id);
-		if (index === -1) {
-			return Promise.reject(new Error(`Quest with id ${updatedQuest.id} does not exist`));
+		const quests = await this.getQuests();
+		if (!quests[updatedQuest.id]) {
+			throw new Error(`Quest with id ${updatedQuest.id} does not exist`);
 		}
-		questsArr[index] = updatedQuest;
-		// Convert array back to object for storage
-		const updatedQuestsObj: Record<string, Quest> = {};
-		for (const quest of questsArr) {
-			updatedQuestsObj[quest.id] = quest;
-		}
-		return this.dataService.setQuests(updatedQuestsObj);
+		quests[updatedQuest.id] = updatedQuest;
+		await this.dataService.setQuests(quests);
 	}
-	// 	const existingQuests = await this.dataService.getQuests();
-	// 	if (!existingQuests[updatedQuest.id]) {
-	// 		return Promise.reject(new Error(`Quest with id ${updatedQuest.id} does not exist`));
-	// 	}
-	// 	existingQuests[updatedQuest.id] = updatedQuest;
-	// 	return this.dataService.setQuests(existingQuests);
-	// }
+
 	async getQuestById(id: string): Promise<Quest | null> {
 		const quests = await this.getQuests();
 		return quests[id] || null;
 	}
+
 	async deleteAllQuests(): Promise<void> {
 		return this.dataService.deleteAllQuests();
 	}
+
+	// -----------------------
+	// Habits
+	async getHabits(): Promise<Record<string, Habit>> {
+		return this.dataService.getHabits();
+	}
+
+	addHabit(habit: Habit): Promise<void> {
+		return this.dataService.addHabit(habit);
+	}
+
+	async updateHabit(updatedHabit: Habit): Promise<void> {
+		const habits = await this.getHabits();
+		if (!habits[updatedHabit.id]) {
+			throw new Error(`Habit with id ${updatedHabit.id} does not exist`);
+		}
+		habits[updatedHabit.id] = updatedHabit;
+		await this.dataService.setHabits(habits);
+	}
+
+	async getHabitById(id: string): Promise<Habit | null> {
+		const habits = await this.getHabits();
+		return habits[id] || null;
+	}
+	async deleteAllHabits(): Promise<void> {
+		return this.dataService.deleteAllHabits();
+	}
+
 }

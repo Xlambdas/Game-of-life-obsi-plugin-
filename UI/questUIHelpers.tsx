@@ -14,10 +14,10 @@ export function CreateQuestModalUI({ onSuccess, onCancel }: { onSuccess: () => v
 	);
 }
 
-export function ModifyQuestModalUI({ quest, onSuccess, onCancel }: { quest: Quest, onSuccess: () => void, onCancel: () => void }) {
+export function ModifyQuestModalUI({ quest, onSuccess, onDelete }: { quest: Quest, onSuccess: () => void, onDelete: () => void }) {
 	return (
 			<div className="quest-modal">
-				<QuestForm existingQuest={quest} onSuccess={onSuccess} onCancel={onCancel} />
+				<QuestForm existingQuest={quest} onSuccess={onSuccess} onDelete={onDelete} />
 			</div>
 	);
 }

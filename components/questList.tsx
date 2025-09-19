@@ -17,7 +17,6 @@ export const QuestList: React.FC<QuestListProps> = ({ quests, onQuestUpdate, onU
 	const appService = useAppContext();
 	const questService = new QuestService(appService);
 
-	// ✅ Une seule source de vérité
 	const [questState, setQuestState] = useState<Quest[]>(quests);
 
 	const [isOpen, setIsOpen] = useState(false);

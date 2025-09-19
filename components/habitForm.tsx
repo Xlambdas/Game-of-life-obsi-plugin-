@@ -1,25 +1,24 @@
-// this is the form to create a new quest.
-import React, { useState } from "react";
-import { useAppContext } from "../context/appContext";
-import { v4 as uuid } from "uuid";
-import { DEFAULT_QUEST } from "../data/DEFAULT";
-import { Notice } from "obsidian";
+import { DEFAULT_HABIT, Habit } from 'data/DEFAULT';
+import { useState } from 'react';
+import { useAppContext } from 'context/appContext';
+import { Notice } from 'obsidian';
 
-export const QuestForm = ({onSuccess, onCancel, onDelete, existingQuest}: {onSuccess: () => void, onCancel?: () => void, onDelete?: () => void, existingQuest?: any}) => {
-    const [title, setTitle] = useState(existingQuest?.title || "");
-	const [shortDescription, setShortDescription] = useState(existingQuest?.shortDescription || "");
+export const HabitForm = ({onSuccess, onCancel, onDelete, existingHabit}: {onSuccess: () => void, onCancel?: () => void, onDelete?: () => void, existingHabit?: Habit}) => {
+	const [title, setTitle] = useState(existingHabit?.title || "");
+	const [shortDescription, setShortDescription] = useState(existingHabit?.shortDescription || "");
+	const [interval, setInterval] = useState(existingHabit?.recurrence.interval || 1);
+	const [unit, setUnit] = useState(existingHabit?.recurrence.unit || "day");
 	const [showAdvanced, setShowAdvanced] = useState(false);
-	const [description, setDescription] = useState(existingQuest?.description || "");
-	const [category, setCategory] = useState(existingQuest?.category || "");
-	const [priority, setPriority] = useState(existingQuest?.priority || "");
-	const [difficulty, setDifficulty] = useState(existingQuest?.difficulty || "");
-	const [dueDate, setDueDate] = useState(existingQuest?.dueDate || "");
+	const [description, setDescription] = useState(existingHabit?.description || "");
+	const [category, setCategory] = useState(existingHabit?.settings.category || "");
+	const [priority, setPriority] = useState(existingHabit?.settings.priority || "");
+	const [difficulty, setDifficulty] = useState(existingHabit?.settings.difficulty || "");
 
 	const [error, setError] = useState<{[key: string]: string}>({}); // Initialize error state
 	const appContext = useAppContext();
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
+	const handleSubmit = async (e: React.FormEvent) => {
+		e.preventDefault();
 		const newError: {[key: string]: string} = {};
 		if (!title.trim()) {
 			newError.title = "Title is required.";
@@ -27,15 +26,8 @@ export const QuestForm = ({onSuccess, onCancel, onDelete, existingQuest}: {onSuc
 		if (!shortDescription.trim()) {
 			newError.shortDescription = "Short description is required.";
 		}
-
-		if (dueDate) {
-			const today = new Date();
-			today.setHours(0, 0, 0, 0);
-			const dueDateObj = new Date(dueDate);
-			dueDateObj.setHours(0, 0, 0, 0);
-			if (dueDateObj < today) {
-				newError.dueDate = "Due date must be today or in the future.";
-			}
+		if (!interval || isNaN(interval) || interval < 1) {
+			newError.interval = "Interval must be a positive number.";
 		}
 		if (Object.keys(newError).length > 0) {
 			setError(newError);
@@ -44,77 +36,52 @@ export const QuestForm = ({onSuccess, onCancel, onDelete, existingQuest}: {onSuc
 		}
 		setError({}); // Clear errors if validation passes
 
-		if (existingQuest) {
-			const updatedQuest = {
-			...existingQuest,
+		const habitsObj = await appContext.getHabits();
+		const habits = Object.values(habitsObj);
+		const usedIds = habits.map((h: any) => h.id);
+		let nextIdNum = 1;
+		let nextId = `habit_${nextIdNum}`;
+		while (usedIds.includes(nextId)) {
+			nextIdNum++;
+			nextId = `habit_${nextIdNum}`;
+		}
+
+        const newHabit = {
+			...DEFAULT_HABIT,
+			id: nextId,
 			title: title.trim(),
 			shortDescription: shortDescription.trim(),
 			description: description.trim() || "",
 			settings: {
-				...existingQuest.settings,
-				category: category.trim() || existingQuest.settings.category,
+				...DEFAULT_HABIT.settings,
+				category: category.trim() || DEFAULT_HABIT.settings.category,
 				priority: (["low","medium","high"].includes(priority.trim())
 				? priority.trim()
-				: existingQuest.settings.priority) as "low" | "medium" | "high",
+				: DEFAULT_HABIT.settings.priority) as "low" | "medium" | "high",
 				difficulty: (["easy", "medium", "hard", "expert"].includes(difficulty.trim())
 					? difficulty.trim()
-					: existingQuest.settings.difficulty) as "easy" | "medium" | "hard" | "expert",
-				isTimeSensitive: !!dueDate,
+					: DEFAULT_HABIT.settings.difficulty) as "easy" | "medium" | "hard" | "expert",
 			},
-			progression: {
-				...existingQuest.progression,
-				dueDate: dueDate ? new Date(dueDate) : undefined,
-				lastUpdated: new Date(),
-			},
-			};
-			await appContext.updateQuest(updatedQuest);
-			onSuccess();
-			return;
-		} else {
+			recurrence: {
+				...DEFAULT_HABIT.recurrence,
+				interval: interval,
+				unit: unit as "days" | "weeks" | "months" | "years",
+			}
+		};
 
-		const questsObj = await appContext.getQuests();
-		const quests = Object.values(questsObj);
-		const usedIds = quests.map((q: any) => q.id);
-		let nextIdNum = 1;
-		let nextId = `quest_${nextIdNum}`;
-		while (usedIds.includes(nextId)) {
-			nextIdNum++;
-			nextId = `quest_${nextIdNum}`;
-		}
+		await appContext.addHabit(newHabit);
+		setTitle(""); // reset le champ
+		console.log("Habit created:", newHabit);
+		new Notice(`Habit "${newHabit.title}" created successfully!`);
 
-        const newQuest = {
-            ...DEFAULT_QUEST,
-            id: nextId,
-            title: title.trim(),
-			shortDescription: shortDescription.trim(),
-			description: description.trim() || "",
-            created_at: new Date(),
-			settings: {
-				...DEFAULT_QUEST.settings,
-				category: category.trim() || DEFAULT_QUEST.settings.category,
-				priority: (["low", "medium", "high"].includes(priority.trim()) ? priority.trim() : DEFAULT_QUEST.settings.priority) as "low" | "medium" | "high",
-				difficulty: (["easy", "medium", "hard", "expert"].includes(difficulty.trim()) ? difficulty.trim() : DEFAULT_QUEST.settings.difficulty) as "easy" | "medium" | "hard" | "expert",
-				isTimeSensitive: dueDate ? true : false,
-			},
-			progression: {
-				...DEFAULT_QUEST.progression,
-				dueDate: dueDate ? new Date(dueDate) : undefined,
-				lastUpdated: new Date(),
-			},
-        };
-
-        await appContext.addQuest(newQuest);
-        setTitle(""); // reset le champ
-		console.log("Quest created:", newQuest);
-		new Notice(`Quest "${newQuest.title}" created successfully!`);
 		onSuccess();
-    };
 	};
-    return (
-        <form onSubmit={handleSubmit} className="quest-form">
+
+	return (
+		<form onSubmit={handleSubmit} className="quest-form">
 			{/* Header */}
 			<div className="form-header">
-				<h1>Create a New Quest</h1>
+				<h1>Create a new Habit</h1>
 				<label className="switch" title="Afficher/Masquer les paramètres supplémentaires">
 					<input
 						type="checkbox"
@@ -122,9 +89,6 @@ export const QuestForm = ({onSuccess, onCancel, onDelete, existingQuest}: {onSuc
 						onChange={(e) => setShowAdvanced(e.target.checked)}
 					/>
 					<span className="slider round"></span>
-					{/* <span className="tooltip-text" style={{ visibility: "hidden", position: "absolute" }}>
-						Show/hide supplementary settings
-					</span> */}
 				</label>
 			</div>
 			{/* Title */}
@@ -188,9 +152,42 @@ export const QuestForm = ({onSuccess, onCancel, onDelete, existingQuest}: {onSuc
 						<option value="Exploration">Exploration</option>
 					</select>
 				</label>
+				<hr className='separator'></hr>
+				<h3>Recurrence</h3>
+				<label className="label-select">
+					<span>Interval</span>
+					<input
+						type="number"
+						name="recurrence"
+						placeholder="1, 2, 3..."
+						className="input"
+						value={interval}
+						onChange={(e) => {
+							setInterval(Number(e.target.value))
+							if (error.interval) {
+								setError((prev) => ({ ...prev, interval: "" }));
+							}
+						}}
+						min={1}
+					/>
+				</label>
+				<label className="label-select">
+					<span>Unit</span>
+					<select
+						name="recurrenceUnit"
+						className="input"
+					>
+						<option value="days">Day(s)</option>
+						<option value="weeks">Week(s)</option>
+						<option value="months">Month(s)</option>
+						<option value="years">Year(s)</option>
+					</select>
+	 			</label>
+				<p className="helper-text">
+					Set how often you want to perform this habit. Consistency is key to building lasting habits!
+				</p>
 			</div>
-
-
+			
 			{/* Advanced Settings */}
 			{showAdvanced && (
 				<div className="form-section">
@@ -236,32 +233,13 @@ export const QuestForm = ({onSuccess, onCancel, onDelete, existingQuest}: {onSuc
 							<option value="expert">Expert</option>
 						</select>
 					</label>
-					<label className="label-select">
-						<span>Due Date</span>
-						<input
-							type="date"
-							name="dueDate"
-							className={error.dueDate ? "input-error" : "date-input"}
-							value={dueDate}
-							onChange={e => {
-								setDueDate(e.target.value);
-								if (error.dueDate) {
-									setError((prev) => ({ ...prev, dueDate: "" }));
-								}
-							}}
-						/>
-					</label>
-					<p className="helper-text">
-						Set a deadline to keep your quest on track. A clear end date helps you stay focused and motivated!
-					</p>
-
 				</div>
 			)}
 			{/* Footer */}
 			<div className="form-footer">
 				<span className="required-note">* Required fields</span>
                 <div className="button-group">
-					{onCancel && (
+                    {onCancel && (
 						<button type="button" onClick={onCancel}>Cancel</button>
 					)}
 					{onDelete && (
@@ -271,5 +249,5 @@ export const QuestForm = ({onSuccess, onCancel, onDelete, existingQuest}: {onSuc
                 </div>
 			</div>
         </form>
-    );
+	)
 };

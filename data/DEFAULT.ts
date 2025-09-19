@@ -209,7 +209,7 @@ export const DEFAULT_PRIORITIES = ['low', 'medium', 'high'] as const;
 export type DefaultPriority = typeof DEFAULT_PRIORITIES[number];
 export const DEFAULT_DIFFICULTIES = ['easy', 'medium', 'hard', 'expert'] as const;
 export type DefaultDifficulty = typeof DEFAULT_DIFFICULTIES[number];
-export const DEFAULT_RECURRENCES = ['days', 'weeks', 'months'] as const;
+export const DEFAULT_RECURRENCES = ['days', 'weeks', 'months', 'years'] as const;
 export type DefaultRecurrence = typeof DEFAULT_RECURRENCES[number];
 
 export type AttributeBlock = {
@@ -305,7 +305,7 @@ export interface Quest extends BaseTask {
 }
 
 export const DEFAULT_QUEST: Quest = {
-	id: "Quest_0",
+	id: "Quest_0", // Auto-generated
 	title: "Tutorial Quest",
 	shortDescription: "Learn the basics of the game.",
 	description: "This is your first quest. Complete it to understand how the game works.",
@@ -505,6 +505,21 @@ export interface Habit extends BaseTask {
 		}[];
 		isCompletedToday: boolean; // Auto generated based on history
 		nextDate: Date; // Auto generated based on recurrence
+		lastCompletedDate: Date; // Auto generated based on history
+	};
+	progress: {
+		level: number; // habit level progression
+		XP: number;
+		goal: number; // e.g. ml of water
+		currentValue: number; // track current amount vs goal
+		milestones: {
+			target: number; // e.g. 7 days streak
+			reward: {
+				XP: number;
+				attributes?: Partial<AttributeBlock>;
+				items?: string[];
+			};
+		}[];
 	};
 	penalty?: {
 		XPLoss: number;
@@ -542,6 +557,17 @@ export const DEFAULT_HABIT: Habit = {
 		history: [],
 		isCompletedToday: false, // Auto generated
 		nextDate: new Date(), // Auto generated based on recurrence
+		lastCompletedDate: new Date(0) // Auto generated
+	},
+	progress: {
+		level: 1, // habit level progression
+		XP: 0,
+		goal: 2000, // e.g. ml of water
+		currentValue: 0, // track current amount vs goal
+		milestones: [
+			{ target: 7, reward: { XP: 20, items: ["Hydration Badge"] } }, // 7 days streak
+			{ target: 30, reward: { XP: 100, attributes: { endurance: 2 } } },
+		],
 	},
 	penalty: {
 		XPLoss: 0,

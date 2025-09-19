@@ -1,4 +1,4 @@
-import { App, Modal } from 'obsidian';
+import { App, Modal, Notice } from 'obsidian';
 import React from 'react';
 import * as ReactDOM from 'react-dom/client';
 // from files :
@@ -45,13 +45,28 @@ export class ModifyQuestModal extends Modal {
 		contentEl.empty();
 		const root = ReactDOM.createRoot(contentEl);
 		const service = AppContextService.getInstance();
+		const dataService = service['dataService'];
 		const handleSuccess = () => {
 			this.close();
 			onQuestUpdate?.(this.quest);
 		};
+		const handleDelete = async () => {
+			if (confirm('Are you sure you want to delete this quest? This action cannot be undone.')) {
+				try {
+					const quests: Quest[] = await dataService.loadAllQuests();
+					const updatedQuests = quests.filter((q: Quest) => q.id !== this.quest.id);
+					await dataService.saveAllQuests(updatedQuests);
+					new Notice('Quest deleted successfully');
+
+				} catch (error) {
+					console.error('Error deleting quest:', error);
+					new Notice('Failed to delete quest');
+				}
+			}
+		};
 		root.render(
 			<AppProvider appService={service}>
-				<ModifyQuestModalUI quest={this.quest} onSuccess={handleSuccess} onCancel={() => this.close()} />
+				<ModifyQuestModalUI quest={this.quest} onSuccess={handleSuccess} onDelete={handleDelete} />
 			</AppProvider>
 		);
 	}

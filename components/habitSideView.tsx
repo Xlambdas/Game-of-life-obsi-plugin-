@@ -1,33 +1,33 @@
 import React from "react";
-import { Quest } from "../data/DEFAULT";
+import { Habit } from "../data/DEFAULT";
 
-interface QuestSideViewProps {
-	filteredQuests: Quest[];
+interface HabitSideViewProps {
+	filteredHabits: Habit[];
 	isOpen: boolean;
 	filter: string;
 	activeTab: "active" | "completed" | "all";
 	sortBy: "priority" | "xp" | "difficulty" | "date";
 	handleToggle: (e: React.SyntheticEvent<HTMLDetailsElement, Event>) => void;
-	handleCompleteQuest: (quest: Quest, completed: boolean) => void;
+	handleCompleteHabit: (habit: Habit, completed: boolean) => void;
 	setFilter: (filter: string) => void;
 	setActiveTab: (tab: "active" | "completed" | "all") => void;
 	setSortBy: (sort: "priority" | "xp" | "difficulty" | "date") => void;
-	handleModifyQuest: (quest: Quest) => void;
+	handleModifyHabit: (habit: Habit) => void;
 }
 
-export const QuestSideView: React.FC<QuestSideViewProps> = (props) => {
+export const HabitSideView: React.FC<HabitSideViewProps> = (props) => {
 	const {
-		filteredQuests,
+		filteredHabits,
 		isOpen,
 		filter,
 		activeTab,
 		sortBy,
 		handleToggle,
-		handleCompleteQuest,
+		handleCompleteHabit,
 		setFilter,
 		setActiveTab,
 		setSortBy,
-		handleModifyQuest,
+		handleModifyHabit,
 	} = props;
 
 	return (
@@ -36,13 +36,13 @@ export const QuestSideView: React.FC<QuestSideViewProps> = (props) => {
 			open={isOpen} 
 			onToggle={handleToggle}
 		>
-		<summary className="accordion-title">Quests</summary>
+		<summary className="accordion-title">Habits</summary>
 
 		{/* Barre de recherche + filtres */}
 		<div className="quest-controls">
 			<input
 				type="text"
-				placeholder="Search quests..."
+				placeholder="Search habits..."
 				value={filter}
 				onChange={(e) => setFilter(e.target.value)}
 				className="quest-search"
@@ -76,10 +76,10 @@ export const QuestSideView: React.FC<QuestSideViewProps> = (props) => {
 				</div>
 			</div>
 
-			{/* Tri */}
+			{/* Sort By */}
 			<div className="quest-sort-dropdown">
 				<button className="quest-sort-button">
-				Sort by: {sortBy.charAt(0).toUpperCase() + sortBy.slice(1)}
+					Sort by: {sortBy.charAt(0).toUpperCase() + sortBy.slice(1)}
 				</button>
 				<div className="quest-sort-options">
 				<button
@@ -92,7 +92,7 @@ export const QuestSideView: React.FC<QuestSideViewProps> = (props) => {
 					className={`quest-sort-option ${sortBy === "xp" ? "active" : ""}`}
 					onClick={() => setSortBy("xp")}
 				>
-					XP Reward
+					XP
 				</button>
 				<button
 					className={`quest-sort-option ${sortBy === "difficulty" ? "active" : ""}`}
@@ -111,71 +111,29 @@ export const QuestSideView: React.FC<QuestSideViewProps> = (props) => {
 			</div>
 		</div>
 
-		{/* Liste ou message si vide */}
-		{filteredQuests.length === 0 ? (
-			<div className="no-quests-message">
-			{filter ? "No quests match your search" : "No quests available"}
-			</div>
-		) : (
-			<div className="quests-container">
-			{filteredQuests.map((quest) => (
-				<QuestItem
-					key={quest.id}
-					quest={quest}
-					onComplete={handleCompleteQuest}
-					onModify={handleModifyQuest}
-				/>
-			))}
-			</div>
-		)}
+		{/* Liste des habits */}
+		<div className="habit-list-container">
+			{filteredHabits.length === 0 ? (
+				<p className="no-habits">No habits found.</p>
+			) : (
+				filteredHabits.map((habit) => (
+					<div key={habit.id} className="habit-item">
+						<div className="habit-info" onClick={() => handleModifyHabit(habit)}>
+							<h3 className="habit-title">{habit.title}</h3>
+							<p className="habit-description">{habit.description}</p>
+						</div>
+						<div className="habit-actions">
+							<button
+								className={`complete-btn ${habit.streak.isCompletedToday ? "completed" : ""}`}
+								onClick={() => handleCompleteHabit(habit, !habit.streak.isCompletedToday)}
+							>
+								{habit.streak.isCompletedToday ? "Undo" : "Complete"}
+							</button>
+						</div>
+					</div>
+				))
+			)}
+		</div>
 		</details>
 	);
-};
-
-interface QuestItemProps {
-	quest: Quest;
-	onComplete: (quest: Quest, completed: boolean) => void;
-	onModify: (quest: Quest) => void;
 }
-
-const QuestItem: React.FC<QuestItemProps> = ({ quest, onComplete, onModify }) => {
-	const isEditable = !quest.progression.isCompleted && !quest.meta.isSystemQuest;
-
-	return (
-		<div className="quest-item">
-			<div className="quest-header">
-				<div className="quest-checkbox-section">
-				<input
-					type="checkbox"
-					checked={quest.progression.isCompleted}
-					onChange={() => onComplete(quest, !quest.progression.isCompleted)}
-					className="quest-checkbox"
-				/>
-				<span className={`quest-title ${quest.progression.isCompleted ? "completed" : ""}`}>
-					{quest.title}
-					{quest.meta.isSystemQuest && <span className="quest-system-badge">System</span>}
-				</span>
-				{isEditable && (
-					<button
-					className="quest-edit-button"
-					onClick={() => onModify(quest)}
-					aria-label="Edit quest"
-					>
-					Edit
-					</button>
-				)}
-				</div>
-			</div>
-
-			{quest.shortDescription && (
-				<div className="quest-description">
-					{quest.shortDescription}
-				</div>
-			)}
-
-			<div className="quest-xp">
-				XP: {quest.reward.XP}
-			</div>
-		</div>
-	);
-};

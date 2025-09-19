@@ -1,0 +1,316 @@
+{
+  "habit_1": {
+    "id": "habit_1",
+    "title": "title",
+    "shortDescription": "test",
+    "description": "",
+    "created_at": "2025-09-17T16:33:33.702Z",
+    "settings": {
+      "type": "habit",
+      "category": "undefined",
+      "priority": "low",
+      "difficulty": "easy",
+      "isSecret": false,
+      "isTimeSensitive": false
+    },
+    "recurrence": {
+      "interval": 1,
+      "unit": "days"
+    },
+    "streak": {
+      "current": 1,
+      "best": 1,
+      "history": [],
+      "isCompletedToday": true,
+      "nextDate": "2025-09-20T09:09:04.257Z",
+      "lastCompletedDate": "2025-09-19T09:09:04.257Z"
+    },
+    "penalty": {
+      "XPLoss": 0,
+      "breackStreak": false
+    },
+    "reward": {
+      "XP": 0,
+      "attributes": {
+        "strength": 0,
+        "agility": 0,
+        "endurance": 1,
+        "charisma": 0,
+        "wisdom": 0,
+        "perception": 0,
+        "intelligence": 0,
+        "willpower": 0,
+        "spirit": 0,
+        "flow": 0,
+        "reputation": 0,
+        "resilience": 0
+      },
+      "items": []
+    },
+    "isSystemHabit": false,
+    "progress": {
+      "XP": 0,
+      "currentValue": 1
+    }
+  },
+  "habit_2": {
+    "id": "habit_2",
+    "title": "title",
+    "shortDescription": "tile",
+    "description": "",
+    "created_at": "2025-09-17T16:40:46.730Z",
+    "settings": {
+      "type": "habit",
+      "category": "Mental",
+      "priority": "low",
+      "difficulty": "easy",
+      "isSecret": false,
+      "isTimeSensitive": false
+    },
+    "recurrence": {
+      "interval": 1,
+      "unit": "days"
+    },
+    "streak": {
+      "current": 1,
+      "best": 1,
+      "history": [],
+      "isCompletedToday": true,
+      "nextDate": "2025-09-20T09:09:06.214Z",
+      "lastCompletedDate": "2025-09-19T09:09:06.214Z"
+    },
+    "penalty": {
+      "XPLoss": 0,
+      "breackStreak": false
+    },
+    "reward": {
+      "XP": 0,
+      "attributes": {
+        "strength": 0,
+        "agility": 0,
+        "endurance": 1,
+        "charisma": 0,
+        "wisdom": 0,
+        "perception": 0,
+        "intelligence": 0,
+        "willpower": 0,
+        "spirit": 0,
+        "flow": 0,
+        "reputation": 0,
+        "resilience": 0
+      },
+      "items": []
+    },
+    "isSystemHabit": false,
+    "progress": {
+      "XP": 0,
+      "currentValue": 1
+    }
+  },
+  "habit_3": {
+    "id": "habit_3",
+    "title": "test number",
+    "shortDescription": "testtttttt",
+    "description": "",
+    "created_at": "2025-09-17T16:46:59.721Z",
+    "settings": {
+      "type": "habit",
+      "category": "undefined",
+      "priority": "low",
+      "difficulty": "easy",
+      "isSecret": false,
+      "isTimeSensitive": false
+    },
+    "recurrence": {
+      "interval": 1,
+      "unit": "days"
+    },
+    "streak": {
+      "current": 1,
+      "best": 1,
+      "history": [],
+      "isCompletedToday": true,
+      "nextDate": "2025-09-20T09:15:31.189Z",
+      "lastCompletedDate": "2025-09-19T09:15:31.189Z"
+    },
+    "penalty": {
+      "XPLoss": 0,
+      "breackStreak": false
+    },
+    "reward": {
+      "XP": 0,
+      "attributes": {
+        "strength": 0,
+        "agility": 0,
+        "endurance": 1,
+        "charisma": 0,
+        "wisdom": 0,
+        "perception": 0,
+        "intelligence": 0,
+        "willpower": 0,
+        "spirit": 0,
+        "flow": 0,
+        "reputation": 0,
+        "resilience": 0
+      },
+      "items": []
+    },
+    "isSystemHabit": false,
+    "progress": {
+      "XP": 0,
+      "currentValue": 1
+    }
+  },
+  "habit_4": {
+    "id": "habit_4",
+    "title": "test new habit",
+    "shortDescription": "testt de qualité sup",
+    "description": "",
+    "created_at": "2025-09-18T13:13:00.773Z",
+    "settings": {
+      "type": "habit",
+      "category": "undefined",
+      "priority": "low",
+      "difficulty": "easy",
+      "isSecret": false,
+      "isTimeSensitive": false
+    },
+    "recurrence": {
+      "interval": 1,
+      "unit": "days"
+    },
+    "streak": {
+      "current": 1,
+      "best": 1,
+      "history": [],
+      "isCompletedToday": true,
+      "nextDate": "2025-09-20T09:15:32.306Z",
+      "lastCompletedDate": "2025-09-19T09:15:32.306Z"
+    },
+    "penalty": {
+      "XPLoss": 0,
+      "breackStreak": false
+    },
+    "reward": {
+      "XP": 0,
+      "attributes": {
+        "strength": 0,
+        "agility": 0,
+        "endurance": 1,
+        "charisma": 0,
+        "wisdom": 0,
+        "perception": 0,
+        "intelligence": 0,
+        "willpower": 0,
+        "spirit": 0,
+        "flow": 0,
+        "reputation": 0,
+        "resilience": 0
+      },
+      "items": []
+    },
+    "isSystemHabit": false,
+    "progress": {
+      "XP": 0,
+      "currentValue": 1
+    }
+  },
+  "habit_5": {
+    "id": "habit_5",
+    "title": "erytgg",
+    "shortDescription": "edrfgb",
+    "description": "",
+    "created_at": "2025-09-18T14:53:36.074Z",
+    "settings": {
+      "type": "habit",
+      "category": "undefined",
+      "priority": "low",
+      "difficulty": "easy",
+      "isSecret": false,
+      "isTimeSensitive": false
+    },
+    "recurrence": {
+      "interval": 1,
+      "unit": "days"
+    },
+    "streak": {
+      "current": 0,
+      "best": 0,
+      "history": [],
+      "isCompletedToday": false,
+      "nextDate": "2025-09-18T14:53:36.074Z"
+    },
+    "penalty": {
+      "XPLoss": 0,
+      "breackStreak": false
+    },
+    "reward": {
+      "XP": 0,
+      "attributes": {
+        "strength": 0,
+        "agility": 0,
+        "endurance": 1,
+        "charisma": 0,
+        "wisdom": 0,
+        "perception": 0,
+        "intelligence": 0,
+        "willpower": 0,
+        "spirit": 0,
+        "flow": 0,
+        "reputation": 0,
+        "resilience": 0
+      },
+      "items": []
+    },
+    "isSystemHabit": false
+  },
+  "habit_6": {
+    "id": "habit_6",
+    "title": "title",
+    "shortDescription": "tiltieili",
+    "description": "",
+    "created_at": "2025-09-18T16:36:41.825Z",
+    "settings": {
+      "type": "habit",
+      "category": "undefined",
+      "priority": "low",
+      "difficulty": "easy",
+      "isSecret": false,
+      "isTimeSensitive": false
+    },
+    "recurrence": {
+      "interval": 1,
+      "unit": "day"
+    },
+    "streak": {
+      "current": 0,
+      "best": 0,
+      "history": [],
+      "isCompletedToday": false,
+      "nextDate": "2025-09-18T16:36:41.825Z"
+    },
+    "penalty": {
+      "XPLoss": 0,
+      "breackStreak": false
+    },
+    "reward": {
+      "XP": 0,
+      "attributes": {
+        "strength": 0,
+        "agility": 0,
+        "endurance": 1,
+        "charisma": 0,
+        "wisdom": 0,
+        "perception": 0,
+        "intelligence": 0,
+        "willpower": 0,
+        "spirit": 0,
+        "flow": 0,
+        "reputation": 0,
+        "resilience": 0
+      },
+      "items": []
+    },
+    "isSystemHabit": false
+  }
+}
