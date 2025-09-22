@@ -113,9 +113,18 @@ export class AppContextService {
 	async updateHabit(updatedHabit: Habit): Promise<void> {
 		const habits = await this.getHabits();
 		if (!habits[updatedHabit.id]) {
-			throw new Error(`Habit with id ${updatedHabit.id} does not exist`);
+			// If not found, create it (upsert behavior)
+			habits[updatedHabit.id] = updatedHabit;
+		} else {
+			habits[updatedHabit.id] = updatedHabit;
 		}
-		habits[updatedHabit.id] = updatedHabit;
+		await this.dataService.setHabits(habits);
+	}
+
+	/** Upsert helper to persist a habit regardless of prior existence */
+	async upsertHabit(habit: Habit): Promise<void> {
+		const habits = await this.getHabits();
+		habits[habit.id] = habit;
 		await this.dataService.setHabits(habits);
 	}
 

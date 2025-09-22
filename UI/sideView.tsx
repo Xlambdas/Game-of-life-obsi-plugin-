@@ -49,16 +49,19 @@ export const SideView: React.FC = () => {
 
 	if (!user) return <p>Loading...</p>;
 	return (
-		<div className="sidebar">
+		<div>
 			<UserCard user={user} />
-			<QuestList
-				quests={quests}
-				onUserUpdate={setUser}
-			/>
-			<HabitList
-				habits={habits}
-				onUserUpdate={setUser}
-			/>
+			<div className="card">
+				<QuestList
+					quests={quests}
+					onUserUpdate={setUser}
+				/>
+				<hr className="separator"></hr>
+				<HabitList
+					habits={habits}
+					onUserUpdate={setUser}
+				/>
+			</div>
 			<button onClick={() => handleAddXP(10)} className="btn">
 				Add 10 XP
 			</button>

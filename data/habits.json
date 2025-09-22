@@ -22,8 +22,8 @@
       "best": 1,
       "history": [],
       "isCompletedToday": true,
-      "nextDate": "2025-09-20T09:09:04.257Z",
-      "lastCompletedDate": "2025-09-19T09:09:04.257Z"
+      "lastCompletedDate": "2025-09-22T13:34:03.188Z",
+      "nextDate": "2025-09-23T13:34:03.188Z"
     },
     "penalty": {
       "XPLoss": 0,
@@ -50,7 +50,7 @@
     "isSystemHabit": false,
     "progress": {
       "XP": 0,
-      "currentValue": 1
+      "currentValue": 5
     }
   },
   "habit_2": {
@@ -74,10 +74,19 @@
     "streak": {
       "current": 1,
       "best": 1,
-      "history": [],
+      "history": [
+        {
+          "date": "2025-09-22T20:06:03.508Z",
+          "success": true
+        }
+      ],
       "isCompletedToday": true,
-      "nextDate": "2025-09-20T09:09:06.214Z",
-      "lastCompletedDate": "2025-09-19T09:09:06.214Z"
+      "nextDate": "2025-09-23T20:06:03.508Z",
+      "lastCompletedDate": "2025-09-22T20:06:03.508Z"
+    },
+    "progress": {
+      "XP": 0,
+      "currentValue": 1
     },
     "penalty": {
       "XPLoss": 0,
@@ -101,11 +110,7 @@
       },
       "items": []
     },
-    "isSystemHabit": false,
-    "progress": {
-      "XP": 0,
-      "currentValue": 1
-    }
+    "isSystemHabit": false
   },
   "habit_3": {
     "id": "habit_3",
@@ -182,10 +187,19 @@
     "streak": {
       "current": 1,
       "best": 1,
-      "history": [],
+      "history": [
+        {
+          "date": "2025-09-22T20:05:46.929Z",
+          "success": true
+        }
+      ],
       "isCompletedToday": true,
-      "nextDate": "2025-09-20T09:15:32.306Z",
-      "lastCompletedDate": "2025-09-19T09:15:32.306Z"
+      "nextDate": "2025-09-23T20:05:46.929Z",
+      "lastCompletedDate": "2025-09-22T20:05:46.929Z"
+    },
+    "progress": {
+      "XP": 0,
+      "currentValue": 1
     },
     "penalty": {
       "XPLoss": 0,
@@ -209,11 +223,7 @@
       },
       "items": []
     },
-    "isSystemHabit": false,
-    "progress": {
-      "XP": 0,
-      "currentValue": 1
-    }
+    "isSystemHabit": false
   },
   "habit_5": {
     "id": "habit_5",
@@ -234,11 +244,25 @@
       "unit": "days"
     },
     "streak": {
-      "current": 0,
-      "best": 0,
-      "history": [],
-      "isCompletedToday": false,
-      "nextDate": "2025-09-18T14:53:36.074Z"
+      "current": 1,
+      "best": 1,
+      "history": [
+        {
+          "date": "2025-09-20T13:32:38.068Z",
+          "success": true
+        },
+        {
+          "date": "2025-09-22T20:05:28.117Z",
+          "success": true
+        }
+      ],
+      "isCompletedToday": true,
+      "nextDate": "2025-09-23T20:05:28.117Z",
+      "lastCompletedDate": "2025-09-22T20:05:28.117Z"
+    },
+    "progress": {
+      "XP": 0,
+      "currentValue": 1
     },
     "penalty": {
       "XPLoss": 0,
@@ -283,11 +307,173 @@
       "unit": "day"
     },
     "streak": {
+      "current": 1,
+      "best": 1,
+      "history": [],
+      "isCompletedToday": false,
+      "nextDate": "1970-01-02T00:00:00.000Z",
+      "lastCompletedDate": "1970-01-01T00:00:00.000Z"
+    },
+    "progress": {
+      "XP": 0,
+      "currentValue": 1
+    },
+    "penalty": {
+      "XPLoss": 0,
+      "breackStreak": false
+    },
+    "reward": {
+      "XP": 0,
+      "attributes": {
+        "strength": 0,
+        "agility": 0,
+        "endurance": 1,
+        "charisma": 0,
+        "wisdom": 0,
+        "perception": 0,
+        "intelligence": 0,
+        "willpower": 0,
+        "spirit": 0,
+        "flow": 0,
+        "reputation": 0,
+        "resilience": 0
+      },
+      "items": []
+    },
+    "isSystemHabit": false
+  },
+  "habit_7": {
+    "id": "habit_7",
+    "title": "test streack",
+    "shortDescription": "real test",
+    "description": "",
+    "created_at": "2025-09-22T09:46:40.729Z",
+    "settings": {
+      "type": "habit",
+      "category": "undefined",
+      "priority": "low",
+      "difficulty": "easy",
+      "isSecret": false,
+      "isTimeSensitive": false
+    },
+    "recurrence": {
+      "interval": 2,
+      "unit": "day"
+    },
+    "streak": {
+      "current": 0,
+      "best": 0,
+      "history": [
+        {
+          "date": "2025-09-20T19:20:25.137Z",
+          "success": true
+        }
+      ],
+      "isCompletedToday": false,
+      "nextDate": "2025-09-20T19:20:25.137Z",
+      "lastCompletedDate": "2025-09-20T19:20:25.137Z"
+    },
+    "progress": {
+      "level": 1,
+      "XP": 0,
+      "goal": 2000,
+      "currentValue": 0,
+      "milestones": [
+        {
+          "target": 7,
+          "reward": {
+            "XP": 20,
+            "items": [
+              "Hydration Badge"
+            ]
+          }
+        },
+        {
+          "target": 30,
+          "reward": {
+            "XP": 100,
+            "attributes": {
+              "endurance": 2
+            }
+          }
+        }
+      ]
+    },
+    "penalty": {
+      "XPLoss": 0,
+      "breackStreak": false
+    },
+    "reward": {
+      "XP": 0,
+      "attributes": {
+        "strength": 0,
+        "agility": 0,
+        "endurance": 1,
+        "charisma": 0,
+        "wisdom": 0,
+        "perception": 0,
+        "intelligence": 0,
+        "willpower": 0,
+        "spirit": 0,
+        "flow": 0,
+        "reputation": 0,
+        "resilience": 0
+      },
+      "items": []
+    },
+    "isSystemHabit": false
+  },
+  "habit_8": {
+    "id": "habit_8",
+    "title": "test creat",
+    "shortDescription": "test create a habit",
+    "description": "",
+    "created_at": "2025-09-22T19:25:17.450Z",
+    "settings": {
+      "type": "habit",
+      "category": "undefined",
+      "priority": "low",
+      "difficulty": "easy",
+      "isSecret": false,
+      "isTimeSensitive": false
+    },
+    "recurrence": {
+      "interval": 1,
+      "unit": "day"
+    },
+    "streak": {
       "current": 0,
       "best": 0,
       "history": [],
       "isCompletedToday": false,
-      "nextDate": "2025-09-18T16:36:41.825Z"
+      "nextDate": "2025-09-22T19:25:17.450Z",
+      "lastCompletedDate": "1970-01-01T00:00:00.000Z"
+    },
+    "progress": {
+      "level": 1,
+      "XP": 0,
+      "goal": 2000,
+      "currentValue": 0,
+      "milestones": [
+        {
+          "target": 7,
+          "reward": {
+            "XP": 20,
+            "items": [
+              "Hydration Badge"
+            ]
+          }
+        },
+        {
+          "target": 30,
+          "reward": {
+            "XP": 100,
+            "attributes": {
+              "endurance": 2
+            }
+          }
+        }
+      ]
     },
     "penalty": {
       "XPLoss": 0,

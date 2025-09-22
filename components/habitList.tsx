@@ -1,6 +1,6 @@
 import React, { use, useEffect, useMemo, useState } from "react";
 import { ModifyHabitModal } from "modal/habitModal";
-import { Habit, UserSettings } from "data/DEFAULT";
+import { DEFAULT_HABIT, Habit, UserSettings } from "data/DEFAULT";
 import { useAppContext } from "context/appContext";
 import { HabitService } from "context/services/habitService";
 import { HabitSideView } from "./habitSideView";
@@ -20,8 +20,9 @@ export const HabitList: React.FC<HabitListProps> = ({ habits, onHabitUpdate, onU
 
 	const [isOpen, setIsOpen] = useState(false);
 	const [filter, setFilter] = useState("");
-	const [activeTab, setActiveTab] = useState<"active" | "completed" | "all">("all");
-	const [sortBy, setSortBy] = useState<"priority" | "xp" | "difficulty" | "date">("priority");
+	const [activeTab, setActiveTab] = useState<"today" | "upcoming">("today");
+	const [sortBy, setSortBy] = useState<"priority" | "xp" | "difficulty" | "recurrence">("priority");
+	const [habit, setHabits] = useState<Habit[]>([DEFAULT_HABIT]);
 
 	useEffect(() => {
 		const savedOpen = localStorage.getItem("habitListOpen");
@@ -30,10 +31,10 @@ export const HabitList: React.FC<HabitListProps> = ({ habits, onHabitUpdate, onU
 		const savedSort = localStorage.getItem("habitListSortBy");
 		if (savedOpen) setIsOpen(savedOpen === "true");
 		if (savedFilter) setFilter(savedFilter);
-		if (savedTab === "active" || savedTab === "completed" || savedTab === "all") {
+		if (savedTab === "today" || savedTab === "upcoming") {
 			setActiveTab(savedTab);
 		}
-		if (savedSort === "priority" || savedSort === "xp" || savedSort === "difficulty" || savedSort === "date") {
+		if (savedSort === "priority" || savedSort === "xp" || savedSort === "difficulty" || savedSort === "recurrence") {
 			setSortBy(savedSort);
 		}
 	}, []);
@@ -52,43 +53,27 @@ export const HabitList: React.FC<HabitListProps> = ({ habits, onHabitUpdate, onU
 		localStorage.setItem("habitListFilter", value);
 	};
 
-	const handleSetActiveTab = (tab: "active" | "completed" | "all") => {
+	const handleSetActiveTab = (tab: "today" | "upcoming") => {
 		setActiveTab(tab);
 		localStorage.setItem("habitListActiveTab", tab);
 	};
 
-	const handleSetSortBy = (sort: "priority" | "xp" | "difficulty" | "date") => {
+	const handleSetSortBy = (sort: "priority" | "xp" | "difficulty" | "recurrence") => {
 		setSortBy(sort);
 		localStorage.setItem("habitListSortBy", sort);
 	};
 
-	const handleCompleteHabit = async (habit: Habit, completed: boolean) => {
-		try {
-			const updatedHabit = await habitService.toggleHabitCompletion(habit);
-			const updatedHabits = habitState.map((h) => (h.id === updatedHabit.id ? updatedHabit : h));
-			setHabitState(updatedHabits);
-			if (onHabitUpdate) onHabitUpdate(updatedHabits);
-
-			// Met à jour les données utilisateur si nécessaire
-			if (updatedHabit.reward.XP > 0 || (updatedHabit.progress && updatedHabit.progress.XP > 0)) {
-				const user = await appService.getUser();
-				let newXP = user.xpDetails.xp + (updatedHabit.reward.XP || 0);
-				if (updatedHabit.progress) {
-					newXP += updatedHabit.progress.XP || 0;
-				}
-				const updatedUser = { ...user, xpDetails: { ...user.xpDetails, xp: newXP } };
-				await appService.saveUser(updatedUser);
-				if (onUserUpdate) onUserUpdate(updatedUser);
-			}
-		} catch (error) {
-			console.error("Error completing habit:", error);
-			new Notice("An error occurred while completing the habit.");
-		}
+	const handleCheckbox = async (habit: Habit, completed: boolean) => {
+		console.log(`Toggling habit ${habit.id} to ${completed}`);
+		const updatedHabit = await habitService.updateHabitCompletion(habit, completed);
+		await habitService.saveHabit(updatedHabit);
+		const updatedHabits = habitState.map(h => h.id === updatedHabit.id ? updatedHabit : h);
+		setHabitState(updatedHabits);
+		if (onHabitUpdate) onHabitUpdate(updatedHabits);
 	};
 
-	const handleModifyHabit = (habit: Habit) => {
-		new Notice("Modify habit feature coming soon!");
-		new ModifyHabitModal(appService.getApp(), habit).open();
+	const handleModify = (habit: Habit) => {
+		console.log("Modifying habit:", habit);
 	};
 
 	const filteredHabits = useMemo(() => {
@@ -98,9 +83,8 @@ export const HabitList: React.FC<HabitListProps> = ({ habits, onHabitUpdate, onU
 					habit.title.toLowerCase().includes(filter.toLowerCase()) ||
 					habit.description.toLowerCase().includes(filter.toLowerCase());
 				const matchesTab =
-					activeTab === "all" ||
-					(activeTab === "active" && !habit.streak.isCompletedToday) ||
-					(activeTab === "completed" && habit.streak.isCompletedToday);
+					activeTab === "today" ||
+					(activeTab === "upcoming" && !habit.streak.isCompletedToday);
 				return matchesSearch && matchesTab;
 			})
 			.sort((a, b) => {
@@ -113,8 +97,8 @@ export const HabitList: React.FC<HabitListProps> = ({ habits, onHabitUpdate, onU
 					case "difficulty":
 						const difficultyOrder = { easy: 0, medium: 1, hard: 2, expert: 3 };
 						return difficultyOrder[a.settings.difficulty || "easy"] - difficultyOrder[b.settings.difficulty || "easy"];
-					case "date":
-						return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+					case "recurrence":
+						return new Date(b.streak.nextDate).getTime() - new Date(a.streak.nextDate).getTime();
 					default:
 						return 0;
 				}
@@ -131,12 +115,62 @@ export const HabitList: React.FC<HabitListProps> = ({ habits, onHabitUpdate, onU
 			activeTab={activeTab}
 			sortBy={sortBy}
 			handleToggle={handleToggle}
-			handleCompleteHabit={handleCompleteHabit}
+			handleComplete={handleCheckbox}
 			setFilter={handleSetFilter}
 			setActiveTab={handleSetActiveTab}
 			setSortBy={handleSetSortBy}
-			handleModifyHabit={handleModifyHabit}
+			handleModifyHabit={handleModify}
 		/>
+	);
+};
+
+
+interface HabitItemProps {
+	habit: Habit;
+	onComplete: (habit: Habit, completed: boolean) => void;
+	onModify: (habit: Habit) => void;
+}
+
+const HabitItem_test: React.FC<HabitItemProps> = ({ habit, onComplete, onModify }) => {
+	const isEditable = !habit.isSystemHabit;
+
+	// Toggle pour compléter / annuler l'habitude pour aujourd'hui
+	const handleToggle = () => {
+		onComplete(habit, !habit.streak.isCompletedToday);
+	};
+
+	return (
+		<div className="quest-item">
+			<div className="quest-header">
+				<div className="quest-checkbox-section">
+					<input
+						type="checkbox"
+						checked={habit.streak.isCompletedToday}
+						onChange={handleToggle}
+						className="quest-checkbox"
+					/>
+					<span className={`quest-title ${habit.streak.isCompletedToday ? "completed" : ""}`}>
+						{habit.title}
+						{habit.isSystemHabit && <span className="quest-system-badge">System</span>}
+					</span>
+					{isEditable && (
+						<button
+							className="quest-edit-button"
+							onClick={() => onModify(habit)}
+							aria-label="Edit habit"
+						>
+							Edit
+						</button>
+					)}
+				</div>
+			</div>
+
+			{habit.shortDescription && (
+				<div className="quest-description">{habit.shortDescription}</div>
+			)}
+
+			<div className="quest-xp">XP: {habit.reward.XP}</div>
+		</div>
 	);
 };
 

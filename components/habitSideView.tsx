@@ -5,13 +5,13 @@ interface HabitSideViewProps {
 	filteredHabits: Habit[];
 	isOpen: boolean;
 	filter: string;
-	activeTab: "active" | "completed" | "all";
-	sortBy: "priority" | "xp" | "difficulty" | "date";
+	activeTab: "today" | "upcoming";
+	sortBy: "priority" | "xp" | "difficulty" | "recurrence";
 	handleToggle: (e: React.SyntheticEvent<HTMLDetailsElement, Event>) => void;
-	handleCompleteHabit: (habit: Habit, completed: boolean) => void;
+	handleComplete: (habit: Habit, completed: boolean) => void;
 	setFilter: (filter: string) => void;
-	setActiveTab: (tab: "active" | "completed" | "all") => void;
-	setSortBy: (sort: "priority" | "xp" | "difficulty" | "date") => void;
+	setActiveTab: (tab: "today" | "upcoming") => void;
+	setSortBy: (sort: "priority" | "xp" | "difficulty" | "recurrence") => void;
 	handleModifyHabit: (habit: Habit) => void;
 }
 
@@ -23,7 +23,7 @@ export const HabitSideView: React.FC<HabitSideViewProps> = (props) => {
 		activeTab,
 		sortBy,
 		handleToggle,
-		handleCompleteHabit,
+		handleComplete,
 		setFilter,
 		setActiveTab,
 		setSortBy,
@@ -31,9 +31,9 @@ export const HabitSideView: React.FC<HabitSideViewProps> = (props) => {
 	} = props;
 
 	return (
-		<details 
-			className="quest-list" 
-			open={isOpen} 
+		<details
+			className="quest-list"
+			open={isOpen}
 			onToggle={handleToggle}
 		>
 		<summary className="accordion-title">Habits</summary>
@@ -48,33 +48,30 @@ export const HabitSideView: React.FC<HabitSideViewProps> = (props) => {
 				className="quest-search"
 			/>
 
-			<div className="quest-controls-row">
-			{/* Onglets : Active / Completed / All */}
-			<div className="quest-filter-dropdown">
-				<button className="quest-filter-button">
-					{activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
-				</button>
-				<div className="quest-filter-options">
+			<div className="habit-controls-row">
+			{/* Onglets : today / upcoming */}
+
 				<button
-					className={`quest-filter-option ${activeTab === "active" ? "active" : ""}`}
-					onClick={() => setActiveTab("active")}
+					className="habit-filter-button"
+					onClick={() => setActiveTab(activeTab === "today" ? "upcoming" : "today")}
 				>
-					Active
+					{activeTab === "today" ? "Today" : "Upcoming"}
 				</button>
+				{/* <div className="quest-filter-options">
 				<button
-					className={`quest-filter-option ${activeTab === "completed" ? "active" : ""}`}
-					onClick={() => setActiveTab("completed")}
+					className={`quest-filter-option ${activeTab === "today" ? "today" : ""}`}
+					onClick={() => setActiveTab("today")}
 				>
-					Completed
+					Today
 				</button>
 				<button
-					className={`quest-filter-option ${activeTab === "all" ? "active" : ""}`}
-					onClick={() => setActiveTab("all")}
+					className={`quest-filter-option ${activeTab === "upcoming" ? "active" : ""}`}
+					onClick={() => setActiveTab("upcoming")}
 				>
-					All
-				</button>
-				</div>
-			</div>
+					Upcoming
+				</button> */}
+				{/* </div> */}
+
 
 			{/* Sort By */}
 			<div className="quest-sort-dropdown">
@@ -101,39 +98,131 @@ export const HabitSideView: React.FC<HabitSideViewProps> = (props) => {
 					Difficulty
 				</button>
 				<button
-					className={`quest-sort-option ${sortBy === "date" ? "active" : ""}`}
-					onClick={() => setSortBy("date")}
+					className={`quest-sort-option ${sortBy === "recurrence" ? "active" : ""}`}
+					onClick={() => setSortBy("recurrence")}
 				>
-					Date
+					Recurrence
 				</button>
 				</div>
 			</div>
 			</div>
 		</div>
 
-		{/* Liste des habits */}
-		<div className="habit-list-container">
-			{filteredHabits.length === 0 ? (
-				<p className="no-habits">No habits found.</p>
-			) : (
-				filteredHabits.map((habit) => (
-					<div key={habit.id} className="habit-item">
-						<div className="habit-info" onClick={() => handleModifyHabit(habit)}>
-							<h3 className="habit-title">{habit.title}</h3>
-							<p className="habit-description">{habit.description}</p>
-						</div>
-						<div className="habit-actions">
-							<button
-								className={`complete-btn ${habit.streak.isCompletedToday ? "completed" : ""}`}
-								onClick={() => handleCompleteHabit(habit, !habit.streak.isCompletedToday)}
-							>
-								{habit.streak.isCompletedToday ? "Undo" : "Complete"}
-							</button>
-						</div>
-					</div>
-				))
-			)}
-		</div>
+		{/* Liste des Habits */}
+		{filteredHabits.length === 0 ? (
+			<div className="no-habits-message">
+			{filter ? "No habits match your search" : "No habits available"}
+			</div>
+		) : (
+			<div className="habits-container">
+			{filteredHabits.map((habit) => (
+				<HabitItem
+					key={habit.id}
+					habit={habit}
+					onComplete={handleComplete}
+					onModify={handleModifyHabit}
+				/>
+			))}
+			</div>
+		)}
 		</details>
 	);
 }
+
+
+interface HabitItemProps {
+	habit: Habit;
+	onComplete: (habit: Habit, completed: boolean) => void;
+	onModify: (habit: Habit) => void;
+}
+
+const HabitItem_old: React.FC<HabitItemProps> = ({ habit, onComplete, onModify }) => {
+	const isEditable = !habit.isSystemHabit;
+
+	
+
+	return (
+		<div className="quest-item">
+			<div className="quest-header">
+				<div className="quest-checkbox-section">
+				<input
+					type="checkbox"
+					checked={habit.streak.isCompletedToday}
+					onChange={() => onComplete(habit, !habit.streak.isCompletedToday)}
+					className="quest-checkbox"
+				/>
+				<span className={`quest-title ${habit.streak.isCompletedToday ? "completed" : ""}`}>
+					{habit.title}
+					{habit.isSystemHabit && <span className="quest-system-badge">System</span>}
+				</span>
+				{isEditable && (
+					<button
+					className="quest-edit-button"
+					onClick={() => onModify(habit)}
+					aria-label="Edit quest"
+					>
+					Edit
+					</button>
+				)}
+				</div>
+			</div>
+
+			{habit.shortDescription && (
+				<div className="quest-description">
+					{habit.shortDescription}
+				</div>
+			)}
+
+			<div className="quest-xp">
+				XP: {habit.reward.XP}
+			</div>
+		</div>
+	);
+};
+
+
+const HabitItem: React.FC<HabitItemProps> = ({ habit, onComplete, onModify }) => {
+	const isEditable = !habit.isSystemHabit;
+
+	const handleToggle = () => {
+		if (habit.streak.isCompletedToday) {
+			onComplete(habit, false); // uncheck
+		} else {
+			onComplete(habit, true); // complete
+		}
+	};
+
+	return (
+		<div className="quest-item">
+			<div className="quest-header">
+				<div className="quest-checkbox-section">
+					<input
+						type="checkbox"
+						checked={habit.streak.isCompletedToday}
+						onChange={handleToggle}
+						className="quest-checkbox"
+					/>
+					<span className={`quest-title ${habit.streak.isCompletedToday ? "completed" : ""}`}>
+						{habit.title}
+						{habit.isSystemHabit && <span className="quest-system-badge">System</span>}
+					</span>
+					{isEditable && (
+						<button
+							className="quest-edit-button"
+							onClick={() => onModify(habit)}
+							aria-label="Edit quest"
+						>
+							Edit
+						</button>
+					)}
+				</div>
+			</div>
+
+			{habit.shortDescription && (
+				<div className="quest-description">{habit.shortDescription}</div>
+			)}
+
+			<div className="quest-xp">XP: {habit.reward.XP}</div>
+		</div>
+	);
+};
