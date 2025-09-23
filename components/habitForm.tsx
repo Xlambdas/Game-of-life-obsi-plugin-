@@ -176,6 +176,8 @@ export const HabitForm = ({onSuccess, onCancel, onDelete, existingHabit}: {onSuc
 					<select
 						name="recurrenceUnit"
 						className="input"
+						value={unit}
+						onChange={e => setUnit(e.target.value)}
 					>
 						<option value="days">Day(s)</option>
 						<option value="weeks">Week(s)</option>

@@ -107,6 +107,7 @@ export class AppContextService {
 	}
 
 	addHabit(habit: Habit): Promise<void> {
+		document.dispatchEvent(new CustomEvent("habitsUpdated"));
 		return this.dataService.addHabit(habit);
 	}
 
@@ -136,4 +137,8 @@ export class AppContextService {
 		return this.dataService.deleteAllHabits();
 	}
 
+	async getAllHabit(): Promise<Habit[]> {
+		const habits = await this.getHabits();
+		return Object.values(habits);
+	}
 }

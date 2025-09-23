@@ -38,6 +38,12 @@ export const SideView: React.FC = () => {
 		loadData();
 	}, [appService]);
 
+	useEffect(() => {
+		const handleReload = () => loadData();
+		document.addEventListener("habitsUpdated", handleReload);
+		return () => document.removeEventListener("habitsUpdated", handleReload);
+	}, []);
+
 	const handleAddXP = async (amount: number) => {
 		if (!user) return;
 		const updatedUser = await addXP(appService, user, amount);

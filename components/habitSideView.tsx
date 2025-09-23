@@ -29,6 +29,7 @@ export const HabitSideView: React.FC<HabitSideViewProps> = (props) => {
 		setSortBy,
 		handleModifyHabit,
 	} = props;
+	
 
 	return (
 		<details
@@ -138,8 +139,6 @@ interface HabitItemProps {
 
 const HabitItem_old: React.FC<HabitItemProps> = ({ habit, onComplete, onModify }) => {
 	const isEditable = !habit.isSystemHabit;
-
-	
 
 	return (
 		<div className="quest-item">

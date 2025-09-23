@@ -15,6 +15,8 @@ export class HabitService {
 	async saveHabit(habit: Habit): Promise<void> {
 		console.log("Saving habit :", habit);
 		await this.appContext.addHabit(habit);
+		// notifier l'UI que les habits ont changé
+		document.dispatchEvent(new CustomEvent("habitsUpdated"));
 	}
 
 	async updateHabitCompletion_old(habit: Habit, completed: boolean, date?: Date): Promise<Habit> {
@@ -96,26 +98,7 @@ export class HabitService {
 				lastCompletedDate: lastDate ?? new Date(0),
 			},
 		};
-		return updatedHabit
-
-	}
-	private calculateNextDate_old(fromDate: Date, recurrence: { interval: number; unit: "days" | "weeks" | "months" | "years" }): Date {
-		const nextDate = new Date(fromDate);
-		switch (recurrence.unit) {
-			case "days":
-				nextDate.setDate(nextDate.getDate() + recurrence.interval);
-				break;
-			case "weeks":
-				nextDate.setDate(nextDate.getDate() + recurrence.interval * 7);
-				break;
-			case "months":
-				nextDate.setMonth(nextDate.getMonth() + recurrence.interval);
-				break;
-			case "years":
-				nextDate.setFullYear(nextDate.getFullYear() + recurrence.interval);
-				break;
-		}
-		return nextDate;
+		return updatedHabit;
 	}
 	async updateHabitCompletion(
 		habit: Habit,
@@ -160,7 +143,8 @@ export class HabitService {
 		// Recalculer les dates clés
 		const lastDate =
 			[...history].reverse().find(entry => entry.success)?.date ?? new Date(0);
-		const nextDate = this.calculateNextDate(lastDate, habit.recurrence);
+		const nextDate = this.calculateNextDate(lastDate, habit.recurrence, habit.created_at);
+
 
 		if (habit.streak.isCompletedToday !== isCompletedToday) {
 		console.warn(
@@ -176,7 +160,7 @@ export class HabitService {
 				...habit.streak,
 				history,
 				isCompletedToday,
-				nextDate,
+				nextDate: new Date(nextDate),
 				lastCompletedDate: lastDate,
 			},
 		};
@@ -184,7 +168,7 @@ export class HabitService {
 		return updatedHabit;
 	}
 
-	private calculateNextDate(
+	private calculateNextDate_old(
 		fromDate: Date,
 		recurrence: { interval: number; unit: "days" | "weeks" | "months" | "years" }
 	): Date {
@@ -203,6 +187,78 @@ export class HabitService {
 				nextDate.setFullYear(nextDate.getFullYear() + recurrence.interval);
 				break;
 		}
+		console.log("Calculated next date:", nextDate);
 		return nextDate;
 	}
+
+	private calculateNextDate(
+		fromDate: Date,
+		recurrence: { interval: number; unit: "days" | "weeks" | "months" | "years" },
+		fallbackCreatedAt?: Date // facultatif : si fromDate est la "sentinelle" epoch (0), retourne created_at
+	): Date {
+		// Défensive : fromDate invalide -> fallback ou epoch
+		if (!fromDate || isNaN(fromDate.getTime())) {
+			if (fallbackCreatedAt) return new Date(fallbackCreatedAt);
+			return new Date(0);
+		}
+
+		// Si on utilise la sentinelle new Date(0) pour dire "pas encore de lastDate"
+		if (fromDate.getTime() === 0) {
+			if (fallbackCreatedAt) return new Date(fallbackCreatedAt);
+			return new Date(0);
+		}
+
+		const nextDate = new Date(fromDate); // clone
+		const { interval, unit } = recurrence;
+
+		switch (unit) {
+			case "days":
+				nextDate.setDate(nextDate.getDate() + interval);
+				break;
+			case "weeks":
+				nextDate.setDate(nextDate.getDate() + interval * 7);
+				break;
+			case "months":
+				// setMonth gère correctement les longueurs de mois (31/30/28/29)
+				nextDate.setMonth(nextDate.getMonth() + interval);
+				break;
+			case "years":
+				nextDate.setFullYear(nextDate.getFullYear() + interval);
+				break;
+			default:
+				// fallback conservateur : ajouter jours
+				nextDate.setDate(nextDate.getDate() + interval);
+				break;
+		}
+
+		console.log("[calculateNextDate] from:", fromDate.toISOString(), "-> next:", nextDate.toISOString());
+		return nextDate;
+	}
+
+	private isToday(date: Date): boolean {
+		const today = new Date();
+		return (
+			date.getDate() === today.getDate() &&
+			date.getMonth() === today.getMonth() &&
+			date.getFullYear() === today.getFullYear()
+		);
+	}
+
+
+	refreshHabits(habit: Habit): Habit {
+		const todayStr = new Date().toDateString();
+		const history = habit.streak.history.map(h => ({ ...h, date: new Date(h.date) }));
+		const isCompletedToday = history.some(
+			entry => new Date(entry.date).toDateString() === todayStr && entry.success
+		);
+
+		return {
+			...habit,
+			streak: {
+				...habit.streak,
+				history,
+				isCompletedToday,
+			}
+		};
+	};
 }

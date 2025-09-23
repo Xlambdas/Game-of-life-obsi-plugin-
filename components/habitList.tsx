@@ -25,6 +25,15 @@ export const HabitList: React.FC<HabitListProps> = ({ habits, onHabitUpdate, onU
 	const [habit, setHabits] = useState<Habit[]>([DEFAULT_HABIT]);
 
 	useEffect(() => {
+		const refreshAllHabits = async () => {
+			const refreshedHabits = habitState.map(habit => habitService.refreshHabits(habit));
+			setHabitState(refreshedHabits);
+		};
+		refreshAllHabits();
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
+
+	useEffect(() => {
 		const savedOpen = localStorage.getItem("habitListOpen");
 		const savedFilter = localStorage.getItem("habitListFilter");
 		const savedTab = localStorage.getItem("habitListActiveTab");
@@ -37,7 +46,15 @@ export const HabitList: React.FC<HabitListProps> = ({ habits, onHabitUpdate, onU
 		if (savedSort === "priority" || savedSort === "xp" || savedSort === "difficulty" || savedSort === "recurrence") {
 			setSortBy(savedSort);
 		}
+		const handleReload = async () => {
+			const habits = await appService.getAllHabit();
+			setHabitState(habits);
+		};
+
+		document.addEventListener("habitsUpdated", handleReload);
+		return () => document.removeEventListener("habitsUpdated", handleReload);
 	}, []);
+
 
 	useEffect(() => {
 		setHabitState(habits); // sync quand props changent
