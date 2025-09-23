@@ -6,8 +6,8 @@ import { Notice } from 'obsidian';
 export const HabitForm = ({onSuccess, onCancel, onDelete, existingHabit}: {onSuccess: () => void, onCancel?: () => void, onDelete?: () => void, existingHabit?: Habit}) => {
 	const [title, setTitle] = useState(existingHabit?.title || "");
 	const [shortDescription, setShortDescription] = useState(existingHabit?.shortDescription || "");
-	const [interval, setInterval] = useState(existingHabit?.recurrence.interval || 1);
-	const [unit, setUnit] = useState(existingHabit?.recurrence.unit || "day");
+	const [interval, setInterval] = useState(existingHabit?.recurrence.interval || DEFAULT_HABIT.recurrence.interval);
+	const [unit, setUnit] = useState(existingHabit?.recurrence.unit || DEFAULT_HABIT.recurrence.unit);
 	const [showAdvanced, setShowAdvanced] = useState(false);
 	const [description, setDescription] = useState(existingHabit?.description || "");
 	const [category, setCategory] = useState(existingHabit?.settings.category || "");
@@ -177,7 +177,7 @@ export const HabitForm = ({onSuccess, onCancel, onDelete, existingHabit}: {onSuc
 						name="recurrenceUnit"
 						className="input"
 						value={unit}
-						onChange={e => setUnit(e.target.value)}
+						onChange={e => setUnit(e.target.value as "days" | "weeks" | "months" | "years")}
 					>
 						<option value="days">Day(s)</option>
 						<option value="weeks">Week(s)</option>
