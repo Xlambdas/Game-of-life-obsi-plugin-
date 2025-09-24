@@ -20,10 +20,15 @@
     "streak": {
       "current": 1,
       "best": 1,
-      "history": [],
-      "isCompletedToday": false,
-      "lastCompletedDate": "1970-01-01T00:00:00.000Z",
-      "nextDate": "1970-01-02T00:00:00.000Z"
+      "history": [
+        {
+          "date": "2025-09-24T16:44:13.438Z",
+          "success": true
+        }
+      ],
+      "isCompletedToday": true,
+      "lastCompletedDate": "2025-09-24T16:44:13.438Z",
+      "nextDate": "2025-09-25T16:44:13.438Z"
     },
     "progress": {
       "XP": 0,
@@ -84,7 +89,7 @@
           "success": true
         }
       ],
-      "isCompletedToday": true,
+      "isCompletedToday": false,
       "nextDate": "2025-09-24T09:25:12.655Z",
       "lastCompletedDate": "2025-09-23T09:25:12.655Z"
     },
@@ -143,7 +148,7 @@
           "success": true
         }
       ],
-      "isCompletedToday": true,
+      "isCompletedToday": false,
       "nextDate": "2025-09-24T06:42:24.011Z",
       "lastCompletedDate": "2025-09-23T06:42:24.011Z"
     },
@@ -206,7 +211,7 @@
           "success": true
         }
       ],
-      "isCompletedToday": true,
+      "isCompletedToday": false,
       "nextDate": "2025-09-24T09:26:10.983Z",
       "lastCompletedDate": "2025-09-23T09:26:10.983Z"
     },
@@ -273,7 +278,7 @@
           "success": true
         }
       ],
-      "isCompletedToday": true,
+      "isCompletedToday": false,
       "nextDate": "2025-09-24T09:39:11.709Z",
       "lastCompletedDate": "2025-09-23T09:39:11.709Z"
     },
@@ -332,7 +337,7 @@
           "success": true
         }
       ],
-      "isCompletedToday": true,
+      "isCompletedToday": false,
       "nextDate": "2025-09-24T07:12:38.003Z",
       "lastCompletedDate": "2025-09-23T07:12:38.003Z"
     },
@@ -476,7 +481,7 @@
           "success": true
         }
       ],
-      "isCompletedToday": true,
+      "isCompletedToday": false,
       "nextDate": "2025-09-24T07:13:12.462Z",
       "lastCompletedDate": "2025-09-23T07:13:12.462Z"
     },
@@ -557,7 +562,7 @@
           "success": true
         }
       ],
-      "isCompletedToday": true,
+      "isCompletedToday": false,
       "nextDate": "2025-09-24T07:45:11.513Z",
       "lastCompletedDate": "2025-09-23T07:45:11.513Z"
     },
@@ -957,17 +962,21 @@
       "unit": "days"
     },
     "streak": {
-      "current": 1,
-      "best": 1,
+      "current": 2,
+      "best": 2,
       "history": [
         {
           "date": "2025-09-23T09:39:59.300Z",
           "success": true
+        },
+        {
+          "date": "2025-09-24T16:24:01.604Z",
+          "success": true
         }
       ],
       "isCompletedToday": true,
-      "nextDate": "2025-09-24T09:39:59.300Z",
-      "lastCompletedDate": "2025-09-23T09:39:59.300Z"
+      "nextDate": "2025-09-25T16:24:01.604Z",
+      "lastCompletedDate": "2025-09-24T16:24:01.604Z"
     },
     "progress": {
       "level": 1,

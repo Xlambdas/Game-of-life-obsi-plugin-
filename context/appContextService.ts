@@ -141,4 +141,11 @@ export class AppContextService {
 		const habits = await this.getHabits();
 		return Object.values(habits);
 	}
+	async saveAllHabits(habits: Habit[]): Promise<void> {
+		const habitMap: Record<string, Habit> = {};
+		habits.forEach(habit => {
+			habitMap[habit.id] = habit;
+		});
+		return this.dataService.setHabits(habitMap);
+	}
 }

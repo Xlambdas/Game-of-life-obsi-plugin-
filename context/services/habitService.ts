@@ -366,20 +366,119 @@ export class HabitService {
 
 
 
-	refreshHabits(habit: Habit): Habit {
+	refreshHabits_old(habit: Habit): Habit {
 		const todayStr = new Date().toDateString();
+		console.log("Refreshing habit:", habit.id, todayStr);
 		const history = habit.streak.history.map(h => ({ ...h, date: new Date(h.date) }));
+		console.log("History:", history);
 		const isCompletedToday = history.some(
 			entry => new Date(entry.date).toDateString() === todayStr && entry.success
 		);
+		console.log("isCompletedToday:", isCompletedToday);
+
+		// Ajoute une condition : si l'habit est validé et que la date du jour est encore dans le champ de recurrence
+		let isWithinRecurrence = false;
+		if (isCompletedToday) {
+			const lastCompleted = [...history].reverse().find(entry => entry.success);
+			if (lastCompleted) {
+				const lastDate = new Date(lastCompleted.date);
+				const { interval, unit } = habit.recurrence;
+				const nextDate = (() => {
+					const d = new Date(lastDate);
+					switch (unit) {
+						case "days":
+							d.setDate(d.getDate() + interval);
+							break;
+						case "weeks":
+							d.setDate(d.getDate() + interval * 7);
+							break;
+						case "months":
+							d.setMonth(d.getMonth() + interval);
+							break;
+						case "years":
+							d.setFullYear(d.getFullYear() + interval);
+							break;
+						default:
+							d.setDate(d.getDate() + interval);
+					}
+					return d;
+				})();
+				const today = new Date();
+				isWithinRecurrence = today.getTime() <= nextDate.getTime();
+				console.log("isWithinRecurrence:", isWithinRecurrence);
+			}
+		}
 
 		return {
 			...habit,
 			streak: {
 				...habit.streak,
 				history,
-				isCompletedToday,
+				isCompletedToday: isCompletedToday,
 			}
 		};
 	};
+
+	refreshHabits(habit: Habit): Habit {
+  const today = new Date();
+  const todayStr = today.toDateString();
+  console.log("Refreshing habit:", habit.id, todayStr);
+
+  const history = habit.streak.history.map(h => ({
+    ...h,
+    date: new Date(h.date),
+  }));
+
+  // Dernier succès
+  const lastCompleted = [...history]
+    .reverse()
+    .find(entry => entry.success);
+
+  let isCompletedToday = false;
+  let nextDate: Date | null = null;
+
+  if (lastCompleted) {
+    const lastDate = new Date(lastCompleted.date);
+    const { interval, unit } = habit.recurrence;
+
+    // Calcule la prochaine date prévue
+    nextDate = (() => {
+      const d = new Date(lastDate);
+      switch (unit) {
+        case "days":
+          d.setDate(d.getDate() + interval);
+          break;
+        case "weeks":
+          d.setDate(d.getDate() + interval * 7);
+          break;
+        case "months":
+          d.setMonth(d.getMonth() + interval);
+          break;
+        case "years":
+          d.setFullYear(d.getFullYear() + interval);
+          break;
+        default:
+          d.setDate(d.getDate() + interval);
+      }
+      return d;
+    })();
+
+    // ✅ Habit est considéré "complet" tant que l’on n’a pas dépassé la prochaine échéance
+    isCompletedToday = today.getTime() <= nextDate.getTime();
+  }
+
+  return {
+    ...habit,
+    streak: {
+      ...habit.streak,
+      history,
+      isCompletedToday,
+      nextDate: nextDate ?? habit.streak.nextDate,
+      lastCompletedDate: lastCompleted
+        ? new Date(lastCompleted.date)
+        : habit.streak.lastCompletedDate,
+    },
+  };
+}
+
 }
