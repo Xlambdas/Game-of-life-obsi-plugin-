@@ -46,35 +46,71 @@ export const HabitForm = ({onSuccess, onCancel, onDelete, existingHabit}: {onSuc
 			nextId = `habit_${nextIdNum}`;
 		}
 
-        const newHabit = {
-			...DEFAULT_HABIT,
-			id: nextId,
+		if (existingHabit) {
+			const updatedHabit = {
+			...existingHabit,
 			title: title.trim(),
 			shortDescription: shortDescription.trim(),
 			description: description.trim() || "",
 			settings: {
-				...DEFAULT_HABIT.settings,
-				category: category.trim() || DEFAULT_HABIT.settings.category,
+				...existingHabit.settings,
+				category: category.trim() || existingHabit.settings.category,
 				priority: (["low","medium","high"].includes(priority.trim())
 				? priority.trim()
-				: DEFAULT_HABIT.settings.priority) as "low" | "medium" | "high",
+				: existingHabit.settings.priority) as "low" | "medium" | "high",
 				difficulty: (["easy", "medium", "hard", "expert"].includes(difficulty.trim())
 					? difficulty.trim()
-					: DEFAULT_HABIT.settings.difficulty) as "easy" | "medium" | "hard" | "expert",
+					: existingHabit.settings.difficulty) as "easy" | "medium" | "hard" | "expert",
 			},
 			recurrence: {
-				...DEFAULT_HABIT.recurrence,
+				...existingHabit.recurrence,
 				interval: interval,
 				unit: unit as "days" | "weeks" | "months" | "years",
 			}
+			};
+			await appContext.updateHabit(updatedHabit);
+			onSuccess();
+			return;
+		} else {
+			const habitsObj = await appContext.getHabits();
+			const habits = Object.values(habitsObj);
+			const usedIds = habits.map((h: any) => h.id);
+			let nextIdNum = 1;
+			let nextId = `habit_${nextIdNum}`;
+			while (usedIds.includes(nextId)) {
+				nextIdNum++;
+				nextId = `habit_${nextIdNum}`;
+			}
+			const newHabit = {
+				...DEFAULT_HABIT,
+				id: nextId,
+				title: title.trim(),
+				shortDescription: shortDescription.trim(),
+				description: description.trim() || "",
+				settings: {
+					...DEFAULT_HABIT.settings,
+					category: category.trim() || DEFAULT_HABIT.settings.category,
+					priority: (["low","medium","high"].includes(priority.trim())
+					? priority.trim()
+					: DEFAULT_HABIT.settings.priority) as "low" | "medium" | "high",
+					difficulty: (["easy", "medium", "hard", "expert"].includes(difficulty.trim())
+						? difficulty.trim()
+						: DEFAULT_HABIT.settings.difficulty) as "easy" | "medium" | "hard" | "expert",
+				},
+				recurrence: {
+					...DEFAULT_HABIT.recurrence,
+					interval: interval,
+					unit: unit as "days" | "weeks" | "months" | "years",
+				},
+			};
+
+			await appContext.addHabit(newHabit);
+			setTitle(""); // reset le champ
+			console.log("Habit created:", newHabit);
+			new Notice(`Habit "${newHabit.title}" created successfully!`);
+			onSuccess();
+			return;
 		};
-
-		await appContext.addHabit(newHabit);
-		setTitle(""); // reset le champ
-		console.log("Habit created:", newHabit);
-		new Notice(`Habit "${newHabit.title}" created successfully!`);
-
-		onSuccess();
 	};
 
 	return (

@@ -72,43 +72,44 @@ export const QuestForm = ({onSuccess, onCancel, onDelete, existingQuest}: {onSuc
 			return;
 		} else {
 
-		const questsObj = await appContext.getQuests();
-		const quests = Object.values(questsObj);
-		const usedIds = quests.map((q: any) => q.id);
-		let nextIdNum = 1;
-		let nextId = `quest_${nextIdNum}`;
-		while (usedIds.includes(nextId)) {
-			nextIdNum++;
-			nextId = `quest_${nextIdNum}`;
-		}
+			const questsObj = await appContext.getQuests();
+			const quests = Object.values(questsObj);
+			const usedIds = quests.map((q: any) => q.id);
+			let nextIdNum = 1;
+			let nextId = `quest_${nextIdNum}`;
+			while (usedIds.includes(nextId)) {
+				nextIdNum++;
+				nextId = `quest_${nextIdNum}`;
+			}
 
-        const newQuest = {
-            ...DEFAULT_QUEST,
-            id: nextId,
-            title: title.trim(),
-			shortDescription: shortDescription.trim(),
-			description: description.trim() || "",
-            created_at: new Date(),
-			settings: {
-				...DEFAULT_QUEST.settings,
-				category: category.trim() || DEFAULT_QUEST.settings.category,
-				priority: (["low", "medium", "high"].includes(priority.trim()) ? priority.trim() : DEFAULT_QUEST.settings.priority) as "low" | "medium" | "high",
-				difficulty: (["easy", "medium", "hard", "expert"].includes(difficulty.trim()) ? difficulty.trim() : DEFAULT_QUEST.settings.difficulty) as "easy" | "medium" | "hard" | "expert",
-				isTimeSensitive: dueDate ? true : false,
-			},
-			progression: {
-				...DEFAULT_QUEST.progression,
-				dueDate: dueDate ? new Date(dueDate) : undefined,
-				lastUpdated: new Date(),
-			},
-        };
+			const newQuest = {
+				...DEFAULT_QUEST,
+				id: nextId,
+				title: title.trim(),
+				shortDescription: shortDescription.trim(),
+				description: description.trim() || "",
+				created_at: new Date(),
+				settings: {
+					...DEFAULT_QUEST.settings,
+					category: category.trim() || DEFAULT_QUEST.settings.category,
+					priority: (["low", "medium", "high"].includes(priority.trim()) ? priority.trim() : DEFAULT_QUEST.settings.priority) as "low" | "medium" | "high",
+					difficulty: (["easy", "medium", "hard", "expert"].includes(difficulty.trim()) ? difficulty.trim() : DEFAULT_QUEST.settings.difficulty) as "easy" | "medium" | "hard" | "expert",
+					isTimeSensitive: dueDate ? true : false,
+				},
+				progression: {
+					...DEFAULT_QUEST.progression,
+					dueDate: dueDate ? new Date(dueDate) : undefined,
+					lastUpdated: new Date(),
+				},
+			};
 
-        await appContext.addQuest(newQuest);
-        setTitle(""); // reset le champ
-		console.log("Quest created:", newQuest);
-		new Notice(`Quest "${newQuest.title}" created successfully!`);
-		onSuccess();
-    };
+			await appContext.addQuest(newQuest);
+			setTitle(""); // reset le champ
+			console.log("Quest created:", newQuest);
+			new Notice(`Quest "${newQuest.title}" created successfully!`);
+			onSuccess();
+			return;
+		};
 	};
     return (
         <form onSubmit={handleSubmit} className="quest-form">

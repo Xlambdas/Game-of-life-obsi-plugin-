@@ -29,7 +29,10 @@ export const HabitSideView: React.FC<HabitSideViewProps> = (props) => {
 		setSortBy,
 		handleModifyHabit,
 	} = props;
-	
+
+	const totalCount = filteredHabits.length;
+	const completedCount = filteredHabits.filter((h) => h.streak.isCompletedToday).length;
+	const percent = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
 	return (
 		<details
@@ -37,7 +40,9 @@ export const HabitSideView: React.FC<HabitSideViewProps> = (props) => {
 			open={isOpen}
 			onToggle={handleToggle}
 		>
-		<summary className="accordion-title">Habits</summary>
+		<summary className="accordion-title">
+			Habits ({completedCount} / {totalCount} - {percent}%)
+		</summary>
 
 		{/* Barre de recherche + filtres */}
 		<div className="quest-controls">
