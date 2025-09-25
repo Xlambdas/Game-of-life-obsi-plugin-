@@ -93,6 +93,8 @@ export const HabitList: React.FC<HabitListProps> = ({ habits, onHabitUpdate, onU
 
 	const handleModify = (habit: Habit) => {
 		console.log("Modifying habit:", habit);
+		new Notice("Opening modify habit modal");
+		new ModifyHabitModal(appService.getApp(), habit).open();
 	};
 
 	const filteredHabits = useMemo(() => {
@@ -165,56 +167,6 @@ export const HabitList: React.FC<HabitListProps> = ({ habits, onHabitUpdate, onU
 			setSortBy={handleSetSortBy}
 			handleModifyHabit={handleModify}
 		/>
-	);
-};
-
-
-interface HabitItemProps {
-	habit: Habit;
-	onComplete: (habit: Habit, completed: boolean) => void;
-	onModify: (habit: Habit) => void;
-}
-
-const HabitItem_test: React.FC<HabitItemProps> = ({ habit, onComplete, onModify }) => {
-	const isEditable = !habit.isSystemHabit;
-
-	// Toggle pour compléter / annuler l'habitude pour aujourd'hui
-	const handleToggle = () => {
-		onComplete(habit, !habit.streak.isCompletedToday);
-	};
-
-	return (
-		<div className="quest-item">
-			<div className="quest-header">
-				<div className="quest-checkbox-section">
-					<input
-						type="checkbox"
-						checked={habit.streak.isCompletedToday}
-						onChange={handleToggle}
-						className="quest-checkbox"
-					/>
-					<span className={`quest-title ${habit.streak.isCompletedToday ? "completed" : ""}`}>
-						{habit.title}
-						{habit.isSystemHabit && <span className="quest-system-badge">System</span>}
-					</span>
-					{isEditable && (
-						<button
-							className="quest-edit-button"
-							onClick={() => onModify(habit)}
-							aria-label="Edit habit"
-						>
-							Edit
-						</button>
-					)}
-				</div>
-			</div>
-
-			{habit.shortDescription && (
-				<div className="quest-description">{habit.shortDescription}</div>
-			)}
-
-			<div className="quest-xp">XP: {habit.reward.XP}</div>
-		</div>
 	);
 };
 

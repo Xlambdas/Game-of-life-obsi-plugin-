@@ -207,7 +207,7 @@ export const HabitForm = ({onSuccess, onCancel, onDelete, existingHabit}: {onSuc
 						The more vivid and detailed your description is, the more powerful and motivating it becomes. Add purpose, emotion, and clarity!
 					</p>
 					<hr className="separator"></hr>
-					<h3>Quest Parameters</h3>
+					<h3>Habit Parameters</h3>
 					<label className="label-select">
 						<span>Priority</span>
 						<select
