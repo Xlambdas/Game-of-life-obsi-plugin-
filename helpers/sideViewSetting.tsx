@@ -1,18 +1,17 @@
 import { ItemView, WorkspaceLeaf } from "obsidian";
 import * as React from "react";
 import * as ReactDOM from "react-dom/client";
+// from files (services, ):
 import { AppProvider } from "../context/appContext";
 import { AppContextService } from "../context/appContextService";
-import { useState } from "react";
-import { useAppContext } from "../context/appContext";
+// from file (UI):
 import { SideView } from "../UI/sideView";
 
-// identifiant unique de la vue
+
 export const SIDE_VIEW_TYPE = "side-view";
 
-
-
 export class SideViewSetting extends ItemView {
+	/* React root for rendering side view */
 	private root: ReactDOM.Root | null = null;
 
 	constructor(leaf: WorkspaceLeaf) {
@@ -28,7 +27,7 @@ export class SideViewSetting extends ItemView {
 	}
 
 	getIcon(): string {
-		return "sword"; //todo change icon
+		return "sword";
 	}
 
 	async onOpen() {

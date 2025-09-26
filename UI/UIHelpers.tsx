@@ -1,3 +1,6 @@
+/* UIHelpers.tsx */
+/* Helper functions and components for the UI of the Game of Life plugin */
+
 export const mainTitle = (contentEl: HTMLElement, title: string) =>{
 		const headerContainer = contentEl.createDiv({ cls: "header-container" });
 		headerContainer.createEl("h1", { text: title });
@@ -13,16 +16,6 @@ export const titleSection = (container: HTMLElement, texte: string) => {
 		title.style.fontWeight = "600";
 	}
 
-
-export const subTitle = (container: HTMLElement, title: string) => {
-	const titleEl = container.createEl("h4", { text: title, cls: "section-title" });
-	titleEl.style.marginBottom = "10px";
-	// titleEl.style.color = "var(--text-accent)";
-	titleEl.style.fontSize = "1.2em";
-	titleEl.style.fontWeight = "bold";
-	titleEl.style.fontStyle = "italic";
-	return titleEl;
-};
 
 export class DescriptionHelper {
 	private element: HTMLElement;

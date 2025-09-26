@@ -1,9 +1,15 @@
 import { App } from 'obsidian';
+// from files (services, default) :
 import { AppContextService } from '../appContextService';
 import { Quest } from '../../data/DEFAULT';
+// from files (UI):
 import { CreateQuestModal } from '../../modal/questModal';
 
 export default class QuestService {
+	/* Higher-level quest operations: create, save, update, toggle completion.
+		Uses AppContextService for data access.
+		Handles UI interactions like opening modals.
+	*/
 	private appContext: AppContextService;
 
 	constructor(contextService: AppContextService) {
@@ -12,27 +18,6 @@ export default class QuestService {
 
 	async createQuest(app: App): Promise<void> {
 		new CreateQuestModal(app).open();
-	}
-
-	async saveQuest(quest: Quest): Promise<void> {
-		console.log("Saving quest :", quest);
-		await this.appContext.addQuest(quest);
-	}
-
-	async addCategory(newCategory: string): Promise<void> {
-		const user = this.appContext.getUser();
-		const categories = user.settings.addedCategories || [];
-		
-		if (!categories.includes(newCategory)) {
-			const updatedCategories = [...categories, newCategory];
-			await this.appContext.updateUserData({
-				settings: { ...user.settings, addedCategories: updatedCategories }
-			});
-		}
-	}
-
-	getUserCategories(): string[] {
-		return this.appContext.getUser().settings.addedCategories || [];
 	}
 
 	async toggleQuestCompletion(quest: Quest): Promise<Quest> {

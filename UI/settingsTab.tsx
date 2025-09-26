@@ -1,18 +1,19 @@
-import { App, Plugin, PluginSettingTab, Setting } from "obsidian";
-import { mainTitle, titleSection, DescriptionHelper } from "./UIHelpers";
+import { App, PluginSettingTab, Setting } from "obsidian";
+// from files (services, plugin, default) :
 import GOL from "../plugin";
+import { AppContextService } from "../context/appContextService";
+import { DEFAULT_SETTINGS } from "../data/DEFAULT";
+// from files (UI) :
+import { mainTitle, titleSection, DescriptionHelper } from "./UIHelpers";
 import { TutorialModal } from "../modal/tutorialModal";
 import { RuleModal } from "../modal/ruleModal";
-import { AppContextService } from "../context/appContextService";
 import { difficultyModal } from "../modal/diffModal";
-import { DEFAULT_SETTINGS } from "../data/DEFAULT";
 
 export class selfSettingsTab extends PluginSettingTab {
 	private contextService: AppContextService;
 
 	constructor(app: App, plugin: GOL) {
 		super(app, plugin);
-
 		this.contextService = AppContextService.getInstance();
 	}
 
@@ -143,49 +144,9 @@ export class selfSettingsTab extends PluginSettingTab {
                 });
 			});
 
-		/** advanced settings : include data version, refresh rate, and reset data */
+		/** advanced settings : include data version, and reset data */
 		titleSection(containerEl, "Advanced Settings");
-		new DescriptionHelper(containerEl, 'Here you can change the advanced settings, like the data version, the refresh rate, and reset your data.');
-
-		// refresh rate part :
-		new Setting(containerEl)
-			.setName('Refresh Rate')
-			.setDesc('Set the refresh rate for the plugin in seconds. Minimum is 1 second. This will affect how often the plugin updates its data.')
-			.addText(text =>
-				text
-					.setValue(this.contextService.getUser().settings.refreshRate.toString())
-					.setPlaceholder('Enter refresh rate in seconds')
-					.onChange(async (value) => {
-						const currentSettings = this.contextService.getUser();
-						const newRefreshRate = parseInt(value, 10);
-						if (!isNaN(newRefreshRate) && newRefreshRate >= 1) {
-							await this.contextService.updateUserData({
-								...currentSettings,
-								settings: {
-									...currentSettings.settings,
-									refreshRate: newRefreshRate
-								}
-							});
-						}
-					}
-				)
-			)
-			.addExtraButton((button) => {
-				button
-					.setIcon('refresh-ccw')
-					.setTooltip('Reset refresh rate to default (60 seconds)')
-					.onClick(async () => {
-						const currentSettings = this.contextService.getUser();
-						await this.contextService.updateUserData({
-							...currentSettings,
-							settings: {
-								...currentSettings.settings,
-								refreshRate: DEFAULT_SETTINGS.settings.refreshRate
-							}
-						});
-						this.display();
-					});
-				});
+		new DescriptionHelper(containerEl, 'Here you can change the advanced settings, like the data version, and reset your data.');
 
 		// Reset settings
         new Setting(containerEl)
@@ -197,6 +158,7 @@ export class selfSettingsTab extends PluginSettingTab {
                     .onClick(async () => {
                         await this.contextService.updateUserData(DEFAULT_SETTINGS);
 						await this.contextService.deleteAllQuests();
+						await this.contextService.deleteAllHabits();
                         this.display();
                     })
                     .buttonEl.style.backgroundColor = '#cb2d06';

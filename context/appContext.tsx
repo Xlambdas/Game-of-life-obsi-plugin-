@@ -1,10 +1,12 @@
 import React, { createContext, useContext } from "react";
-// from file :
+// from file (services) :
 import { AppContextService } from "./appContextService";
-import { DataService } from "./services/dataService";
 
-// Responsabilité : exposer via React Context un appService prêt à utiliser pour tous les composants.
-// Ne fait pas de calcul métier complexe.
+/*
+	This file defines a React context for the application, providing access to the AppContextService
+	throughout the component tree. It includes the context type, provider component, and a custom hook
+	for consuming the context.
+*/
 
 type AppContextType = {
 	appService: AppContextService;
@@ -27,6 +29,7 @@ export const AppProvider = ({
 }
 
 export const useAppContext = (): AppContextService => {
+	// Custom hook to access the AppContextService instance from the context
 	const context = useContext(AppContext);
 	if (!context) {
 		throw new Error("useApp must be used within an AppProvider");

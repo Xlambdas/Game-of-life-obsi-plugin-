@@ -4,6 +4,7 @@ import { useAppContext } from 'context/appContext';
 import { Notice } from 'obsidian';
 
 export const HabitForm = ({onSuccess, onCancel, onDelete, existingHabit}: {onSuccess: () => void, onCancel?: () => void, onDelete?: () => void, existingHabit?: Habit}) => {
+	/* Form to create or modify a habit */
 	const [title, setTitle] = useState(existingHabit?.title || "");
 	const [shortDescription, setShortDescription] = useState(existingHabit?.shortDescription || "");
 	const [interval, setInterval] = useState(existingHabit?.recurrence.interval || DEFAULT_HABIT.recurrence.interval);
@@ -36,6 +37,7 @@ export const HabitForm = ({onSuccess, onCancel, onDelete, existingHabit}: {onSuc
 		}
 		setError({}); // Clear errors if validation passes
 
+		// Generate a unique ID for the new habit // todo : delete algo id.
 		const habitsObj = await appContext.getHabits();
 		const habits = Object.values(habitsObj);
 		const usedIds = habits.map((h: any) => h.id);
@@ -47,6 +49,7 @@ export const HabitForm = ({onSuccess, onCancel, onDelete, existingHabit}: {onSuc
 		}
 
 		if (existingHabit) {
+			// Update existing habit
 			const updatedHabit = {
 			...existingHabit,
 			title: title.trim(),
@@ -72,6 +75,7 @@ export const HabitForm = ({onSuccess, onCancel, onDelete, existingHabit}: {onSuc
 			onSuccess();
 			return;
 		} else {
+			// Create new habit
 			const habitsObj = await appContext.getHabits();
 			const habits = Object.values(habitsObj);
 			const usedIds = habits.map((h: any) => h.id);
@@ -105,7 +109,6 @@ export const HabitForm = ({onSuccess, onCancel, onDelete, existingHabit}: {onSuc
 			};
 
 			await appContext.addHabit(newHabit);
-			setTitle(""); // reset le champ
 			console.log("Habit created:", newHabit);
 			new Notice(`Habit "${newHabit.title}" created successfully!`);
 			onSuccess();

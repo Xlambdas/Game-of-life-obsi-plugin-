@@ -2,10 +2,11 @@ import { Vault, App } from "obsidian";
 import { DataService } from "./services/dataService";
 import { Habit, Quest, UserSettings } from "data/DEFAULT";
 
-// gérer la data globale, CRUD, sauvegarde/reload, accès aux services (dataService, questService, etc.).
-// Ce fichier ne doit pas toucher à React ni à l’UI.
 
 export class AppContextService {
+	/* Singleton service providing access to data operations and app context.
+		Wraps DataService and provides higher-level methods if needed.
+	*/
 	private static _instance: AppContextService;
 	private dataService: DataService;
 	private app: App;
@@ -54,20 +55,6 @@ export class AppContextService {
 		return this.dataService.getUser();
 	}
 
-	saveUser(user: UserSettings): void {
-		this.dataService.saveUser(user);
-	}
-
-	setUserData(key: string, value: any): void {
-		this.dataService.setUser(key, value);
-	}
-
-	reloadUserData(): void {
-		this.dataService.loadUser().catch(err => {
-			console.error("Failed to reload user data:", err);
-		});
-	}
-
 	updateUserData(newData: Partial<UserSettings>): Promise<void> {
 		return this.dataService.updateUser(newData);
 	}
@@ -91,11 +78,6 @@ export class AppContextService {
 		await this.dataService.setQuests(quests);
 	}
 
-	async getQuestById(id: string): Promise<Quest | null> {
-		const quests = await this.getQuests();
-		return quests[id] || null;
-	}
-
 	async deleteAllQuests(): Promise<void> {
 		return this.dataService.deleteAllQuests();
 	}
@@ -107,7 +89,6 @@ export class AppContextService {
 	}
 
 	addHabit(habit: Habit): Promise<void> {
-		document.dispatchEvent(new CustomEvent("habitsUpdated"));
 		return this.dataService.addHabit(habit);
 	}
 
@@ -122,17 +103,6 @@ export class AppContextService {
 		await this.dataService.setHabits(habits);
 	}
 
-	/** Upsert helper to persist a habit regardless of prior existence */
-	async upsertHabit(habit: Habit): Promise<void> {
-		const habits = await this.getHabits();
-		habits[habit.id] = habit;
-		await this.dataService.setHabits(habits);
-	}
-
-	async getHabitById(id: string): Promise<Habit | null> {
-		const habits = await this.getHabits();
-		return habits[id] || null;
-	}
 	async deleteAllHabits(): Promise<void> {
 		return this.dataService.deleteAllHabits();
 	}

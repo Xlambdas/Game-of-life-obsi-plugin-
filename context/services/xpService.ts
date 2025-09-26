@@ -1,6 +1,7 @@
+import { Notice } from "obsidian";
+// from files (services, default):
 import { AppContextService } from "../appContextService";
 import { UserSettings } from "data/DEFAULT";
-import { Notice } from "obsidian";
 
 export interface XpCalc {
 	totalXp: number;
@@ -10,8 +11,11 @@ export interface XpCalc {
 }
 
 export function computeXpFromTotal(totalXp: number, maxLevel?: number): XpCalc {
-	// sécurité
-	let total = Math.max(0, Math.trunc(totalXp)); // entier >= 0
+	/* Calcule level/newXp/lvlThreshold à partir du total XP.
+		maxLevel optionnel : si défini, plafonne le level à cette valeur.
+		Retourne un objet { totalXp, level, newXp, lvlThreshold }.
+	*/
+	let total = Math.max(0, Math.trunc(totalXp)); // normalisation
 	const baseThreshold = 100;
 	let level = 1;
 	let threshold = baseThreshold;
@@ -25,9 +29,8 @@ export function computeXpFromTotal(totalXp: number, maxLevel?: number): XpCalc {
 		threshold = Math.floor(threshold * 1.2);
 	}
 
-	// Si on a atteint le niveau max, on plafonne newXp pour l'affichage
+	// If user has reached max level, cap remaining XP to just below next threshold
 	if (level >= capLevel) {
-		// remaining peut être énorme si totalXp >= somme thresholds ; on plafonne l'affichage
 		remaining = Math.min(remaining, Math.max(0, threshold - 1));
 		level = capLevel;
 	}
@@ -40,25 +43,26 @@ export function computeXpFromTotal(totalXp: number, maxLevel?: number): XpCalc {
 	};
 }
 
-/**
- * Ajoute amount (peut être négatif) au total XP de l'utilisateur,
- * recalcule level/newXp/lvlThreshold à partir du total et persiste.
- */
+
 export async function addXP(
 	appService: AppContextService,
 	user: UserSettings,
 	amount: number
 ): Promise<UserSettings> {
+	/* add (or remove) XP to a user, updating their xpDetails accordingly.
+		Triggers a level-up Notice if applicable.
+		Persists the updated xpDetails via appService.updateUserData.
+		Returns the updated UserSettings object.
+	*/
 	const currentXp = Math.max(0, user.xpDetails?.xp ?? 0);
 	const maxLevel = user.xpDetails?.maxLevel;
 	const newTotal = Math.max(0, currentXp + Math.trunc(amount));
 
 	const calc = computeXpFromTotal(newTotal, maxLevel);
 
-	// notification de level-up (comparaison avant / après)
 	const prevLevel = user.xpDetails?.level ?? 1;
 	if (calc.level > prevLevel) {
-		new Notice(`🎉 Félicitations — niveau ${calc.level} atteint !`);
+		new Notice(`congrats — level ${calc.level} reached!`);
 	}
 
 	const updatedXpDetails = {
@@ -69,7 +73,7 @@ export async function addXP(
 		lvlThreshold: calc.lvlThreshold,
 	};
 
-	// Persister uniquement xpDetails (moins risqué que de réécrire tout l'objet user)
+	// Persist the updated xpDetails
 	await appService.updateUserData({ xpDetails: updatedXpDetails });
 
 	const updatedUser: UserSettings = {
@@ -81,8 +85,10 @@ export async function addXP(
 }
 
 
-/** Normalise xpDetails d'un user (réécrit xpDetails en cohérence avec xp total). */
 export async function normalizeUserXpOnLoad(appService: AppContextService): Promise<void> {
+	/* load the user from appService, recalcule et persiste ses xpDetails si incohérence détectée.
+		Utilisé au chargement de l'app pour corriger d'éventuelles erreurs.
+	*/
 	const user = appService.getUser();
 	if (!user) return;
 
@@ -90,7 +96,6 @@ export async function normalizeUserXpOnLoad(appService: AppContextService): Prom
 	const maxLevel = user.xpDetails?.maxLevel;
 	const calc = computeXpFromTotal(xpTotal, maxLevel);
 
-	// Si incohérence (ex: newXp négatif ou level mismatch), on persist la version calculée
 	const needsUpdate =
 		user.xpDetails?.level !== calc.level ||
 		user.xpDetails?.newXp !== calc.newXp ||
@@ -106,7 +111,6 @@ export async function normalizeUserXpOnLoad(appService: AppContextService): Prom
 		lvlThreshold: calc.lvlThreshold,
 		};
 		await appService.updateUserData({ xpDetails: updated });
-		// Optionnel : mettre à jour l'instance user en mémoire si nécessaire
 	}
 }
 

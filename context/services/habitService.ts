@@ -1,11 +1,13 @@
 import { AppContextService } from "../appContextService";
-import { Habit, DEFAULT_HABIT } from "data/DEFAULT";
-import { addXP } from "./xpService";
-import { App } from "obsidian";
-import { CreateHabitModal } from "modal/habitModal";
-import { normalize } from "path";
+// from files (default):
+import { Habit } from "data/DEFAULT";
+
 
 export class HabitService {
+	/* Handles all habit-related operations: create, update, delete, mark complete/incomplete.
+		Uses AppContextService for data persistence.
+		Contains logic to manage habit streaks and recurrences.
+	*/
 	private appContext: AppContextService;
 
 	constructor(contextService: AppContextService) {
@@ -15,96 +17,17 @@ export class HabitService {
 	async saveHabit(habit: Habit): Promise<void> {
 		console.log("Saving habit :", habit);
 		await this.appContext.addHabit(habit);
-		// notifier l'UI que les habits ont changé
-		document.dispatchEvent(new CustomEvent("habitsUpdated"));
 	}
 
-	async updateHabitCompletion_old(habit: Habit, completed: boolean, date?: Date): Promise<Habit> {
-		const history = habit.streak.history.map(h => ({ ...h, date: new Date(h.date) }));
-		const dateToCheck = date || new Date();
-		const normalizeDate = (d: Date | string) =>{
-			return new Date(d).toDateString();
-		}
-		console.log(`Completing ${completed ? "✅" : "❌"} habit ${habit.id} for today (${dateToCheck.toDateString()})`);
-
-		// Vérifier si la date est déjà dans l'historique (pour éviter les doublons)
-		const dateStr = normalizeDate(dateToCheck);
-		const existingEntry = habit.streak.history.find((entry: any) =>
-			normalizeDate(entry.date) === dateStr
-		);
-
-		const calculateLastDate = (): Date | null => {
-			const hist = [...habit.streak.history];
-			if (hist.length === 0) return new Date(0);
-
-			// Retourner la dernière date de succès
-			for (const entry of hist.reverse()) {
-				if (entry.success) return new Date(entry.date);
-			}
-			return new Date(0);
-		};
-
-		const calculateNextDate = (lastDate: Date): number => {
-			if (lastDate === new Date(0)) return habit.created_at.getTime();
-			const nextDate = new Date(lastDate);
-			const { interval, unit } = habit.recurrence;
-			const multiplier = { days: 1, weeks: 7, months: 30, years: 365 }[unit] || 1;
-			nextDate.setTime(nextDate.getTime() + interval * multiplier * 24 * 60 * 60 * 1000);
-			console.log("Next date calculated as:", nextDate, nextDate.getTime());
-			return nextDate.getTime();
-		};
-
-		if (completed) {
-			// Si on coche une date déjà cochée, ne rien faire
-			if (existingEntry && existingEntry.success) {
-				console.log("Date already completed, no changes made.");
-				return habit;
-			}
-			// Ajouter ou mettre à jour l'entrée
-			const newEntry = { date: dateToCheck, success: true };
-			if (existingEntry) {
-				Object.assign(existingEntry, newEntry);
-				// Mettre à jour l'historique
-				let newHistory = habit.streak.history.map(entry =>
-					normalizeDate(entry.date) === dateStr ? newEntry : entry
-				);
-				habit.streak.history = newHistory;
-			} else {
-				habit.streak.history.push(newEntry);
-			}
-		} else {
-			// supprimer l'entrée si elle existe
-			if (existingEntry) {
-				let newHistory = habit.streak.history.filter(entry =>
-					normalizeDate(entry.date) !== dateStr
-				);
-				habit.streak.history = newHistory;
-			} else {
-				console.log("Date not found in history, no changes made.");
-				return habit;
-			}
-		}
-		const lastDate = calculateLastDate();
-		const nextDate = lastDate ? calculateNextDate(lastDate) : Date.now();
-		console.log("Last date:", lastDate, "Next date:", new Date(nextDate));
-
-		const updatedHabit: Habit = {
-			...habit,
-			streak: {
-				...habit.streak,
-				history: habit.streak.history.map(h => ({ ...h, date: new Date(h.date) })),
-				isCompletedToday: completed,
-				nextDate: new Date(nextDate),
-				lastCompletedDate: lastDate ?? new Date(0),
-			},
-		};
-		return updatedHabit;
-	}
 	async updateHabitCompletion(
 		habit: Habit,
 		completed: boolean,
 		date: Date = new Date()
 	): Promise<Habit> {
+		/* Marks a habit as completed or not for a specific date (default today).
+			Updates the habit's streak, history, nextDate, and lastCompletedDate accordingly.
+			Throws error if trying to complete an already completed date or uncomplete a non-completed date.
+		*/
 		const normalizeDate = (d: Date | string) => new Date(d).toDateString();
 		const dateStr = normalizeDate(date);
 
@@ -112,11 +35,10 @@ export class HabitService {
 			`Completing ${completed ? "✅" : "❌"} habit ${habit.id} for ${date.toDateString()}`
 		);
 
-		// Cloner l’historique pour éviter des side-effects
 		let history = habit.streak.history.map(h => ({ ...h, date: new Date(h.date) }));
 		const existingEntry = history.find(entry => normalizeDate(entry.date) === dateStr);
 
-		// Cas erreur : aucune action possible
+		// error cases
 		if (completed && existingEntry?.success) {
 			throw new Error(`Habit ${habit.id} already completed for ${dateStr}. No further action possible.`);
 		}
@@ -140,7 +62,7 @@ export class HabitService {
 			entry => normalizeDate(entry.date) === todayStr && entry.success
 		);
 
-		// Recalculer les dates clés
+		// calculate key dates
 		const lastDate =
 			[...history].reverse().find(entry => entry.success)?.date ?? new Date(0);
 		const nextDate = this.calculateNextDate(lastDate, habit.recurrence, habit.created_at);
@@ -151,68 +73,7 @@ export class HabitService {
 				`[Incohérence corrigée] Habit ${habit.id} avait isCompletedToday=${habit.streak.isCompletedToday} mais l’historique dit ${isCompletedToday}.`
 			);
 		}
-
-		// const currentStreak = (() => {
-		// 	if (history.length === 0) return 0;
-
-		// 	const sortedHistory = [...history].sort(
-		// 		(a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-		// 	);
-
-		// 	const { interval, unit } = habit.recurrence; // ex: { interval: 2, unit: "day" }
-		// 	let streak = 0;
-		// 	let lastDate = new Date();
-
-		// 	// Fonction pour calculer l’écart selon l’unité choisie
-		// 	const getDiff = (d1: Date, d2: Date) => {
-		// 		const diffMs = d1.getTime() - d2.getTime();
-		// 		switch (unit) {
-		// 		case "days":
-		// 			return Math.floor(diffMs / (1000 * 60 * 60 * 24));
-		// 		case "weeks":
-		// 			return Math.floor(diffMs / (1000 * 60 * 60 * 24 * 7));
-		// 		case "months":
-		// 			return (
-		// 			d1.getFullYear() * 12 + d1.getMonth() -
-		// 			(d2.getFullYear() * 12 + d2.getMonth())
-		// 			);
-		// 		default:
-		// 			return Math.floor(diffMs / (1000 * 60 * 60 * 24)); // fallback en jours
-		// 		}
-		// 	};
-
-		// 	for (const entry of sortedHistory) {
-		// 		const entryDate = new Date(entry.date);
-		// 		if (entry.success) {
-		// 		const diff = getDiff(lastDate, entryDate);
-
-		// 		// On accepte si l’écart correspond exactement à l’intervalle
-		// 		// ou si on est "dans la fenêtre" (par ex. 0 si fait le même jour)
-		// 		if (diff === 0 || diff === interval) {
-		// 			streak++;
-		// 			lastDate = entryDate;
-		// 		} else {
-		// 			break; // streak cassé
-		// 		}
-		// 		} else {
-		// 		break; // streak cassé par un échec
-		// 		}
-		// 	}
-
-		// 	return streak;
-		// })();
-
-		// const bestStreak = Math.max(habit.streak.best, currentStreak);
-		// if (bestStreak > habit.streak.best) {
-		// 	console.log(`New best streak for habit ${habit.id}: ${bestStreak}`);
-		// 	// Récompenser le joueur		}
-		// }
-
 		const { current, best } = this.computeStreaks(history, habit.recurrence);
-
-
-		console.log(`Updated habit ${habit.id}: currentStreak=${current}, bestStreak=${best}, isCompletedToday=${isCompletedToday}`);
-
 
 		const updatedHabit: Habit = {
 			...habit,
@@ -226,22 +87,21 @@ export class HabitService {
 				lastCompletedDate: lastDate,
 			},
 		};
-
 		return updatedHabit;
 	}
 
 	private calculateNextDate(
 		fromDate: Date,
 		recurrence: { interval: number; unit: "days" | "weeks" | "months" | "years" },
-		fallbackCreatedAt?: Date // facultatif : si fromDate est la "sentinelle" epoch (0), retourne created_at
+		fallbackCreatedAt?: Date // optional : if fromDate is the "sentinel" epoch (0), return created_at
 	): Date {
-		// Défensive : fromDate invalide -> fallback ou epoch
+		// Defensive : fromDate invalid -> fallback or epoch
 		if (!fromDate || isNaN(fromDate.getTime())) {
 			if (fallbackCreatedAt) return new Date(fallbackCreatedAt);
 			return new Date(0);
 		}
 
-		// Si on utilise la sentinelle new Date(0) pour dire "pas encore de lastDate"
+		// if fromDate is epoch (0), return created_at or epoch
 		if (fromDate.getTime() === 0) {
 			if (fallbackCreatedAt) return new Date(fallbackCreatedAt);
 			return new Date(0);
@@ -258,32 +118,20 @@ export class HabitService {
 				nextDate.setDate(nextDate.getDate() + interval * 7);
 				break;
 			case "months":
-				// setMonth gère correctement les longueurs de mois (31/30/28/29)
 				nextDate.setMonth(nextDate.getMonth() + interval);
 				break;
 			case "years":
 				nextDate.setFullYear(nextDate.getFullYear() + interval);
 				break;
 			default:
-				// fallback conservateur : ajouter jours
 				nextDate.setDate(nextDate.getDate() + interval);
 				break;
 		}
 
-		console.log("[calculateNextDate] from:", fromDate.toISOString(), "-> next:", nextDate.toISOString());
+		// console.log("[calculateNextDate] from:", fromDate.toISOString(), "-> next:", nextDate.toISOString());
 		return nextDate;
 	}
 
-	private isToday(date: Date): boolean {
-		const today = new Date();
-		return (
-			date.getDate() === today.getDate() &&
-			date.getMonth() === today.getMonth() &&
-			date.getFullYear() === today.getFullYear()
-		);
-	}
-
-	// ajouter dans HabitService
 	private computeStreaks(
 		history: { date: Date | string; success: boolean }[],
 		recurrence: { interval: number; unit: "days" | "weeks" | "months" | "years" }
@@ -314,18 +162,18 @@ export class HabitService {
 			return new Date(r.getFullYear(), r.getMonth(), r.getDate());
 		};
 
-		// garder uniquement les succès et dédupliquer par date
+		// only keep successful entries, one per day
 		const map = new Map<string, Date>();
 		for (const h of history) {
 			if (!h.success) continue;
 			const d = normalizeDateOnly(h.date);
-			map.set(d.toDateString(), d); // la clé = date string garantit une entrée par jour
+			map.set(d.toDateString(), d); // the key = date string ensures one entry per day
 		}
 
 		const dates = Array.from(map.values()).sort((a, b) => a.getTime() - b.getTime());
 		if (dates.length === 0) return { current: 0, best: 0 };
 
-		// calcule best (meilleure séquence consécutive n'importe où)
+		// calculate best (longest streak anywhere in history)
 		let best = 1;
 		let seq = 1;
 		for (let i = 1; i < dates.length; i++) {
@@ -340,7 +188,7 @@ export class HabitService {
 			if (seq > best) best = seq;
 		}
 
-		// calcule current : séquence qui se termine aujourd'hui (sinon current = 0)
+		// calculate current : streak that ends today (otherwise current = 0)
 		const today = normalizeDateOnly(new Date());
 		let current = 0;
 		const last = dates[dates.length - 1];
@@ -364,121 +212,68 @@ export class HabitService {
 		return { current, best };
 	}
 
+	refreshHabits(habit: Habit): Habit {
+		const today = new Date();
+		const todayStr = today.toDateString();
+		// console.log("Refreshing habit:", habit.id, todayStr);
 
+		const history = habit.streak.history.map(h => ({
+			...h,
+			date: new Date(h.date),
+		}));
 
-	refreshHabits_old(habit: Habit): Habit {
-		const todayStr = new Date().toDateString();
-		console.log("Refreshing habit:", habit.id, todayStr);
-		const history = habit.streak.history.map(h => ({ ...h, date: new Date(h.date) }));
-		console.log("History:", history);
-		const isCompletedToday = history.some(
+		// last success
+		const lastCompleted = [...history]
+			.reverse()
+			.find(entry => entry.success);
+
+		let isCompletedToday = false;
+		let nextDate: Date | null = null;
+
+		if (lastCompleted) {
+			const lastDate = new Date(lastCompleted.date);
+			const { interval, unit } = habit.recurrence;
+
+			// Calculate the next due date
+			nextDate = (() => {
+			const d = new Date(lastDate);
+			switch (unit) {
+				case "days":
+				d.setDate(d.getDate() + interval);
+				break;
+				case "weeks":
+				d.setDate(d.getDate() + interval * 7);
+				break;
+				case "months":
+				d.setMonth(d.getMonth() + interval);
+				break;
+				case "years":
+				d.setFullYear(d.getFullYear() + interval);
+				break;
+				default:
+				d.setDate(d.getDate() + interval);
+			}
+			return d;
+			})();
+
+			isCompletedToday = today.getTime() <= nextDate.getTime();
+
+			isCompletedToday = isCompletedToday && history.some(
 			entry => new Date(entry.date).toDateString() === todayStr && entry.success
 		);
-		console.log("isCompletedToday:", isCompletedToday);
-
-		// Ajoute une condition : si l'habit est validé et que la date du jour est encore dans le champ de recurrence
-		let isWithinRecurrence = false;
-		if (isCompletedToday) {
-			const lastCompleted = [...history].reverse().find(entry => entry.success);
-			if (lastCompleted) {
-				const lastDate = new Date(lastCompleted.date);
-				const { interval, unit } = habit.recurrence;
-				const nextDate = (() => {
-					const d = new Date(lastDate);
-					switch (unit) {
-						case "days":
-							d.setDate(d.getDate() + interval);
-							break;
-						case "weeks":
-							d.setDate(d.getDate() + interval * 7);
-							break;
-						case "months":
-							d.setMonth(d.getMonth() + interval);
-							break;
-						case "years":
-							d.setFullYear(d.getFullYear() + interval);
-							break;
-						default:
-							d.setDate(d.getDate() + interval);
-					}
-					return d;
-				})();
-				const today = new Date();
-				isWithinRecurrence = today.getTime() <= nextDate.getTime();
-				console.log("isWithinRecurrence:", isWithinRecurrence);
-			}
 		}
 
 		return {
 			...habit,
 			streak: {
-				...habit.streak,
-				history,
-				isCompletedToday: isCompletedToday,
-			}
+			...habit.streak,
+			history,
+			isCompletedToday,
+			nextDate: nextDate ?? habit.streak.nextDate,
+			lastCompletedDate: lastCompleted
+				? new Date(lastCompleted.date)
+				: habit.streak.lastCompletedDate,
+			},
 		};
-	};
-
-	refreshHabits(habit: Habit): Habit {
-  const today = new Date();
-  const todayStr = today.toDateString();
-  console.log("Refreshing habit:", habit.id, todayStr);
-
-  const history = habit.streak.history.map(h => ({
-    ...h,
-    date: new Date(h.date),
-  }));
-
-  // Dernier succès
-  const lastCompleted = [...history]
-    .reverse()
-    .find(entry => entry.success);
-
-  let isCompletedToday = false;
-  let nextDate: Date | null = null;
-
-  if (lastCompleted) {
-    const lastDate = new Date(lastCompleted.date);
-    const { interval, unit } = habit.recurrence;
-
-    // Calcule la prochaine date prévue
-    nextDate = (() => {
-      const d = new Date(lastDate);
-      switch (unit) {
-        case "days":
-          d.setDate(d.getDate() + interval);
-          break;
-        case "weeks":
-          d.setDate(d.getDate() + interval * 7);
-          break;
-        case "months":
-          d.setMonth(d.getMonth() + interval);
-          break;
-        case "years":
-          d.setFullYear(d.getFullYear() + interval);
-          break;
-        default:
-          d.setDate(d.getDate() + interval);
-      }
-      return d;
-    })();
-
-    // ✅ Habit est considéré "complet" tant que l’on n’a pas dépassé la prochaine échéance
-    isCompletedToday = today.getTime() <= nextDate.getTime();
-  }
-
-  return {
-    ...habit,
-    streak: {
-      ...habit.streak,
-      history,
-      isCompletedToday,
-      nextDate: nextDate ?? habit.streak.nextDate,
-      lastCompletedDate: lastCompleted
-        ? new Date(lastCompleted.date)
-        : habit.streak.lastCompletedDate,
-    },
-  };
-}
-
+	}
 }

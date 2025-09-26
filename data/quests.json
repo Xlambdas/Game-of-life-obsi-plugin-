@@ -259,5 +259,92 @@
       "lockoutTimeMinutes": 0
     },
     "notes": "This is a system-generated quest to help you get started. Complete it to unlock more features."
+  },
+  "quest_2": {
+    "id": "quest_2",
+    "title": "test_quest n??",
+    "shortDescription": "test en despi ??",
+    "description": "",
+    "created_at": "2025-09-25T13:43:10.306Z",
+    "settings": {
+      "type": "quest",
+      "category": "Undefined",
+      "priority": "low",
+      "difficulty": "easy",
+      "isSecret": false,
+      "isTimeSensitive": false
+    },
+    "progression": {
+      "isCompleted": false,
+      "completedAt": null,
+      "progress": 0,
+      "startedAt": "1970-01-01T00:00:00.000Z",
+      "lastUpdated": "2025-09-25T13:43:18.945Z",
+      "subtasks": [],
+      "attempts": 0,
+      "failures": 0,
+      "timeSpentMinutes": 0
+    },
+    "reward": {
+      "XP": 10,
+      "items": [],
+      "attributes": {
+        "strength": 0,
+        "agility": 0,
+        "endurance": 0,
+        "charisma": 0,
+        "wisdom": 0,
+        "perception": 0,
+        "intelligence": 1,
+        "willpower": 0,
+        "spirit": 0,
+        "flow": 0,
+        "reputation": 0,
+        "resilience": 0
+      },
+      "unlocks": [],
+      "badges": [],
+      "title": "Novice Adventurer",
+      "spiritBoost": 0
+    },
+    "requirements": {
+      "level": 0,
+      "previousQuests": [],
+      "attributes": {
+        "strength": 0,
+        "agility": 0,
+        "endurance": 0,
+        "charisma": 0,
+        "wisdom": 0,
+        "perception": 0,
+        "intelligence": 0,
+        "willpower": 0,
+        "spirit": 0,
+        "flow": 0,
+        "reputation": 0,
+        "resilience": 0
+      },
+      "timeAvailableMinutes": 30,
+      "tagsRequired": []
+    },
+    "meta": {
+      "difficulty": "easy",
+      "category": "Undefined",
+      "tags": [],
+      "isSystemQuest": false,
+      "createdBy": "system",
+      "linkedToGoal": "",
+      "estimatedDurationMinutes": 30,
+      "recommendedTimeOfDay": "any",
+      "energyRequired": 0,
+      "willpowerRequired": 0
+    },
+    "failureConsequence": {
+      "description": "You failed the quest. Try again!",
+      "spiritLoss": 0,
+      "XPLoss": 0,
+      "lockoutTimeMinutes": 0
+    },
+    "notes": "This is a system-generated quest to help you get started. Complete it to unlock more features."
   }
 }

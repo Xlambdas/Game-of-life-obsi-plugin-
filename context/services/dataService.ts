@@ -1,8 +1,13 @@
 import { Vault, normalizePath } from 'obsidian';
-// from files :
+// from files (default) :
 import { UserSettings, DEFAULT_SETTINGS, Quest, DEFAULT_QUEST, Habit, DEFAULT_HABIT } from '../../data/DEFAULT';
 
 export class DataService {
+	/* Handles all data operations: loading, saving, CRUD for user, quests, habits.
+		Uses Obsidian's Vault API to read/write JSON files.
+		Ensures data files exist and have correct structure.
+		Dispatches events on data changes for UI to react.
+	*/
 	private userPath: string;
 	private questsPath: string;
 	private habitsPath: string;
@@ -51,6 +56,7 @@ export class DataService {
 	private async save(type: 'user' | 'quests' | 'habits'): Promise<void> {
 		let path: string;
 		let content: string;
+		document.dispatchEvent(new CustomEvent("dbUpdated"));
 
 		switch (type) {
 			case 'user':
@@ -77,6 +83,7 @@ export class DataService {
 	// -----------------------
 	// generic get
 	get(key: 'user' | 'quests' | 'habits'): UserSettings | Record<string, Quest> | Record<string, Habit> {
+		document.dispatchEvent(new CustomEvent("dbUpdated"));
 		if (key === 'user') {
 			return this.user;
 		}
@@ -96,11 +103,9 @@ export class DataService {
 		const content = await this.vault.adapter.read(this.userPath);
 		try {
 			const parsed = JSON.parse(content);
-			// Vérification basique : doit être un objet non null et non array
 			if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed)) {
 				throw new Error("Invalid user data format");
 			}
-			// Vérifie que tous les champs de DEFAULT_SETTINGS sont présents
 			for (const key of Object.keys(DEFAULT_SETTINGS)) {
 				if (!(key in parsed)) {
 					throw new Error(`Missing user data field: ${key}`);
@@ -141,6 +146,7 @@ export class DataService {
 	}
 
 	async addQuest(questData: Partial<Quest>): Promise<void> {
+		document.dispatchEvent(new CustomEvent("dbUpdated"));
 		const id = questData.id || `quest_${Object.keys(this.quests).length + 1}`;
 		this.quests[id] = { ...DEFAULT_QUEST, ...questData, id };
 		await this.save('quests');

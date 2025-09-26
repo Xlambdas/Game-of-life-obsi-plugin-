@@ -1,9 +1,6 @@
-import React from 'react';
-import * as ReactDOM from 'react-dom/client';
-// from files :
-import { AppContextService } from '../context/appContextService';
-import { AppProvider } from '../context/appContext';
-import { Habit, Quest } from 'data/DEFAULT';
+// from files (Default) :
+import { Habit } from 'data/DEFAULT';
+// from files (UI):
 import { HabitForm } from '../components/habitForm';
 
 

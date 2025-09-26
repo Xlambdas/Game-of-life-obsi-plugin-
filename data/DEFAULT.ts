@@ -3,27 +3,27 @@
 */
 export interface UserSettings {
 	settings: {
-		difficulty: 'easy' | 'normal' | 'hard' | 'expert' | string;
-		theme: string;
-		language: string;
-		refreshRate: number;
-		addedCategories: string[];
-		dataVersion: number;
+		difficulty: 'easy' | 'normal' | 'hard' | 'expert' | string; //todo : bonus/malus
+		theme: string; //todo
+		language: string; //todo
+		refreshRate: number; //todo : delete
+		addedCategories: string[]; //todo
+		dataVersion: number; //todo Increment this when changing the data structure
 	};
 	persona: {
 		name: string;
-		class: string;
-		health: number;
-		maxHealth: number;
-		mana?: number;
-		maxMana?: number;
-		energy?: number;
-		maxEnergy?: number;
+		class: string; // todo : add default classes, each with different starting stats/abilities/appearance/quest bonus...
+		health: number;	//todo
+		maxHealth: number; //todo
+		mana?: number; //todo
+		maxMana?: number; //todo
+		energy?: number; //todo
+		maxEnergy?: number; //todo
 		alignment?: {
 			order: 'good' | 'neutral' | 'evil';
 			chaos: 'lawful' | 'neutral' | 'chaotic';
-		};
-		titles?: string[];
+		}; //todo
+		titles?: string[]; // todo : add default titles
 		reputation?: {
 			guilds: Record<string, number>; // Guild name and reputation score
 			factions: Record<string, number>; // Faction name and reputation score
@@ -33,55 +33,55 @@ export interface UserSettings {
 			locations: Record<string, number>; // Location name and reputation score
 			quests: Record<string, number>; // Quest name and reputation score
 			achievements: Record<string, number>; // Achievement name and reputation score
-		};
-		achievements?: string[]; // List of achievement IDs
-		traits?: string[]; // List of trait IDs
-		abilities?: string[]; // List of ability IDs
+		}; // todo
+		achievements?: string[]; // List of achievement IDs // todo
+		traits?: string[]; // List of trait IDs // todo
+		abilities?: string[]; // List of ability IDs // todo
 	}
 	xpDetails: {
-		xp: number;
-		level: number;
+		xp: number; //todo : add calculation for XP gain and for xp attributes
+		level: number; //todo : add level up request
 		maxLevel: number;
 		newXp: number;
 		lvlThreshold: number;
-		freePts: number;
+		freePts: number; //todo : add points gain and spending
 	};
-	attribute: AttributeBlock;
+	attribute: AttributeBlock; // todo : add calculation for attribute gain
 	skills: {
 		[key: string]: {
 			level: number;
 			maxLevel: number;
 			xp: number;
-		};
+		}; //todo : add default skills and calculation for skill gain/attribute bonus..
 	};
 	habits: {
 		[id: string]: {
 			level: number;
 			maxLevel: number;
 			xp: number;
-		};
+		}; // todo : add calculation for habit gain and add completion tracking
 	};
 	quests: {
 		[id: string]: {
 			level: number;
 			maxLevel: number;
 			xp: number;
-		};
+		}; // todo : same as habits
 	};
-	completedQuests: string[];
-	objectives: string[];
-	challenges: string[];
+	completedQuests: string[]; // List of completed quest IDs // todo
+	objectives: string[]; // todo
+	challenges: string[]; // todo
 	buffs: {
 		[id: string]: {
 			duration: number; // in seconds
 			effect: string; // Description of the buff effect
-		};
+		}; // todo : add calculation for buff duration and effects
 	};
 	debuffs: {
 		[id: string]: {
 			duration: number; // in seconds
 			effect: string; // Description of the debuff effect
-		};
+		}; // todo : add calculation for debuff duration and effects
 	};
 	
 	achievements: {
@@ -89,33 +89,33 @@ export interface UserSettings {
 			title: string;
 			description: string;
 			date: Date;
-		};
+		}; // todo : add calculation for achievement unlocking / visualization
 	};
-	lastLogin: Date;
-	sessionTime: number; // in seconds
+	lastLogin: Date; // todo
+	sessionTime: number; // in seconds // todo
 	activityLog: {
 		date: Date;
 		action: string; // Description of the action
-	}[];
+	}[]; // todo
 	notifications: {
 		id: string;
 		message: string;
 		date: Date;
 		read: boolean;
-	}[];
+	}[]; // todo : search if useful
 	journalNotes: {
 	[id: string]: {
 			title: string;
 			content: string;
 			date: Date;
-	};
+	}; // todo : add journal feature / history of the player
 	};
 	questsProgress: {
 		[id: string]: {
 			progress: number;
 			isCompleted: boolean;
 			completedAt: Date | null;
-		};
+		}; // todo : track quest progress
 	}
 }
 
@@ -213,22 +213,22 @@ export const DEFAULT_RECURRENCES = ['days', 'weeks', 'months', 'years'] as const
 export type DefaultRecurrence = typeof DEFAULT_RECURRENCES[number];
 
 export type AttributeBlock = {
-  strength: number;
-  agility: number;
-  endurance: number;
-  charisma: number;
-  wisdom: number;
-  perception: number;
-  intelligence: number;
-  willpower: number;
-  spirit: number;
-  flow: number;
-  reputation: number;
-  resilience: number;
+	strength: number;
+	agility: number;
+	endurance: number;
+	charisma: number;
+	wisdom: number;
+	perception: number;
+	intelligence: number;
+	willpower: number;
+	spirit: number;
+	flow: number;
+	reputation: number;
+	resilience: number;
 }
 
 
-export type TaskType = 'quest' | 'habit'; // | 'skill' | 'goal';
+export type TaskType = 'quest' | 'habit'; // | 'skill' | 'goal'; //todo : add skills/goals/...
 
 export interface BaseTask {
 	id: string;

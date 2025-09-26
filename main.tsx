@@ -8,6 +8,7 @@
  * @exports GOL - The main plugin functionality for the "game-of-life" project.
  * @author XLambdas
  */
+
 import GOL from './plugin';
 
 export default GOL;

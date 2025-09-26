@@ -1,7 +1,9 @@
 import { App, WorkspaceLeaf } from "obsidian";
+// from files :
 import { SIDE_VIEW_TYPE, SideViewSetting } from "../../helpers/sideViewSetting";
 
 export class ViewService {
+	/* service for managing views */
 	private app: App;
 
 	constructor(app: App) {

@@ -63,21 +63,6 @@ export const HabitSideView: React.FC<HabitSideViewProps> = (props) => {
 				>
 					{activeTab === "today" ? "Today" : "Upcoming"}
 				</button>
-				{/* <div className="quest-filter-options">
-				<button
-					className={`quest-filter-option ${activeTab === "today" ? "today" : ""}`}
-					onClick={() => setActiveTab("today")}
-				>
-					Today
-				</button>
-				<button
-					className={`quest-filter-option ${activeTab === "upcoming" ? "active" : ""}`}
-					onClick={() => setActiveTab("upcoming")}
-				>
-					Upcoming
-				</button> */}
-				{/* </div> */}
-
 
 			{/* Sort By */}
 			<div className="quest-sort-dropdown">
@@ -142,48 +127,6 @@ interface HabitItemProps {
 	onModify: (habit: Habit) => void;
 }
 
-const HabitItem_old: React.FC<HabitItemProps> = ({ habit, onComplete, onModify }) => {
-	const isEditable = !habit.isSystemHabit;
-
-	return (
-		<div className="quest-item">
-			<div className="quest-header">
-				<div className="quest-checkbox-section">
-				<input
-					type="checkbox"
-					checked={habit.streak.isCompletedToday}
-					onChange={() => onComplete(habit, !habit.streak.isCompletedToday)}
-					className="quest-checkbox"
-				/>
-				<span className={`quest-title ${habit.streak.isCompletedToday ? "completed" : ""}`}>
-					{habit.title}
-					{habit.isSystemHabit && <span className="quest-system-badge">System</span>}
-				</span>
-				{isEditable && (
-					<button
-					className="quest-edit-button"
-					onClick={() => onModify(habit)}
-					aria-label="Edit quest"
-					>
-					Edit
-					</button>
-				)}
-				</div>
-			</div>
-
-			{habit.shortDescription && (
-				<div className="quest-description">
-					{habit.shortDescription}
-				</div>
-			)}
-
-			<div className="quest-xp">
-				XP: {habit.reward.XP}
-			</div>
-		</div>
-	);
-};
-
 
 const HabitItem: React.FC<HabitItemProps> = ({ habit, onComplete, onModify }) => {
 	const isEditable = !habit.isSystemHabit;
@@ -226,7 +169,10 @@ const HabitItem: React.FC<HabitItemProps> = ({ habit, onComplete, onModify }) =>
 				<div className="quest-description">{habit.shortDescription}</div>
 			)}
 
-			<div className="quest-xp">XP: {habit.reward.XP}</div>
+			<div className="quest-xp">
+				XP: {habit.reward.XP} |  Streak: {habit.streak.current}
+			</div>
+
 		</div>
 	);
 };

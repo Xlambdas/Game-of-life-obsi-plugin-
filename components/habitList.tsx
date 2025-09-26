@@ -48,13 +48,13 @@ export const HabitList: React.FC<HabitListProps> = ({ habits, onHabitUpdate, onU
 		if (savedSort === "priority" || savedSort === "xp" || savedSort === "difficulty" || savedSort === "recurrence") {
 			setSortBy(savedSort);
 		}
-		const handleReload = async () => {
-			const habits = await appService.getAllHabit();
-			setHabitState(habits);
-		};
+		// const handleReload = async () => {
+		// 	const habits = await appService.getAllHabit();
+		// 	setHabitState(habits);
+		// };
 
-		document.addEventListener("habitsUpdated", handleReload);
-		return () => document.removeEventListener("habitsUpdated", handleReload);
+		// document.addEventListener("habitsUpdated", handleReload);
+		// return () => document.removeEventListener("habitsUpdated", handleReload);
 	}, []);
 
 

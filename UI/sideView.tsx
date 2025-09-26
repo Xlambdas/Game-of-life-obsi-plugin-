@@ -1,21 +1,20 @@
-import { ItemView, Notice, WorkspaceLeaf } from "obsidian";
+import { Notice } from "obsidian";
 import * as React from "react";
-import * as ReactDOM from "react-dom/client";
-import { AppProvider } from "../context/appContext";
-import { AppContextService } from "../context/appContextService";
 import { useEffect, useState } from "react";
+// from files (services, Default):
 import { useAppContext } from "../context/appContext";
-import { UserSettings, Quest, Habit } from "../data/DEFAULT";
 import { addXP } from "../context/services/xpService";
+import { UserSettings, Quest, Habit } from "../data/DEFAULT";
+// from files (UI, components):
 import { UserCard } from "../components/userCard";
-import QuestService from "../context/services/questService";
 import { QuestList } from "../components/questList";
 import { HabitList } from "components/habitList";
 
-// Responsabilité : uniquement afficher les données et gérer les interactions avec l’utilisateur (boutons, inputs, filtres).
-// Ne fait pas de CRUD direct ni de calcul métier complexe. Tout passe par useAppContext().
-
 export const SideView: React.FC = () => {
+	/* SideView component that displays user info, quests, and habits.
+		Fetches data from AppContextService and updates on data changes.
+		Allows adding XP to user.
+	*/
 	const appService = useAppContext();
 	const [quests, setQuests] = useState<Quest[]>([]);
 	const [habits, setHabits] = useState<Habit[]>([]);
@@ -40,8 +39,8 @@ export const SideView: React.FC = () => {
 
 	useEffect(() => {
 		const handleReload = () => loadData();
-		document.addEventListener("habitsUpdated", handleReload);
-		return () => document.removeEventListener("habitsUpdated", handleReload);
+		document.addEventListener("dbUpdated", handleReload);
+		return () => document.removeEventListener("dbUpdated", handleReload);
 	}, []);
 
 	const handleAddXP = async (amount: number) => {
