@@ -1,4 +1,5 @@
 import React from "react";
+// from file (default):
 import { Quest } from "../data/DEFAULT";
 
 interface QuestSideViewProps {
@@ -16,6 +17,7 @@ interface QuestSideViewProps {
 }
 
 export const QuestSideView: React.FC<QuestSideViewProps> = (props) => {
+	/* Side view for quests */
 	const {
 		filteredQuests,
 		isOpen,
@@ -31,14 +33,14 @@ export const QuestSideView: React.FC<QuestSideViewProps> = (props) => {
 	} = props;
 
 	return (
-		<details 
-			className="quest-list" 
-			open={isOpen} 
+		<details
+			className="quest-list"
+			open={isOpen}
 			onToggle={handleToggle}
 		>
 		<summary className="accordion-title">Quests</summary>
 
-		{/* Barre de recherche + filtres */}
+		{/* Search bar and filters */}
 		<div className="quest-controls">
 			<input
 				type="text"
@@ -49,7 +51,7 @@ export const QuestSideView: React.FC<QuestSideViewProps> = (props) => {
 			/>
 
 			<div className="quest-controls-row">
-			{/* Onglets : Active / Completed / All */}
+			{/* Tabs: Active / Completed / All */}
 			<div className="quest-filter-dropdown">
 				<button className="quest-filter-button">
 					{activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
@@ -76,7 +78,7 @@ export const QuestSideView: React.FC<QuestSideViewProps> = (props) => {
 				</div>
 			</div>
 
-			{/* Tri */}
+			{/* Sorting */}
 			<div className="quest-sort-dropdown">
 				<button className="quest-sort-button">
 				Sort by: {sortBy.charAt(0).toUpperCase() + sortBy.slice(1)}
@@ -111,7 +113,7 @@ export const QuestSideView: React.FC<QuestSideViewProps> = (props) => {
 			</div>
 		</div>
 
-		{/* Liste ou message si vide */}
+		{/* List or message if empty */}
 		{filteredQuests.length === 0 ? (
 			<div className="no-quests-message">
 			{filter ? "No quests match your search" : "No quests available"}
@@ -139,6 +141,7 @@ interface QuestItemProps {
 }
 
 const QuestItem: React.FC<QuestItemProps> = ({ quest, onComplete, onModify }) => {
+	/* Individual quest item in the list */
 	const isEditable = !quest.progression.isCompleted && !quest.meta.isSystemQuest;
 
 	return (

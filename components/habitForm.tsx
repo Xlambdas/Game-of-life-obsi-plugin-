@@ -1,7 +1,9 @@
-import { DEFAULT_HABIT, Habit } from 'data/DEFAULT';
 import { useState } from 'react';
-import { useAppContext } from 'context/appContext';
 import { Notice } from 'obsidian';
+// from files (Service, DEFAULT):
+import { useAppContext } from 'context/appContext';
+import { DEFAULT_HABIT, Habit, DEFAULT_PRIORITIES, DefaultPriority, DEFAULT_CATEGORIES, DefaultCategory, DEFAULT_DIFFICULTIES, DefaultDifficulty, DEFAULT_RECURRENCES, DefaultRecurrence } from 'data/DEFAULT';
+
 
 export const HabitForm = ({onSuccess, onCancel, onDelete, existingHabit}: {onSuccess: () => void, onCancel?: () => void, onDelete?: () => void, existingHabit?: Habit}) => {
 	/* Form to create or modify a habit */
@@ -57,18 +59,14 @@ export const HabitForm = ({onSuccess, onCancel, onDelete, existingHabit}: {onSuc
 			description: description.trim() || "",
 			settings: {
 				...existingHabit.settings,
-				category: category.trim() || existingHabit.settings.category,
-				priority: (["low","medium","high"].includes(priority.trim())
-				? priority.trim()
-				: existingHabit.settings.priority) as "low" | "medium" | "high",
-				difficulty: (["easy", "medium", "hard", "expert"].includes(difficulty.trim())
-					? difficulty.trim()
-					: existingHabit.settings.difficulty) as "easy" | "medium" | "hard" | "expert",
+				category: validateValue(category.trim(), DEFAULT_CATEGORIES, existingHabit.settings.category as DefaultCategory),
+				priority: validateValue(priority.trim(), DEFAULT_PRIORITIES, existingHabit.settings.priority as DefaultPriority),
+				difficulty: validateValue(difficulty.trim(), DEFAULT_DIFFICULTIES, existingHabit.settings.difficulty as DefaultDifficulty),
 			},
 			recurrence: {
 				...existingHabit.recurrence,
 				interval: interval,
-				unit: unit as "days" | "weeks" | "months" | "years",
+				unit: unit as DefaultRecurrence,
 			}
 			};
 			await appContext.updateHabit(updatedHabit);
@@ -93,18 +91,14 @@ export const HabitForm = ({onSuccess, onCancel, onDelete, existingHabit}: {onSuc
 				description: description.trim() || "",
 				settings: {
 					...DEFAULT_HABIT.settings,
-					category: category.trim() || DEFAULT_HABIT.settings.category,
-					priority: (["low","medium","high"].includes(priority.trim())
-					? priority.trim()
-					: DEFAULT_HABIT.settings.priority) as "low" | "medium" | "high",
-					difficulty: (["easy", "medium", "hard", "expert"].includes(difficulty.trim())
-						? difficulty.trim()
-						: DEFAULT_HABIT.settings.difficulty) as "easy" | "medium" | "hard" | "expert",
+					category: validateValue(category.trim(), DEFAULT_CATEGORIES, DEFAULT_HABIT.settings.category as DefaultCategory),
+					priority: validateValue(priority.trim(), DEFAULT_PRIORITIES, DEFAULT_HABIT.settings.priority as DefaultPriority),
+					difficulty: validateValue(difficulty.trim(), DEFAULT_DIFFICULTIES, DEFAULT_HABIT.settings.difficulty as DefaultDifficulty),
 				},
 				recurrence: {
 					...DEFAULT_HABIT.recurrence,
 					interval: interval,
-					unit: unit as "days" | "weeks" | "months" | "years",
+					unit: unit as DefaultRecurrence,
 				},
 			};
 
@@ -181,14 +175,12 @@ export const HabitForm = ({onSuccess, onCancel, onDelete, existingHabit}: {onSuc
 						value={category}
 						onChange={e => setCategory(e.target.value)}
 					>
-						<option value="Undefined">Select category</option>
-						<option value="Physical">Physical</option>
-						<option value="Mental">Mental</option>
-						<option value="Social">Social</option>
-						<option value="Creative">Creative</option>
-						<option value="Emotional">Emotional</option>
-						<option value="Organizational">Organizational</option>
-						<option value="Exploration">Exploration</option>
+						<option value="">-- Select Category --</option>
+						{DEFAULT_CATEGORIES.map(cat => (
+						<option key={cat} value={cat}>
+							{cat}
+						</option>
+						))}
 					</select>
 				</label>
 				<hr className='separator'></hr>
@@ -216,19 +208,20 @@ export const HabitForm = ({onSuccess, onCancel, onDelete, existingHabit}: {onSuc
 						name="recurrenceUnit"
 						className="input"
 						value={unit}
-						onChange={e => setUnit(e.target.value as "days" | "weeks" | "months" | "years")}
+						onChange={e => setUnit(e.target.value as DefaultRecurrence)}
 					>
-						<option value="days">Day(s)</option>
-						<option value="weeks">Week(s)</option>
-						<option value="months">Month(s)</option>
-						<option value="years">Year(s)</option>
+						{DEFAULT_RECURRENCES.map(rec => (
+							<option key={rec} value={rec}>
+								{rec.charAt(0).toUpperCase() + rec.slice(1)}
+							</option>
+						))}
 					</select>
-	 			</label>
+				</label>
 				<p className="helper-text">
 					Set how often you want to perform this habit. Consistency is key to building lasting habits!
 				</p>
 			</div>
-			
+
 			{/* Advanced Settings */}
 			{showAdvanced && (
 				<div className="form-section">
@@ -255,9 +248,11 @@ export const HabitForm = ({onSuccess, onCancel, onDelete, existingHabit}: {onSuc
 							value={priority}
 							onChange={e => setPriority(e.target.value)}
 						>
-							<option value="low">Low</option>
-							<option value="medium">Medium</option>
-							<option value="high">High</option>
+							{DEFAULT_PRIORITIES.map(pri => (
+								<option key={pri} value={pri}>
+									{pri.charAt(0).toUpperCase() + pri.slice(1)}
+								</option>
+							))}
 						</select>
 					</label>
 					<label className="label-select">
@@ -268,10 +263,11 @@ export const HabitForm = ({onSuccess, onCancel, onDelete, existingHabit}: {onSuc
 							value={difficulty}
 							onChange={e => setDifficulty(e.target.value)}
 						>
-							<option value="easy">Easy</option>
-							<option value="medium">Medium</option>
-							<option value="hard">Hard</option>
-							<option value="expert">Expert</option>
+							{DEFAULT_DIFFICULTIES.map(diff => (
+								<option key={diff} value={diff}>
+									{diff.charAt(0).toUpperCase() + diff.slice(1)}
+								</option>
+							))}
 						</select>
 					</label>
 				</div>
@@ -292,3 +288,12 @@ export const HabitForm = ({onSuccess, onCancel, onDelete, existingHabit}: {onSuc
         </form>
 	)
 };
+
+
+function validateValue<T extends readonly string[]>(
+	value: string,
+	validValues: T,
+	fallback: T[number]
+): T[number] {
+	return (validValues.includes(value as any) ? value : fallback) as T[number];
+}

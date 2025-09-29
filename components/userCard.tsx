@@ -1,16 +1,13 @@
-import React, { useState } from "react";
+import React from "react";
+// from file (default):
 import { UserSettings } from "../data/DEFAULT";
-import { useAppContext } from "../context/appContext";
-import { addXP } from "../context/services/xpService";
-import { Notice } from "obsidian";
-
-
 
 interface UserCardProps {
 	user: UserSettings;
 }
 
 export const UserCard: React.FC<UserCardProps> = ({ user }) => {
+	/* Card displaying user information and XP progress */
 
     return (
 		<div className="card">

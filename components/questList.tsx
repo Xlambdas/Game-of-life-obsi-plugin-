@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useMemo } from "react";
+import { Notice } from "obsidian";
+// from files (services, default):
 import { useAppContext } from "../context/appContext";
 import { Quest, UserSettings } from "../data/DEFAULT";
 import { addXP } from "../context/services/xpService";
-import { Notice } from "obsidian";
 import QuestService from "../context/services/questService";
+// from file (UI):
 import { QuestSideView } from "./questSideView";
 import { ModifyQuestModal } from "modal/questModal";
 
@@ -39,7 +41,7 @@ export const QuestList: React.FC<QuestListProps> = ({ quests, onQuestUpdate, onU
 	}, []);
 
 	useEffect(() => {
-		setQuestState(quests); // sync quand props changent
+		setQuestState(quests); // sync when prop changes
 	}, [quests]);
 
 	const handleToggle = (e: React.SyntheticEvent<HTMLDetailsElement, Event>) => {
@@ -63,13 +65,14 @@ export const QuestList: React.FC<QuestListProps> = ({ quests, onQuestUpdate, onU
 		localStorage.setItem("questListSortBy", sort);
 	};
 
-	// Gestion complétion
+
 	const handleCompleteQuest = async (quest: Quest, completed: boolean) => {
+		// Toggle quest completion status
 		try {
 			const updatedQuest = await questService.toggleQuestCompletion(quest);
 			const user = await appService.getUser();
 
-			// MAJ immédiate du state local
+			// MAJ UI
 			const updatedList = questState.map(q =>
 				q.id === updatedQuest.id
 					? {
@@ -96,18 +99,14 @@ export const QuestList: React.FC<QuestListProps> = ({ quests, onQuestUpdate, onU
 					}
 				}
 			} else {
-				// si décochée → on enlève l'XP
+				// if uncompleted
 				user.completedQuests = user.completedQuests.filter((id: string) => id !== updatedQuest.id);
 				if (updatedQuest.reward.XP) {
 					const newUser = await addXP(appService, user as UserSettings, -updatedQuest.reward.XP);
 					onUserUpdate?.(newUser);
 				}
-
-				// await appService.updateUserData(user);
 				new Notice("Quest marked as not completed.");
 			}
-
-			// propager au parent si besoin
 			onQuestUpdate?.(updatedList);
 		} catch (err) {
 			console.error("Error completing quest:", err);
@@ -116,11 +115,9 @@ export const QuestList: React.FC<QuestListProps> = ({ quests, onQuestUpdate, onU
 	};
 
 	const handleModifyQuest = (quest: Quest) => {
-		new Notice("Modify quest feature coming soon!");
 		new ModifyQuestModal(appService.getApp(), quest).open();
 	};
 
-	// Filtrage & tri (sur questState uniquement)
 	const filteredQuests = useMemo(() => {
 		return questState
 			.filter((quest) => {

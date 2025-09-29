@@ -1,4 +1,5 @@
 import React from "react";
+// from file (Default):
 import { Habit } from "../data/DEFAULT";
 
 interface HabitSideViewProps {
@@ -16,6 +17,7 @@ interface HabitSideViewProps {
 }
 
 export const HabitSideView: React.FC<HabitSideViewProps> = (props) => {
+	/* Side view to display and manage habits */
 	const {
 		filteredHabits,
 		isOpen,
@@ -30,6 +32,7 @@ export const HabitSideView: React.FC<HabitSideViewProps> = (props) => {
 		handleModifyHabit,
 	} = props;
 
+	// UI feedback on completion rate
 	const totalCount = filteredHabits.length;
 	const completedCount = filteredHabits.filter((h) => h.streak.isCompletedToday).length;
 	const percent = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
@@ -55,8 +58,7 @@ export const HabitSideView: React.FC<HabitSideViewProps> = (props) => {
 			/>
 
 			<div className="habit-controls-row">
-			{/* Onglets : today / upcoming */}
-
+			{/* today / upcoming */}
 				<button
 					className="habit-filter-button"
 					onClick={() => setActiveTab(activeTab === "today" ? "upcoming" : "today")}
@@ -120,7 +122,6 @@ export const HabitSideView: React.FC<HabitSideViewProps> = (props) => {
 	);
 }
 
-
 interface HabitItemProps {
 	habit: Habit;
 	onComplete: (habit: Habit, completed: boolean) => void;
@@ -129,6 +130,7 @@ interface HabitItemProps {
 
 
 const HabitItem: React.FC<HabitItemProps> = ({ habit, onComplete, onModify }) => {
+	/* Individual habit item with completion and edit options */
 	const isEditable = !habit.isSystemHabit;
 
 	const handleToggle = () => {
@@ -168,7 +170,6 @@ const HabitItem: React.FC<HabitItemProps> = ({ habit, onComplete, onModify }) =>
 			{habit.shortDescription && (
 				<div className="quest-description">{habit.shortDescription}</div>
 			)}
-
 			<div className="quest-xp">
 				XP: {habit.reward.XP} |  Streak: {habit.streak.current}
 			</div>

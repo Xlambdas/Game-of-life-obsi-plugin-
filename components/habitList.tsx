@@ -1,10 +1,13 @@
-import React, { use, useEffect, useMemo, useState } from "react";
-import { ModifyHabitModal } from "modal/habitModal";
-import { DEFAULT_HABIT, Habit, UserSettings } from "data/DEFAULT";
+import React, { useEffect, useMemo, useState } from "react";
+import { Notice } from "obsidian";
+// from files (Service, DEFAULT):
 import { useAppContext } from "context/appContext";
 import { HabitService } from "context/services/habitService";
+import { DEFAULT_HABIT, Habit, UserSettings } from "data/DEFAULT";
+// from files (UI):
 import { HabitSideView } from "./habitSideView";
-import { Notice } from "obsidian";
+import { ModifyHabitModal } from "modal/habitModal";
+
 
 interface HabitListProps {
 	habits: Habit[];
@@ -13,6 +16,7 @@ interface HabitListProps {
 }
 
 export const HabitList: React.FC<HabitListProps> = ({ habits, onHabitUpdate, onUserUpdate }) => {
+	/* Side view to display and manage habits */
 	const appService = useAppContext();
 	const habitService = new HabitService(appService);
 
@@ -22,17 +26,15 @@ export const HabitList: React.FC<HabitListProps> = ({ habits, onHabitUpdate, onU
 	const [filter, setFilter] = useState("");
 	const [activeTab, setActiveTab] = useState<"today" | "upcoming">("today");
 	const [sortBy, setSortBy] = useState<"priority" | "xp" | "difficulty" | "recurrence">("priority");
-	const [habit, setHabits] = useState<Habit[]>([DEFAULT_HABIT]);
 
 	useEffect(() => {
 		const refreshAllHabits = async () => {
+			/* Refresh all habits to update their streaks and next dates */
 			const refreshedHabits = await Promise.all(habitState.map(habit => habitService.refreshHabits(habit)));
 			setHabitState(refreshedHabits);
-			await appService.saveAllHabits(refreshedHabits); // Met à jour la database avec les habits à jour
+			await appService.saveAllHabits(refreshedHabits);
 		};
-		
 		refreshAllHabits();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	useEffect(() => {
@@ -48,20 +50,13 @@ export const HabitList: React.FC<HabitListProps> = ({ habits, onHabitUpdate, onU
 		if (savedSort === "priority" || savedSort === "xp" || savedSort === "difficulty" || savedSort === "recurrence") {
 			setSortBy(savedSort);
 		}
-		// const handleReload = async () => {
-		// 	const habits = await appService.getAllHabit();
-		// 	setHabitState(habits);
-		// };
-
-		// document.addEventListener("habitsUpdated", handleReload);
-		// return () => document.removeEventListener("habitsUpdated", handleReload);
 	}, []);
-
 
 	useEffect(() => {
 		setHabitState(habits); // sync quand props changent
 	}, [habits]);
 
+	// Handlers for UI interactions (and localStorage persistence)
 	const handleToggle = (e: React.SyntheticEvent<HTMLDetailsElement, Event>) => {
 		const details = e.currentTarget;
 		setIsOpen(details.open);
@@ -126,9 +121,7 @@ export const HabitList: React.FC<HabitListProps> = ({ habits, onHabitUpdate, onU
 				} else {
 					// upcoming: nextDate is after today
 					matchesTab = nextDateStr > todayStr && lastCompletedDateStr !== todayStr;
-
 				}
-
 				return matchesSearch && matchesTab;
 			})
 			.sort((a, b) => {
@@ -148,8 +141,6 @@ export const HabitList: React.FC<HabitListProps> = ({ habits, onHabitUpdate, onU
 				}
 			});
 	}, [habitState, filter, activeTab, sortBy]);
-
-
 
 	if (!habitState.length) return <div>No habits available</div>;
 

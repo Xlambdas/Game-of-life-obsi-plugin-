@@ -1,9 +1,8 @@
-// this is the form to create a new quest.
 import React, { useState } from "react";
-import { useAppContext } from "../context/appContext";
-import { v4 as uuid } from "uuid";
-import { DEFAULT_QUEST } from "../data/DEFAULT";
 import { Notice } from "obsidian";
+// from file (services, default):
+import { useAppContext } from "../context/appContext";
+import { DEFAULT_QUEST, DEFAULT_CATEGORIES, DefaultCategory, DEFAULT_DIFFICULTIES, DefaultDifficulty, DEFAULT_PRIORITIES, DefaultPriority } from "../data/DEFAULT";
 
 export const QuestForm = ({onSuccess, onCancel, onDelete, existingQuest}: {onSuccess: () => void, onCancel?: () => void, onDelete?: () => void, existingQuest?: any}) => {
     const [title, setTitle] = useState(existingQuest?.title || "");
@@ -52,13 +51,9 @@ export const QuestForm = ({onSuccess, onCancel, onDelete, existingQuest}: {onSuc
 			description: description.trim() || "",
 			settings: {
 				...existingQuest.settings,
-				category: category.trim() || existingQuest.settings.category,
-				priority: (["low","medium","high"].includes(priority.trim())
-				? priority.trim()
-				: existingQuest.settings.priority) as "low" | "medium" | "high",
-				difficulty: (["easy", "medium", "hard", "expert"].includes(difficulty.trim())
-					? difficulty.trim()
-					: existingQuest.settings.difficulty) as "easy" | "medium" | "hard" | "expert",
+				category: validateValue(category.trim(), DEFAULT_CATEGORIES, existingQuest.settings.category as DefaultCategory),
+				priority: validateValue(priority.trim(), DEFAULT_PRIORITIES, existingQuest.settings.priority as DefaultPriority),
+				difficulty: validateValue(difficulty.trim(), DEFAULT_DIFFICULTIES, existingQuest.settings.difficulty as DefaultDifficulty),
 				isTimeSensitive: !!dueDate,
 			},
 			progression: {
@@ -91,9 +86,9 @@ export const QuestForm = ({onSuccess, onCancel, onDelete, existingQuest}: {onSuc
 				created_at: new Date(),
 				settings: {
 					...DEFAULT_QUEST.settings,
-					category: category.trim() || DEFAULT_QUEST.settings.category,
-					priority: (["low", "medium", "high"].includes(priority.trim()) ? priority.trim() : DEFAULT_QUEST.settings.priority) as "low" | "medium" | "high",
-					difficulty: (["easy", "medium", "hard", "expert"].includes(difficulty.trim()) ? difficulty.trim() : DEFAULT_QUEST.settings.difficulty) as "easy" | "medium" | "hard" | "expert",
+					category: validateValue(category.trim(), DEFAULT_CATEGORIES, DEFAULT_QUEST.settings.category as DefaultCategory),
+					priority: validateValue(priority.trim(), DEFAULT_PRIORITIES, DEFAULT_QUEST.settings.priority as DefaultPriority),
+					difficulty: validateValue(difficulty.trim(), DEFAULT_DIFFICULTIES, DEFAULT_QUEST.settings.difficulty as DefaultDifficulty),
 					isTimeSensitive: dueDate ? true : false,
 				},
 				progression: {
@@ -104,8 +99,6 @@ export const QuestForm = ({onSuccess, onCancel, onDelete, existingQuest}: {onSuc
 			};
 
 			await appContext.addQuest(newQuest);
-			setTitle(""); // reset le champ
-			console.log("Quest created:", newQuest);
 			new Notice(`Quest "${newQuest.title}" created successfully!`);
 			onSuccess();
 			return;
@@ -123,9 +116,6 @@ export const QuestForm = ({onSuccess, onCancel, onDelete, existingQuest}: {onSuc
 						onChange={(e) => setShowAdvanced(e.target.checked)}
 					/>
 					<span className="slider round"></span>
-					{/* <span className="tooltip-text" style={{ visibility: "hidden", position: "absolute" }}>
-						Show/hide supplementary settings
-					</span> */}
 				</label>
 			</div>
 			{/* Title */}
@@ -179,18 +169,13 @@ export const QuestForm = ({onSuccess, onCancel, onDelete, existingQuest}: {onSuc
 						value={category}
 						onChange={e => setCategory(e.target.value)}
 					>
-						<option value="Undefined">Select category</option>
-						<option value="Physical">Physical</option>
-						<option value="Mental">Mental</option>
-						<option value="Social">Social</option>
-						<option value="Creative">Creative</option>
-						<option value="Emotional">Emotional</option>
-						<option value="Organizational">Organizational</option>
-						<option value="Exploration">Exploration</option>
+						<option value="">-- Select Category --</option>
+						{DEFAULT_CATEGORIES.map((cat) => (
+							<option key={cat} value={cat}>{cat.charAt(0).toUpperCase() + cat.slice(1)}</option>
+						))}
 					</select>
 				</label>
 			</div>
-
 
 			{/* Advanced Settings */}
 			{showAdvanced && (
@@ -218,9 +203,9 @@ export const QuestForm = ({onSuccess, onCancel, onDelete, existingQuest}: {onSuc
 							value={priority}
 							onChange={e => setPriority(e.target.value)}
 						>
-							<option value="low">Low</option>
-							<option value="medium">Medium</option>
-							<option value="high">High</option>
+							{DEFAULT_PRIORITIES.map(pri => (
+								<option key={pri} value={pri}>{pri.charAt(0).toUpperCase() + pri.slice(1)}</option>
+							))}
 						</select>
 					</label>
 					<label className="label-select">
@@ -231,10 +216,9 @@ export const QuestForm = ({onSuccess, onCancel, onDelete, existingQuest}: {onSuc
 							value={difficulty}
 							onChange={e => setDifficulty(e.target.value)}
 						>
-							<option value="easy">Easy</option>
-							<option value="medium">Medium</option>
-							<option value="hard">Hard</option>
-							<option value="expert">Expert</option>
+							{DEFAULT_DIFFICULTIES.map(diff => (
+								<option key={diff} value={diff}>{diff.charAt(0).toUpperCase() + diff.slice(1)}</option>
+							))}
 						</select>
 					</label>
 					<label className="label-select">
@@ -274,3 +258,12 @@ export const QuestForm = ({onSuccess, onCancel, onDelete, existingQuest}: {onSuc
         </form>
     );
 };
+
+
+function validateValue<T extends readonly string[]>(
+	value: string,
+	validValues: T,
+	fallback: T[number]
+): T[number] {
+	return (validValues.includes(value as any) ? value : fallback) as T[number];
+}
