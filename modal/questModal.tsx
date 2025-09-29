@@ -1,14 +1,14 @@
 import { App, Modal, Notice } from 'obsidian';
-import React from 'react';
 import * as ReactDOM from 'react-dom/client';
-// from files :
+// from files (services, Default) :
 import { AppContextService } from '../context/appContextService';
 import { AppProvider } from '../context/appContext';
-import { QuestList } from '../components/questList';
-import { CreateQuestModalUI, ModifyQuestModalUI } from '../UI/questUIHelpers';
 import { Quest } from 'data/DEFAULT';
+// from files (UI) :
+import { CreateQuestModalUI, ModifyQuestModalUI } from '../UI/questUIHelpers';
 
 export class CreateQuestModal extends Modal {
+	/* Modal for creating a new quest */
 	constructor(app: App) {
 		super(app);
 	}
@@ -34,6 +34,7 @@ export class CreateQuestModal extends Modal {
 }
 
 export class ModifyQuestModal extends Modal {
+	/* Modal for modifying a quest */
 	private quest: Quest;
 	constructor(app: App, quest: Quest) {
 		super(app);

@@ -1,6 +1,7 @@
 import { App, Modal } from 'obsidian';
 
 export class RuleModal extends Modal {
+	/* Modal for the rules of the game (called from the settingTab) */
 	constructor(app: App) {
 		super(app);
 	}

@@ -1,16 +1,15 @@
 import { App, Modal, Notice } from 'obsidian';
-import React from 'react';
 import * as ReactDOM from 'react-dom/client';
-// from files :
+// from files (services, Default) :
 import { AppContextService } from '../context/appContextService';
 import { AppProvider } from '../context/appContext';
-import { Habit, Quest } from 'data/DEFAULT';
-import { ModifyQuestModal } from './questModal';
+import { Habit } from 'data/DEFAULT';
+// from files (UI) :
 import { CreateHabitModalUI, ModifyHabitModalUI } from '../UI/habitUIHelpers';
-import { ModifyQuestModalUI } from 'UI/questUIHelpers';
-import { HabitService } from 'context/services/habitService';
+
 
 export class CreateHabitModal extends Modal {
+	/* Modal for creating a new habit */
 	constructor(app: App) {
 		super(app);
 	}
@@ -36,6 +35,7 @@ export class CreateHabitModal extends Modal {
 }
 
 export class ModifyHabitModal extends Modal {
+	/* Modal for modifying a habit */
 	private habit: Habit;
 	constructor(app: App, habit: Habit) {
 		super(app);
@@ -76,6 +76,7 @@ export class ModifyHabitModal extends Modal {
 		this.contentEl.empty();
 	}
 }
+
 let onHabitUpdate: ((habit: Habit) => void) | null = null;
 export function openModifyHabitModal(app: App, habit: Habit, onUpdate: (habit: Habit) => void) {
 	onHabitUpdate = onUpdate;

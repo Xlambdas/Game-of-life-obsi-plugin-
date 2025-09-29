@@ -1,6 +1,7 @@
 import { App, Modal, Setting } from 'obsidian';
 
 export class difficultyModal extends Modal {
+	/* Modal for the setting of the difficulty */
 	private resolve: ((value: boolean) => void) | null = null;
 
 	constructor(app: App) {
