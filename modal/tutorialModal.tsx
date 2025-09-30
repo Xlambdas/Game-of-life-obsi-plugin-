@@ -1,6 +1,7 @@
 import { App, Modal } from "obsidian";
 
 export class TutorialModal extends Modal {
+	// todo: fill the modal with the tutorial content
 	constructor(app: App) {
 		super(app);
 	}

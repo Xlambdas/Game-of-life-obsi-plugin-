@@ -112,6 +112,7 @@ export const HabitSideView: React.FC<HabitSideViewProps> = (props) => {
 				<HabitItem
 					key={habit.id}
 					habit={habit}
+					activeTab={activeTab}
 					onComplete={handleComplete}
 					onModify={handleModifyHabit}
 				/>
@@ -124,12 +125,13 @@ export const HabitSideView: React.FC<HabitSideViewProps> = (props) => {
 
 interface HabitItemProps {
 	habit: Habit;
+	activeTab: "today" | "upcoming";
 	onComplete: (habit: Habit, completed: boolean) => void;
 	onModify: (habit: Habit) => void;
 }
 
 
-const HabitItem: React.FC<HabitItemProps> = ({ habit, onComplete, onModify }) => {
+const HabitItem: React.FC<HabitItemProps> = ({ habit, activeTab, onComplete, onModify }) => {
 	/* Individual habit item with completion and edit options */
 	const isEditable = !habit.isSystemHabit;
 
@@ -149,6 +151,7 @@ const HabitItem: React.FC<HabitItemProps> = ({ habit, onComplete, onModify }) =>
 						type="checkbox"
 						checked={habit.streak.isCompletedToday}
 						onChange={handleToggle}
+						disabled={activeTab === "upcoming"}
 						className="quest-checkbox"
 					/>
 					<span className={`quest-title ${habit.streak.isCompletedToday ? "completed" : ""}`}>
