@@ -1,7 +1,7 @@
 // from files (Default) :
 import { Habit } from 'data/DEFAULT';
 // from files (UI):
-import { HabitForm } from '../components/habitForm';
+import { HabitForm } from '../components/forms/habits/habitForm';
 
 
 export function CreateHabitModalUI({ onSuccess, onCancel }: { onSuccess: () => void, onCancel: () => void }) {

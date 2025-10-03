@@ -226,7 +226,20 @@ export type AttributeBlock = {
 	reputation: number;
 	resilience: number;
 }
-
+export const DEFAULT_ATTRIBUTES: (keyof AttributeBlock)[] = [
+	"strength",
+	"agility",
+	"endurance",
+	"charisma",
+	"wisdom",
+	"perception",
+	"intelligence",
+	"willpower",
+	"spirit",
+	"flow",
+	"reputation",
+	"resilience"
+];
 
 export type TaskType = 'quest' | 'habit'; // | 'skill' | 'goal'; //todo : add skills/goals/...
 

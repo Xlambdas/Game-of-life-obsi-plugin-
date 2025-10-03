@@ -1,7 +1,7 @@
 // from files (Default) :
 import { Quest } from 'data/DEFAULT';
 // from files (UI):
-import { QuestForm } from 'components/questForm';
+import { QuestForm } from 'components/forms/quests/questForm';
 
 
 export function CreateQuestModalUI({ onSuccess, onCancel }: { onSuccess: () => void, onCancel: () => void }) {

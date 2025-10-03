@@ -33,10 +33,10 @@
     }
   },
   "xpDetails": {
-    "xp": 10,
+    "xp": 20,
     "level": 1,
     "maxLevel": 100,
-    "newXp": 10,
+    "newXp": 20,
     "lvlThreshold": 100,
     "freePts": 0
   },
@@ -58,7 +58,8 @@
   "habits": {},
   "quests": {},
   "completedQuests": [
-    "quest_1"
+    "quest_1",
+    "quest_6"
   ],
   "objectives": [],
   "challenges": [],
