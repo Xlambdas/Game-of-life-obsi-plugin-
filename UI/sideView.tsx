@@ -6,9 +6,9 @@ import { useAppContext } from "../context/appContext";
 import { addXP } from "../context/services/xpService";
 import { UserSettings, Quest, Habit } from "../data/DEFAULT";
 // from files (UI, components):
-import { UserCard } from "../components/userCard";
-import { QuestList } from "../components/questList";
-import { HabitList } from "components/habitList";
+import { UserCard } from "../components/forms/UI/userCard";
+import { QuestList } from "../components/quests/questList";
+import { HabitList } from "components/habits/habitList";
 
 export const SideView: React.FC = () => {
 	/* SideView component that displays user info, quests, and habits.

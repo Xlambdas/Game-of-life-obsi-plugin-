@@ -1,6 +1,6 @@
 import React from "react";
 // from file (Default):
-import { Habit } from "../data/DEFAULT";
+import { Habit } from "../../data/DEFAULT";
 
 interface HabitSideViewProps {
 	filteredHabits: Habit[];

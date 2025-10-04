@@ -1,6 +1,6 @@
 import React from "react";
 // from file (default):
-import { Quest } from "../data/DEFAULT";
+import { Quest } from "../../data/DEFAULT";
 
 interface QuestSideViewProps {
 	filteredQuests: Quest[];

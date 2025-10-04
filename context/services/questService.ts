@@ -3,7 +3,7 @@ import { App } from 'obsidian';
 import { AppContextService } from '../appContextService';
 import { Quest } from '../../data/DEFAULT';
 // from files (UI):
-import { CreateQuestModal } from '../../modal/questModal';
+// import { CreateQuestModal } from '../../modal/questModal';
 
 export default class QuestService {
 	/* Higher-level quest operations: create, save, update, toggle completion.
@@ -14,10 +14,6 @@ export default class QuestService {
 
 	constructor(contextService: AppContextService) {
 		this.appContext = contextService;
-	}
-
-	async createQuest(app: App): Promise<void> {
-		new CreateQuestModal(app).open();
 	}
 
 	async toggleQuestCompletion(quest: Quest): Promise<Quest> {

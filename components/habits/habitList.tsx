@@ -6,7 +6,7 @@ import { HabitService } from "context/services/habitService";
 import { DEFAULT_HABIT, Habit, UserSettings } from "data/DEFAULT";
 // from files (UI):
 import { HabitSideView } from "./habitSideView";
-import { ModifyHabitModal } from "modal/habitModal";
+import { GenericForm } from "../forms/genericForm";
 
 
 interface HabitListProps {
@@ -88,8 +88,7 @@ export const HabitList: React.FC<HabitListProps> = ({ habits, onHabitUpdate, onU
 
 	const handleModify = (habit: Habit) => {
 		console.log("Modifying habit:", habit);
-		new Notice("Opening modify habit modal");
-		new ModifyHabitModal(appService.getApp(), habit).open();
+		new GenericForm(appService.getApp(), 'habit-modify', habit).open();
 	};
 
 	const filteredHabits = useMemo(() => {

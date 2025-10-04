@@ -5,8 +5,29 @@ import { useAppContext } from 'context/appContext';
 import { DEFAULT_HABIT, Habit, DEFAULT_PRIORITIES, DefaultPriority, DEFAULT_CATEGORIES, DefaultCategory, DEFAULT_DIFFICULTIES, DefaultDifficulty, DEFAULT_RECURRENCES, DefaultRecurrence } from 'data/DEFAULT';
 
 
-export const HabitForm = ({onSuccess, onCancel, onDelete, existingHabit}: {onSuccess: () => void, onCancel?: () => void, onDelete?: () => void, existingHabit?: Habit}) => {
-	/* Form to create or modify a habit */
+function validateValue<T extends readonly string[]>(
+	value: string,
+	validValues: T,
+	fallback: T[number]
+): T[number] {
+	return (validValues.includes(value as any) ? value : fallback) as T[number];
+}
+
+
+export const HabitFormUI = ({
+	mode,
+	existingHabit,
+	onSuccess,
+	onCancel,
+	onDelete,
+}: {
+	mode: 'habit-create' | 'habit-modify',
+	existingHabit?: any,
+	onSuccess: (habit: Habit) => void,
+	onCancel?: () => void,
+	onDelete?: () => void,
+}) => {
+		/* Form to create or modify a habit */
 	const [title, setTitle] = useState(existingHabit?.title || "");
 	const [shortDescription, setShortDescription] = useState(existingHabit?.shortDescription || "");
 	const [interval, setInterval] = useState(existingHabit?.recurrence.interval || DEFAULT_HABIT.recurrence.interval);
@@ -70,7 +91,7 @@ export const HabitForm = ({onSuccess, onCancel, onDelete, existingHabit}: {onSuc
 			}
 			};
 			await appContext.updateHabit(updatedHabit);
-			onSuccess();
+			onSuccess(updatedHabit);
 			return;
 		} else {
 			// Create new habit
@@ -103,11 +124,10 @@ export const HabitForm = ({onSuccess, onCancel, onDelete, existingHabit}: {onSuc
 			};
 
 			await appContext.addHabit(newHabit);
-			console.log("Habit created:", newHabit);
 			new Notice(`Habit "${newHabit.title}" created successfully!`);
-			onSuccess();
+			onSuccess(newHabit);
 			return;
-		};
+		}
 	};
 
 	return (
@@ -286,14 +306,5 @@ export const HabitForm = ({onSuccess, onCancel, onDelete, existingHabit}: {onSuc
                 </div>
 			</div>
         </form>
-	)
+	);
 };
-
-
-function validateValue<T extends readonly string[]>(
-	value: string,
-	validValues: T,
-	fallback: T[number]
-): T[number] {
-	return (validValues.includes(value as any) ? value : fallback) as T[number];
-}

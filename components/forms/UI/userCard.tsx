@@ -1,6 +1,6 @@
 import React from "react";
 // from file (default):
-import { UserSettings } from "../data/DEFAULT";
+import { UserSettings } from "../../../data/DEFAULT";
 
 interface UserCardProps {
 	user: UserSettings;

@@ -3,10 +3,9 @@ import { Plugin } from 'obsidian';
 import { AppContextService } from './context/appContextService';
 import { ViewService } from './context/services/viewService';
 // from files - other
-import { CreateQuestModal } from './modal/questModal';
+// import { CreateQuestModal } from './modal/questModal';
 import { selfSettingsTab } from './UI/settingsTab';
-import { CreateHabitModal } from 'modal/habitModal';
-
+import { GenericForm } from 'components/forms/genericForm';
 
 export default class GOL extends Plugin {
 	private viewService!: ViewService;
@@ -44,23 +43,31 @@ export default class GOL extends Plugin {
 		});
 
 		// creation commands (quest or habit)
-		this.addCommand({
-			id: 'create-new-quest',
-			name: 'Create New Quest',
-			callback: () => {
-				new CreateQuestModal(this.app).open();
-			}
-		});
+		// this.addCommand({
+		// 	id: 'create-new-quest',
+		// 	name: 'Create New Quest',
+		// 	callback: () => {
+		// 		new CreateQuestModal(this.app).open();
+		// 	}
+		// });
 		this.addCommand({
 			id: 'create-new-habit',
 			name: 'Create New Habit',
 			callback: () => {
-				new CreateHabitModal(this.app).open();
+				new GenericForm(this.app, 'habit-create').open();
+			}
+		});
+
+		this.addCommand({
+			id: 'create-new-quest',
+			name: 'Create New Quest',
+			callback: () => {
+				new GenericForm(this.app, 'quest-create').open();
 			}
 		});
 
 		this.addRibbonIcon("plus", "create Habit", ()=>{
-			new CreateHabitModal(this.app).open();
+			new GenericForm(this.app, 'habit-create').open();
 		})
 	}
 

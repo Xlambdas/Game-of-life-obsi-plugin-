@@ -1,13 +1,14 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Notice } from "obsidian";
 // from files (services, default):
-import { useAppContext } from "../context/appContext";
-import { Quest, UserSettings } from "../data/DEFAULT";
-import { addXP } from "../context/services/xpService";
-import QuestService from "../context/services/questService";
+import { useAppContext } from "../../context/appContext";
+import { Quest, UserSettings } from "../../data/DEFAULT";
+import { addXP } from "../../context/services/xpService";
+import QuestService from "../../context/services/questService";
 // from file (UI):
 import { QuestSideView } from "./questSideView";
-import { ModifyQuestModal } from "modal/questModal";
+// import { ModifyQuestModal } from "modal/questModal";
+import { GenericForm } from "../forms/genericForm";
 
 interface QuestListProps {
 	quests: Quest[];
@@ -114,8 +115,8 @@ export const QuestList: React.FC<QuestListProps> = ({ quests, onQuestUpdate, onU
 		}
 	};
 
-	const handleModifyQuest = (quest: Quest) => {
-		new ModifyQuestModal(appService.getApp(), quest).open();
+	const handleModify = (quest: Quest) => {
+		new GenericForm(appService.getApp(), 'quest-modify', quest).open();
 	};
 
 	const filteredQuests = useMemo(() => {
@@ -163,7 +164,7 @@ export const QuestList: React.FC<QuestListProps> = ({ quests, onQuestUpdate, onU
 			setFilter={handleSetFilter}
 			setActiveTab={handleSetActiveTab}
 			setSortBy={handleSetSortBy}
-			handleModifyQuest={handleModifyQuest}
+			handleModifyQuest={handleModify}
 		/>
 	);
 };
