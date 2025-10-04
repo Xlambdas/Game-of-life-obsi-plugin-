@@ -1,9 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Notice } from "obsidian";
 // from files (Service, DEFAULT):
 import { useAppContext } from "context/appContext";
 import { HabitService } from "context/services/habitService";
-import { DEFAULT_HABIT, Habit, UserSettings } from "data/DEFAULT";
+import { Habit, UserSettings } from "data/DEFAULT";
 // from files (UI):
 import { HabitSideView } from "./habitSideView";
 import { GenericForm } from "../forms/genericForm";
@@ -78,7 +77,7 @@ export const HabitList: React.FC<HabitListProps> = ({ habits, onHabitUpdate, onU
 	};
 
 	const handleCheckbox = async (habit: Habit, completed: boolean) => {
-		console.log(`Toggling habit ${habit.id} to ${completed}`);
+		// console.log(`Toggling habit ${habit.id} to ${completed}`);
 		const updatedHabit = await habitService.updateHabitCompletion(habit, completed);
 		await habitService.saveHabit(updatedHabit);
 		const updatedHabits = habitState.map(h => h.id === updatedHabit.id ? updatedHabit : h);
@@ -87,7 +86,7 @@ export const HabitList: React.FC<HabitListProps> = ({ habits, onHabitUpdate, onU
 	};
 
 	const handleModify = (habit: Habit) => {
-		console.log("Modifying habit:", habit);
+		// console.log("Modifying habit:", habit);
 		new GenericForm(appService.getApp(), 'habit-modify', habit).open();
 	};
 

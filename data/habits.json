@@ -372,11 +372,15 @@
         {
           "date": "2025-09-30T06:28:42.124Z",
           "success": true
+        },
+        {
+          "date": "2025-10-04T16:46:14.647Z",
+          "success": true
         }
       ],
-      "isCompletedToday": false,
-      "nextDate": "2025-10-01T06:28:42.124Z",
-      "lastCompletedDate": "2025-09-30T06:28:42.124Z"
+      "isCompletedToday": true,
+      "nextDate": "2025-10-05T16:46:14.647Z",
+      "lastCompletedDate": "2025-10-04T16:46:14.647Z"
     },
     "progress": {
       "level": 1,
@@ -457,11 +461,15 @@
         {
           "date": "2025-09-30T06:01:29.954Z",
           "success": true
+        },
+        {
+          "date": "2025-10-04T16:46:16.193Z",
+          "success": true
         }
       ],
-      "isCompletedToday": false,
-      "nextDate": "2025-10-01T06:01:29.954Z",
-      "lastCompletedDate": "2025-09-30T06:01:29.954Z"
+      "isCompletedToday": true,
+      "nextDate": "2025-10-05T16:46:16.193Z",
+      "lastCompletedDate": "2025-10-04T16:46:16.193Z"
     },
     "progress": {
       "level": 1,
@@ -608,7 +616,7 @@
       "unit": "days"
     },
     "streak": {
-      "current": 1,
+      "current": 0,
       "best": 1,
       "history": [
         {

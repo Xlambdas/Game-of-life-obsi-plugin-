@@ -6,6 +6,7 @@ import { ViewService } from './context/services/viewService';
 // import { CreateQuestModal } from './modal/questModal';
 import { selfSettingsTab } from './UI/settingsTab';
 import { GenericForm } from 'components/forms/genericForm';
+import { openFullscreenMainView } from 'helpers/sideViewSetting';
 
 export default class GOL extends Plugin {
 	private viewService!: ViewService;
@@ -34,6 +35,10 @@ export default class GOL extends Plugin {
 			this.viewService.openSideView();
 		});
 
+		this.addRibbonIcon("swords", "Open mainView", () => {
+			this.viewService.openMainView();
+		});
+
 		this.addCommand({
 			id: 'open-side-view',
 			name: 'Open side View',
@@ -42,14 +47,6 @@ export default class GOL extends Plugin {
 			}
 		});
 
-		// creation commands (quest or habit)
-		// this.addCommand({
-		// 	id: 'create-new-quest',
-		// 	name: 'Create New Quest',
-		// 	callback: () => {
-		// 		new CreateQuestModal(this.app).open();
-		// 	}
-		// });
 		this.addCommand({
 			id: 'create-new-habit',
 			name: 'Create New Habit',
@@ -66,13 +63,18 @@ export default class GOL extends Plugin {
 			}
 		});
 
-		this.addRibbonIcon("plus", "create Habit", ()=>{
-			new GenericForm(this.app, 'habit-create').open();
-		})
+		this.addCommand({
+			id: 'open-fullscreen-main-view',
+			name: 'Open Fullscreen Main View',
+			callback: () => {
+				openFullscreenMainView();
+			}
+		});
 	}
 
 	onunload() {
 		this.viewService.closeSideView();
+		this.viewService.closeMainView();
 		console.warn('Game of Life plugin unloaded');
 	}
 }

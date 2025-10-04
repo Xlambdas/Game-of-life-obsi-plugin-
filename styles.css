@@ -508,22 +508,202 @@ input:checked + .slider::before {
     display: flex;
     align-items: center;
 }
-/* 
-.habit-filter-button:hover {
-  background: #334155;
+
+/* mainView styles */
+.main-view {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: flex-start;
+	padding: 2rem;
+	/* background: radial-gradient(circle at center, #1a1a1a, #0d0d0d); */
+	color: #e0e0e0;
+	min-height: 100%;
+	font-family: "Cinzel", serif;
 }
 
-.habit-filter-button:active {
-  transform: scale(0.95);
+.main-view .column {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
 }
 
-.habit-filter-button.today {
-  background: #0ea5e9; /* bleu clair 
+.main-view .card {
+	background: rgba(255, 255, 255, 0.05);
+	border: 1px solid rgba(0, 188, 212, 0.2);
+	border-radius: 16px;
+	padding: 2rem;
+	box-shadow: 0 0 20px rgba(0, 188, 212, 0.15);
+	transition: transform 0.3s ease, box-shadow 0.3s ease;
+	backdrop-filter: blur(6px);
+	width: 100%;
+	max-width: 800px;
 }
 
-.habit-filter-button.upcoming {
-  background: #22c55e; /* vert 
-} */
+.main-view .card:hover {
+	transform: translateY(-4px);
+	box-shadow: 0 0 25px rgba(0, 188, 212, 0.4);
+}
+
+.main-view .card-title {
+	font-size: 1.5rem;
+	text-align: center;
+	color: #00bcd4;
+	text-shadow: 0 0 8px rgba(0, 188, 212, 0.8);
+	margin-bottom: 1.5rem;
+}
+
+.main-view .card h2 {
+	margin: 0 0 12px;
+	font-size: 1.2rem;
+	font-weight: bold;
+	color: var(--text-normal);
+}
+
+.main-view .attributes {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 8px;
+}
+
+.main-view .attribute {
+	display: flex;
+	justify-content: space-between;
+	background: var(--background-secondary);
+	padding: 6px 10px;
+	border-radius: 6px;
+}
+
+.main-view .attr-name {
+	font-weight: 600;
+}
+
+.main-view .attr-value {
+	color: var(--text-accent);
+}
+
+.main-view .list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.main-view .list-item {
+	display: flex;
+	justify-content: space-between;
+	background: var(--background-secondary);
+	padding: 8px 12px;
+	border-radius: 6px;
+	margin-bottom: 6px;
+}
+
+.meta {
+	font-size: 0.8rem;
+	color: var(--text-muted);
+}
+
+.empty {
+	font-size: 0.9rem;
+	color: var(--text-muted);
+	font-style: italic;
+}
+
+.radar-wrapper {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	height: 400px;
+}
+
+@media (max-width: 600px) {
+	.radar-wrapper {
+		height: 300px;
+	}
+}
+
+
+.user-panel {
+	margin-bottom: 2rem;
+}
+
+.dashboard-container {
+	display: flex;
+	gap: 2rem;
+	width: 100%;
+	max-width: 1200px;
+	margin: 0 auto;
+	align-items: flex-start;
+	justify-content: space-between;
+	flex-wrap: wrap; /* responsive fallback */
+}
+
+.dashboard-left {
+  	flex: 1 1 300px; /* grow, shrink, min width */
+}
+
+.dashboard-right {
+  	flex: 2 1 500px; /* wider for chart */
+}
+
+/* Card Styling */
+.main-view .dashboard-left.card,
+.main-view .dashboard-right.card {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(0, 188, 212, 0.2);
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 0 20px rgba(0, 188, 212, 0.15);
+  backdrop-filter: blur(6px);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.dashboard-left.card:hover,
+.dashboard-right.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 0 25px rgba(0, 188, 212, 0.4);
+}
+
+/* Responsive */
+@media (max-width: 800px) {
+  .dashboard-container {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .dashboard-left,
+  .dashboard-right {
+    flex: 1 1 100%;
+  }
+}
+
+.radar-wrapper {
+  width: 100%;
+  height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.weak-stats-panel .focus-attr {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 10px;
+  border-radius: 6px;
+  margin-bottom: 4px;
+  background: rgba(0, 188, 212, 0.05);
+}
+
+.task-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 10px;
+  margin-bottom: 4px;
+  border-radius: 6px;
+  background: rgba(0, 188, 212, 0.05);
+  font-size: 0.9rem;
+}
+
 
 
 /* ---------------------- button ---------------------- */
@@ -551,4 +731,23 @@ input:checked + .slider::before {
 .delete-btn:disabled {
 	background-color: #ef9a9a;
 	cursor: not-allowed;
+}
+
+
+/* ---------------------- test fullscreen ---------------------- */
+.gol-fullscreen-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	background: var(--background-primary);
+	z-index: 9999; /* au-dessus de tout */
+	display: flex;
+	flex-direction: column;
+}
+.exit-fullscreen {
+	position: absolute;
+	top: 10px;
+	right: 10px;
 }

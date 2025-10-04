@@ -961,25 +961,24 @@
   },
   "Quest_0": {
     "id": "Quest_0",
-    "title": "quest-final",
-    "shortDescription": "sxdtfcygvbuhnj,kl",
-    "description": "ezqsdfchkjb",
-    "created_at": "2025-10-04T13:22:31.122Z",
+    "title": "quest test main view",
+    "shortDescription": "are you sure this is going to work ??",
+    "description": "",
+    "created_at": "2025-10-04T15:32:59.748Z",
     "settings": {
       "type": "quest",
       "category": "Mental",
-      "priority": "high",
-      "difficulty": "expert",
+      "priority": "low",
+      "difficulty": "easy",
       "isSecret": false,
-      "isTimeSensitive": true
+      "isTimeSensitive": false
     },
     "progression": {
       "isCompleted": false,
       "completedAt": null,
       "progress": 0,
-      "dueDate": "2026-12-12T00:00:00.000Z",
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-10-04T13:23:25.252Z",
+      "lastUpdated": "2025-10-04T15:35:25.235Z",
       "subtasks": [],
       "attempts": 0,
       "failures": 0,
@@ -995,10 +994,10 @@
         "charisma": 0,
         "wisdom": 0,
         "perception": 0,
-        "intelligence": 0,
+        "intelligence": 1,
         "willpower": 0,
         "spirit": 0,
-        "flow": 2,
+        "flow": 0,
         "reputation": 0,
         "resilience": 0
       },
@@ -1008,7 +1007,7 @@
       "spiritBoost": 0
     },
     "requirements": {
-      "level": 2,
+      "level": 1,
       "previousQuests": [],
       "attributes": {
         "strength": 0,

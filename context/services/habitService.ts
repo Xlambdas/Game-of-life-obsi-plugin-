@@ -25,9 +25,9 @@ export class HabitService {
 		const history = habit.streak.history.map(h => ({ ...h, date: new Date(h.date) }));
 		const lastDate = [...history].reverse().find(entry => entry.success)?.date ?? new Date(0);
 		const nextDate = this.calculateNextDate(lastDate, habit.recurrence, habit.created_at);
-		console.log(
-			`Updating dates for habit ${habit.id}: lastCompletedDate=${lastDate.toDateString()}, nextDate=${nextDate.toDateString()}`
-		);
+		// console.log(
+		// 	`Updating dates for habit ${habit.id}: lastCompletedDate=${lastDate.toDateString()}, nextDate=${nextDate.toDateString()}`
+		// );
 
 		return {
 			...habit,
