@@ -1,6 +1,6 @@
 // from file (Default):
-import { error } from "console";
-import { DEFAULT_CATEGORIES, DEFAULT_DIFFICULTIES, DEFAULT_PRIORITIES } from "data/DEFAULT";
+import { DEFAULT_CATEGORIES, DEFAULT_DIFFICULTIES, DEFAULT_PRIORITIES, DEFAULT_RECURRENCES, DefaultRecurrence } from "data/DEFAULT";
+// from file (UI, components):
 import { RewardAttributeInput, AttributeReward } from "./rewardAttributeInput";
 
 
@@ -241,3 +241,57 @@ export const RewardsInput = ({
 	)
 };
 
+export const RecurrenceInput = ({
+	interval, setInterval,
+	unit, setUnit,
+	error, setError
+}: {
+	interval: number;
+	setInterval: (interval: number) => void;
+	unit: string;
+	setUnit: (unit: string) => void;
+	error: {[key: string]: string};
+	setError: (error: {[key: string]: string}) => void;
+}) => {
+	return (
+		<div className="form-section">
+			<hr className='separator'></hr>
+			<h3>Recurrence</h3>
+			<label className="label-select">
+				<span>Interval</span>
+				<input
+					type="number"
+					name="recurrence"
+					placeholder="1, 2, 3..."
+					className="input"
+					value={interval}
+					onChange={(e) => {
+						setInterval(Number(e.target.value))
+						if (error.interval) {
+							setError({ ...error, interval: "" });
+						}
+					}}
+					min={1}
+				/>
+			</label>
+			<label className="label-select">
+				<span>Unit</span>
+				<select
+					name="recurrenceUnit"
+					className="input"
+					value={unit}
+					onChange={e => setUnit(e.target.value as DefaultRecurrence)}
+				>
+					{DEFAULT_RECURRENCES.map(rec => (
+						<option key={rec} value={rec}>
+							{rec.charAt(0).toUpperCase() + rec.slice(1)}
+						</option>
+					))}
+				</select>
+			</label>
+			<p className="helper-text">
+				Set how often you want to perform this habit. Consistency is key to building lasting habits!
+			</p>
+		</div>
+	)
+};

@@ -1,11 +1,9 @@
-import { Notice } from "obsidian";
 import React, { useState } from "react";
 // from file (services, default):
 import { useAppContext } from "../../context/appContext";
-import { DEFAULT_QUEST, DEFAULT_CATEGORIES, DefaultCategory, DEFAULT_DIFFICULTIES, DefaultDifficulty, DEFAULT_PRIORITIES, DefaultPriority, Quest } from "../../data/DEFAULT";
+import { DEFAULT_QUEST, Quest } from "../../data/DEFAULT";
 // from file (UI, components):
-import { RewardAttributeInput } from "../forms/UI/rewardAttributeInput";
-import { validateValue, FormHeader, FormFooter } from "../forms/UI/formHelpers";
+import { FormHeader, FormFooter } from "../forms/UI/formHelpers";
 import { validateAndBuildQuest } from "./questHelpers";
 import { TitleInput, ShortDescription_CategoryInput, SupplementaryInput, DueDateInput, RequirementsInput, RewardsInput } from "components/forms/UI/formInputs";
 
