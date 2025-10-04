@@ -5,14 +5,9 @@ import { useAppContext } from "../../context/appContext";
 import { DEFAULT_QUEST, DEFAULT_CATEGORIES, DefaultCategory, DEFAULT_DIFFICULTIES, DefaultDifficulty, DEFAULT_PRIORITIES, DefaultPriority, Quest } from "../../data/DEFAULT";
 // from file (UI, components):
 import { RewardAttributeInput } from "../forms/UI/rewardAttributeInput";
-
-function validateValue<T extends readonly string[]>(
-	value: string,
-	validValues: T,
-	fallback: T[number]
-): T[number] {
-	return (validValues.includes(value as any) ? value : fallback) as T[number];
-}
+import { validateValue, FormHeader, FormFooter } from "../forms/UI/formHelpers";
+import { validateAndBuildQuest } from "./questHelpers";
+import { TitleInput, ShortDescription_CategoryInput, SupplementaryInput, DueDateInput, RequirementsInput, RewardsInput } from "components/forms/UI/formInputs";
 
 export const QuestFormUI = ({
 	existingQuest,
@@ -25,7 +20,7 @@ export const QuestFormUI = ({
 	onCancel?: () => void,
 	onDelete?: () => void,
 }) => {
-
+	/* Form to create or modify a quest */
     const [title, setTitle] = useState(existingQuest?.title || "");
 	const [shortDescription, setShortDescription] = useState(existingQuest?.shortDescription || "");
 	const [showAdvanced, setShowAdvanced] = useState(false);
@@ -33,292 +28,92 @@ export const QuestFormUI = ({
 	const [category, setCategory] = useState(existingQuest?.settings.category || "");
 	const [priority, setPriority] = useState(existingQuest?.settings.priority || "");
 	const [difficulty, setDifficulty] = useState(existingQuest?.settings.difficulty || "");
-	const [dueDate, setDueDate] = useState(existingQuest?.progression.dueDate || "");
+	const [dueDate, setDueDate] = useState(existingQuest?.progression.dueDate ? new Date(existingQuest?.progression.dueDate).toISOString().split('T')[0] : "");
 	const [levelMin, setLevelMin] = useState(existingQuest?.requirements.level || 1);
 	const [attributeRewards, setAttributeRewards] = useState(existingQuest?.reward.attributes || DEFAULT_QUEST.reward.attributes);
 
 	const [error, setError] = useState<{[key: string]: string}>({}); // Initialize error state
 	const appContext = useAppContext();
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-		const newError: {[key: string]: string} = {};
-		if (!title.trim()) {
-			newError.title = "Title is required.";
+	const handleSubmit = async (e: React.FormEvent) => {
+		e.preventDefault();
+		const { quest, errors } = await validateAndBuildQuest({
+			existingQuest,
+			title, shortDescription, description,
+			category, priority, difficulty,
+			dueDate: dueDate ? new Date(dueDate) : undefined, levelMin, attributeRewards,
+			appContext
+		});
+		if (quest) {
+			onSuccess(quest);
 		}
-		if (!shortDescription.trim()) {
-			newError.shortDescription = "Short description is required.";
+		if (Object.keys(errors).length > 0) {
+			setError(errors);
 		}
-
-		if (dueDate) {
-			const today = new Date();
-			today.setHours(0, 0, 0, 0);
-			const dueDateObj = new Date(dueDate);
-			dueDateObj.setHours(0, 0, 0, 0);
-			if (dueDateObj < today) {
-				newError.dueDate = "Due date must be today or in the future.";
-			}
-		}
-		if (Object.keys(newError).length > 0) {
-			setError(newError);
-			new Notice("Please fix the errors in the form.");
-			return;
-		}
-		setError({}); // Clear errors if validation passes
-
-		if (existingQuest) {
-			const updatedQuest = {
-				...existingQuest,
-				title: title.trim(),
-				shortDescription: shortDescription.trim(),
-				description: description.trim() || "",
-				settings: {
-					...existingQuest.settings,
-					category: validateValue(category.trim(), DEFAULT_CATEGORIES, existingQuest.settings.category as DefaultCategory),
-					priority: validateValue(priority.trim(), DEFAULT_PRIORITIES, existingQuest.settings.priority as DefaultPriority),
-					difficulty: validateValue(difficulty.trim(), DEFAULT_DIFFICULTIES, existingQuest.settings.difficulty as DefaultDifficulty),
-					isTimeSensitive: !!dueDate,
-				},
-				progression: {
-					...existingQuest.progression,
-					dueDate: dueDate ? new Date(dueDate) : undefined,
-					lastUpdated: new Date(),
-				},
-				requirements: {
-					...existingQuest.requirements,
-					level: levelMin >= 1 ? levelMin : 1,
-				},
-				reward: {
-					...existingQuest.reward,
-					attributes: attributeRewards,
-				},
-			};
-			await appContext.updateQuest(updatedQuest);
-			onSuccess(updatedQuest);
-			return;
-		} else {
-
-			const questsObj = await appContext.getQuests();
-			const quests = Object.values(questsObj);
-			const usedIds = quests.map((q: any) => q.id);
-			let nextIdNum = 1;
-			let nextId = `quest_${nextIdNum}`;
-			while (usedIds.includes(nextId)) {
-				nextIdNum++;
-				nextId = `quest_${nextIdNum}`;
-			}
-
-			const newQuest = {
-				...DEFAULT_QUEST,
-				id: nextId,
-				title: title.trim(),
-				shortDescription: shortDescription.trim(),
-				description: description.trim() || "",
-				created_at: new Date(),
-				settings: {
-					...DEFAULT_QUEST.settings,
-					category: validateValue(category.trim(), DEFAULT_CATEGORIES, DEFAULT_QUEST.settings.category as DefaultCategory),
-					priority: validateValue(priority.trim(), DEFAULT_PRIORITIES, DEFAULT_QUEST.settings.priority as DefaultPriority),
-					difficulty: validateValue(difficulty.trim(), DEFAULT_DIFFICULTIES, DEFAULT_QUEST.settings.difficulty as DefaultDifficulty),
-					isTimeSensitive: dueDate ? true : false,
-				},
-				progression: {
-					...DEFAULT_QUEST.progression,
-					dueDate: dueDate ? new Date(dueDate) : undefined,
-					lastUpdated: new Date(),
-				},
-				requirements: {
-					...DEFAULT_QUEST.requirements,
-					level: levelMin >= 1 ? levelMin : 1,
-				},
-				reward: {
-					...DEFAULT_QUEST.reward,
-					attributes: attributeRewards,
-				},
-			};
-
-			await appContext.addQuest(newQuest);
-			new Notice(`Quest "${newQuest.title}" created successfully!`);
-			onSuccess(newQuest);
-			return;
-		};
 	};
+
     return (
         <form onSubmit={handleSubmit} className="quest-form">
 			{/* Header */}
-			<div className="form-header">
-				<h1>Create a New Quest</h1>
-				<label className="switch" title="Afficher/Masquer les paramètres supplémentaires">
-					<input
-						type="checkbox"
-						checked={showAdvanced}
-						onChange={(e) => setShowAdvanced(e.target.checked)}
-					/>
-					<span className="slider round"></span>
-				</label>
-			</div>
+			<FormHeader
+				title={existingQuest ? "Modify Quest" : "Create New Quest"}
+				showAdvanced={showAdvanced}
+				setShowAdvanced={() => setShowAdvanced(!showAdvanced)}
+			/>
 			{/* Title */}
-			<div className="form-section">
-				<label>
-					Title *
-					<input
-						type="text"
-						name="title"
-						placeholder="Enter quest title..."
-						className={error.title ? "input-error" : "input"}
-						value={title}
-						onChange={e => {
-							setTitle(e.target.value);
-							if (error.title) {
-								setError((prev) => ({ ...prev, title: "" }));
-							}
-						}}
-					/>
-				</label>
-				<p className="helper-text">
-                    A clear and concise title helps you stay focused on your main objective.
-                </p>
-			</div>
+			<TitleInput
+				title={title}
+				setTitle={setTitle}
+				error={error}
+				setError={setError}
+			/>
 			{/* Short Description */}
-			<div className="form-section">
-				<label>
-					Short Description *
-					<input
-						type="text"
-						name="shortDescription"
-						className={error.shortDescription ? "input-error" : "input"}
-						placeholder="Enter a brief overview..."
-						value={shortDescription}
-						onChange={e => {
-							setShortDescription(e.target.value);
-							if (error.shortDescription) {
-								setError((prev) => ({ ...prev, shortDescription: "" }));
-							}
-						}}
-					/>
-				</label>
-				<p className="helper-text">
-					A brief overview of the quest's objectives. Keep it concise yet informative !
-				</p>
-				<label className="label-select">
-					<span>Category</span>
-					<select
-						name="category"
-						className="input"
-						value={category}
-						onChange={e => setCategory(e.target.value)}
-					>
-						<option value="">-- Select Category --</option>
-						{DEFAULT_CATEGORIES.map((cat) => (
-							<option key={cat} value={cat}>{cat.charAt(0).toUpperCase() + cat.slice(1)}</option>
-						))}
-					</select>
-				</label>
-			</div>
+			<ShortDescription_CategoryInput
+				type="quest"
+				shortDescription={shortDescription}
+				setShortDescription={setShortDescription}
+				category={category}
+				setCategory={setCategory}
+				error={error}
+				setError={setError}
+			/>
 
 			{/* Advanced Settings */}
 			{showAdvanced && (
 				<div className="form-section">
-					<hr className="separator"></hr>
-					<h2>Supplementary Settings</h2>
-					<label>
-						Full description
-						<textarea
-							placeholder="Enter quest description..."
-							value={description}
-							onChange={e => setDescription(e.target.value)}
-						/>
-					</label>
-					<p className="helper-text">
-						The more vivid and detailed your description is, the more powerful and motivating it becomes. Add purpose, emotion, and clarity!
-					</p>
-					<hr className="separator"></hr>
-					<h3>Quest Parameters</h3>
-					<label className="label-select">
-						<span>Priority</span>
-						<select
-							name="priority"
-							className="input"
-							value={priority}
-							onChange={e => setPriority(e.target.value)}
-						>
-							{DEFAULT_PRIORITIES.map(pri => (
-								<option key={pri} value={pri}>{pri.charAt(0).toUpperCase() + pri.slice(1)}</option>
-							))}
-						</select>
-					</label>
-					<label className="label-select">
-						<span>Difficulty</span>
-						<select
-							name="difficulty"
-							className="input"
-							value={difficulty}
-							onChange={e => setDifficulty(e.target.value)}
-						>
-							{DEFAULT_DIFFICULTIES.map(diff => (
-								<option key={diff} value={diff}>{diff.charAt(0).toUpperCase() + diff.slice(1)}</option>
-							))}
-						</select>
-					</label>
-					<label className="label-select">
-						<span>Due Date</span>
-						<input
-							type="date"
-							name="dueDate"
-							className={error.dueDate ? "input-error" : "date-input"}
-							value={dueDate}
-							onChange={e => {
-								setDueDate(e.target.value);
-								if (error.dueDate) {
-									setError((prev) => ({ ...prev, dueDate: "" }));
-								}
-							}}
-						/>
-					</label>
-					<p className="helper-text">
-						Set a deadline to keep your quest on track. A clear end date helps you stay focused and motivated!
-					</p>
-					<hr className="separator"></hr>
-					<h3>Requirements</h3>
-					<label className="label-select">
-						<span>Level min</span>
-						<input
-							type="number"
-							name="levelMin"
-							placeholder="1, 2, 3..."
-							className="input"
-							value={levelMin}
-							onChange={(e) => {
-								setLevelMin(Number(e.target.value))
-								if (error.levelMin) {
-									setError((prev) => ({ ...prev, levelMin: "" }));
-								}
-							}}
-							min={1}
-						/>
-					</label>
-					<hr className="separator"></hr>
-					<h3>Rewards</h3>
-					<RewardAttributeInput
-						initialValue={attributeRewards}
-						onChange={setAttributeRewards}
+					<SupplementaryInput
+						type="Quest"
+						description={description}
+						setDescription={setDescription}
+						priority={priority}
+						setPriority={setPriority}
+						difficulty={difficulty}
+						setDifficulty={setDifficulty}
+					/>
+					<DueDateInput
+						dueDate={dueDate}
+						setDueDate={setDueDate}
+						error={error}
+						setError={setError}
+					/>
+					<RequirementsInput
+						levelMin={levelMin}
+						setLevelMin={setLevelMin}
+						error={error}
+						setError={setError}
+					/>
+					<RewardsInput
+						attributeRewards={attributeRewards}
+						setAttributeRewards={setAttributeRewards}
 					/>
 				</div>
 			)}
 			{/* Footer */}
-			<div className="form-footer">
-				<span className="required-note">* Required fields</span>
-                <div className="button-group">
-					{onCancel && (
-						<button type="button" onClick={onCancel}>Cancel</button>
-					)}
-					{onDelete && (
-						<button type="button" className="delete-btn" onClick={onDelete}>Delete</button>
-					)}
-                    <button type="submit" className="save-btn">Save Quest</button>
-                </div>
-			</div>
-        </form>
-    );
-};
-
+			<FormFooter
+				onCancel={onCancel}
+				onDelete={onDelete}
+				submitLabel={existingQuest ? "Save Changes" : "Create Quest"}
+			/>
+		</form>
+	);
+}

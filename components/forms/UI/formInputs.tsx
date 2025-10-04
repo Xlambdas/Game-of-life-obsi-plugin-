@@ -1,0 +1,243 @@
+// from file (Default):
+import { error } from "console";
+import { DEFAULT_CATEGORIES, DEFAULT_DIFFICULTIES, DEFAULT_PRIORITIES } from "data/DEFAULT";
+import { RewardAttributeInput, AttributeReward } from "./rewardAttributeInput";
+
+
+export const TitleInput = ({
+	title,
+	setTitle,
+	error,
+	setError
+}: {
+	title: string;
+	setTitle: (title: string) => void;
+	error: {[key: string]: string};
+	setError: (error: {[key: string]: string}) => void;
+}) => {
+	return (
+		<div className="form-section">
+				<label>
+					Title *
+					<input
+						type="text"
+						name="title"
+						placeholder="Enter quest title..."
+						className={error.title ? "input-error" : "input"}
+						value={title}
+						onChange={e => {
+							setTitle(e.target.value);
+							if (error.title) {
+								setError({ ...error, title: "" });
+							}
+						}}
+					/>
+				</label>
+				<p className="helper-text">
+                    A clear and concise title helps you stay focused on your main objective.
+                </p>
+			</div>
+	)
+};
+
+export const ShortDescription_CategoryInput = ({
+	type = "quest",
+	shortDescription, setShortDescription,
+	category, setCategory,
+	error,
+	setError
+}: {
+	type?: string; // "quest" or "habit"
+	shortDescription: string;
+	setShortDescription: (desc: string) => void;
+	category: string;
+	setCategory: (cat: string) => void;
+	error: {[key: string]: string};
+	setError: (error: {[key: string]: string}) => void;
+}) => {
+	return (
+		<div className="form-section">
+			<label>
+				Short Description *
+				<input
+					type="text"
+					name="shortDescription"
+					className={error.shortDescription ? "input-error" : "input"}
+					placeholder="Enter a brief overview..."
+					value={shortDescription}
+					onChange={e => {
+						setShortDescription(e.target.value);
+						if (error.shortDescription) {
+							setError({ ...error, shortDescription: "" });
+						}
+					}}
+				/>
+			</label>
+			<p className="helper-text">
+				A brief overview of the {type}'s objectives. Keep it concise yet informative !
+			</p>
+			<label className="label-select">
+				<span>Category</span>
+				<select
+					name="category"
+					className="input"
+					value={category}
+					onChange={e => setCategory(e.target.value)}
+				>
+					<option value="">-- Select Category --</option>
+					{DEFAULT_CATEGORIES.map((cat) => (
+						<option key={cat} value={cat}>{cat.charAt(0).toUpperCase() + cat.slice(1)}</option>
+					))}
+				</select>
+			</label>
+		</div>
+	)
+};
+
+export const SupplementaryInput = ({
+	type = "Quest",
+	description, setDescription,
+	priority, setPriority,
+	difficulty, setDifficulty,
+}: {
+	type?: string; // "Quest" or "Habit"
+	description: string;
+	setDescription: (desc: string) => void;
+	priority: string;
+	setPriority: (priority: string) => void;
+	difficulty: string;
+	setDifficulty: (difficulty: string) => void;
+}) => {
+	return (
+		<div>
+			<hr className="separator"></hr>
+			<h2>Supplementary Settings</h2>
+			<label>
+				Full description
+				<textarea
+					placeholder="Enter quest description..."
+					value={description}
+					onChange={e => setDescription(e.target.value)}
+				/>
+			</label>
+			<p className="helper-text">
+				The more vivid and detailed your description is, the more powerful and motivating it becomes. Add purpose, emotion, and clarity!
+			</p>
+			<hr className="separator"></hr>
+			<h3>{type} Parameters</h3>
+			<label className="label-select">
+				<span>Priority</span>
+				<select
+					name="priority"
+					className="input"
+					value={priority}
+					onChange={e => setPriority(e.target.value)}
+				>
+					{DEFAULT_PRIORITIES.map(pri => (
+						<option key={pri} value={pri}>{pri.charAt(0).toUpperCase() + pri.slice(1)}</option>
+					))}
+				</select>
+			</label>
+			<label className="label-select">
+				<span>Difficulty</span>
+				<select
+					name="difficulty"
+					className="input"
+					value={difficulty}
+					onChange={e => setDifficulty(e.target.value)}
+				>
+					{DEFAULT_DIFFICULTIES.map(diff => (
+						<option key={diff} value={diff}>{diff.charAt(0).toUpperCase() + diff.slice(1)}</option>
+					))}
+				</select>
+			</label>
+		</div>
+	)
+};
+
+export const DueDateInput = ({
+	dueDate, setDueDate,
+	error,
+	setError
+}: {
+	dueDate: string;
+	setDueDate: (date: string) => void;
+	error: {[key: string]: string};
+	setError: (error: {[key: string]: string}) => void;
+}) => {
+	return (
+		<div>
+			<label className="label-select">
+				<span>Due Date</span>
+				<input
+					type="date"
+					name="dueDate"
+					className={error.dueDate ? "input-error" : "date-input"}
+					value={dueDate}
+					onChange={e => {
+						setDueDate(e.target.value);
+						if (error.dueDate) {
+							setError({ ...error, dueDate: "" });
+						}
+					}}
+				/>
+			</label>
+			<p className="helper-text">
+				Set a deadline to keep your quest on track. A clear end date helps you stay focused and motivated!
+			</p>
+		</div>
+	)
+};
+
+export const RequirementsInput = ({
+	levelMin, setLevelMin,
+	error, setError
+}: {
+	levelMin: number;
+	setLevelMin: (level: number) => void;
+	error: {[key: string]: string};
+	setError: (error: {[key: string]: string}) => void;
+}) => {
+	return (
+		<div>
+			<hr className="separator"></hr>
+			<h3>Requirements</h3>
+			<label className="label-select">
+				<span>Level min</span>
+				<input
+					type="number"
+					name="levelMin"
+					className="input"
+					value={levelMin}
+					onChange={e => {
+						setLevelMin(Number(e.target.value))
+						if (error.levelMin) {
+							setError({ ...error, levelMin: "" });
+						}
+					}}
+					min={1}
+				/>
+			</label>
+		</div>
+	)
+};
+
+
+export const RewardsInput = ({
+	attributeRewards, setAttributeRewards
+}: {
+	attributeRewards: AttributeReward;
+	setAttributeRewards: (rewards: AttributeReward) => void;
+}) => {
+	return (
+		<div>
+			<hr className="separator"></hr>
+			<h3>Rewards</h3>
+			<RewardAttributeInput
+				initialValue={attributeRewards}
+				onChange={setAttributeRewards}
+			/>
+		</div>
+	)
+};
+

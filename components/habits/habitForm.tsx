@@ -3,6 +3,8 @@ import { Notice } from 'obsidian';
 // from files (Service, DEFAULT):
 import { useAppContext } from 'context/appContext';
 import { DEFAULT_HABIT, Habit, DEFAULT_PRIORITIES, DefaultPriority, DEFAULT_CATEGORIES, DefaultCategory, DEFAULT_DIFFICULTIES, DefaultDifficulty, DEFAULT_RECURRENCES, DefaultRecurrence } from 'data/DEFAULT';
+// from file (UI, components):
+import { RewardAttributeInput } from 'components/forms/UI/rewardAttributeInput';
 
 
 function validateValue<T extends readonly string[]>(
@@ -15,19 +17,17 @@ function validateValue<T extends readonly string[]>(
 
 
 export const HabitFormUI = ({
-	mode,
 	existingHabit,
 	onSuccess,
 	onCancel,
 	onDelete,
 }: {
-	mode: 'habit-create' | 'habit-modify',
 	existingHabit?: any,
 	onSuccess: (habit: Habit) => void,
 	onCancel?: () => void,
 	onDelete?: () => void,
 }) => {
-		/* Form to create or modify a habit */
+	/* Form to create or modify a habit */
 	const [title, setTitle] = useState(existingHabit?.title || "");
 	const [shortDescription, setShortDescription] = useState(existingHabit?.shortDescription || "");
 	const [interval, setInterval] = useState(existingHabit?.recurrence.interval || DEFAULT_HABIT.recurrence.interval);
@@ -37,6 +37,8 @@ export const HabitFormUI = ({
 	const [category, setCategory] = useState(existingHabit?.settings.category || "");
 	const [priority, setPriority] = useState(existingHabit?.settings.priority || "");
 	const [difficulty, setDifficulty] = useState(existingHabit?.settings.difficulty || "");
+	const [attributeRewards, setAttributeRewards] = useState(existingHabit?.reward.attributes || {});
+
 
 	const [error, setError] = useState<{[key: string]: string}>({}); // Initialize error state
 	const appContext = useAppContext();
@@ -74,21 +76,25 @@ export const HabitFormUI = ({
 		if (existingHabit) {
 			// Update existing habit
 			const updatedHabit = {
-			...existingHabit,
-			title: title.trim(),
-			shortDescription: shortDescription.trim(),
-			description: description.trim() || "",
-			settings: {
-				...existingHabit.settings,
-				category: validateValue(category.trim(), DEFAULT_CATEGORIES, existingHabit.settings.category as DefaultCategory),
-				priority: validateValue(priority.trim(), DEFAULT_PRIORITIES, existingHabit.settings.priority as DefaultPriority),
-				difficulty: validateValue(difficulty.trim(), DEFAULT_DIFFICULTIES, existingHabit.settings.difficulty as DefaultDifficulty),
-			},
-			recurrence: {
-				...existingHabit.recurrence,
-				interval: interval,
-				unit: unit as DefaultRecurrence,
-			}
+				...existingHabit,
+				title: title.trim(),
+				shortDescription: shortDescription.trim(),
+				description: description.trim() || "",
+				settings: {
+					...existingHabit.settings,
+					category: validateValue(category.trim(), DEFAULT_CATEGORIES, existingHabit.settings.category as DefaultCategory),
+					priority: validateValue(priority.trim(), DEFAULT_PRIORITIES, existingHabit.settings.priority as DefaultPriority),
+					difficulty: validateValue(difficulty.trim(), DEFAULT_DIFFICULTIES, existingHabit.settings.difficulty as DefaultDifficulty),
+				},
+				recurrence: {
+					...existingHabit.recurrence,
+					interval: interval,
+					unit: unit as DefaultRecurrence,
+				},
+				reward: {
+					...existingHabit.reward,
+					attributes: attributeRewards,
+				},
 			};
 			await appContext.updateHabit(updatedHabit);
 			onSuccess(updatedHabit);
@@ -121,10 +127,13 @@ export const HabitFormUI = ({
 					interval: interval,
 					unit: unit as DefaultRecurrence,
 				},
+				reward: {
+					...DEFAULT_HABIT.reward,
+					attributes: attributeRewards,
+				},
 			};
 
 			await appContext.addHabit(newHabit);
-			new Notice(`Habit "${newHabit.title}" created successfully!`);
 			onSuccess(newHabit);
 			return;
 		}
@@ -290,6 +299,12 @@ export const HabitFormUI = ({
 							))}
 						</select>
 					</label>
+					<hr className="separator"></hr>
+					<h3>Rewards</h3>
+					<RewardAttributeInput
+						initialValue={attributeRewards}
+						onChange={setAttributeRewards}
+					/>
 				</div>
 			)}
 			{/* Footer */}

@@ -32,11 +32,15 @@
         {
           "date": "2025-09-30T06:03:05.593Z",
           "success": true
+        },
+        {
+          "date": "2025-10-04T11:42:56.975Z",
+          "success": true
         }
       ],
-      "isCompletedToday": false,
-      "nextDate": "2025-10-01T06:03:05.593Z",
-      "lastCompletedDate": "2025-09-30T06:03:05.593Z"
+      "isCompletedToday": true,
+      "nextDate": "2025-10-05T11:42:56.975Z",
+      "lastCompletedDate": "2025-10-04T11:42:56.975Z"
     },
     "progress": {
       "level": 1,
@@ -113,11 +117,15 @@
         {
           "date": "2025-09-24T07:57:10.274Z",
           "success": true
+        },
+        {
+          "date": "2025-10-04T11:42:59.278Z",
+          "success": true
         }
       ],
-      "isCompletedToday": false,
-      "nextDate": "2025-09-27T07:57:10.274Z",
-      "lastCompletedDate": "2025-09-24T07:57:10.274Z"
+      "isCompletedToday": true,
+      "nextDate": "2025-10-07T11:42:59.278Z",
+      "lastCompletedDate": "2025-10-04T11:42:59.278Z"
     },
     "progress": {
       "level": 1,
@@ -583,7 +591,7 @@
   },
   "habit_8": {
     "id": "habit_8",
-    "title": "habit_8",
+    "title": "habit_8, 217",
     "shortDescription": "test refresh rate",
     "description": "",
     "created_at": "2025-09-25T13:20:32.161Z",

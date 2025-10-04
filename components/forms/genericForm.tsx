@@ -81,7 +81,6 @@ export class GenericForm extends Modal {
 		} else if (this.mode === 'habit-create' || this.mode === 'habit-modify') {
 			ui = (
 				<HabitFormUI
-					mode={this.mode}
 					existingHabit={this.data as Habit}
 					onSuccess={handleSubmit}
 					onCancel={this.mode === 'habit-create' ? () => this.close() : undefined}
