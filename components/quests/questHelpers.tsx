@@ -78,11 +78,11 @@ export async function validateAndBuildQuest({
 		}
 	};
 
-	if (existingQuest) {
-		await appContext.updateQuest(newQuest);
-	} else {
-		await appContext.addQuest(newQuest);
-	}
+	// if (existingQuest) {
+	// 	await appContext.updateQuest(newQuest);
+	// } else {
+	// 	await appContext.addQuest(newQuest);
+	// }
 
 	return { quest: newQuest, errors: {} };
 }

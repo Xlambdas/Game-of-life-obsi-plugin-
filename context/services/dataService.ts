@@ -1,4 +1,5 @@
 import { Vault, normalizePath } from 'obsidian';
+import { v4 as uuidv4 } from 'uuid';
 // from files (default) :
 import { UserSettings, DEFAULT_SETTINGS, Quest, DEFAULT_QUEST, Habit, DEFAULT_HABIT } from '../../data/DEFAULT';
 
@@ -65,6 +66,7 @@ export class DataService {
 				break;
 			case 'quests':
 				path = this.questsPath;
+				console.log("Saving quests:", this.quests);
 				content = JSON.stringify(this.quests, null, 2);
 				break;
 			case 'habits':
@@ -147,10 +149,15 @@ export class DataService {
 
 	async addQuest(questData: Partial<Quest>): Promise<void> {
 		document.dispatchEvent(new CustomEvent("dbUpdated"));
-		const id = questData.id || `quest_${Object.keys(this.quests).length + 1}`;
-		this.quests[id] = { ...DEFAULT_QUEST, ...questData, id };
+		let newId = questData.id;
+		if (!newId || newId === "quest_0") {
+			newId = this.generateId("quest");
+		}
+
+		this.quests[newId] = { ...DEFAULT_QUEST, ...questData, id: newId } as Quest;
 		await this.save('quests');
 	}
+
 
 	async setQuests(quests: Record<string, Quest>): Promise<void> {
 		this.quests = quests;
@@ -189,8 +196,13 @@ export class DataService {
 	}
 
 	async addHabit(habitData: Partial<Habit>): Promise<void> {
-		const id = habitData.id || `habit_${Object.keys(this.habits).length + 1}`;
-		this.habits[id] = { ...DEFAULT_HABIT, ...habitData, id };
+		document.dispatchEvent(new CustomEvent("dbUpdated"));
+		let newId = habitData.id;
+		if (!newId || newId === "habit_0") {
+			newId = this.generateId("habit");
+		}
+
+		this.habits[newId] = { ...DEFAULT_HABIT, ...habitData, id: newId } as Habit;
 		await this.save('habits');
 	}
 
@@ -220,4 +232,14 @@ export class DataService {
 		await this.loadHabits();
 		return Object.values(this.habits);
 	}
+
+	// -----------------------
+	// helpers
+	private generateId(prefix: string) {
+		// Generate a unique ID with the given prefix
+		const ts = Date.now().toString(36).slice(-4);
+		const rand = Math.random().toString(36).substring(2, 5);
+		return `${prefix}_${ts}${rand}`;
+	}
+
 }

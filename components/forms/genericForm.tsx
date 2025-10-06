@@ -33,6 +33,7 @@ export class GenericForm extends Modal {
 
 		const handleSubmit = async (data: DataType) => {
 			if (this.mode === 'quest-create') {
+				console.log("Submitting new quest:", data);
 				await dataService.addQuest(data as Quest);
 			} else if (this.mode === 'quest-modify') {
 				const allQuests = await dataService.loadAllQuests();
@@ -51,7 +52,7 @@ export class GenericForm extends Modal {
 			this.close();
 		};
 
-		const handleQuestDelete = async () => {
+		const handleDelete = async () => {
 			if (!this.data) return;
 			if (this.mode === "quest-modify") {
 				const allQuests = await dataService.loadAllQuests();
@@ -75,7 +76,7 @@ export class GenericForm extends Modal {
 					existingQuest={this.data}
 					onSuccess={handleSubmit}
 					onCancel={this.mode === 'quest-create' ? () => this.close() : undefined}
-					onDelete={this.mode === 'quest-modify' ? handleQuestDelete : undefined}
+					onDelete={this.mode === 'quest-modify' ? handleDelete : undefined}
 				/>
 			);
 		} else if (this.mode === 'habit-create' || this.mode === 'habit-modify') {
@@ -84,7 +85,7 @@ export class GenericForm extends Modal {
 					existingHabit={this.data as Habit}
 					onSuccess={handleSubmit}
 					onCancel={this.mode === 'habit-create' ? () => this.close() : undefined}
-					onDelete={this.mode === 'habit-modify' ? handleQuestDelete : undefined}
+					onDelete={this.mode === 'habit-modify' ? handleDelete : undefined}
 				/>
 			);
 		} else {

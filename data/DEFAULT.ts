@@ -318,7 +318,7 @@ export interface Quest extends BaseTask {
 }
 
 export const DEFAULT_QUEST: Quest = {
-	id: "Quest_0", // Auto-generated
+	id: "quest_0", // Auto-generated
 	title: "Tutorial Quest",
 	shortDescription: "Learn the basics of the game.",
 	description: "This is your first quest. Complete it to understand how the game works.",

@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Notice } from 'obsidian';
 // from files (Service, DEFAULT):
 import { useAppContext } from 'context/appContext';
-import { DEFAULT_HABIT, Habit } from 'data/DEFAULT';
+import { DEFAULT_HABIT, Habit, AttributeBlock} from 'data/DEFAULT';
 // from file (UI, components):
 import { FormHeader, FormFooter } from 'components/forms/UI/formHelpers';
 import { validateAndBuildHabit } from './habitHelpers';
@@ -53,6 +53,8 @@ export const HabitFormUI = ({
 			setError(errors);
 		}
 	};
+
+
 
 	return (
 		<form onSubmit={handleSubmit} className="quest-form">
@@ -116,3 +118,47 @@ export const HabitFormUI = ({
 		</form>
 	);
 };
+
+
+
+export const updateAttributesByCategory = (category: string, attributes: AttributeBlock): AttributeBlock => {
+	const updatedAttributes: AttributeBlock = { ...attributes };
+
+	switch (category) {
+		case 'Physical':
+			updatedAttributes.strength += 1;
+			updatedAttributes.agility += 1;
+			updatedAttributes.endurance += 1;
+			break;
+		case 'Mental':
+			updatedAttributes.wisdom += 1;
+			updatedAttributes.perception += 1;
+			updatedAttributes.intelligence += 1;
+			break;
+		case 'Social':
+			updatedAttributes.charisma += 1;
+			updatedAttributes.intelligence += 1;
+			break;
+		case 'Creative':
+			updatedAttributes.charisma += 1;
+			updatedAttributes.perception += 1;
+			break;
+		case 'Emotional':
+			updatedAttributes.wisdom += 1;
+			updatedAttributes.charisma += 1;
+			break;
+		case 'Organizational':
+			updatedAttributes.intelligence += 1;
+			updatedAttributes.perception += 1;
+			break;
+		case 'Exploration':
+			updatedAttributes.agility += 1;
+			updatedAttributes.perception += 1;
+			updatedAttributes.intelligence += 1;
+			break;
+		default:
+			break; // No changes for undefined or other categories
+	}
+
+	return updatedAttributes;
+}
