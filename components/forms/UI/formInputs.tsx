@@ -224,10 +224,13 @@ export const RequirementsInput = ({
 
 
 export const RewardsInput = ({
-	attributeRewards, setAttributeRewards
+	attributeRewards, setAttributeRewards,
+	error, setError
 }: {
 	attributeRewards: AttributeReward;
 	setAttributeRewards: (rewards: AttributeReward) => void;
+	error: {[key: string]: string};
+	setError: (error: {[key: string]: string}) => void;
 }) => {
 	return (
 		<div>
@@ -236,6 +239,8 @@ export const RewardsInput = ({
 			<RewardAttributeInput
 				initialValue={attributeRewards}
 				onChange={setAttributeRewards}
+				error={error}
+				setError={setError}
 			/>
 		</div>
 	)

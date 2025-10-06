@@ -100,10 +100,10 @@ export const QuestFormUI = ({
 						error={error}
 						setError={setError}
 					/>
-					<RewardsInput
+					{/* <RewardsInput
 						attributeRewards={attributeRewards}
 						setAttributeRewards={setAttributeRewards}
-					/>
+					/> */}
 				</div>
 			)}
 			{/* Footer */}

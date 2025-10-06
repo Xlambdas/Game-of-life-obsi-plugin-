@@ -194,7 +194,6 @@ export const DEFAULT_SETTINGS: UserSettings = {
 
 
 export const DEFAULT_CATEGORIES = [
-	'Undefined',
 	'Physical',
 	'Mental',
 	'Social',
@@ -226,20 +225,21 @@ export type AttributeBlock = {
 	reputation: number;
 	resilience: number;
 }
-export const DEFAULT_ATTRIBUTES: (keyof AttributeBlock)[] = [
-	"strength",
-	"agility",
-	"endurance",
-	"charisma",
-	"wisdom",
-	"perception",
-	"intelligence",
-	"willpower",
-	"spirit",
-	"flow",
-	"reputation",
-	"resilience"
-];
+
+export const DEFAULT_ATTRIBUTES: AttributeBlock = {
+	strength: 0,
+	agility: 0,
+	endurance: 0,
+	charisma: 0,
+	wisdom: 0,
+	perception: 0,
+	intelligence: 0,
+	willpower: 0,
+	spirit: 0,
+	flow: 0,
+	reputation: 0,
+	resilience: 0,
+};
 
 export type TaskType = 'quest' | 'habit'; // | 'skill' | 'goal'; //todo : add skills/goals/...
 
@@ -547,7 +547,7 @@ export interface Habit extends BaseTask {
 }
 
 export const DEFAULT_HABIT: Habit = {
-	id: "Habit_0",
+	id: "habit_0",
 	title: "drink water",
 	shortDescription: "Stay hydrated",
 	description: "This is your first habit.",
@@ -589,18 +589,8 @@ export const DEFAULT_HABIT: Habit = {
 	reward: {
 		XP: 0,
 		attributes: {
-			strength: 0,
-			agility: 0,
-			endurance: 1,
-			charisma: 0,
-			wisdom: 0,
-			perception: 0,
-			intelligence: 0,
-			willpower: 0,
-			spirit: 0,
-			flow: 0,
-			reputation: 0,
-			resilience: 0
+			...DEFAULT_ATTRIBUTES,
+			endurance: 1
 		},
 		items: [],
 	},

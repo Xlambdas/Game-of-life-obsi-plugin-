@@ -66,11 +66,12 @@ export class DataService {
 				break;
 			case 'quests':
 				path = this.questsPath;
-				console.log("Saving quests:", this.quests);
+				// console.log("Saving quests:", this.quests);
 				content = JSON.stringify(this.quests, null, 2);
 				break;
 			case 'habits':
 				path = this.habitsPath;
+				console.log("Saving habits:", this.habits);
 				content = JSON.stringify(this.habits, null, 2);
 				break;
 			default:

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Notice } from 'obsidian';
 // from files (Service, DEFAULT):
 import { useAppContext } from 'context/appContext';
-import { DEFAULT_HABIT, Habit, AttributeBlock} from 'data/DEFAULT';
+import { DEFAULT_HABIT, Habit, AttributeBlock, DEFAULT_ATTRIBUTES} from 'data/DEFAULT';
 // from file (UI, components):
 import { FormHeader, FormFooter } from 'components/forms/UI/formHelpers';
 import { validateAndBuildHabit } from './habitHelpers';
@@ -32,7 +32,6 @@ export const HabitFormUI = ({
 	const [difficulty, setDifficulty] = useState(existingHabit?.settings.difficulty || "");
 	const [attributeRewards, setAttributeRewards] = useState(existingHabit?.reward.attributes || {});
 
-
 	const [error, setError] = useState<{[key: string]: string}>({}); // Initialize error state
 	const appContext = useAppContext();
 
@@ -53,8 +52,6 @@ export const HabitFormUI = ({
 			setError(errors);
 		}
 	};
-
-
 
 	return (
 		<form onSubmit={handleSubmit} className="quest-form">
@@ -106,6 +103,8 @@ export const HabitFormUI = ({
 					<RewardsInput
 						attributeRewards={attributeRewards}
 						setAttributeRewards={setAttributeRewards}
+						error={error}
+						setError={setError}
 					/>
 				</div>
 			)}
@@ -119,46 +118,3 @@ export const HabitFormUI = ({
 	);
 };
 
-
-
-export const updateAttributesByCategory = (category: string, attributes: AttributeBlock): AttributeBlock => {
-	const updatedAttributes: AttributeBlock = { ...attributes };
-
-	switch (category) {
-		case 'Physical':
-			updatedAttributes.strength += 1;
-			updatedAttributes.agility += 1;
-			updatedAttributes.endurance += 1;
-			break;
-		case 'Mental':
-			updatedAttributes.wisdom += 1;
-			updatedAttributes.perception += 1;
-			updatedAttributes.intelligence += 1;
-			break;
-		case 'Social':
-			updatedAttributes.charisma += 1;
-			updatedAttributes.intelligence += 1;
-			break;
-		case 'Creative':
-			updatedAttributes.charisma += 1;
-			updatedAttributes.perception += 1;
-			break;
-		case 'Emotional':
-			updatedAttributes.wisdom += 1;
-			updatedAttributes.charisma += 1;
-			break;
-		case 'Organizational':
-			updatedAttributes.intelligence += 1;
-			updatedAttributes.perception += 1;
-			break;
-		case 'Exploration':
-			updatedAttributes.agility += 1;
-			updatedAttributes.perception += 1;
-			updatedAttributes.intelligence += 1;
-			break;
-		default:
-			break; // No changes for undefined or other categories
-	}
-
-	return updatedAttributes;
-}

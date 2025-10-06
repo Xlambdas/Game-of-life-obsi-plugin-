@@ -15,11 +15,14 @@ export interface AttributeRewardPair {
 interface RewardAttributeInputProps {
 	initialValue?: AttributeReward;
 	onChange: (rewards: AttributeReward) => void;
+	error: {[key: string]: string};
+	setError: (error: {[key: string]: string}) => void;
 }
 
 export const RewardAttributeInput: React.FC<RewardAttributeInputProps> = ({
 	initialValue = {},
 	onChange,
+	error, setError
 }) => {
 	// 🔑 initialise UNIQUEMENT les paires non nulles
 	const [pairs, setPairs] = useState<AttributeRewardPair[]>(() => {
@@ -35,7 +38,7 @@ export const RewardAttributeInput: React.FC<RewardAttributeInputProps> = ({
 	// Conversion des paires -> objet statBlock complet
 	const pairsToAttributes = (pairs: AttributeRewardPair[]) => {
 		const result: Record<string, number> = {};
-		DEFAULT_ATTRIBUTES.forEach(attr => {
+		Object.keys(DEFAULT_ATTRIBUTES).forEach(attr => {
 		result[attr] = 0;
 		});
 		pairs.forEach(p => {
@@ -87,7 +90,7 @@ export const RewardAttributeInput: React.FC<RewardAttributeInputProps> = ({
 					<option value="" disabled={!!pair.attribute}>
 						Select attribute...
 					</option>
-					{DEFAULT_ATTRIBUTES.map(attr => (
+					{Object.keys(DEFAULT_ATTRIBUTES).map(attr => (
 						<option
 						key={attr}
 						value={attr}
@@ -102,7 +105,7 @@ export const RewardAttributeInput: React.FC<RewardAttributeInputProps> = ({
 					placeholder="XP amount..."
 					value={pair.xp || ""}
 					onChange={(e) => handleChange(index, "xp", e.target.value)}
-					className="attribute-xp-input"
+					className={error.attributeRewards ? "input-error" : "attribute-xp-input"}
 					style={{ width: "35%", marginRight: "8px" }}
 					/>
 					<button

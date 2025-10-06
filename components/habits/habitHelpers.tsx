@@ -1,7 +1,7 @@
 import { Notice } from "obsidian";
 // from file (services, default):
 import { useAppContext } from "../../context/appContext";
-import { DEFAULT_HABIT, DEFAULT_CATEGORIES, DefaultCategory, DEFAULT_DIFFICULTIES, DefaultDifficulty, DEFAULT_PRIORITIES, DefaultPriority, Habit, DefaultRecurrence } from "../../data/DEFAULT";
+import { DEFAULT_HABIT, DEFAULT_CATEGORIES, DefaultCategory, DEFAULT_DIFFICULTIES, DefaultDifficulty, DEFAULT_PRIORITIES, DefaultPriority, Habit, DefaultRecurrence, AttributeBlock } from "../../data/DEFAULT";
 // from file (UI, components):
 import { validateValue } from "../forms/UI/formHelpers";
 
@@ -22,7 +22,7 @@ export async function validateAndBuildHabit({
 	category: string,
 	priority: string,
 	difficulty: string,
-	attributeRewards: { attribute: string; xp: number; }[],
+	attributeRewards: AttributeBlock,
 	appContext: ReturnType<typeof useAppContext>
 }): Promise<{ habit: Habit | null; errors: { [key: string]: string } }> {
 	const errors: { [key: string]: string } = {};
@@ -39,9 +39,32 @@ export async function validateAndBuildHabit({
 			errors.interval = "Interval must be a positive number.";
 	}
 
+	if (attributeRewards) {
+		const invalidAttributes = Object.entries(attributeRewards).filter(([attr, xp]) => xp < 0);
+		if (invalidAttributes.length > 0) {
+			errors.attributeRewards = "Attribute rewards cannot be negative.";
+		}
+		const sumAttributes = Object.values(attributeRewards).reduce((sum, val) => sum + val, 0);
+		if (sumAttributes > 10) {
+			errors.attributeRewards = "You can't allocate more than 10 points in total.";
+		}
+		if (Object.keys(attributeRewards).length === 0) {
+			errors.attributeRewards = "At least one attribute reward must be greater than zero.";
+		}
+	}
+
 	if (Object.keys(errors).length > 0) {
 		new Notice("Please fix the errors in the form.");
+		if (errors.attributeRewards) {
+			new Notice(errors.attributeRewards);
+		}
 		return { habit: null, errors };
+	}
+
+	// --- Update attributes if category chosen ---
+	let updatedAttributes = { ...attributeRewards };
+	if (category) {
+		updatedAttributes = updateAttributesByCategory(category, updatedAttributes);
 	}
 
 	const newHabit: Habit = {
@@ -62,15 +85,53 @@ export async function validateAndBuildHabit({
 		},
 		reward: {
 			...((existingHabit?.reward) || DEFAULT_HABIT.reward),
-			attributes: attributeRewards,
+			attributes: updatedAttributes,
 		}
 	};
 
-	if (existingHabit) {
-		await appContext.updateHabit(newHabit);
-	} else {
-		await appContext.addHabit(newHabit);
+	return { habit: newHabit, errors: {} };
+}
+
+
+
+export const updateAttributesByCategory = (category: string, attributes: AttributeBlock): AttributeBlock => {
+	const updatedAttributes: AttributeBlock = { ...attributes };
+
+	switch (category) {
+		case 'Physical':
+			updatedAttributes.strength += 1;
+			updatedAttributes.agility += 1;
+			updatedAttributes.endurance += 1;
+			break;
+		case 'Mental':
+			updatedAttributes.wisdom += 1;
+			updatedAttributes.perception += 1;
+			updatedAttributes.intelligence += 1;
+			break;
+		case 'Social':
+			updatedAttributes.charisma += 1;
+			updatedAttributes.intelligence += 1;
+			break;
+		case 'Creative':
+			updatedAttributes.charisma += 1;
+			updatedAttributes.perception += 1;
+			break;
+		case 'Emotional':
+			updatedAttributes.wisdom += 1;
+			updatedAttributes.charisma += 1;
+			break;
+		case 'Organizational':
+			updatedAttributes.intelligence += 1;
+			updatedAttributes.perception += 1;
+			break;
+		case 'Exploration':
+			updatedAttributes.agility += 1;
+			updatedAttributes.perception += 1;
+			updatedAttributes.intelligence += 1;
+			break;
+		default:
+			break; // No changes for undefined or other categories
 	}
 
-	return { habit: newHabit, errors: {} };
+	return updatedAttributes;
 }

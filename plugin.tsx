@@ -38,8 +38,8 @@ export default class GOL extends Plugin {
 		this.addRibbonIcon("swords", "Open mainView", () => {
 			this.viewService.openMainView();
 		});
-		this.addRibbonIcon("plus-square", "Create New Quest", () => {
-			new GenericForm(this.app, 'quest-create').open();
+		this.addRibbonIcon("plus-square", "Create New Habit", () => {
+			new GenericForm(this.app, 'habit-create').open();
 		});
 
 		this.addCommand({
