@@ -123,7 +123,7 @@
           "success": true
         }
       ],
-      "isCompletedToday": true,
+      "isCompletedToday": false,
       "nextDate": "2025-10-07T11:42:59.278Z",
       "lastCompletedDate": "2025-10-04T11:42:59.278Z"
     },
@@ -1107,6 +1107,357 @@
         "endurance": 1,
         "charisma": 0,
         "wisdom": 0,
+        "perception": 1,
+        "intelligence": 1,
+        "willpower": 0,
+        "spirit": 0,
+        "flow": 0,
+        "reputation": 0,
+        "resilience": 0
+      },
+      "items": []
+    },
+    "isSystemHabit": false
+  },
+  "habit_yyqdmxb": {
+    "id": "habit_yyqdmxb",
+    "title": "Last test attribute",
+    "shortDescription": "short descr",
+    "description": "",
+    "created_at": "2025-10-07T12:44:54.820Z",
+    "settings": {
+      "type": "habit",
+      "category": "Social",
+      "priority": "low",
+      "difficulty": "easy",
+      "isSecret": false,
+      "isTimeSensitive": false
+    },
+    "recurrence": {
+      "interval": 1,
+      "unit": "days"
+    },
+    "streak": {
+      "current": 0,
+      "best": 0,
+      "history": [],
+      "isCompletedToday": false,
+      "nextDate": "2025-10-07T12:44:54.820Z",
+      "lastCompletedDate": "1970-01-01T00:00:00.000Z"
+    },
+    "progress": {
+      "level": 1,
+      "XP": 0,
+      "goal": 2000,
+      "currentValue": 0,
+      "milestones": [
+        {
+          "target": 7,
+          "reward": {
+            "XP": 20,
+            "items": [
+              "Hydration Badge"
+            ]
+          }
+        },
+        {
+          "target": 30,
+          "reward": {
+            "XP": 100,
+            "attributes": {
+              "endurance": 2
+            }
+          }
+        }
+      ]
+    },
+    "penalty": {
+      "XPLoss": 0,
+      "breackStreak": false
+    },
+    "reward": {
+      "XP": 0,
+      "attributes": {
+        "charisma": null,
+        "intelligence": null
+      },
+      "items": []
+    },
+    "isSystemHabit": false
+  },
+  "habit_2t3s1nr": {
+    "id": "habit_2t3s1nr",
+    "title": "teest attribute habit",
+    "shortDescription": "ljnbhbhjl",
+    "description": "",
+    "created_at": "2025-10-07T12:48:08.955Z",
+    "settings": {
+      "type": "habit",
+      "category": "Mental",
+      "priority": "low",
+      "difficulty": "easy",
+      "isSecret": false,
+      "isTimeSensitive": false
+    },
+    "recurrence": {
+      "interval": 1,
+      "unit": "days"
+    },
+    "streak": {
+      "current": 0,
+      "best": 0,
+      "history": [],
+      "isCompletedToday": false,
+      "nextDate": "2025-10-07T12:48:08.955Z",
+      "lastCompletedDate": "1970-01-01T00:00:00.000Z"
+    },
+    "progress": {
+      "level": 1,
+      "XP": 0,
+      "goal": 2000,
+      "currentValue": 0,
+      "milestones": [
+        {
+          "target": 7,
+          "reward": {
+            "XP": 20,
+            "items": [
+              "Hydration Badge"
+            ]
+          }
+        },
+        {
+          "target": 30,
+          "reward": {
+            "XP": 100,
+            "attributes": {
+              "endurance": 2
+            }
+          }
+        }
+      ]
+    },
+    "penalty": {
+      "XPLoss": 0,
+      "breackStreak": false
+    },
+    "reward": {
+      "XP": 0,
+      "attributes": {
+        "wisdom": null,
+        "perception": null,
+        "intelligence": null
+      },
+      "items": []
+    },
+    "isSystemHabit": false
+  },
+  "habit_dkr7h6b": {
+    "id": "habit_dkr7h6b",
+    "title": "restdxhtgfxc",
+    "shortDescription": "esrdcvgbhnj,",
+    "description": "",
+    "created_at": "2025-10-07T12:56:33.994Z",
+    "settings": {
+      "type": "habit",
+      "category": "Creative",
+      "priority": "low",
+      "difficulty": "easy",
+      "isSecret": false,
+      "isTimeSensitive": false
+    },
+    "recurrence": {
+      "interval": 1,
+      "unit": "days"
+    },
+    "streak": {
+      "current": 0,
+      "best": 0,
+      "history": [],
+      "isCompletedToday": false,
+      "nextDate": "2025-10-07T12:56:33.994Z",
+      "lastCompletedDate": "1970-01-01T00:00:00.000Z"
+    },
+    "progress": {
+      "level": 1,
+      "XP": 0,
+      "goal": 2000,
+      "currentValue": 0,
+      "milestones": [
+        {
+          "target": 7,
+          "reward": {
+            "XP": 20,
+            "items": [
+              "Hydration Badge"
+            ]
+          }
+        },
+        {
+          "target": 30,
+          "reward": {
+            "XP": 100,
+            "attributes": {
+              "endurance": 2
+            }
+          }
+        }
+      ]
+    },
+    "penalty": {
+      "XPLoss": 0,
+      "breackStreak": false
+    },
+    "reward": {
+      "XP": 0,
+      "attributes": {
+        "charisma": null,
+        "perception": null
+      },
+      "items": []
+    },
+    "isSystemHabit": false
+  },
+  "habit_fs3m5h1": {
+    "id": "habit_fs3m5h1",
+    "title": "testattribute",
+    "shortDescription": "edtcgfbh",
+    "description": "",
+    "created_at": "2025-10-07T12:58:21.778Z",
+    "settings": {
+      "type": "habit",
+      "category": "Creative",
+      "priority": "low",
+      "difficulty": "easy",
+      "isSecret": false,
+      "isTimeSensitive": false
+    },
+    "recurrence": {
+      "interval": 1,
+      "unit": "days"
+    },
+    "streak": {
+      "current": 0,
+      "best": 0,
+      "history": [],
+      "isCompletedToday": false,
+      "nextDate": "2025-10-07T12:58:21.778Z",
+      "lastCompletedDate": "1970-01-01T00:00:00.000Z"
+    },
+    "progress": {
+      "level": 1,
+      "XP": 0,
+      "goal": 2000,
+      "currentValue": 0,
+      "milestones": [
+        {
+          "target": 7,
+          "reward": {
+            "XP": 20,
+            "items": [
+              "Hydration Badge"
+            ]
+          }
+        },
+        {
+          "target": 30,
+          "reward": {
+            "XP": 100,
+            "attributes": {
+              "endurance": 2
+            }
+          }
+        }
+      ]
+    },
+    "penalty": {
+      "XPLoss": 0,
+      "breackStreak": false
+    },
+    "reward": {
+      "XP": 0,
+      "attributes": {
+        "strength": 0,
+        "agility": 0,
+        "endurance": 0,
+        "charisma": 1,
+        "wisdom": 0,
+        "perception": 1,
+        "intelligence": 0,
+        "willpower": 0,
+        "spirit": 0,
+        "flow": 0,
+        "reputation": 0,
+        "resilience": 0
+      },
+      "items": []
+    },
+    "isSystemHabit": false
+  },
+  "habit_igorr1o": {
+    "id": "habit_igorr1o",
+    "title": "zsedvg",
+    "shortDescription": "sdwv",
+    "description": "",
+    "created_at": "2025-10-07T13:00:24.105Z",
+    "settings": {
+      "type": "habit",
+      "category": "Mental",
+      "priority": "low",
+      "difficulty": "easy",
+      "isSecret": false,
+      "isTimeSensitive": false
+    },
+    "recurrence": {
+      "interval": 1,
+      "unit": "days"
+    },
+    "streak": {
+      "current": 0,
+      "best": 0,
+      "history": [],
+      "isCompletedToday": false,
+      "nextDate": "2025-10-07T13:00:24.105Z",
+      "lastCompletedDate": "1970-01-01T00:00:00.000Z"
+    },
+    "progress": {
+      "level": 1,
+      "XP": 0,
+      "goal": 2000,
+      "currentValue": 0,
+      "milestones": [
+        {
+          "target": 7,
+          "reward": {
+            "XP": 20,
+            "items": [
+              "Hydration Badge"
+            ]
+          }
+        },
+        {
+          "target": 30,
+          "reward": {
+            "XP": 100,
+            "attributes": {
+              "endurance": 2
+            }
+          }
+        }
+      ]
+    },
+    "penalty": {
+      "XPLoss": 0,
+      "breackStreak": false
+    },
+    "reward": {
+      "XP": 0,
+      "attributes": {
+        "strength": 0,
+        "agility": 0,
+        "endurance": 0,
+        "charisma": 0,
+        "wisdom": 1,
         "perception": 1,
         "intelligence": 1,
         "willpower": 0,

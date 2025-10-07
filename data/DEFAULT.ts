@@ -244,54 +244,57 @@ export const DEFAULT_ATTRIBUTES: AttributeBlock = {
 export type TaskType = 'quest' | 'habit'; // | 'skill' | 'goal'; //todo : add skills/goals/...
 
 export interface BaseTask {
-	id: string;
+	id: string; // Auto-generated unique ID
 	title: string;
 	shortDescription: string;
 	description: string;
-	created_at: Date;
+	created_at: Date; // Auto-generated
 	settings: {
-		type: TaskType;
-		priority?: DefaultPriority;
-		difficulty?: DefaultDifficulty;
-		category: DefaultCategory;
-		isSecret?: boolean;
-		isTimeSensitive?: boolean;
+		type: TaskType; // Auto-generated
+		priority?: DefaultPriority; // todo: add algo to set priority based on user level/xp/...
+		difficulty?: DefaultDifficulty; // todo: add algo to set difficulty based on user level/xp/...
+		category: DefaultCategory; // todo: add algo to set category based on user preferences
+		isSecret?: boolean; // Auto-generated
+		isTimeSensitive?: boolean; // Auto-generated // todo: do algo to set the limit time
 	};
 }
 
+/*
+* Quest Default Settings
+*/
 
 export interface Quest extends BaseTask {
 	settings: { type: 'quest' } & BaseTask['settings'];
 
 	progression: {
 		isCompleted: boolean;
-		completedAt: Date | null;
-		progress: number; // 0 to 100
-		dueDate?: Date;
-		startedAt?: Date;
-		lastUpdated?: Date;
-		subtasks?: string[];
-		attempts?: number;
-		failures?: number;
-		timeSpentMinutes?: number;
+		completedAt: Date | null; // Auto-generated
+		progress: number; // Auto-generated: 0 to 100 // todo: do algo
+		dueDate?: Date; // todo: do algo
+		startedAt?: Date; // Auto-generated when the quest is started // todo: do algo
+		lastUpdated?: Date; // Auto-generated when the quest is updated // todo: do algo
+		subtasks?: string[]; // todo: do algo
+		attempts?: number; // todo: do algo
+		failures?: number; // todo: do algo
+		timeSpentMinutes?: number; // Auto-generated // todo: do algo
 	};
 
 	reward: {
-		XP: number;
-		items?: string[];
-		attributes?: Partial<AttributeBlock>; // gains in stats
-		unlocks?: string[];
-		badges?: string[]; // achievements
-		title?: string; // e.g. "Beast of Discipline"
-		spiritBoost?: number; // motivation reward
+		XP: number; // todo: do algo
+		items?: string[]; // item IDs or names // todo: do algo
+		attributes?: Partial<AttributeBlock>; // gains in stats // todo: do algo
+		unlocks?: string[]; // IDs of skills, abilities, areas, etc. // todo: do algo
+		badges?: string[]; // achievements or titles // todo: do algo
+		title?: string; // e.g. "Beast of Discipline" // todo: do algo
+		spiritBoost?: number; // motivation reward // todo: do algo
 	};
 
 	requirements: {
-		level: number;
-		previousQuests?: string[];
-		attributes?: Partial<AttributeBlock>; // minimum stats
-		timeAvailableMinutes?: number; // practical constraint
-		tagsRequired?: string[]; // e.g. ['outdoor', 'focus']
+		level: number; // minimum user level //todo: do algo
+		previousQuests?: string[]; // IDs of prerequisite quests // todo: do algo
+		attributes?: Partial<AttributeBlock>; // minimum stats // todo: do algo
+		timeAvailableMinutes?: number; // practical constraint // todo: do algo
+		tagsRequired?: string[]; // e.g. ['outdoor', 'focus'] // todo: do algo
 	};
 
 	meta: {
@@ -308,13 +311,13 @@ export interface Quest extends BaseTask {
 	};
 
 	failureConsequence?: {
-		description?: string;
-		spiritLoss?: number;
-		XPLoss?: number;
-		lockoutTimeMinutes?: number;
+		description?: string; //todo: do algo
+		spiritLoss?: number; // spirit cost // todo: do algo
+		XPLoss?: number; // XP cost // todo: do algo
+		lockoutTimeMinutes?: number; // time before you can retry // todo: do algo
 	};
 
-	notes?: string;
+	notes?: string; // additional notes or lore // todo: do algo
 }
 
 export const DEFAULT_QUEST: Quest = {
@@ -407,101 +410,8 @@ export const DEFAULT_QUEST: Quest = {
 };
 
 /*
-* Quest Default Settings
-*/
-export interface Quest_old extends BaseTask {
-	settings: {type: 'quest'} & BaseTask['settings'];
-	progression: {
-		isCompleted: boolean;
-		completed_at: Date;
-		progress: number;
-		dueDate?: Date;
-		subtasks?: string[];
-	};
-	reward: {
-		XP: number;
-		items?: string[];
-		attributes?: AttributeBlock;
-		unlock?: string[];
-	}
-	requirements: {
-		level: number;
-		previousQuests?: string[];
-		stats: AttributeBlock;
-	};
-	// recurrence: never;
-	failureConsequence?: string;
-	isSystemQuest?: boolean;
-}
-
-export const DEFAULT_QUEST_old: Quest_old = {
-	id: "Quest_0",
-	title: "Tutorial",
-	shortDescription: "This is your first quest.",
-	description: "This is your first quest.",
-	created_at: new Date(), // Auto generated
-	settings: {
-		type: 'quest', // Auto generated
-		category: 'Undefined',
-		priority: 'low', // todo: do algo
-		difficulty: 'easy', // todo: do algo
-		isSecret: false, // Auto generated
-		isTimeSensitive: false, //Auto generated // todo: do algo to set the limit time
-	},
-	progression: {
-		isCompleted: false,
-		completed_at: new Date(0), // Auto generated
-		progress: 0, // Auto generated (0-100) //todo: do algo
-		dueDate: new Date(0), //todo do algo
-		subtasks: [], // todo: do algo
-	},
-	reward: {
-		XP: 1, // todo: do algo
-		items: [], // todo: do algo
-		attributes: {
-			strength: 0,
-			agility: 0,
-			endurance: 0,
-			charisma: 0,
-			wisdom: 0,
-			perception: 0,
-			intelligence: 1,
-			willpower: 0,
-			spirit: 0,
-			flow: 0,
-			reputation: 0,
-			resilience: 0
-		},
-		unlock: [], // todo: do algo
-	},
-	requirements: { // todo: do algo
-		level: 0,
-		previousQuests: [], // todo: do algo
-		stats: {
-			strength: 0,
-			agility: 0,
-			endurance: 0,
-			charisma: 0,
-			wisdom: 0,
-			perception: 0,
-			intelligence: 0,
-			willpower: 0,
-			spirit: 0,
-			flow: 0,
-			reputation: 0,
-			resilience: 0
-		},
-	},
-	// recurrence: undefined, // Auto generated // todo: do algo
-	failureConsequence: "You failed the quest.", // todo: do algo
-	isSystemQuest: false // Auto generated // todo: do algo
-};
-
-
-/*
 * Habit Default Settings
 */
-
 
 export interface Habit extends BaseTask {
 	settings: {type: 'habit'} & BaseTask['settings'];
@@ -510,11 +420,11 @@ export interface Habit extends BaseTask {
 		unit: DefaultRecurrence;
 	};
 	streak: {
-		current: number;
-		best: number;
+		current: number; // auto generated
+		best: number; // auto generated
 		history: {
-			date: Date;
-			success: boolean;
+			date: Date; // auto generated
+			success: boolean; // auto generated
 		}[];
 		isCompletedToday: boolean; // Auto generated based on history
 		nextDate: Date; // Auto generated based on recurrence

@@ -1,9 +1,10 @@
 import { Notice } from "obsidian";
 // from file (services, default):
 import { useAppContext } from "../../context/appContext";
-import { DEFAULT_QUEST, DEFAULT_CATEGORIES, DefaultCategory, DEFAULT_DIFFICULTIES, DefaultDifficulty, DEFAULT_PRIORITIES, DefaultPriority, Quest } from "../../data/DEFAULT";
+import { DEFAULT_QUEST, DEFAULT_CATEGORIES, DefaultCategory, DEFAULT_DIFFICULTIES, DefaultDifficulty, DEFAULT_PRIORITIES, DefaultPriority, Quest, AttributeBlock } from "../../data/DEFAULT";
 // from file (UI, components):
 import { validateValue } from "../forms/UI/formHelpers";
+import { updateAttributesByCategory } from "components/habits/habitHelpers";
 
 export async function validateAndBuildQuest({
 	existingQuest,
@@ -21,7 +22,7 @@ export async function validateAndBuildQuest({
 	difficulty: string,
 	dueDate: Date | undefined,
 	levelMin: number,
-	attributeRewards: { attribute: string; xp: number; }[],
+	attributeRewards: AttributeBlock,
 	appContext: ReturnType<typeof useAppContext>
 }): Promise<{ quest: Quest | null; errors: { [key: string]: string } }> {
 	const errors: { [key: string]: string } = {};
@@ -46,8 +47,28 @@ export async function validateAndBuildQuest({
 		errors.levelMin = "Level must be at least 1.";
 	}
 
+	// --- Update attributes if category chosen ---
+	let updatedAttributes = { ...attributeRewards };
+	if (category) {
+		updatedAttributes = updateAttributesByCategory(category, updatedAttributes);
+	}
+
+	if (updatedAttributes) {
+		const invalidAttributes = Object.entries(updatedAttributes).filter(([attr, xp]) => xp < 0);
+		if (invalidAttributes.length > 0) {
+			errors.attributeRewards = "Attribute rewards cannot be negative.";
+		}
+		const sumAttributes = Object.values(updatedAttributes).reduce((sum, val) => sum + val, 0);
+		if (sumAttributes > 10) {
+			errors.attributeRewards = "You can't allocate more than 10 points in total.\n Keep in mind that selecting a category automatically allocates some points.";
+		}
+	}
+
 	if (Object.keys(errors).length > 0) {
 		new Notice("Please fix the errors in the form.");
+		if (errors.attributeRewards) {
+			new Notice(errors.attributeRewards);
+		}
 		return { quest: null, errors };
 	}
 
@@ -74,15 +95,9 @@ export async function validateAndBuildQuest({
 		},
 		reward: {
 			...((existingQuest?.reward) || DEFAULT_QUEST.reward),
-			attributes: attributeRewards,
+			attributes: updatedAttributes,
 		}
 	};
-
-	// if (existingQuest) {
-	// 	await appContext.updateQuest(newQuest);
-	// } else {
-	// 	await appContext.addQuest(newQuest);
-	// }
 
 	return { quest: newQuest, errors: {} };
 }
