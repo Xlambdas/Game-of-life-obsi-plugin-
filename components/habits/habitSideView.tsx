@@ -131,16 +131,13 @@ interface HabitItemProps {
 }
 
 
+
 const HabitItem: React.FC<HabitItemProps> = ({ habit, activeTab, onComplete, onModify }) => {
 	/* Individual habit item with completion and edit options */
 	const isEditable = !habit.isSystemHabit;
 
 	const handleToggle = () => {
-		if (habit.streak.isCompletedToday) {
-			onComplete(habit, false); // uncheck
-		} else {
-			onComplete(habit, true); // complete
-		}
+		onComplete(habit, !habit.streak.isCompletedToday);
 	};
 
 	return (
@@ -174,19 +171,16 @@ const HabitItem: React.FC<HabitItemProps> = ({ habit, activeTab, onComplete, onM
 				<div className="quest-description">{habit.shortDescription}</div>
 			)}
 			<div className="quest-xp">
-				{/* XP: {habit.reward.XP}
-				{/* {habit.reward.attributes &&
-					Object.entries(habit.reward.attributes)
-						.filter(([_, value]) => value !== 0 && value !== null && value !== undefined)
-						.map(([key, value]) => (
-							<span key={key} className="quest-attribute">
-								{" | "}{key}: {value}
-							</span>
-						))
-				}
-				{" | "}Streak: {habit.streak.current} (Best: {habit.streak.best}) */}
+				{habit.reward.attributes && (Object.entries(habit.reward.attributes)
+				.filter(([_, v]) => v !== 0 && v !== null && v !== undefined)
+				.map(([key, value]) => (
+					<span key={key} className="flex items-center gap-1">
+						<span className="text-amber-300 font-medium">{key}: </span>
+						<span className="text-amber-100">{value}</span> <br />
+					</span>
+				)))}
+				Streak: {habit.streak.current} (Best: {habit.streak.best})
 			</div>
-
 		</div>
 	);
 };

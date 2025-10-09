@@ -177,7 +177,14 @@ const QuestItem: React.FC<QuestItemProps> = ({ quest, onComplete, onModify }) =>
 			)}
 
 			<div className="quest-xp">
-				XP: {quest.reward.XP}
+				{quest.reward.attributes && (Object.entries(quest.reward.attributes)
+				.filter(([_, v]) => v !== 0 && v !== null && v !== undefined)
+				.map(([key, value]) => (
+					<span key={key} className="flex items-center gap-1">
+						<span className="text-amber-300 font-medium">{key}: </span>
+						<span className="text-amber-100">{value}</span> <br />
+					</span>
+				)))}
 			</div>
 		</div>
 	);

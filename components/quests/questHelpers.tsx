@@ -49,7 +49,7 @@ export async function validateAndBuildQuest({
 
 	// --- Update attributes if category chosen ---
 	let updatedAttributes = { ...attributeRewards };
-	if (category) {
+	if (category && category !== (existingQuest?.settings.category || "")) {
 		updatedAttributes = updateAttributesByCategory(category, updatedAttributes);
 	}
 
@@ -60,7 +60,10 @@ export async function validateAndBuildQuest({
 		}
 		const sumAttributes = Object.values(updatedAttributes).reduce((sum, val) => sum + val, 0);
 		if (sumAttributes > 10) {
-			errors.attributeRewards = "You can't allocate more than 10 points in total.\n Keep in mind that selecting a category automatically allocates some points.";
+			errors.attributeRewards = "You can't allocate more than 10 points in total.";
+			if (category) {
+				errors.attributeRewards += "\n Keep in mind that selecting a category automatically allocates some points.";
+			}
 		}
 	}
 
