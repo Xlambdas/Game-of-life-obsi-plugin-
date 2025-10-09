@@ -2,6 +2,7 @@ import { Notice } from "obsidian";
 // from files (services, default):
 import { AppContextService } from "../appContextService";
 import { UserSettings } from "data/DEFAULT";
+import max from "uuid/dist/cjs/max";
 
 export interface XpCalc {
 	totalXp: number;
@@ -19,6 +20,65 @@ export default class XpService {
 	constructor(appService: AppContextService) {
 		this.appService = appService;
 	}
+
+	public async updateXPFromAttributes(
+		attributes: Partial<UserSettings["attribute"]>,
+		isCompleted: boolean
+	): Promise<UserSettings> {
+		/* Update user's attributes and XP details.
+		- Adds provided attribute values to user's current ones.
+		- Recalculates total XP as the sum of all attributes.
+		- Returns the updated UserSettings object (no persistence here).
+		*/
+		const user = this.appService.getUser();
+		if (!user) throw new Error("No user found");
+
+		// 1. Clone current attributes
+		const currentAttributes = { ...user.attribute };
+
+		// 2. Apply updates (incremental)
+		for (const [key, value] of Object.entries(attributes)) {
+			if (value !== undefined && typeof value === "number") {
+				if (!isCompleted) {
+					currentAttributes[key as keyof typeof currentAttributes] =
+						Math.max((currentAttributes[key as keyof typeof currentAttributes] ?? 0) - value, 0);
+						console.log(`Updated attribute ${key}: ${currentAttributes[key as keyof typeof currentAttributes]}`);
+					continue;
+				} else {
+					currentAttributes[key as keyof typeof currentAttributes] =
+						(currentAttributes[key as keyof typeof currentAttributes] ?? 0) + value;
+						console.log(`Updated attribute ${key}: ${currentAttributes[key as keyof typeof currentAttributes]}`);
+				}
+			}
+		}
+
+		// 3. Compute total XP as sum of all attributes (rounded)
+		const totalXp = Object.values(currentAttributes)
+			.filter(v => typeof v === "number")
+			.reduce((acc, val) => acc + (val ?? 0), 0);
+
+		const addedXP = isCompleted ? Object.values(attributes).reduce((acc, val) => acc + (val ?? 0), 0) : Object.values(attributes).reduce((acc, val) => acc - (val ?? 0), 0);
+		if (isCompleted && addedXP > 0) {
+			new Notice(`You gained ${addedXP} XP from attributes!`);
+		}
+
+		const newUser = await this.addXP(user, addedXP);
+
+		console.log(`Current total XP: New total XP: ${totalXp}`);
+		// 4. Update XP details if present
+		const updatedXpDetails = {
+			...newUser.xpDetails,
+			xp: totalXp,
+		};
+
+		// 5. Return updated user object (no save)
+		return {
+			...newUser,
+			xpDetails: updatedXpDetails,
+			attribute: currentAttributes,
+		};
+	}
+
 
 	private computeXpFromTotal(totalXp: number, maxLevel?: number): XpCalc {
 		/* Calcule level/newXp/lvlThreshold à partir du total XP.
