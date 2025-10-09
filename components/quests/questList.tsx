@@ -3,8 +3,6 @@ import { Notice } from "obsidian";
 // from files (services, default):
 import { useAppContext } from "../../context/appContext";
 import { Quest, UserSettings } from "../../data/DEFAULT";
-import { addXP } from "../../context/services/xpService";
-import QuestService from "../../context/services/questService";
 // from file (UI):
 import { QuestSideView } from "./questSideView";
 // import { ModifyQuestModal } from "modal/questModal";
@@ -18,7 +16,6 @@ interface QuestListProps {
 
 export const QuestList: React.FC<QuestListProps> = ({ quests, onQuestUpdate, onUserUpdate }) => {
 	const appService = useAppContext();
-	const questService = new QuestService(appService);
 
 	const [questState, setQuestState] = useState<Quest[]>(quests);
 
@@ -70,21 +67,21 @@ export const QuestList: React.FC<QuestListProps> = ({ quests, onQuestUpdate, onU
 	const handleCompleteQuest = async (quest: Quest, completed: boolean) => {
 		// Toggle quest completion status
 		try {
-			const updatedQuest = await questService.toggleQuestCompletion(quest);
+			const updatedQuest = await appService.questService.toggleQuestCompletion(quest);
 			const user = await appService.getUser();
 
 			// MAJ UI
 			const updatedList = questState.map(q =>
 				q.id === updatedQuest.id
 					? {
-							...q,
-							progression: {
-								...q.progression,
-								isCompleted: completed,
-								progress: completed ? 100 : 0,
-								completedAt: completed ? new Date() : null,
-							},
-					  }
+						...q,
+						progression: {
+							...q.progression,
+							isCompleted: completed,
+							progress: completed ? 100 : 0,
+							completedAt: completed ? new Date() : null,
+						},
+					}
 					: q
 			);
 			setQuestState(updatedList);
@@ -94,7 +91,7 @@ export const QuestList: React.FC<QuestListProps> = ({ quests, onQuestUpdate, onU
 				if (Array.isArray(user.completedQuests) && !user.completedQuests.includes(updatedQuest.id)) {
 					user.completedQuests.push(updatedQuest.id);
 					if (updatedQuest.reward.XP) {
-						const newUser = await addXP(appService, user as UserSettings, updatedQuest.reward.XP);
+						const newUser = await appService.xpService.addXP(user as UserSettings, updatedQuest.reward.XP);
 						onUserUpdate?.(newUser);
 						new Notice(`Quest completed! +${updatedQuest.reward.XP} XP`);
 					}
@@ -103,7 +100,7 @@ export const QuestList: React.FC<QuestListProps> = ({ quests, onQuestUpdate, onU
 				// if uncompleted
 				user.completedQuests = user.completedQuests.filter((id: string) => id !== updatedQuest.id);
 				if (updatedQuest.reward.XP) {
-					const newUser = await addXP(appService, user as UserSettings, -updatedQuest.reward.XP);
+					const newUser = await appService.xpService.addXP(user as UserSettings, -updatedQuest.reward.XP);
 					onUserUpdate?.(newUser);
 				}
 				new Notice("Quest marked as not completed.");

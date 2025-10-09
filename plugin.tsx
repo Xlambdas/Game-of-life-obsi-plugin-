@@ -1,7 +1,7 @@
 import { Plugin } from 'obsidian';
 // from files - services:
 import { AppContextService } from './context/appContextService';
-import { ViewService } from './context/services/viewService';
+import ViewService from './context/services/viewService';
 // from files - other
 // import { CreateQuestModal } from './modal/questModal';
 import { selfSettingsTab } from './UI/settingsTab';

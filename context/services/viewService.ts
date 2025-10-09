@@ -2,7 +2,7 @@ import { App, WorkspaceLeaf } from "obsidian";
 // from files :
 import { SIDE_VIEW_TYPE, SideViewSetting, MAIN_VIEW_TYPE, MainViewSetting } from "../../helpers/sideViewSetting";
 
-export class ViewService {
+export default class ViewService {
 	/* service for managing views */
 	private app: App;
 

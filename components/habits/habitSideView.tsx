@@ -174,7 +174,17 @@ const HabitItem: React.FC<HabitItemProps> = ({ habit, activeTab, onComplete, onM
 				<div className="quest-description">{habit.shortDescription}</div>
 			)}
 			<div className="quest-xp">
-				XP: {habit.reward.XP} |  Streak: {habit.streak.current}
+				{/* XP: {habit.reward.XP}
+				{/* {habit.reward.attributes &&
+					Object.entries(habit.reward.attributes)
+						.filter(([_, value]) => value !== 0 && value !== null && value !== undefined)
+						.map(([key, value]) => (
+							<span key={key} className="quest-attribute">
+								{" | "}{key}: {value}
+							</span>
+						))
+				}
+				{" | "}Streak: {habit.streak.current} (Best: {habit.streak.best}) */}
 			</div>
 
 		</div>

@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 // from files (Service, DEFAULT):
 import { useAppContext } from "context/appContext";
-import { HabitService } from "context/services/habitService";
 import { Habit, UserSettings } from "data/DEFAULT";
 // from files (UI):
 import { HabitSideView } from "./habitSideView";
@@ -17,7 +16,6 @@ interface HabitListProps {
 export const HabitList: React.FC<HabitListProps> = ({ habits, onHabitUpdate, onUserUpdate }) => {
 	/* Side view to display and manage habits */
 	const appService = useAppContext();
-	const habitService = new HabitService(appService);
 
 	const [habitState, setHabitState] = useState<Habit[]>(habits);
 
@@ -29,9 +27,9 @@ export const HabitList: React.FC<HabitListProps> = ({ habits, onHabitUpdate, onU
 	useEffect(() => {
 		const refreshAllHabits = async () => {
 			/* Refresh all habits to update their streaks and next dates */
-			const refreshedHabits = await Promise.all(habitState.map(habit => habitService.refreshHabits(habit)));
+			const refreshedHabits = await Promise.all(habitState.map(habit => appService.habitService.refreshHabits(habit)));
 			setHabitState(refreshedHabits);
-			await appService.saveAllHabits(refreshedHabits);
+			await appService.dataService.saveAllHabits(refreshedHabits);
 		};
 		refreshAllHabits();
 	}, []);
@@ -78,8 +76,8 @@ export const HabitList: React.FC<HabitListProps> = ({ habits, onHabitUpdate, onU
 
 	const handleCheckbox = async (habit: Habit, completed: boolean) => {
 		// console.log(`Toggling habit ${habit.id} to ${completed}`);
-		const updatedHabit = await habitService.updateHabitCompletion(habit, completed);
-		await habitService.saveHabit(updatedHabit);
+		const updatedHabit = await appService.habitService.updateHabitCompletion(habit, completed);
+		await appService.habitService.saveHabit(updatedHabit);
 		const updatedHabits = habitState.map(h => h.id === updatedHabit.id ? updatedHabit : h);
 		setHabitState(updatedHabits);
 		if (onHabitUpdate) onHabitUpdate(updatedHabits);

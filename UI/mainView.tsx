@@ -21,9 +21,9 @@ export const MainView: React.FC = () => {
 
 	const loadData = async () => {
 		const [loadedUser, loadedQuests, loadedHabits] = await Promise.all([
-		appService.get("user"),
-		appService.get("quests"),
-		appService.get("habits"),
+		appService.dataService.get("user"),
+		appService.dataService.get("quests"),
+		appService.dataService.get("habits"),
 		]);
 
 		setUser(

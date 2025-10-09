@@ -3,7 +3,6 @@ import * as React from "react";
 import { useEffect, useState } from "react";
 // from files (services, Default):
 import { useAppContext } from "../context/appContext";
-import { addXP } from "../context/services/xpService";
 import { UserSettings, Quest, Habit } from "../data/DEFAULT";
 // from files (UI, components):
 import { UserCard } from "../components/forms/UI/userCard";
@@ -21,9 +20,9 @@ export const SideView: React.FC = () => {
 	const [user, setUser] = useState<UserSettings | null>(null);
 
 	const loadData = async () => {
-		const loadedUser = await appService.get('user');
-		const loadedQuests = await appService.get('quests');
-		const loadedHabits = await appService.get('habits');
+		const loadedUser = await appService.dataService.getUser();
+		const loadedQuests = await appService.dataService.getQuests();
+		const loadedHabits = await appService.dataService.getHabits();
 		if (loadedUser && typeof loadedUser === 'object' && 'settings' in loadedUser) {
 			setUser(loadedUser as UserSettings);
 		} else {
@@ -45,7 +44,7 @@ export const SideView: React.FC = () => {
 
 	const handleAddXP = async (amount: number) => {
 		if (!user) return;
-		const updatedUser = await addXP(appService, user, amount);
+		const updatedUser = await appService.xpService.addXP(user, amount);
 		setUser(updatedUser);
 		console.log(`Added ${amount} XP to user. New user: ${updatedUser}`);
 		new Notice(`You gained ${amount} XP!`);

@@ -350,18 +350,8 @@ export const DEFAULT_QUEST: Quest = {
 		XP: 10, // todo: do algo
 		items: [], // todo: do algo
 		attributes: {
-			strength: 0,
-			agility: 0,
-			endurance: 0,
-			charisma: 0,
-			wisdom: 0,
-			perception: 0,
+			...DEFAULT_ATTRIBUTES,
 			intelligence: 1,
-			willpower: 0,
-			spirit: 0,
-			flow: 0,
-			reputation: 0,
-			resilience: 0
 		},
 		unlocks: [], // todo: do algo
 		badges: [], // todo: do algo
@@ -372,18 +362,7 @@ export const DEFAULT_QUEST: Quest = {
 		level: 0,
 		previousQuests: [], // todo: do algo
 		attributes: {
-			strength: 0,
-			agility: 0,
-			endurance: 0,
-			charisma: 0,
-			wisdom: 0,
-			perception: 0,
-			intelligence: 0,
-			willpower: 0,
-			spirit: 0,
-			flow: 0,
-			reputation: 0,
-			resilience: 0
+			...DEFAULT_ATTRIBUTES
 		},
 		timeAvailableMinutes: 30, // practical constraint
 		tagsRequired: [], // e.g. ['outdoor', 'focus']
@@ -488,8 +467,8 @@ export const DEFAULT_HABIT: Habit = {
 		goal: 2000, // e.g. ml of water
 		currentValue: 0, // track current amount vs goal
 		milestones: [
-			{ target: 7, reward: { XP: 20, items: ["Hydration Badge"] } }, // 7 days streak
-			{ target: 30, reward: { XP: 100, attributes: { endurance: 2 } } },
+			{ target: 7, reward: { XP: 10, items: ["Hydration Badge"] } }, // 7 days streak
+			{ target: 30, reward: { XP: 20, attributes: { endurance: 2 } } },
 		],
 	},
 	penalty: {

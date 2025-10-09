@@ -4,7 +4,7 @@ import { AppContextService } from "../appContextService";
 import { Habit } from "data/DEFAULT";
 
 
-export class HabitService {
+export default class HabitService {
 	/* Handles all habit-related operations: create, update, delete, mark complete/incomplete.
 		Uses AppContextService for data persistence.
 		Contains logic to manage habit streaks and recurrences.
@@ -17,7 +17,7 @@ export class HabitService {
 
 	async saveHabit(habit: Habit): Promise<void> {
 		console.log("Saving habit :", habit);
-		await this.appContext.addHabit(habit);
+		await this.appContext.dataService.addHabit(habit);
 	}
 
 	updateDates(habit: Habit, date: Date): Habit {

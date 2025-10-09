@@ -27,7 +27,7 @@ export default class QuestService {
 				lastUpdated: new Date(),
 			},
 		};
-		await this.appContext.updateQuest(updatedQuest);
+		await this.appContext.dataService.updateQuest(updatedQuest);
 		return updatedQuest;
 	}
 }

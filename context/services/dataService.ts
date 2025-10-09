@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 // from files (default) :
 import { UserSettings, DEFAULT_SETTINGS, Quest, DEFAULT_QUEST, Habit, DEFAULT_HABIT } from '../../data/DEFAULT';
 
-export class DataService {
+export default class DataService {
 	/* Handles all data operations: loading, saving, CRUD for user, quests, habits.
 		Uses Obsidian's Vault API to read/write JSON files.
 		Ensures data files exist and have correct structure.
@@ -187,6 +187,16 @@ export class DataService {
 		await this.loadQuests();
 		return Object.values(this.quests);
 	}
+
+	async updateQuest(updatedQuest: Quest): Promise<void> {
+		const quests = await this.getQuests();
+		if (!quests[updatedQuest.id]) {
+			throw new Error(`Quest with id ${updatedQuest.id} does not exist`);
+		}
+		quests[updatedQuest.id] = updatedQuest;
+		await this.setQuests(quests);
+	}
+
 
 	// ------------------------
 	// Habits
