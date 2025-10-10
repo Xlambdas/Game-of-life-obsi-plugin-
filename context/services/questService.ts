@@ -16,19 +16,41 @@ export default class QuestService {
 		this.appContext = contextService;
 	}
 
-	async toggleQuestCompletion(quest: Quest): Promise<Quest> {
+	async saveQuest(quest: Quest): Promise<void> {
+		console.log("Saving quest :", quest);
+		await this.appContext.dataService.updateQuest(quest);
+	}
+
+	async questCompletion(
+		quest: Quest,
+		completed: boolean,
+	): Promise<Quest> {
 		const updatedQuest: Quest = {
 			...quest,
 			progression: {
 				...quest.progression,
-				isCompleted: !quest.progression.isCompleted,
-				progress: !quest.progression.isCompleted ? 100 : 0,
-				completedAt: !quest.progression.isCompleted ? new Date() : null,
+				isCompleted: completed,
+				progress: completed ? 100 : 0,
+				completedAt: completed ? new Date() : null,
+				lastUpdated: new Date(),
+				attempts: completed ? quest.progression.attempts + 1 : quest.progression.attempts,
+				failures: !completed ? quest.progression.failures + 1 : quest.progression.failures,
+			},
+		};
+		return updatedQuest;
+	}
+
+	refreshQuests(quest: Quest): Quest {
+		const progress = quest.progression.isCompleted ? 100 : 0;
+
+		return {
+			...quest,
+			progression: {
+				...quest.progression,
+				progress: progress,
 				lastUpdated: new Date(),
 			},
 		};
-		await this.appContext.dataService.updateQuest(updatedQuest);
-		return updatedQuest;
 	}
 }
 

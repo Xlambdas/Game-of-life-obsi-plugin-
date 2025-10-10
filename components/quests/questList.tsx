@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, use } from "react";
 import { Notice } from "obsidian";
 // from files (services, default):
 import { useAppContext } from "../../context/appContext";
@@ -15,6 +15,7 @@ interface QuestListProps {
 }
 
 export const QuestList: React.FC<QuestListProps> = ({ quests, onQuestUpdate, onUserUpdate }) => {
+	/* Side view to display and manage quests */
 	const appService = useAppContext();
 
 	const [questState, setQuestState] = useState<Quest[]>(quests);
@@ -23,6 +24,17 @@ export const QuestList: React.FC<QuestListProps> = ({ quests, onQuestUpdate, onU
 	const [filter, setFilter] = useState("");
 	const [activeTab, setActiveTab] = useState<"active" | "completed" | "all">("active");
 	const [sortBy, setSortBy] = useState<"priority" | "xp" | "difficulty" | "date">("priority");
+
+	useEffect(() => {
+		const refreshAllQuests = async () => {
+			/* Refresh all quests to update their statuses if needed */
+			const refreshedQuests = await Promise.all(questState.map(quest => appService.questService.refreshQuests(quest)));
+			setQuestState(refreshedQuests);
+			await appService.dataService.saveAllQuests(refreshedQuests);
+		};
+		refreshAllQuests();
+	}, []);
+
 	useEffect(() => {
 		const savedOpen = localStorage.getItem("questListOpen");
 		const savedFilter = localStorage.getItem("questListFilter");
@@ -64,29 +76,20 @@ export const QuestList: React.FC<QuestListProps> = ({ quests, onQuestUpdate, onU
 	};
 
 
+	const handleGetDaysUntil = (targetDate: Date): number => {
+		return appService.xpService.getDaysUntil(new Date(), targetDate);
+	}
+
 	const handleCompleteQuest = async (quest: Quest, completed: boolean) => {
 		// Toggle quest completion status
 		try {
-			const updatedQuest = await appService.questService.toggleQuestCompletion(quest);
-			const user = await appService.getUser();
+			const updatedQuest = await appService.questService.questCompletion(quest, completed);
+			await appService.questService.saveQuest(updatedQuest);
+			const updatedQuests = questState.map(q => q.id === updatedQuest.id ? updatedQuest : q);
+			setQuestState(updatedQuests);
+			const user = appService.dataService.getUser() as UserSettings;
 
-			// MAJ UI
-			const updatedList = questState.map(q =>
-				q.id === updatedQuest.id
-					? {
-						...q,
-						progression: {
-							...q.progression,
-							isCompleted: completed,
-							progress: completed ? 100 : 0,
-							completedAt: completed ? new Date() : null,
-						},
-					}
-					: q
-			);
-			setQuestState(updatedList);
 
-			// MAJ User + XP
 			if (completed) {
 				if (Array.isArray(user.completedQuests) && !user.completedQuests.includes(updatedQuest.id)) {
 					user.completedQuests.push(updatedQuest.id);
@@ -105,7 +108,7 @@ export const QuestList: React.FC<QuestListProps> = ({ quests, onQuestUpdate, onU
 				}
 				new Notice("Quest marked as not completed.");
 			}
-			onQuestUpdate?.(updatedList);
+			onQuestUpdate?.(updatedQuests);
 		} catch (err) {
 			console.error("Error completing quest:", err);
 			new Notice("Failed to update quest status");
@@ -162,6 +165,7 @@ export const QuestList: React.FC<QuestListProps> = ({ quests, onQuestUpdate, onU
 			setActiveTab={handleSetActiveTab}
 			setSortBy={handleSetSortBy}
 			handleModifyQuest={handleModify}
+			getDaysUntil={handleGetDaysUntil}
 		/>
 	);
 };

@@ -185,9 +185,13 @@ export default class XpService {
 		/* Calculate days until the next occurrence of targetDay (0=Sunday, 6=Saturday).
 			If today is targetDay, returns 0.
 		*/
-		const dayOfWeek = today.getDay();
-		if (dayOfWeek === targetDate.getDay()) return 0;
-		return (targetDate.getDay() + 7 - dayOfWeek) % 7;
+		const todayMidnight = new Date(today);
+		todayMidnight.setHours(0, 0, 0, 0);
+		const targetMidnight = new Date(targetDate);
+		targetMidnight.setHours(0, 0, 0, 0);
+		const diffTime = targetMidnight.getTime() - todayMidnight.getTime();
+		const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+		return diffDays >= 0 ? diffDays : 0;
 	}
 }
 

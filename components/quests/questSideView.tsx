@@ -14,6 +14,7 @@ interface QuestSideViewProps {
 	setActiveTab: (tab: "active" | "completed" | "all") => void;
 	setSortBy: (sort: "priority" | "xp" | "difficulty" | "date") => void;
 	handleModifyQuest: (quest: Quest) => void;
+	getDaysUntil: (targetDate: Date) => number;
 }
 
 export const QuestSideView: React.FC<QuestSideViewProps> = (props) => {
@@ -30,6 +31,7 @@ export const QuestSideView: React.FC<QuestSideViewProps> = (props) => {
 		setActiveTab,
 		setSortBy,
 		handleModifyQuest,
+		getDaysUntil
 	} = props;
 
 	return (
@@ -126,6 +128,7 @@ export const QuestSideView: React.FC<QuestSideViewProps> = (props) => {
 					quest={quest}
 					onComplete={handleCompleteQuest}
 					onModify={handleModifyQuest}
+					getDaysUntil={getDaysUntil}
 				/>
 			))}
 			</div>
@@ -138,9 +141,10 @@ interface QuestItemProps {
 	quest: Quest;
 	onComplete: (quest: Quest, completed: boolean) => void;
 	onModify: (quest: Quest) => void;
+	getDaysUntil: (targetDate: Date) => number;
 }
 
-const QuestItem: React.FC<QuestItemProps> = ({ quest, onComplete, onModify }) => {
+const QuestItem: React.FC<QuestItemProps> = ({ quest, onComplete, onModify, getDaysUntil }) => {
 	/* Individual quest item in the list */
 	const isEditable = !quest.progression.isCompleted && !quest.meta.isSystemQuest;
 
@@ -186,6 +190,9 @@ const QuestItem: React.FC<QuestItemProps> = ({ quest, onComplete, onModify }) =>
 					</span>
 				)))}
 			</div>
+			{quest.progression.dueDate ? <div className="quest-days-remaining">
+				{getDaysUntil(new Date(quest.progression.dueDate))} days remaining
+			</div> : null}
 		</div>
 	);
 };

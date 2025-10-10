@@ -16,7 +16,6 @@ export default class HabitService {
 	}
 
 	async saveHabit(habit: Habit): Promise<void> {
-		console.log("Saving habit :", habit);
 		await this.appContext.dataService.addHabit(habit);
 	}
 

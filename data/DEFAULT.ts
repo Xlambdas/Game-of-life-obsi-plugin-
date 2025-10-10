@@ -274,8 +274,8 @@ export interface Quest extends BaseTask {
 		startedAt?: Date; // Auto-generated when the quest is started // todo: do algo
 		lastUpdated?: Date; // Auto-generated when the quest is updated // todo: do algo
 		subtasks?: string[]; // todo: do algo
-		attempts?: number; // todo: do algo
-		failures?: number; // todo: do algo
+		attempts: number; // todo: do algo
+		failures: number; // todo: do algo
 		timeSpentMinutes?: number; // Auto-generated // todo: do algo
 	};
 
