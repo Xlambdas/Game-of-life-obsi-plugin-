@@ -14,6 +14,7 @@ interface HabitSideViewProps {
 	setActiveTab: (tab: "today" | "upcoming") => void;
 	setSortBy: (sort: "priority" | "xp" | "difficulty" | "recurrence") => void;
 	handleModifyHabit: (habit: Habit) => void;
+	getDaysUntil: (targetDate: Date) => number;
 }
 
 export const HabitSideView: React.FC<HabitSideViewProps> = (props) => {
@@ -30,6 +31,7 @@ export const HabitSideView: React.FC<HabitSideViewProps> = (props) => {
 		setActiveTab,
 		setSortBy,
 		handleModifyHabit,
+		getDaysUntil
 	} = props;
 
 	// UI feedback on completion rate
@@ -115,6 +117,7 @@ export const HabitSideView: React.FC<HabitSideViewProps> = (props) => {
 					activeTab={activeTab}
 					onComplete={handleComplete}
 					onModify={handleModifyHabit}
+					getDaysUntil={getDaysUntil}
 				/>
 			))}
 			</div>
@@ -128,11 +131,12 @@ interface HabitItemProps {
 	activeTab: "today" | "upcoming";
 	onComplete: (habit: Habit, completed: boolean) => void;
 	onModify: (habit: Habit) => void;
+	getDaysUntil: (targetDate: Date) => number;
 }
 
 
 
-const HabitItem: React.FC<HabitItemProps> = ({ habit, activeTab, onComplete, onModify }) => {
+const HabitItem: React.FC<HabitItemProps> = ({ habit, activeTab, onComplete, onModify, getDaysUntil }) => {
 	/* Individual habit item with completion and edit options */
 	const isEditable = !habit.isSystemHabit;
 
@@ -171,14 +175,18 @@ const HabitItem: React.FC<HabitItemProps> = ({ habit, activeTab, onComplete, onM
 				<div className="quest-description">{habit.shortDescription}</div>
 			)}
 			<div className="quest-xp">
-				{habit.reward.attributes && (Object.entries(habit.reward.attributes)
-				.filter(([_, v]) => v !== 0 && v !== null && v !== undefined)
-				.map(([key, value]) => (
-					<span key={key} className="flex items-center gap-1">
-						<span className="text-amber-300 font-medium">{key}: </span>
-						<span className="text-amber-100">{value}</span> <br />
-					</span>
-				)))}
+				{activeTab === "today" && habit.reward.attributes ? (
+					Object.entries(habit.reward.attributes)
+						.filter(([_, v]) => v !== 0 && v !== null && v !== undefined)
+						.map(([key, value]) => (
+							<span key={key} className="flex items-center gap-1">
+								<span className="text-amber-300 font-medium">{key}: </span>
+								<span className="text-amber-100">{value}</span> <br/>
+							</span>
+						))
+				) : (
+					<span>Next in {getDaysUntil(new Date(habit.streak.nextDate || new Date()))} days<br/></span>
+				)}
 				Streak: {habit.streak.current} (Best: {habit.streak.best})
 			</div>
 		</div>

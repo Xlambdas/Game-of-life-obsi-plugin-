@@ -74,6 +74,10 @@ export const HabitList: React.FC<HabitListProps> = ({ habits, onHabitUpdate, onU
 		localStorage.setItem("habitListSortBy", sort);
 	};
 
+	const handleGetDaysUntil = (targetDate: Date): number => {
+		return appService.xpService.getDaysUntil(new Date(), targetDate);
+	}
+
 	const handleCheckbox = async (habit: Habit, completed: boolean) => {
 		console.log(`Toggling habit ${habit} to ${completed}`);
 		const updatedHabit = await appService.habitService.updateHabitCompletion(habit, completed);
@@ -157,6 +161,7 @@ export const HabitList: React.FC<HabitListProps> = ({ habits, onHabitUpdate, onU
 			setActiveTab={handleSetActiveTab}
 			setSortBy={handleSetSortBy}
 			handleModifyHabit={handleModify}
+			getDaysUntil={handleGetDaysUntil}
 		/>
 	);
 };

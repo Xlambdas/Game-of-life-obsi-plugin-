@@ -63,7 +63,7 @@ export const MainView: React.FC = () => {
 	const completedHabits = habits.filter(h => h.streak.isCompletedToday).length;
 	const completionPercent = totalHabits ? Math.round((completedHabits / totalHabits) * 100) : 0;
 
-
+    if (1 === 1) {return <p>Loading...</p>}
 	return (
 		<div className="main-view">
 		<div className="dashboard-container">

@@ -180,5 +180,14 @@ export default class XpService {
 			await this.appService.updateUserData({ xpDetails: updated });
 		}
 	}
+
+	public getDaysUntil(today: Date, targetDate: Date): number {
+		/* Calculate days until the next occurrence of targetDay (0=Sunday, 6=Saturday).
+			If today is targetDay, returns 0.
+		*/
+		const dayOfWeek = today.getDay();
+		if (dayOfWeek === targetDate.getDay()) return 0;
+		return (targetDate.getDay() + 7 - dayOfWeek) % 7;
+	}
 }
 
