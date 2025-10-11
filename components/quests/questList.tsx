@@ -7,6 +7,7 @@ import { Quest, UserSettings } from "../../data/DEFAULT";
 import { QuestSideView } from "./questSideView";
 // import { ModifyQuestModal } from "modal/questModal";
 import { GenericForm } from "../forms/genericForm";
+import { on } from "events";
 
 interface QuestListProps {
 	quests: Quest[];
@@ -81,37 +82,20 @@ export const QuestList: React.FC<QuestListProps> = ({ quests, onQuestUpdate, onU
 	}
 
 	const handleCompleteQuest = async (quest: Quest, completed: boolean) => {
-		// Toggle quest completion status
+		// Update Quest as completed or not, update user XP and attributes.
 		try {
 			const updatedQuest = await appService.questService.questCompletion(quest, completed);
 			await appService.questService.saveQuest(updatedQuest);
 			const updatedQuests = questState.map(q => q.id === updatedQuest.id ? updatedQuest : q);
 			setQuestState(updatedQuests);
-			const user = appService.dataService.getUser() as UserSettings;
-
-
-			if (completed) {
-				if (Array.isArray(user.completedQuests) && !user.completedQuests.includes(updatedQuest.id)) {
-					user.completedQuests.push(updatedQuest.id);
-					if (updatedQuest.reward.XP) {
-						const newUser = await appService.xpService.addXP(user as UserSettings, updatedQuest.reward.XP);
-						onUserUpdate?.(newUser);
-						new Notice(`Quest completed! +${updatedQuest.reward.XP} XP`);
-					}
-				}
-			} else {
-				// if uncompleted
-				user.completedQuests = user.completedQuests.filter((id: string) => id !== updatedQuest.id);
-				if (updatedQuest.reward.XP) {
-					const newUser = await appService.xpService.addXP(user as UserSettings, -updatedQuest.reward.XP);
-					onUserUpdate?.(newUser);
-				}
-				new Notice("Quest marked as not completed.");
-			}
-			onQuestUpdate?.(updatedQuests);
-		} catch (err) {
-			console.error("Error completing quest:", err);
-			new Notice("Failed to update quest status");
+			const user = await appService.xpService.updateXPFromAttributes(quest.reward.attributes || {}, completed);
+			await appService.dataService.saveUser(user);
+			if (onUserUpdate) onUserUpdate(user);
+			if (onQuestUpdate) onQuestUpdate(updatedQuests);
+			if (completed) new Notice(`Quest "${quest.title}" completed!`);
+		} catch (error) {
+			console.error("Error completing quest:", error);
+			new Notice("An error occurred while updating the quest. Please try again.");
 		}
 	};
 

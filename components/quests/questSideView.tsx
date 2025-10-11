@@ -1,6 +1,7 @@
 import React from "react";
 // from file (default):
 import { Quest } from "../../data/DEFAULT";
+import { ChevronDown, SortAsc, Filter } from "lucide-react";
 
 interface QuestSideViewProps {
 	filteredQuests: Quest[];
@@ -54,31 +55,21 @@ export const QuestSideView: React.FC<QuestSideViewProps> = (props) => {
 
 			<div className="quest-controls-row">
 			{/* Tabs: Active / Completed / All */}
-			<div className="quest-filter-dropdown">
-				<button className="quest-filter-button">
-					{activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
-				</button>
-				<div className="quest-filter-options">
-				<button
-					className={`quest-filter-option ${activeTab === "active" ? "active" : ""}`}
-					onClick={() => setActiveTab("active")}
-				>
-					Active
-				</button>
-				<button
-					className={`quest-filter-option ${activeTab === "completed" ? "active" : ""}`}
-					onClick={() => setActiveTab("completed")}
-				>
-					Completed
-				</button>
-				<button
-					className={`quest-filter-option ${activeTab === "all" ? "active" : ""}`}
-					onClick={() => setActiveTab("all")}
-				>
-					All
-				</button>
-				</div>
-			</div>
+
+			<button
+				className="habit-filter-button"
+				onClick={() => {
+					const next =
+						activeTab === "active"
+							? "completed"
+							: activeTab === "completed"
+							? "all"
+							: "active";
+					setActiveTab(next);
+				}}
+			>
+				{activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
+			</button>
 
 			{/* Sorting */}
 			<div className="quest-sort-dropdown">
@@ -91,12 +82,6 @@ export const QuestSideView: React.FC<QuestSideViewProps> = (props) => {
 					onClick={() => setSortBy("priority")}
 				>
 					Priority
-				</button>
-				<button
-					className={`quest-sort-option ${sortBy === "xp" ? "active" : ""}`}
-					onClick={() => setSortBy("xp")}
-				>
-					XP Reward
 				</button>
 				<button
 					className={`quest-sort-option ${sortBy === "difficulty" ? "active" : ""}`}
@@ -173,6 +158,7 @@ const QuestItem: React.FC<QuestItemProps> = ({ quest, onComplete, onModify, getD
 				)}
 				</div>
 			</div>
+			<ProgressBar value={quest.progression.progress} max={100} showPercent={false} className="quest-progress-bar" />
 
 			{quest.shortDescription && (
 				<div className="quest-description">
@@ -180,6 +166,12 @@ const QuestItem: React.FC<QuestItemProps> = ({ quest, onComplete, onModify, getD
 				</div>
 			)}
 
+			{/* Remaining days */}
+			{quest.progression.dueDate && !quest.progression.isCompleted ? <div className="quest-xp">
+				<strong>{getDaysUntil(new Date(quest.progression.dueDate))} days remaining</strong>
+			</div> : null}
+
+			{/* Attributes rewards */}
 			<div className="quest-xp">
 				{quest.reward.attributes && (Object.entries(quest.reward.attributes)
 				.filter(([_, v]) => v !== 0 && v !== null && v !== undefined)
@@ -190,9 +182,37 @@ const QuestItem: React.FC<QuestItemProps> = ({ quest, onComplete, onModify, getD
 					</span>
 				)))}
 			</div>
-			{quest.progression.dueDate ? <div className="quest-days-remaining">
-				{getDaysUntil(new Date(quest.progression.dueDate))} days remaining
-			</div> : null}
 		</div>
 	);
+};
+
+
+
+type Props = {
+  value: number;       // 0..max
+  max?: number;        // default 100
+  showPercent?: boolean;
+  className?: string;
+};
+
+export const ProgressBar: React.FC<Props> = ({ value, max = 100, showPercent = false, className = "" }) => {
+	console.log("progress value:", value, typeof value);
+
+  const safeVal = typeof value === "number" && !isNaN(value) ? value : 0;
+  const pct = Math.max(0, Math.min(100, Math.round((safeVal / max) * 100)));
+
+  return (
+    <div className={`progress ${pct === 100 ? "completed" : ""} ${className}`}>
+      <div
+        className="progress__fill"
+        style={{ width: `${pct}%` }}
+        role="progressbar"
+        aria-valuemin={0}
+        aria-valuemax={max}
+        aria-valuenow={safeVal}
+        aria-label={`Progression ${pct}%`}
+      />
+      {showPercent && <span className="progress-meta">{pct}%</span>}
+    </div>
+  );
 };

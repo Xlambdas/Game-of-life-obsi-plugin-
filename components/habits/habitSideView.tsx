@@ -81,12 +81,6 @@ export const HabitSideView: React.FC<HabitSideViewProps> = (props) => {
 					Priority
 				</button>
 				<button
-					className={`quest-sort-option ${sortBy === "xp" ? "active" : ""}`}
-					onClick={() => setSortBy("xp")}
-				>
-					XP
-				</button>
-				<button
 					className={`quest-sort-option ${sortBy === "difficulty" ? "active" : ""}`}
 					onClick={() => setSortBy("difficulty")}
 				>
@@ -185,7 +179,7 @@ const HabitItem: React.FC<HabitItemProps> = ({ habit, activeTab, onComplete, onM
 							</span>
 						))
 				) : (
-					<span>Next in {getDaysUntil(new Date(habit.streak.nextDate || new Date()))} days<br/></span>
+					<span><strong>Next in {getDaysUntil(new Date(habit.streak.nextDate || new Date()))} days</strong><br/></span>
 				)}
 				Streak: {habit.streak.current} (Best: {habit.streak.best})
 			</div>

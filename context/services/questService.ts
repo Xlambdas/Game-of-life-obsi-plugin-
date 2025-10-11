@@ -41,7 +41,7 @@ export default class QuestService {
 	}
 
 	refreshQuests(quest: Quest): Quest {
-		const progress = quest.progression.isCompleted ? 100 : 0;
+		const progress = quest.progression.isCompleted ? 100 : quest.progression.progress;
 
 		return {
 			...quest,

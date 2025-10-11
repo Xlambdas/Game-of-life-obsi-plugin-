@@ -18,17 +18,21 @@
       "unit": "days"
     },
     "streak": {
-      "current": 1,
-      "best": 1,
+      "current": 2,
+      "best": 2,
       "history": [
         {
           "date": "2025-10-09T18:31:15.711Z",
           "success": true
+        },
+        {
+          "date": "2025-10-11T08:45:44.917Z",
+          "success": true
         }
       ],
       "isCompletedToday": true,
-      "nextDate": "2025-10-11T18:31:15.711Z",
-      "lastCompletedDate": "2025-10-09T18:31:15.711Z"
+      "nextDate": "2025-10-13T08:45:44.917Z",
+      "lastCompletedDate": "2025-10-11T08:45:44.917Z"
     },
     "progress": {
       "level": 1,
@@ -63,8 +67,8 @@
     "reward": {
       "XP": 0,
       "attributes": {
-        "strength": 1,
-        "agility": 1,
+        "strength": 2,
+        "agility": 0,
         "endurance": 1,
         "charisma": 0,
         "wisdom": 0,
@@ -99,17 +103,21 @@
       "unit": "days"
     },
     "streak": {
-      "current": 1,
-      "best": 1,
+      "current": 2,
+      "best": 2,
       "history": [
         {
           "date": "2025-10-10T13:37:32.346Z",
           "success": true
+        },
+        {
+          "date": "2025-10-11T06:55:17.361Z",
+          "success": true
         }
       ],
       "isCompletedToday": true,
-      "nextDate": "2025-10-11T13:37:32.346Z",
-      "lastCompletedDate": "2025-10-10T13:37:32.346Z"
+      "nextDate": "2025-10-12T06:55:17.361Z",
+      "lastCompletedDate": "2025-10-11T06:55:17.361Z"
     },
     "progress": {
       "level": 1,
@@ -342,12 +350,17 @@
       "unit": "weeks"
     },
     "streak": {
-      "current": 0,
-      "best": 0,
-      "history": [],
-      "isCompletedToday": false,
-      "nextDate": "2025-10-10T13:37:20.213Z",
-      "lastCompletedDate": "1970-01-01T00:00:00.000Z"
+      "current": 1,
+      "best": 1,
+      "history": [
+        {
+          "date": "2025-10-10T22:07:16.762Z",
+          "success": true
+        }
+      ],
+      "isCompletedToday": true,
+      "nextDate": "2025-10-17T22:07:16.762Z",
+      "lastCompletedDate": "2025-10-10T22:07:16.762Z"
     },
     "progress": {
       "level": 1,
