@@ -42,12 +42,12 @@ export default class XpService {
 				if (!isCompleted) {
 					currentAttributes[key as keyof typeof currentAttributes] =
 						Math.max((currentAttributes[key as keyof typeof currentAttributes] ?? 0) - value, 0);
-						console.log(`Updated attribute ${key}: ${currentAttributes[key as keyof typeof currentAttributes]}`);
+						// console.log(`Updated attribute ${key}: ${currentAttributes[key as keyof typeof currentAttributes]}`);
 					continue;
 				} else {
 					currentAttributes[key as keyof typeof currentAttributes] =
 						(currentAttributes[key as keyof typeof currentAttributes] ?? 0) + value;
-						console.log(`Updated attribute ${key}: ${currentAttributes[key as keyof typeof currentAttributes]}`);
+						// console.log(`Updated attribute ${key}: ${currentAttributes[key as keyof typeof currentAttributes]}`);
 				}
 			}
 		}
@@ -64,7 +64,7 @@ export default class XpService {
 
 		const newUser = await this.addXP(user, addedXP);
 
-		console.log(`Current total XP: New total XP: ${totalXp}`);
+		// console.log(`Current total XP: New total XP: ${totalXp}`);
 		// 4. Update XP details if present
 		const updatedXpDetails = {
 			...newUser.xpDetails,

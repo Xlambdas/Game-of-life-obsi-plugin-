@@ -30,7 +30,7 @@ export const HabitFormUI = ({
 	const [category, setCategory] = useState(existingHabit?.settings.category || "");
 	const [priority, setPriority] = useState(existingHabit?.settings.priority || "");
 	const [difficulty, setDifficulty] = useState(existingHabit?.settings.difficulty || "");
-	const [attributeRewards, setAttributeRewards] = useState(existingHabit?.reward.attributes || {});
+	const [attributeRewards, setAttributeRewards] = useState(existingHabit?.reward.attributes || DEFAULT_HABIT.reward.attributes);
 
 	const [error, setError] = useState<{[key: string]: string}>({}); // Initialize error state
 	const appContext = useAppContext();

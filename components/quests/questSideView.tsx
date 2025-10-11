@@ -196,7 +196,6 @@ type Props = {
 };
 
 export const ProgressBar: React.FC<Props> = ({ value, max = 100, showPercent = false, className = "" }) => {
-	console.log("progress value:", value, typeof value);
 
   const safeVal = typeof value === "number" && !isNaN(value) ? value : 0;
   const pct = Math.max(0, Math.min(100, Math.round((safeVal / max) * 100)));

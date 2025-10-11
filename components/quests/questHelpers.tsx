@@ -47,6 +47,8 @@ export async function validateAndBuildQuest({
 		errors.levelMin = "Level must be at least 1.";
 	}
 
+	const user = appContext.getUser();
+
 	// --- Update attributes if category chosen ---
 	let updatedAttributes = { ...attributeRewards };
 	if (category && category !== (existingQuest?.settings.category || "")) {
@@ -59,8 +61,9 @@ export async function validateAndBuildQuest({
 			errors.attributeRewards = "Attribute rewards cannot be negative.";
 		}
 		const sumAttributes = Object.values(updatedAttributes).reduce((sum, val) => sum + val, 0);
-		if (sumAttributes > 10) {
-			errors.attributeRewards = "You can't allocate more than 10 points in total.";
+		if (sumAttributes > (10 * (1 + (user.xpDetails.level || 1) / 10))) {
+			console.log("Sum of attribute rewards:", sumAttributes, "Max allowed:", 10 * (1 + (user.xpDetails.level || 1) / 10));
+			errors.attributeRewards = `You can't allocate more than ${10 * (1 + (user.xpDetails.level || 1) / 10)} points in total.`;
 			if (category) {
 				errors.attributeRewards += "\n Keep in mind that selecting a category automatically allocates some points.";
 			}

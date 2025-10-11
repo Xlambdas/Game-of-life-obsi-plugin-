@@ -26,13 +26,13 @@
           "success": true
         },
         {
-          "date": "2025-10-11T08:45:44.917Z",
+          "date": "2025-10-11T13:08:06.120Z",
           "success": true
         }
       ],
       "isCompletedToday": true,
-      "nextDate": "2025-10-13T08:45:44.917Z",
-      "lastCompletedDate": "2025-10-11T08:45:44.917Z"
+      "nextDate": "2025-10-13T13:08:06.120Z",
+      "lastCompletedDate": "2025-10-11T13:08:06.120Z"
     },
     "progress": {
       "level": 1,
