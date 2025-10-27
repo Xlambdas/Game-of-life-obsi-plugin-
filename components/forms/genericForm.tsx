@@ -33,7 +33,7 @@ export class GenericForm extends Modal {
 
 		const handleSubmit = async (data: DataType) => {
 			if (this.mode === 'quest-create') {
-				console.log("Submitting new quest:", data);
+				// console.log("Submitting new quest:", data);
 				await dataService.addQuest(data as Quest);
 			} else if (this.mode === 'quest-modify') {
 				const allQuests = await dataService.loadAllQuests();

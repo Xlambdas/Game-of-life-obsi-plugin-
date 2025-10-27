@@ -10,7 +10,7 @@ export async function validateAndBuildQuest({
 	existingQuest,
 	title, shortDescription, description,
 	category, priority, difficulty,
-	dueDate, levelMin, attributeRewards,
+	dueDate, levelMin, reqQuest, attributeRewards,
 	appContext
 }: {
 	existingQuest?: any,
@@ -22,6 +22,7 @@ export async function validateAndBuildQuest({
 	difficulty: string,
 	dueDate: Date | undefined,
 	levelMin: number,
+	reqQuest: { id: string, title: string }[] | null,
 	attributeRewards: AttributeBlock,
 	appContext: ReturnType<typeof useAppContext>
 }): Promise<{ quest: Quest | null; errors: { [key: string]: string } }> {
@@ -48,6 +49,7 @@ export async function validateAndBuildQuest({
 	}
 
 	const user = appContext.getUser();
+	console.log("requirements prerequisiteQuest", reqQuest);
 
 	// --- Update attributes if category chosen ---
 	let updatedAttributes = { ...attributeRewards };
@@ -62,7 +64,6 @@ export async function validateAndBuildQuest({
 		}
 		const sumAttributes = Object.values(updatedAttributes).reduce((sum, val) => sum + val, 0);
 		if (sumAttributes > (10 * (1 + (user.xpDetails.level || 1) / 10))) {
-			console.log("Sum of attribute rewards:", sumAttributes, "Max allowed:", 10 * (1 + (user.xpDetails.level || 1) / 10));
 			errors.attributeRewards = `You can't allocate more than ${10 * (1 + (user.xpDetails.level || 1) / 10)} points in total.`;
 			if (category) {
 				errors.attributeRewards += "\n Keep in mind that selecting a category automatically allocates some points.";
@@ -98,6 +99,7 @@ export async function validateAndBuildQuest({
 		requirements: {
 			...((existingQuest?.requirements) || DEFAULT_QUEST.requirements),
 			level: Math.max(levelMin, 1),
+			previousQuests: reqQuest && reqQuest.length > 0 ? reqQuest : [],
 		},
 		reward: {
 			...((existingQuest?.reward) || DEFAULT_QUEST.reward),

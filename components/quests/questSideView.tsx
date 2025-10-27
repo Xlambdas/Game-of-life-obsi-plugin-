@@ -7,15 +7,15 @@ interface QuestSideViewProps {
 	filteredQuests: Quest[];
 	isOpen: boolean;
 	filter: string;
-	activeTab: "active" | "completed" | "all";
+	activeTab: "active" | "completed" | "all" | "upcoming";
 	sortBy: "priority" | "xp" | "difficulty" | "date";
 	handleToggle: (e: React.SyntheticEvent<HTMLDetailsElement, Event>) => void;
 	handleCompleteQuest: (quest: Quest, completed: boolean) => void;
 	setFilter: (filter: string) => void;
-	setActiveTab: (tab: "active" | "completed" | "all") => void;
+	setActiveTab: (tab: "active" | "completed" | "all" | "upcoming") => void;
 	setSortBy: (sort: "priority" | "xp" | "difficulty" | "date") => void;
 	handleModifyQuest: (quest: Quest) => void;
-	getDaysUntil: (targetDate: Date) => number;
+	getDaysUntil: (targetDate: Date) => string;
 }
 
 export const QuestSideView: React.FC<QuestSideViewProps> = (props) => {
@@ -64,6 +64,8 @@ export const QuestSideView: React.FC<QuestSideViewProps> = (props) => {
 							? "completed"
 							: activeTab === "completed"
 							? "all"
+							: activeTab === "all"
+							? "upcoming"
 							: "active";
 					setActiveTab(next);
 				}}
@@ -111,6 +113,7 @@ export const QuestSideView: React.FC<QuestSideViewProps> = (props) => {
 				<QuestItem
 					key={quest.id}
 					quest={quest}
+					activeTab={activeTab}
 					onComplete={handleCompleteQuest}
 					onModify={handleModifyQuest}
 					getDaysUntil={getDaysUntil}
@@ -124,12 +127,13 @@ export const QuestSideView: React.FC<QuestSideViewProps> = (props) => {
 
 interface QuestItemProps {
 	quest: Quest;
+	activeTab?: "active" | "completed" | "all" | "upcoming";
 	onComplete: (quest: Quest, completed: boolean) => void;
 	onModify: (quest: Quest) => void;
-	getDaysUntil: (targetDate: Date) => number;
+	getDaysUntil: (targetDate: Date) => string;
 }
 
-const QuestItem: React.FC<QuestItemProps> = ({ quest, onComplete, onModify, getDaysUntil }) => {
+const QuestItem: React.FC<QuestItemProps> = ({ quest, activeTab, onComplete, onModify, getDaysUntil }) => {
 	/* Individual quest item in the list */
 	const isEditable = !quest.progression.isCompleted && !quest.meta.isSystemQuest;
 
@@ -141,6 +145,7 @@ const QuestItem: React.FC<QuestItemProps> = ({ quest, onComplete, onModify, getD
 					type="checkbox"
 					checked={quest.progression.isCompleted}
 					onChange={() => onComplete(quest, !quest.progression.isCompleted)}
+					disabled={activeTab === "upcoming"}
 					className="quest-checkbox"
 				/>
 				<span className={`quest-title ${quest.progression.isCompleted ? "completed" : ""}`}>
@@ -149,11 +154,11 @@ const QuestItem: React.FC<QuestItemProps> = ({ quest, onComplete, onModify, getD
 				</span>
 				{isEditable && (
 					<button
-					className="quest-edit-button"
-					onClick={() => onModify(quest)}
-					aria-label="Edit quest"
+						className="quest-edit-button"
+						onClick={() => onModify(quest)}
+						aria-label="Edit quest"
 					>
-					Edit
+						Edit
 					</button>
 				)}
 				</div>

@@ -15,7 +15,7 @@ export const UserCard: React.FC<UserCardProps> = ({ user }) => {
 			<h2 className="card-title">Level {user.xpDetails.level}</h2>
 			<div className="progress-container">
 				<ProgressBar value={user.xpDetails.newXp} max={user.xpDetails.lvlThreshold} showPercent={false} className="xp-progress-bar" />
-				
+
 				<p className="xp-text">
 					{user.xpDetails.newXp}/{user.xpDetails.lvlThreshold}
 				</p>

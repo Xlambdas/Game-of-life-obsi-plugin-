@@ -74,8 +74,9 @@ export const HabitList: React.FC<HabitListProps> = ({ habits, onHabitUpdate, onU
 		localStorage.setItem("habitListSortBy", sort);
 	};
 
-	const handleGetDaysUntil = (targetDate: Date): number => {
-		return appService.xpService.getDaysUntil(new Date(), targetDate);
+	const handleGetDaysUntil = (targetDate: Date): string => {
+		// console.log("Calculating days until:", new Date(), targetDate);
+		return appService.xpService.getDaysUntil(new Date(), targetDate, 'habit');
 	}
 
 	const handleCheckbox = async (habit: Habit, completed: boolean) => {

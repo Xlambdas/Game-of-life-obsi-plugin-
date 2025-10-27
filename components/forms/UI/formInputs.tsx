@@ -2,6 +2,8 @@
 import { DEFAULT_CATEGORIES, DEFAULT_DIFFICULTIES, DEFAULT_PRIORITIES, DEFAULT_RECURRENCES, DefaultRecurrence } from "data/DEFAULT";
 // from file (UI, components):
 import { RewardAttributeInput, AttributeReward } from "./rewardAttributeInput";
+import { RequirementsLevelInput, RequirementsQuestInput } from "./requirementInput";
+import { on } from "events";
 
 
 export const TitleInput = ({
@@ -191,33 +193,34 @@ export const DueDateInput = ({
 
 export const RequirementsInput = ({
 	levelMin, setLevelMin,
+	reqQuest = [], setReqQuest,
+	allQuests,
 	error, setError
 }: {
 	levelMin: number;
 	setLevelMin: (level: number) => void;
+	reqQuest: { id: string; title: string }[];
+	setReqQuest: (quests: { id: string; title: string }[]) => void;
+	allQuests: { id: string; title: string }[];
 	error: {[key: string]: string};
 	setError: (error: {[key: string]: string}) => void;
 }) => {
+	//input: a list of all (quests: {id, title}), and a level requirment
 	return (
 		<div>
 			<hr className="separator"></hr>
 			<h3>Requirements</h3>
-			<label className="label-select">
-				<span>Level min</span>
-				<input
-					type="number"
-					name="levelMin"
-					className="input"
-					value={levelMin}
-					onChange={e => {
-						setLevelMin(Number(e.target.value))
-						if (error.levelMin) {
-							setError({ ...error, levelMin: "" });
-						}
-					}}
-					min={1}
-				/>
-			</label>
+			<RequirementsLevelInput
+				levelMin={levelMin}
+				setLevelMin={setLevelMin}
+				error={error}
+				setError={setError}
+			/>
+			<RequirementsQuestInput
+				initialValues={reqQuest}
+				setReqQuest={setReqQuest}
+				allQuests={allQuests}
+			/>
 		</div>
 	)
 };

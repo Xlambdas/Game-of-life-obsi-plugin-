@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 // from file (services, default):
 import { useAppContext } from "../../context/appContext";
 import { DEFAULT_QUEST, Quest } from "../../data/DEFAULT";
@@ -28,10 +28,25 @@ export const QuestFormUI = ({
 	const [difficulty, setDifficulty] = useState(existingQuest?.settings.difficulty || "");
 	const [dueDate, setDueDate] = useState(existingQuest?.progression.dueDate ? new Date(existingQuest?.progression.dueDate).toISOString().split('T')[0] : "");
 	const [levelMin, setLevelMin] = useState(existingQuest?.requirements.level || 1);
+	const [reqQuest, setReqQuest] = useState<{ id: string; title: string }[]>(existingQuest?.requirements.prerequisiteQuest || []);
 	const [attributeRewards, setAttributeRewards] = useState(existingQuest?.reward.attributes || DEFAULT_QUEST.reward.attributes);
+	const [allQuests, setAllQuests] = useState<{id: string, title: string}[]>([]);
 
 	const [error, setError] = useState<{[key: string]: string}>({}); // Initialize error state
 	const appContext = useAppContext();
+
+	// Load all quests on component mount
+	useEffect(() => {
+		const loadQuests = async () => {
+			try {
+				const quests = await appContext.dataService.loadAllQuests();
+				setAllQuests(quests.map((q: any) => ({ id: q.id, title: q.title })));
+			} catch (error) {
+				console.error("Error loading quests:", error);
+			}
+		};
+		loadQuests();
+	}, [appContext.dataService]);
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
@@ -39,7 +54,9 @@ export const QuestFormUI = ({
 			existingQuest,
 			title, shortDescription, description,
 			category, priority, difficulty,
-			dueDate: dueDate ? new Date(dueDate) : undefined, levelMin, attributeRewards,
+			dueDate: dueDate ? new Date(dueDate) : undefined,
+			levelMin, reqQuest: reqQuest,
+			attributeRewards,
 			appContext
 		});
 		if (quest) {
@@ -97,6 +114,9 @@ export const QuestFormUI = ({
 					<RequirementsInput
 						levelMin={levelMin}
 						setLevelMin={setLevelMin}
+						reqQuest={reqQuest}
+						setReqQuest={setReqQuest}
+						allQuests={allQuests}
 						error={error}
 						setError={setError}
 					/>

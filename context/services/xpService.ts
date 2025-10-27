@@ -42,12 +42,10 @@ export default class XpService {
 				if (!isCompleted) {
 					currentAttributes[key as keyof typeof currentAttributes] =
 						Math.max((currentAttributes[key as keyof typeof currentAttributes] ?? 0) - value, 0);
-						// console.log(`Updated attribute ${key}: ${currentAttributes[key as keyof typeof currentAttributes]}`);
 					continue;
 				} else {
 					currentAttributes[key as keyof typeof currentAttributes] =
 						(currentAttributes[key as keyof typeof currentAttributes] ?? 0) + value;
-						// console.log(`Updated attribute ${key}: ${currentAttributes[key as keyof typeof currentAttributes]}`);
 				}
 			}
 		}
@@ -181,7 +179,7 @@ export default class XpService {
 		}
 	}
 
-	public getDaysUntil(today: Date, targetDate: Date): number {
+	public getDaysUntil_old(today: Date, targetDate: Date): number {
 		/* Calculate days until the next occurrence of targetDay (0=Sunday, 6=Saturday).
 			If today is targetDay, returns 0.
 		*/
@@ -192,6 +190,30 @@ export default class XpService {
 		const diffTime = targetMidnight.getTime() - todayMidnight.getTime();
 		const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 		return diffDays >= 0 ? diffDays : 0;
+	}
+
+	public getDaysUntil(today: Date, targetDate: Date, type: 'quest'| 'habit'): string {
+		const todayMidnight = new Date(today);
+		todayMidnight.setHours(0, 0, 0, 0);
+		const targetMidnight = new Date(targetDate);
+		targetMidnight.setHours(0, 0, 0, 0);
+		// console.log("Calculating days until:", todayMidnight, targetMidnight);
+		const diffTime = targetMidnight.getTime() - todayMidnight.getTime();
+		const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+		if (type === 'habit') {
+			if (diffDays <= 0) return "Today";
+			if (diffDays === 1) return "Next tomorrow";
+			if (diffDays < 7) return `Next in ${diffDays} days`;
+
+			const diffWeeks = Math.floor(diffDays / 7);
+			const remainingDays = diffDays % 7;
+
+			if (remainingDays === 0) return `Next in ${diffWeeks} week${diffWeeks > 1 ? "s" : ""}`;
+			return `Next in ${diffWeeks} week${diffWeeks > 1 ? "s" : ""} and ${remainingDays} day${remainingDays > 1 ? "s" : ""}`;
+		} else {
+			return diffDays >= 0 ? diffDays.toString() : "0";
+		}
 	}
 }
 

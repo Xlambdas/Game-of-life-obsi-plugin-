@@ -18,7 +18,7 @@
       "unit": "days"
     },
     "streak": {
-      "current": 2,
+      "current": 1,
       "best": 2,
       "history": [
         {
@@ -28,11 +28,23 @@
         {
           "date": "2025-10-11T13:08:06.120Z",
           "success": true
+        },
+        {
+          "date": "2025-10-14T12:18:21.772Z",
+          "success": true
+        },
+        {
+          "date": "2025-10-16T14:18:00.281Z",
+          "success": true
+        },
+        {
+          "date": "2025-10-27T18:34:34.067Z",
+          "success": true
         }
       ],
       "isCompletedToday": true,
-      "nextDate": "2025-10-13T13:08:06.120Z",
-      "lastCompletedDate": "2025-10-11T13:08:06.120Z"
+      "nextDate": "2025-10-29T18:34:34.067Z",
+      "lastCompletedDate": "2025-10-27T18:34:34.067Z"
     },
     "progress": {
       "level": 1,
@@ -103,7 +115,7 @@
       "unit": "days"
     },
     "streak": {
-      "current": 2,
+      "current": 1,
       "best": 2,
       "history": [
         {
@@ -113,11 +125,19 @@
         {
           "date": "2025-10-11T06:55:17.361Z",
           "success": true
+        },
+        {
+          "date": "2025-10-14T12:18:24.334Z",
+          "success": true
+        },
+        {
+          "date": "2025-10-16T18:50:56.954Z",
+          "success": true
         }
       ],
-      "isCompletedToday": true,
-      "nextDate": "2025-10-12T06:55:17.361Z",
-      "lastCompletedDate": "2025-10-11T06:55:17.361Z"
+      "isCompletedToday": false,
+      "nextDate": "2025-10-17T18:50:56.954Z",
+      "lastCompletedDate": "2025-10-16T18:50:56.954Z"
     },
     "progress": {
       "level": 1,
@@ -194,11 +214,15 @@
         {
           "date": "2025-10-10T13:38:50.991Z",
           "success": true
+        },
+        {
+          "date": "2025-10-27T18:34:36.331Z",
+          "success": true
         }
       ],
       "isCompletedToday": true,
-      "nextDate": "2025-10-24T13:38:50.991Z",
-      "lastCompletedDate": "2025-10-10T13:38:50.991Z"
+      "nextDate": "2025-11-10T18:34:36.331Z",
+      "lastCompletedDate": "2025-10-27T18:34:36.331Z"
     },
     "progress": {
       "level": 1,
@@ -331,36 +355,36 @@
     },
     "isSystemHabit": false
   },
-  "habit_8zviork": {
-    "id": "habit_8zviork",
-    "title": "test",
-    "shortDescription": "utcvt",
-    "description": "full descr",
-    "created_at": "2025-10-10T13:37:20.213Z",
+  "habit_46ge1h3": {
+    "id": "habit_46ge1h3",
+    "title": "titles",
+    "shortDescription": "wewn habiiiit",
+    "description": "",
+    "created_at": "2025-10-16T18:53:14.485Z",
     "settings": {
       "type": "habit",
-      "category": "Emotional",
-      "priority": "medium",
-      "difficulty": "hard",
+      "category": "Creative",
+      "priority": "low",
+      "difficulty": "easy",
       "isSecret": false,
       "isTimeSensitive": false
     },
     "recurrence": {
-      "interval": 1,
-      "unit": "weeks"
+      "interval": 3,
+      "unit": "days"
     },
     "streak": {
       "current": 1,
       "best": 1,
       "history": [
         {
-          "date": "2025-10-10T22:07:16.762Z",
+          "date": "2025-10-27T18:34:37.752Z",
           "success": true
         }
       ],
       "isCompletedToday": true,
-      "nextDate": "2025-10-17T22:07:16.762Z",
-      "lastCompletedDate": "2025-10-10T22:07:16.762Z"
+      "nextDate": "2025-10-30T18:34:37.752Z",
+      "lastCompletedDate": "2025-10-27T18:34:37.752Z"
     },
     "progress": {
       "level": 1,
@@ -399,8 +423,8 @@
         "agility": 0,
         "endurance": 1,
         "charisma": 1,
-        "wisdom": 1,
-        "perception": 0,
+        "wisdom": 0,
+        "perception": 1,
         "intelligence": 0,
         "willpower": 0,
         "spirit": 0,

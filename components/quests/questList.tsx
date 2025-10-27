@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, use } from "react";
 import { Notice } from "obsidian";
 // from files (services, default):
 import { useAppContext } from "../../context/appContext";
-import { Quest, UserSettings } from "../../data/DEFAULT";
+import { AttributeBlock, DEFAULT_ATTRIBUTES, Quest, UserSettings } from "../../data/DEFAULT";
 // from file (UI):
 import { QuestSideView } from "./questSideView";
 // import { ModifyQuestModal } from "modal/questModal";
@@ -11,11 +11,12 @@ import { on } from "events";
 
 interface QuestListProps {
 	quests: Quest[];
+	user: UserSettings;
 	onQuestUpdate?: (updatedQuests: Quest[]) => void;
 	onUserUpdate?: (updatedUser: UserSettings) => void;
 }
 
-export const QuestList: React.FC<QuestListProps> = ({ quests, onQuestUpdate, onUserUpdate }) => {
+export const QuestList: React.FC<QuestListProps> = ({ quests, user, onQuestUpdate, onUserUpdate }) => {
 	/* Side view to display and manage quests */
 	const appService = useAppContext();
 
@@ -23,7 +24,7 @@ export const QuestList: React.FC<QuestListProps> = ({ quests, onQuestUpdate, onU
 
 	const [isOpen, setIsOpen] = useState(false);
 	const [filter, setFilter] = useState("");
-	const [activeTab, setActiveTab] = useState<"active" | "completed" | "all">("active");
+	const [activeTab, setActiveTab] = useState<"active" | "completed" | "all" | "upcoming">("active");
 	const [sortBy, setSortBy] = useState<"priority" | "xp" | "difficulty" | "date">("priority");
 
 	useEffect(() => {
@@ -77,8 +78,8 @@ export const QuestList: React.FC<QuestListProps> = ({ quests, onQuestUpdate, onU
 	};
 
 
-	const handleGetDaysUntil = (targetDate: Date): number => {
-		return appService.xpService.getDaysUntil(new Date(), targetDate);
+	const handleGetDaysUntil = (targetDate: Date): string => {
+		return appService.xpService.getDaysUntil(new Date(), targetDate, 'quest');
 	}
 
 	const handleCompleteQuest = async (quest: Quest, completed: boolean) => {
@@ -111,9 +112,11 @@ export const QuestList: React.FC<QuestListProps> = ({ quests, onQuestUpdate, onU
 					quest.title.toLowerCase().includes(filter.toLowerCase()) ||
 					quest.description.toLowerCase().includes(filter.toLowerCase());
 				const matchesTab =
-					activeTab === "all" ||
+					activeTab === "all" && validateRequirements(quest, user) ||
 					(activeTab === "active" && !quest.progression.isCompleted) ||
-					(activeTab === "completed" && quest.progression.isCompleted);
+					(activeTab === "completed" && quest.progression.isCompleted) ||
+					(activeTab === "upcoming" && !quest.progression.isCompleted && !validateRequirements(quest, user));
+
 				return matchesSearch && matchesTab;
 			})
 			.sort((a, b) => {
@@ -152,4 +155,35 @@ export const QuestList: React.FC<QuestListProps> = ({ quests, onQuestUpdate, onU
 			getDaysUntil={handleGetDaysUntil}
 		/>
 	);
+};
+
+
+const validateRequirements = (quest: Quest, user: UserSettings) => {
+	// Check if user meets the level requirement for the quest
+	const userLevel = user.xpDetails.level ?? 1;
+	const userAttributes = user.attribute ?? DEFAULT_ATTRIBUTES;
+	const questLevel = quest.requirements.level || 1;
+	const questAttributes = quest.requirements.attributes || {};
+	// If no requirements, always valid
+	if (questLevel <= 1 && Object.keys(questAttributes).length === 0) return true;
+	// Check level requirement
+	if (questLevel > userLevel) return false;
+
+	// Check if user meets the attribute requirements for the quest
+	for (const [attr, reqValue] of Object.entries(questAttributes)) {
+		const userValue = userAttributes[attr as keyof typeof userAttributes] ?? 0;
+		if (userValue < (reqValue ?? 0)) return false;
+	}
+
+	if (quest.requirements.previousQuests && quest.requirements.previousQuests.length > 0) {
+		// Check if all previous quests are completed
+		const userQuests = Array.isArray(user.quests) ? user.quests : [];
+		const allCompleted = quest.requirements.previousQuests.every(prevQuestId => {
+			const prevQuest = userQuests.find(q => q.id === prevQuestId);
+			return prevQuest?.progression.isCompleted;
+		});
+		if (!allCompleted) return false;
+	}
+	// console.log("Quest requirements met for quest:", quest.title);
+	return true;
 };

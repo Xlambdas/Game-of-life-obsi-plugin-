@@ -14,7 +14,7 @@ interface HabitSideViewProps {
 	setActiveTab: (tab: "today" | "upcoming") => void;
 	setSortBy: (sort: "priority" | "xp" | "difficulty" | "recurrence") => void;
 	handleModifyHabit: (habit: Habit) => void;
-	getDaysUntil: (targetDate: Date) => number;
+	getDaysUntil: (targetDate: Date) => string;
 }
 
 export const HabitSideView: React.FC<HabitSideViewProps> = (props) => {
@@ -125,7 +125,7 @@ interface HabitItemProps {
 	activeTab: "today" | "upcoming";
 	onComplete: (habit: Habit, completed: boolean) => void;
 	onModify: (habit: Habit) => void;
-	getDaysUntil: (targetDate: Date) => number;
+	getDaysUntil: (targetDate: Date) => string;
 }
 
 
@@ -179,7 +179,7 @@ const HabitItem: React.FC<HabitItemProps> = ({ habit, activeTab, onComplete, onM
 							</span>
 						))
 				) : (
-					<span><strong>Next in {getDaysUntil(new Date(habit.streak.nextDate || new Date()))} days</strong><br/></span>
+					<span><strong>{getDaysUntil(new Date(habit.streak.nextDate || new Date()))}</strong><br/></span>
 				)}
 				Streak: {habit.streak.current} (Best: {habit.streak.best})
 			</div>

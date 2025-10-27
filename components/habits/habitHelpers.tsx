@@ -54,7 +54,6 @@ export async function validateAndBuildHabit({
 		const sumAttributes = Object.values(updatedAttributes).reduce((sum, val) => sum + val, 0);
 		if (sumAttributes > (3 * (1 + (user.xpDetails.level || 1) / 10))) {
 			errors.attributeRewards = `You can't allocate more than ${3 * (1 + (user.xpDetails.level || 1) / 10)} points in total.`;
-			console.log("Sum of attribute rewards:", sumAttributes, "Max allowed:", 3 * (1 + (user.xpDetails.level || 1) / 10), errors.attributeRewards);
 			if (category) {
 				errors.attributeRewards += "\n Keep in mind that selecting a category automatically allocates some points.";
 			}
@@ -64,7 +63,6 @@ export async function validateAndBuildHabit({
 	if (Object.keys(errors).length > 0) {
 		new Notice("Please fix the errors in the form.");
 		if (errors.attributeRewards) {
-			console.log("Attribute Rewards Error:", errors.attributeRewards);
 			new Notice(errors.attributeRewards);
 		}
 		return { habit: null, errors };

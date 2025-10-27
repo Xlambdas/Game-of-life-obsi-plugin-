@@ -20,7 +20,7 @@ export const SideView: React.FC = () => {
 	const [user, setUser] = useState<UserSettings | null>(null);
 
 	const loadData = async () => {
-		const loadedUser = await appService.dataService.getUser();
+		const loadedUser = appService.dataService.getUser();
 		const loadedQuests = await appService.dataService.getQuests();
 		const loadedHabits = await appService.dataService.getHabits();
 		if (loadedUser && typeof loadedUser === 'object' && 'settings' in loadedUser) {
@@ -58,6 +58,7 @@ export const SideView: React.FC = () => {
 			<div className="card">
 				<QuestList
 					quests={quests}
+					user={user}
 					onUserUpdate={setUser}
 				/>
 				<hr className="separator"></hr>
