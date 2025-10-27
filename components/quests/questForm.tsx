@@ -28,7 +28,7 @@ export const QuestFormUI = ({
 	const [difficulty, setDifficulty] = useState(existingQuest?.settings.difficulty || "");
 	const [dueDate, setDueDate] = useState(existingQuest?.progression.dueDate ? new Date(existingQuest?.progression.dueDate).toISOString().split('T')[0] : "");
 	const [levelMin, setLevelMin] = useState(existingQuest?.requirements.level || 1);
-	const [reqQuest, setReqQuest] = useState<{ id: string; title: string }[]>(existingQuest?.requirements.prerequisiteQuest || []);
+	const [reqQuests, setReqQuests] = useState<{ id: string; title: string }[]>(existingQuest?.requirements.previousQuests || []);
 	const [attributeRewards, setAttributeRewards] = useState(existingQuest?.reward.attributes || DEFAULT_QUEST.reward.attributes);
 	const [allQuests, setAllQuests] = useState<{id: string, title: string}[]>([]);
 
@@ -55,7 +55,7 @@ export const QuestFormUI = ({
 			title, shortDescription, description,
 			category, priority, difficulty,
 			dueDate: dueDate ? new Date(dueDate) : undefined,
-			levelMin, reqQuest: reqQuest,
+			levelMin, reqQuests,
 			attributeRewards,
 			appContext
 		});
@@ -114,8 +114,8 @@ export const QuestFormUI = ({
 					<RequirementsInput
 						levelMin={levelMin}
 						setLevelMin={setLevelMin}
-						reqQuest={reqQuest}
-						setReqQuest={setReqQuest}
+						reqQuests={reqQuests}
+						setReqQuests={setReqQuests}
 						allQuests={allQuests}
 						error={error}
 						setError={setError}

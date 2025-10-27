@@ -193,18 +193,19 @@ export const DueDateInput = ({
 
 export const RequirementsInput = ({
 	levelMin, setLevelMin,
-	reqQuest = [], setReqQuest,
+	reqQuests, setReqQuests,
 	allQuests,
 	error, setError
 }: {
 	levelMin: number;
 	setLevelMin: (level: number) => void;
-	reqQuest: { id: string; title: string }[];
-	setReqQuest: (quests: { id: string; title: string }[]) => void;
+	reqQuests: { id: string; title: string }[];
+	setReqQuests: (quests: { id: string; title: string }[]) => void;
 	allQuests: { id: string; title: string }[];
 	error: {[key: string]: string};
 	setError: (error: {[key: string]: string}) => void;
 }) => {
+	console.log("formInputs:", reqQuests);
 	//input: a list of all (quests: {id, title}), and a level requirment
 	return (
 		<div>
@@ -217,9 +218,11 @@ export const RequirementsInput = ({
 				setError={setError}
 			/>
 			<RequirementsQuestInput
-				initialValues={reqQuest}
-				setReqQuest={setReqQuest}
+				reqQuests={reqQuests}
+				setReqQuests={setReqQuests}
 				allQuests={allQuests}
+				error={error}
+				setError={setError}
 			/>
 		</div>
 	)

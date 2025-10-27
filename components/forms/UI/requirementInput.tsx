@@ -1,5 +1,5 @@
 import { error } from "console";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 // from file (Default):
 
 export const RequirementsLevelInput = ({
@@ -41,69 +41,25 @@ interface QuestRequirement {
 }
 
 interface RequirementsQuestInputProps {
-	initialValues: QuestRequirement[];
-	setReqQuest: (quests: QuestRequirement[]) => void;
-	allQuests: QuestRequirement[];
-}
-
-
-export const RequirementsQuestInput: React.FC<RequirementsQuestInputProps> = ({
-	initialValues,
-	setReqQuest,
-	allQuests,
-}) => {
-
-
-
-	return (
-		<div>
-			<label>
-				<span>Other quest before this one:</span>
-				<select
-					name="prerequisiteQuest"
-					className="input"
-					multiple={true}
-					value={initialValues.map(q => q.id)}
-					onChange={(e) => {
-						const selectedIds = Array.from(e.target.selectedOptions, option => option.value);
-						const selectedQuests = allQuests.filter(q => selectedIds.includes(q.id));
-						setReqQuest(selectedQuests);
-					}}
-					style={{ height: "6em" }}
-				>
-					{/* <option value="">-- Select prerequisite quest --</option> */}
-					{allQuests.map(quest => (
-						<option key={quest.id} value={quest.id}>
-							{quest.title}
-						</option>
-					))}
-				</select>
-			</label>
-		</div>
-	)
-};
-
-
-
-
-interface RequirementsQuestInputProps_old {
-	initialValue?: QuestRequirement[];
-	setReqQuest: (quests: QuestRequirement[]) => void;
+	reqQuests: QuestRequirement[];
+	setReqQuests: (quests: QuestRequirement[]) => void;
 	allQuests: QuestRequirement[];
 	error: { [key: string]: string };
 	setError: (error: { [key: string]: string }) => void;
 }
 
-export const RequirementsQuestInput_new_old: React.FC<RequirementsQuestInputProps_old> = ({
-	initialValue,
-	setReqQuest,
+export const RequirementsQuestInput: React.FC<RequirementsQuestInputProps> = ({
+	reqQuests,
+	setReqQuests,
 	allQuests,
 	error,
 	setError
 }) => {
+	console.log("reqQuests:", reqQuests);
+	
 	// Initialize with existing requirements or one empty row
 	const [requirements, setRequirements] = useState<QuestRequirement[]>(() => {
-		return initialValue && initialValue.length > 0 ? initialValue : [{ id: "", title: "" }];
+		return reqQuests && reqQuests.length > 0 ? reqQuests : [{ id: "", title: "" }];
 	});
 
 	const handleChange = (index: number, selectedId: string) => {
@@ -114,12 +70,11 @@ export const RequirementsQuestInput_new_old: React.FC<RequirementsQuestInputProp
 			? { id: selectedQuest.id, title: selectedQuest.title }
 			: req
 		);
-		
+
 		setRequirements(updated);
-		
 		// Only pass non-empty requirements to parent
 		const validRequirements = updated.filter(req => req.id !== "");
-		setReqQuest(validRequirements);
+		setReqQuests(validRequirements);
 	};
 
 	const handleAdd = () => {
@@ -129,12 +84,11 @@ export const RequirementsQuestInput_new_old: React.FC<RequirementsQuestInputProp
 	const handleRemove = (index: number) => {
 		const updated = requirements.filter((_, i) => i !== index);
 		const newRequirements = updated.length > 0 ? updated : [{ id: "", title: "" }];
-		
 		setRequirements(newRequirements);
-		
+
 		// Only pass non-empty requirements to parent
 		const validRequirements = newRequirements.filter(req => req.id !== "");
-		setReqQuest(validRequirements);
+		setReqQuests(validRequirements);
 	};
 
 	// Get already selected quest IDs to disable them in other dropdowns
@@ -142,150 +96,43 @@ export const RequirementsQuestInput_new_old: React.FC<RequirementsQuestInputProp
 
 	return (
 		<div>
-		<hr className="separator" />
-		<h4>Other quest prerequisite</h4>
-		<div className="form-group">
-			<label>Prerequisite Quests:</label>
-			<p className="helper-text">
-			Select quests that must be completed before this one.
-			</p>
-			
-			<div className="quest-requirements-container">
-			{requirements.map((requirement, index) => (
-				<div
-				key={index}
-				className="quest-requirement-row"
-				style={{
-					display: "flex",
-					alignItems: "center",
-					marginBottom: "8px"
-				}}
-				>
-				<select
-					value={requirement.id}
-					onChange={(e) => handleChange(index, e.target.value)}
-					className={error.prerequisiteQuests ? "input-error" : "input"}
-					style={{ flex: 1, marginRight: "8px" }}
-				>
-					<option value="" disabled={!!requirement.id}>
-					-- Select prerequisite quest --
-					</option>
-					{allQuests.map(quest => (
-					<option
-						key={quest.id}
-						value={quest.id}
-						disabled={
-						selectedQuestIds.includes(quest.id) &&
-						requirement.id !== quest.id
-						}
+			<div className="form-group">
+				<label>Prerequisite Quests:</label>
+				<p className="helper-text">
+					Select quests that must be completed before this one.
+				</p>
+				<div className="quest-requirements-container">
+				{requirements.map((requirement, index) => (
+					<div
+						key={index}
+						className="quest-requirement-row"
+						style={{
+							display: "flex",
+							alignItems: "center",
+							marginBottom: "8px"
+						}}
 					>
-						{quest.title}
-					</option>
-					))}
-				</select>
-
-				<button
-					type="button"
-					onClick={() => handleRemove(index)}
-					className="mod-warning"
-					style={{
-					width: "24px",
-					height: "24px",
-					padding: 0,
-					display: "flex",
-					alignItems: "center",
-					justifyContent: "center"
-					}}
-				>
-					×
-				</button>
-				</div>
-			))}
-			</div>
-			<button
-			type="button"
-			className="mod-cta"
-			onClick={handleAdd}
-			>
-			+ Add Prerequisite Quest
-			</button>
-		</div>
-		</div>
-	);
-};
-
-
-
-interface Quest {
-	id: string;
-	title: string;
-}
-
-
-export const RequirementsQuestInput_old_old: React.FC<RequirementsQuestInputProps> = ({
-	initialValues,
-	setReqQuest,
-	allQuests,
-}) => {
-
-
-  const handleChange = (index: number, questId: string) => {
-		const quest = allQuests.find((q) => q.id === questId);
-		const updated = initialValues.map((q, i) =>
-			i === index ? quest || { id: "", title: "" } : q
-		);
-		setReqQuest(updated.filter((q) => q.id));
-	};
-
-	const handleAdd = () => {
-		setReqQuest([...initialValues, { id: "", title: "" }]);
-	};
-
-	const handleRemove = (index: number) => {
-		const updated = initialValues.filter((_, i) => i !== index);
-		setReqQuest(updated.length > 0 ? updated : [{ id: "", title: "" }]);
-	};
-
-	const selectedIds = initialValues.map((q) => q.id).filter(Boolean);
-
-	return (
-		<div className="form-group">
-			<label>Quest Prerequisites:</label>
-			<p className="helper-text">
-				Select other quests that must be completed before this one.
-			</p>
-
-			{initialValues.map((quest, index) => (
-				<div
-					key={index}
-					style={{
-						display: "flex",
-						alignItems: "center",
-						marginBottom: "8px",
-					}}
-				>
 					<select
-						value={quest.id}
+						value={requirement.id}
 						onChange={(e) => handleChange(index, e.target.value)}
-						className="input"
-						style={{ width: "85%", marginRight: "8px" }}
+						className={error.prerequisiteQuests ? "input-error" : "input"}
+						style={{ flex: 1, marginRight: "8px" }}
 					>
-						<option value="">Select prerequisite quest...</option>
-						{allQuests.map((q) => {
-							const isAlreadySelected = selectedIds.includes(q.id);
-							return (
-								<option
-									key={q.id}
-									value={q.id}
-									disabled={isAlreadySelected && q.id !== quest.id}
-								>
-									{q.title}
-									{isAlreadySelected && q.id !== quest.id
-										? " ✅ (Already selected)"
-										: ""}
-								</option>
-							);
-						})}
+						<option value="" disabled={!!requirement.id}>
+						-- Select prerequisite quest --
+						</option>
+						{allQuests.map(quest => (
+						<option
+							key={quest.id}
+							value={quest.id}
+							disabled={
+							selectedQuestIds.includes(quest.id) &&
+							requirement.id !== quest.id
+							}
+						>
+							{quest.title}
+						</option>
+						))}
 					</select>
 
 					<button
@@ -293,149 +140,166 @@ export const RequirementsQuestInput_old_old: React.FC<RequirementsQuestInputProp
 						onClick={() => handleRemove(index)}
 						className="mod-warning"
 						style={{
-							width: "24px",
-							height: "24px",
-							display: "flex",
-							alignItems: "center",
-							justifyContent: "center",
-							padding: 0,
+						width: "24px",
+						height: "24px",
+						padding: 0,
+						display: "flex",
+						alignItems: "center",
+						justifyContent: "center"
 						}}
 					>
 						×
 					</button>
 				</div>
 			))}
-
-			<button type="button" className="mod-cta" onClick={handleAdd}>
-				+ Add prerequisite quest
-			</button>
-
+			</div>
+				<button
+					type="button"
+					className="mod-cta"
+					onClick={handleAdd}
+				>
+					+ Add Prerequisite Quest
+				</button>
+			</div>
 		</div>
 	);
 };
 
 
-interface RequirementsQuestInputProps_old {
-	initialValue?: Quest[];
-	setQuest: (quests: Quest[]) => void;
-	onChange: (quests: Quest[]) => void;
-	allQuests: Quest[];
+interface RequirementsQuestInputProps_test {
+	reqQuests: QuestRequirement[];
+	setReqQuests: (quests: QuestRequirement[]) => void;
+	allQuests: QuestRequirement[];
 	error: { [key: string]: string };
 	setError: (error: { [key: string]: string }) => void;
-	currentQuestId?: string; // optionnel, pour éviter de se sélectionner soi-même
 }
 
-export const RequirementsQuestInput_newer: React.FC<RequirementsQuestInputProps_old> = ({
-	initialValue = [],
-	onChange,
-
+export const RequirementsQuestInput_test: React.FC<RequirementsQuestInputProps_test> = ({
+	reqQuests,
+	setReqQuests,
 	allQuests,
 	error,
-	setError,
-	currentQuestId,
+	setError
 }) => {
-	// 🔑 Initialise avec les quêtes valides ou une ligne vide
-	const [pairs, setPairs] = useState<Quest[]>(() =>
-		initialValue.length > 0 ? initialValue : [{ id: "", title: "" }]
+	// Detect if we’re modifying an existing quest
+	const isEditing = reqQuests.length > 0;
+
+	// If editing, try to guess the current quest (it’s excluded from the dropdown)
+	const [filteredAllQuests, setFilteredAllQuests] = React.useState(allQuests);
+
+	React.useEffect(() => {
+		// We assume the current quest is the one that’s not in allQuests as a prerequisite
+		// and has at least one of its requirements already present.
+		let currentQuestId: string | null = null;
+
+		// Try to find the current quest by looking for a match in existing data (best-effort)
+		if (isEditing && allQuests.length > 0) {
+			// If allQuests includes all quests (including current), we can exclude one
+			// that has same title/id as an edited one (it will be detected later in parent)
+			const possibleCurrent = allQuests.find(
+				q => reqQuests.some(rq => rq.id === q.id)
+			);
+			currentQuestId = possibleCurrent ? possibleCurrent.id : null;
+		}
+
+		if (currentQuestId) {
+			setFilteredAllQuests(allQuests.filter(q => q.id !== currentQuestId));
+		} else {
+			setFilteredAllQuests(allQuests);
+		}
+	}, [allQuests, reqQuests, isEditing]);
+
+	// Initialize with existing requirements or one empty row
+	const [requirements, setRequirements] = React.useState<QuestRequirement[]>(() =>
+		reqQuests.length > 0 ? reqQuests : [{ id: "", title: "" }]
 	);
 
-
-	// 🧩 Gestion du changement d’une quête dans la liste
-	const handleChange = (index: number, questId: string) => {
-		const quest = allQuests.find((q) => q.id === questId);
-		const updated = pairs.map((p, i) =>
-			i === index ? quest || { id: "", title: "" } : p
+	const handleChange = (index: number, selectedId: string) => {
+		const selectedQuest = filteredAllQuests.find(q => q.id === selectedId);
+		const updated = requirements.map((req, i) =>
+			i === index && selectedQuest
+				? { id: selectedQuest.id, title: selectedQuest.title }
+				: req
 		);
-		setPairs(updated);
-		onChange(updated.filter((q) => q.id));
+
+		setRequirements(updated);
+		setReqQuests(updated.filter(req => req.id !== ""));
 	};
 
-	// ➕ Ajouter une ligne
 	const handleAdd = () => {
-		setPairs([...pairs, { id: "", title: "" }]);
+		setRequirements([...requirements, { id: "", title: "" }]);
 	};
 
-	// ❌ Supprimer une ligne
 	const handleRemove = (index: number) => {
-		const updated = pairs.filter((_, i) => i !== index);
-		setPairs(updated.length > 0 ? updated : [{ id: "", title: "" }]);
-		onChange(updated.filter((q) => q.id));
+		const updated = requirements.filter((_, i) => i !== index);
+		const newRequirements = updated.length > 0 ? updated : [{ id: "", title: "" }];
+		setRequirements(newRequirements);
+		setReqQuests(newRequirements.filter(req => req.id !== ""));
 	};
 
-	// 🔍 Empêche la sélection de doublons et de la quête actuelle
-	const selectedIds = pairs.map((p) => p.id).filter(Boolean);
+	const selectedQuestIds = requirements.map(req => req.id).filter(Boolean);
 
 	return (
-		<div className="form-group">
-			<label>Quest Prerequisites:</label>
-			<p className="helper-text">
-				Select other quests that must be completed before this one.
-			</p>
+		<div>
+			<div className="form-group">
+				<label>Prerequisite Quests:</label>
+				<p className="helper-text">
+					Select quests that must be completed before this one.
+				</p>
 
-			<div className="quest-pairs-container">
-				{pairs.map((pair, index) => (
-					<div
-						key={index}
-						className="quest-pair"
-						style={{ display: "flex", alignItems: "center", marginBottom: "8px" }}
-					>
-						<select
-							value={pair.id}
-							onChange={(e) => handleChange(index, e.target.value)}
-							className="input"
-							style={{ width: "85%", marginRight: "8px" }}
+				<div className="quest-requirements-container">
+					{requirements.map((requirement, index) => (
+						<div
+							key={index}
+							className="quest-requirement-row"
+							style={{ display: "flex", alignItems: "center", marginBottom: "8px" }}
 						>
-							<option value="">Select prerequisite quest...</option>
-							{allQuests.map((q) => {
-								const isDisabled =
-									(selectedIds.includes(q.id) && q.id !== pair.id) ||
-									q.id === currentQuestId;
-								return (
-									<option key={q.id} value={q.id} disabled={isDisabled}>
-										{q.title}
-										{isDisabled ? " ✅" : ""}
+							<select
+								value={requirement.id}
+								onChange={e => handleChange(index, e.target.value)}
+								className={error.prerequisiteQuests ? "input-error" : "input"}
+								style={{ flex: 1, marginRight: "8px" }}
+							>
+								<option value="" disabled={!!requirement.id}>
+									-- Select prerequisite quest --
+								</option>
+								{filteredAllQuests.map(quest => (
+									<option
+										key={quest.id}
+										value={quest.id}
+										disabled={
+											selectedQuestIds.includes(quest.id) &&
+											requirement.id !== quest.id
+										}
+									>
+										{quest.title}
 									</option>
-								);
-							})}
-						</select>
+								))}
+							</select>
 
-						<button
-							type="button"
-							onClick={() => handleRemove(index)}
-							className="mod-warning"
-							style={{
-								width: "24px",
-								height: "24px",
-								padding: 0,
-								display: "flex",
-								alignItems: "center",
-								justifyContent: "center",
-							}}
-						>
-							×
-						</button>
-					</div>
-				))}
-			</div>
-
-			<button type="button" className="mod-cta" onClick={handleAdd}>
-				+ Add prerequisite quest
-			</button>
-
-			{/* 🔹 Liste actuelle */}
-			{pairs.filter((q) => q.id).length > 0 && (
-				<div style={{ marginTop: "12px" }}>
-					<strong>Current prerequisites:</strong>
-					<ul style={{ margin: "6px 0 0 16px" }}>
-						{pairs
-							.filter((q) => q.id)
-							.map((q) => (
-								<li key={q.id}>{q.title}</li>
-							))}
-					</ul>
+							<button
+								type="button"
+								onClick={() => handleRemove(index)}
+								className="mod-warning"
+								style={{
+									width: "24px",
+									height: "24px",
+									padding: 0,
+									display: "flex",
+									alignItems: "center",
+									justifyContent: "center"
+								}}
+							>
+								×
+							</button>
+						</div>
+					))}
 				</div>
-			)}
 
+				<button type="button" className="mod-cta" onClick={handleAdd}>
+					+ Add Prerequisite Quest
+				</button>
+			</div>
 		</div>
 	);
 };

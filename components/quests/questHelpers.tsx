@@ -10,7 +10,7 @@ export async function validateAndBuildQuest({
 	existingQuest,
 	title, shortDescription, description,
 	category, priority, difficulty,
-	dueDate, levelMin, reqQuest, attributeRewards,
+	dueDate, levelMin, reqQuests, attributeRewards,
 	appContext
 }: {
 	existingQuest?: any,
@@ -22,7 +22,7 @@ export async function validateAndBuildQuest({
 	difficulty: string,
 	dueDate: Date | undefined,
 	levelMin: number,
-	reqQuest: { id: string, title: string }[] | null,
+	reqQuests: { id: string, title: string }[] | null,
 	attributeRewards: AttributeBlock,
 	appContext: ReturnType<typeof useAppContext>
 }): Promise<{ quest: Quest | null; errors: { [key: string]: string } }> {
@@ -49,7 +49,7 @@ export async function validateAndBuildQuest({
 	}
 
 	const user = appContext.getUser();
-	console.log("requirements prerequisiteQuest", reqQuest);
+	console.log("requirements prerequisiteQuest", reqQuests);
 
 	// --- Update attributes if category chosen ---
 	let updatedAttributes = { ...attributeRewards };
@@ -99,7 +99,7 @@ export async function validateAndBuildQuest({
 		requirements: {
 			...((existingQuest?.requirements) || DEFAULT_QUEST.requirements),
 			level: Math.max(levelMin, 1),
-			previousQuests: reqQuest && reqQuest.length > 0 ? reqQuest : [],
+			previousQuests: reqQuests && reqQuests.length > 0 ? reqQuests : [],
 		},
 		reward: {
 			...((existingQuest?.reward) || DEFAULT_QUEST.reward),
