@@ -3,7 +3,7 @@ import { DEFAULT_CATEGORIES, DEFAULT_DIFFICULTIES, DEFAULT_PRIORITIES, DEFAULT_R
 // from file (UI, components):
 import { RewardAttributeInput, AttributeReward } from "./rewardAttributeInput";
 import { RequirementsLevelInput, RequirementsQuestInput } from "./requirementInput";
-import { on } from "events";
+import { ConditionQuestInput, ConditionHabitInput } from "./progressCondInput";
 
 
 export const TitleInput = ({
@@ -254,13 +254,17 @@ export const RewardsInput = ({
 };
 
 export const ProgressConditionInput = ({
-	reqHabits, setReqHabits,
-	allHabits,
+	condQuests, setCondQuests,
+	condHabits, setCondHabits,
+	allQuests, allHabits,
 	error, setError
 }: {
-	reqHabits: { id: string; title: string }[];
-	setReqHabits: (habits: { id: string; title: string }[]) => void;
-	allHabits: { id: string; title: string }[];
+	condQuests: { id: string; title: string; targetProgress: number }[];
+	setCondQuests: (quests: { id: string; title: string; targetProgress: number }[]) => void;
+	condHabits: { id: string; title: string; targetStreak: number }[];
+	setCondHabits: (habits: { id: string; title: string; targetStreak: number }[]) => void;
+	allQuests: { id: string; title: string; targetProgress: number }[];
+	allHabits: { id: string; title: string; targetStreak: number }[];
 	error: {[key: string]: string};
 	setError: (error: {[key: string]: string}) => void;
 }) => {
@@ -268,6 +272,18 @@ export const ProgressConditionInput = ({
 		<div>
 			<hr className="separator"></hr>
 			<h3>Progress Conditions</h3>
+			<ConditionQuestInput
+				condQuests={condQuests}
+				setCondQuests={setCondQuests}
+				allQuests={allQuests}
+				error={error}
+				setError={setError}
+			/>
+			{/* <ConditionHabitInput
+				condHabits={condHabits}
+				setCondHabits={setCondHabits}
+				allHabits={allHabits}
+			/> */}
 		</div>
 	)
 };

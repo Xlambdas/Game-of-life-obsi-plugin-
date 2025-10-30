@@ -19,7 +19,7 @@
       "progress": 0,
       "dueDate": "2025-12-12T00:00:00.000Z",
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-10-30T11:10:44.268Z",
+      "lastUpdated": "2025-10-30T12:48:43.437Z",
       "subtasks": [],
       "attempts": 10,
       "failures": 11,
@@ -115,7 +115,7 @@
       "completedAt": "2025-10-10T21:53:47.951Z",
       "progress": 100,
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-10-30T11:10:44.268Z",
+      "lastUpdated": "2025-10-30T12:48:43.437Z",
       "subtasks": [],
       "attempts": 1,
       "failures": 0,
@@ -202,7 +202,7 @@
       "completedAt": "2025-10-16T19:13:01.473Z",
       "progress": 100,
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-10-30T11:10:44.268Z",
+      "lastUpdated": "2025-10-30T12:48:43.437Z",
       "subtasks": [],
       "attempts": 1,
       "failures": 0,
@@ -289,7 +289,7 @@
       "completedAt": null,
       "progress": 0,
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-10-30T11:10:44.268Z",
+      "lastUpdated": "2025-10-30T12:48:43.437Z",
       "subtasks": [],
       "attempts": 0,
       "failures": 0,
@@ -376,7 +376,7 @@
       "completedAt": null,
       "progress": 0,
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-10-30T11:10:44.268Z",
+      "lastUpdated": "2025-10-30T12:48:43.437Z",
       "subtasks": [],
       "attempts": 0,
       "failures": 0,
@@ -463,7 +463,7 @@
       "completedAt": null,
       "progress": 0,
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-10-30T11:10:44.268Z",
+      "lastUpdated": "2025-10-30T12:48:43.437Z",
       "subtasks": [],
       "attempts": 0,
       "failures": 0,
@@ -550,7 +550,7 @@
       "completedAt": null,
       "progress": 0,
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-10-30T11:10:44.268Z",
+      "lastUpdated": "2025-10-30T12:48:43.437Z",
       "subtasks": [],
       "attempts": 0,
       "failures": 0,
@@ -637,7 +637,7 @@
       "completedAt": null,
       "progress": 0,
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-10-30T11:10:44.268Z",
+      "lastUpdated": "2025-10-30T12:48:43.437Z",
       "subtasks": [],
       "attempts": 0,
       "failures": 0,
@@ -729,7 +729,7 @@
       "completedAt": null,
       "progress": 0,
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-10-30T11:10:44.268Z",
+      "lastUpdated": "2025-10-30T12:48:43.437Z",
       "subtasks": [],
       "attempts": 0,
       "failures": 0,
@@ -821,7 +821,7 @@
       "completedAt": null,
       "progress": 0,
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-10-30T11:10:44.268Z",
+      "lastUpdated": "2025-10-30T12:48:43.437Z",
       "subtasks": [],
       "attempts": 0,
       "failures": 0,
@@ -913,7 +913,7 @@
       "completedAt": null,
       "progress": 0,
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-10-30T11:10:44.268Z",
+      "lastUpdated": "2025-10-30T12:48:43.437Z",
       "subtasks": [],
       "attempts": 0,
       "failures": 0,
@@ -1009,7 +1009,7 @@
       "completedAt": null,
       "progress": 0,
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-10-30T11:10:44.268Z",
+      "lastUpdated": "2025-10-30T12:48:43.437Z",
       "subtasks": [],
       "attempts": 0,
       "failures": 0,
@@ -1105,7 +1105,7 @@
       "completedAt": null,
       "progress": 0,
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-10-30T11:10:44.268Z",
+      "lastUpdated": "2025-10-30T12:48:43.437Z",
       "subtasks": [],
       "attempts": 0,
       "failures": 0,
@@ -1209,7 +1209,7 @@
       "completedAt": null,
       "progress": 0,
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-10-30T11:10:44.268Z",
+      "lastUpdated": "2025-10-30T12:48:43.437Z",
       "subtasks": [],
       "attempts": 0,
       "failures": 0,
@@ -1305,7 +1305,7 @@
       "completedAt": null,
       "progress": 0,
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-10-30T11:11:55.348Z",
+      "lastUpdated": "2025-10-30T12:48:43.437Z",
       "subtasks": [],
       "attempts": 0,
       "failures": 0,
@@ -1343,6 +1343,197 @@
         {
           "id": "quest_75cmuni",
           "title": "test"
+        }
+      ],
+      "attributes": {
+        "strength": 0,
+        "agility": 0,
+        "endurance": 0,
+        "charisma": 0,
+        "wisdom": 0,
+        "perception": 0,
+        "intelligence": 0,
+        "willpower": 0,
+        "spirit": 0,
+        "flow": 0,
+        "reputation": 0,
+        "resilience": 0
+      },
+      "timeAvailableMinutes": 30,
+      "tagsRequired": []
+    },
+    "meta": {
+      "difficulty": "easy",
+      "category": "Undefined",
+      "tags": [],
+      "isSystemQuest": false,
+      "createdBy": "system",
+      "linkedToGoal": "",
+      "estimatedDurationMinutes": 30,
+      "recommendedTimeOfDay": "any",
+      "energyRequired": 0,
+      "willpowerRequired": 0
+    },
+    "failureConsequence": {
+      "description": "You failed the quest. Try again!",
+      "spiritLoss": 0,
+      "XPLoss": 0,
+      "lockoutTimeMinutes": 0
+    },
+    "notes": "This is a system-generated quest to help you get started. Complete it to unlock more features."
+  },
+  "quest_z3aa0ml": {
+    "id": "quest_z3aa0ml",
+    "title": "condition quest",
+    "shortDescription": "test of the condition for a quest ?",
+    "description": "",
+    "created_at": "2025-10-30T12:41:29.466Z",
+    "settings": {
+      "type": "quest",
+      "category": "Undefined",
+      "priority": "low",
+      "difficulty": "easy",
+      "isSecret": false,
+      "isTimeSensitive": false
+    },
+    "progression": {
+      "isCompleted": false,
+      "completedAt": null,
+      "progress": 0,
+      "startedAt": "1970-01-01T00:00:00.000Z",
+      "lastUpdated": "2025-10-30T12:48:43.437Z",
+      "subtasks": {
+        "conditionQuests": [],
+        "conditionHabits": []
+      },
+      "attempts": 0,
+      "failures": 0,
+      "timeSpentMinutes": 0
+    },
+    "reward": {
+      "XP": 10,
+      "items": [],
+      "attributes": {
+        "strength": 0,
+        "agility": 0,
+        "endurance": 0,
+        "charisma": 0,
+        "wisdom": 0,
+        "perception": 0,
+        "intelligence": 1,
+        "willpower": 0,
+        "spirit": 0,
+        "flow": 0,
+        "reputation": 0,
+        "resilience": 0
+      },
+      "unlocks": [],
+      "badges": [],
+      "title": "Novice Adventurer",
+      "spiritBoost": 0
+    },
+    "requirements": {
+      "level": 1,
+      "previousQuests": [],
+      "attributes": {
+        "strength": 0,
+        "agility": 0,
+        "endurance": 0,
+        "charisma": 0,
+        "wisdom": 0,
+        "perception": 0,
+        "intelligence": 0,
+        "willpower": 0,
+        "spirit": 0,
+        "flow": 0,
+        "reputation": 0,
+        "resilience": 0
+      },
+      "timeAvailableMinutes": 30,
+      "tagsRequired": []
+    },
+    "meta": {
+      "difficulty": "easy",
+      "category": "Undefined",
+      "tags": [],
+      "isSystemQuest": false,
+      "createdBy": "system",
+      "linkedToGoal": "",
+      "estimatedDurationMinutes": 30,
+      "recommendedTimeOfDay": "any",
+      "energyRequired": 0,
+      "willpowerRequired": 0
+    },
+    "failureConsequence": {
+      "description": "You failed the quest. Try again!",
+      "spiritLoss": 0,
+      "XPLoss": 0,
+      "lockoutTimeMinutes": 0
+    },
+    "notes": "This is a system-generated quest to help you get started. Complete it to unlock more features."
+  },
+  "quest_7kgeund": {
+    "id": "quest_7kgeund",
+    "title": "cond quest v345",
+    "shortDescription": "test n152636364",
+    "description": "",
+    "created_at": "2025-10-30T12:47:37.687Z",
+    "settings": {
+      "type": "quest",
+      "category": "Mental",
+      "priority": "low",
+      "difficulty": "easy",
+      "isSecret": false,
+      "isTimeSensitive": false
+    },
+    "progression": {
+      "isCompleted": false,
+      "completedAt": null,
+      "progress": 0,
+      "startedAt": "1970-01-01T00:00:00.000Z",
+      "lastUpdated": "2025-10-30T12:49:00.413Z",
+      "subtasks": {
+        "conditionQuests": [
+          {
+            "id": "quest_tkmpj2w",
+            "title": "test",
+            "targetProgress": 50
+          }
+        ],
+        "conditionHabits": []
+      },
+      "attempts": 0,
+      "failures": 0,
+      "timeSpentMinutes": 0
+    },
+    "reward": {
+      "XP": 10,
+      "items": [],
+      "attributes": {
+        "strength": 0,
+        "agility": 0,
+        "endurance": 0,
+        "charisma": 0,
+        "wisdom": 6,
+        "perception": 1,
+        "intelligence": 2,
+        "willpower": 0,
+        "spirit": 0,
+        "flow": 0,
+        "reputation": 0,
+        "resilience": 0
+      },
+      "unlocks": [],
+      "badges": [],
+      "title": "Novice Adventurer",
+      "spiritBoost": 0
+    },
+    "requirements": {
+      "level": 3,
+      "previousQuests": [
+        {
+          "id": "quest_4nm7t5i",
+          "title": "quest_n213"
         }
       ],
       "attributes": {

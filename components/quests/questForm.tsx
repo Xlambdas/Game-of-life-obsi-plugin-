@@ -30,7 +30,11 @@ export const QuestFormUI = ({
 	const [levelMin, setLevelMin] = useState(existingQuest?.requirements.level || 1);
 	const [reqQuests, setReqQuests] = useState<{ id: string; title: string }[]>(existingQuest?.requirements.previousQuests || []);
 	const [attributeRewards, setAttributeRewards] = useState(existingQuest?.reward.attributes || DEFAULT_QUEST.reward.attributes);
-	const [allQuests, setAllQuests] = useState<{id: string, title: string}[]>([]);
+	const [allQuests, setAllQuests] = useState<{id: string, title: string; targetProgress: number}[]>([]);
+	const [allHabits, setAllHabits] = useState<{id: string, title: string; targetStreak: number}[]>([]);
+
+	const [condQuests, setCondQuests] = useState<{ id: string; title: string; targetProgress: number }[]>(existingQuest?.progression.subtasks?.conditionQuests || []);
+	const [condHabits, setCondHabits] = useState<{ id: string; title: string; targetStreak: number }[]>(existingQuest?.progression.subtasks?.conditionHabits || []);
 
 	const [error, setError] = useState<{[key: string]: string}>({}); // Initialize error state
 	const appContext = useAppContext();
@@ -40,7 +44,7 @@ export const QuestFormUI = ({
 		const loadQuests = async () => {
 			try {
 				const quests = await appContext.dataService.loadAllQuests();
-				setAllQuests(quests.map((q: any) => ({ id: q.id, title: q.title })));
+				setAllQuests(quests.map((q: any) => ({ id: q.id, title: q.title, targetProgress: q.progression.progress || 0 })));
 			} catch (error) {
 				console.error("Error loading quests:", error);
 			}
@@ -55,7 +59,7 @@ export const QuestFormUI = ({
 			title, shortDescription, description,
 			category, priority, difficulty,
 			dueDate: dueDate ? new Date(dueDate) : undefined,
-			levelMin, reqQuests,
+			levelMin, reqQuests, condQuests,
 			attributeRewards,
 			appContext
 		});
@@ -128,11 +132,14 @@ export const QuestFormUI = ({
 						setError={setError}
 					/>
 					<ProgressConditionInput
-						reqHabits={[]}
-						setReqHabits={() => {}}
-						allHabits={[]}
-						error={{}}
-						setError={() => {}}
+						condQuests={condQuests}
+						setCondQuests={setCondQuests}
+						condHabits={condHabits}
+						setCondHabits={setCondHabits}
+						allQuests={allQuests}
+						allHabits={allHabits}
+						error={error}
+						setError={setError}
 					/>
 				</div>
 			)}

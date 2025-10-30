@@ -10,7 +10,7 @@ export async function validateAndBuildQuest({
 	existingQuest,
 	title, shortDescription, description,
 	category, priority, difficulty,
-	dueDate, levelMin, reqQuests, attributeRewards,
+	dueDate, levelMin, reqQuests, condQuests, attributeRewards,
 	appContext
 }: {
 	existingQuest?: any,
@@ -23,6 +23,7 @@ export async function validateAndBuildQuest({
 	dueDate: Date | undefined,
 	levelMin: number,
 	reqQuests: { id: string, title: string }[] | null,
+	condQuests: { id: string, title: string, targetProgress: number }[] | null,
 	attributeRewards: AttributeBlock,
 	appContext: ReturnType<typeof useAppContext>
 }): Promise<{ quest: Quest | null; errors: { [key: string]: string } }> {
@@ -46,6 +47,18 @@ export async function validateAndBuildQuest({
 	}
 	if (levelMin < 1) {
 		errors.levelMin = "Level must be at least 1.";
+	}
+	if (condQuests) {
+		const invalidCondQuests = condQuests.filter(cq =>
+			!cq.id ||
+			typeof cq.targetProgress !== "number" ||
+			!Number.isFinite(cq.targetProgress) ||
+			cq.targetProgress < 1 ||
+			cq.targetProgress > 100
+		);
+		if (invalidCondQuests.length > 0) {
+			errors.condQuests = "All condition quests must be selected and have a target progress between 1 and 100.";
+		}
 	}
 
 	const user = appContext.getUser();
@@ -95,6 +108,10 @@ export async function validateAndBuildQuest({
 			...((existingQuest?.progression) || DEFAULT_QUEST.progression),
 			dueDate: dueDate ? new Date(dueDate) : undefined,
 			lastUpdated: new Date(),
+			subtasks: {
+				...((existingQuest?.progression.subtasks) || DEFAULT_QUEST.progression.subtasks),
+				conditionQuests: condQuests && condQuests.length > 0 ? condQuests : [],
+			},
 		},
 		requirements: {
 			...((existingQuest?.requirements) || DEFAULT_QUEST.requirements),

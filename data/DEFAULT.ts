@@ -273,7 +273,10 @@ export interface Quest extends BaseTask {
 		dueDate?: Date; // todo: do algo
 		startedAt?: Date; // Auto-generated when the quest is started // todo: do algo
 		lastUpdated?: Date; // Auto-generated when the quest is updated // todo: do algo
-		subtasks?: string[]; // todo: do algo
+		subtasks?: {
+			conditionQuests: { id: string; title: string; targetProgress: number }[];
+			conditionHabits: { id: string; title: string; targetStreak: number }[];
+		}; // todo: do algo
 		attempts: number; // todo: do algo
 		failures: number; // todo: do algo
 		timeSpentMinutes?: number; // Auto-generated // todo: do algo
@@ -291,7 +294,7 @@ export interface Quest extends BaseTask {
 
 	requirements: {
 		level: number; // minimum user level //todo: do algo
-		previousQuests?: string[]; // IDs of prerequisite quests // todo: do algo
+		previousQuests?: { id: string; title: string}[]; // IDs of prerequisite quests // todo: do algo
 		attributes?: Partial<AttributeBlock>; // minimum stats // todo: do algo
 		timeAvailableMinutes?: number; // practical constraint // todo: do algo
 		tagsRequired?: string[]; // e.g. ['outdoor', 'focus'] // todo: do algo
@@ -341,7 +344,10 @@ export const DEFAULT_QUEST: Quest = {
 		dueDate: new Date(0), // todo do algo
 		startedAt: new Date(0), // todo do algo
 		lastUpdated: new Date(0), // todo do algo
-		subtasks: [], // todo: do algo
+		subtasks: {
+			conditionQuests: [],
+			conditionHabits: [],
+		}, // todo: do algo
 		attempts: 0, // Auto generated
 		failures: 0, // Auto generated
 		timeSpentMinutes: 0, // Auto generated
