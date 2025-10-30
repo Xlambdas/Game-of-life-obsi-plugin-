@@ -5,7 +5,7 @@ import { DEFAULT_QUEST, Quest } from "../../data/DEFAULT";
 // from file (UI, components):
 import { FormHeader, FormFooter } from "../forms/UI/formHelpers";
 import { validateAndBuildQuest } from "./questHelpers";
-import { TitleInput, ShortDescription_CategoryInput, SupplementaryInput, DueDateInput, RequirementsInput, RewardsInput } from "components/forms/UI/formInputs";
+import { TitleInput, ShortDescription_CategoryInput, SupplementaryInput, DueDateInput, RequirementsInput, RewardsInput, ProgressConditionInput } from "components/forms/UI/formInputs";
 
 export const QuestFormUI = ({
 	existingQuest,
@@ -112,6 +112,7 @@ export const QuestFormUI = ({
 						setError={setError}
 					/>
 					<RequirementsInput
+						existingQuest={existingQuest}
 						levelMin={levelMin}
 						setLevelMin={setLevelMin}
 						reqQuests={reqQuests}
@@ -125,6 +126,13 @@ export const QuestFormUI = ({
 						setAttributeRewards={setAttributeRewards}
 						error={error}
 						setError={setError}
+					/>
+					<ProgressConditionInput
+						reqHabits={[]}
+						setReqHabits={() => {}}
+						allHabits={[]}
+						error={{}}
+						setError={() => {}}
 					/>
 				</div>
 			)}

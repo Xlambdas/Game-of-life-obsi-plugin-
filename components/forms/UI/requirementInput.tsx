@@ -41,22 +41,18 @@ interface QuestRequirement {
 }
 
 interface RequirementsQuestInputProps {
+	existingQuest?: any;
 	reqQuests: QuestRequirement[];
 	setReqQuests: (quests: QuestRequirement[]) => void;
 	allQuests: QuestRequirement[];
-	error: { [key: string]: string };
-	setError: (error: { [key: string]: string }) => void;
 }
 
 export const RequirementsQuestInput: React.FC<RequirementsQuestInputProps> = ({
+	existingQuest,
 	reqQuests,
 	setReqQuests,
 	allQuests,
-	error,
-	setError
 }) => {
-	console.log("reqQuests:", reqQuests);
-	
 	// Initialize with existing requirements or one empty row
 	const [requirements, setRequirements] = useState<QuestRequirement[]>(() => {
 		return reqQuests && reqQuests.length > 0 ? reqQuests : [{ id: "", title: "" }];
@@ -115,7 +111,7 @@ export const RequirementsQuestInput: React.FC<RequirementsQuestInputProps> = ({
 					<select
 						value={requirement.id}
 						onChange={(e) => handleChange(index, e.target.value)}
-						className={error.prerequisiteQuests ? "input-error" : "input"}
+						className={"input"}
 						style={{ flex: 1, marginRight: "8px" }}
 					>
 						<option value="" disabled={!!requirement.id}>
@@ -127,7 +123,8 @@ export const RequirementsQuestInput: React.FC<RequirementsQuestInputProps> = ({
 							value={quest.id}
 							disabled={
 							selectedQuestIds.includes(quest.id) &&
-							requirement.id !== quest.id
+							requirement.id !== quest.id ||
+							existingQuest?.id === quest.id
 							}
 						>
 							{quest.title}

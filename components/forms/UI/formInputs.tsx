@@ -192,11 +192,13 @@ export const DueDateInput = ({
 };
 
 export const RequirementsInput = ({
+	existingQuest,
 	levelMin, setLevelMin,
 	reqQuests, setReqQuests,
 	allQuests,
 	error, setError
 }: {
+	existingQuest?: any;
 	levelMin: number;
 	setLevelMin: (level: number) => void;
 	reqQuests: { id: string; title: string }[];
@@ -205,7 +207,7 @@ export const RequirementsInput = ({
 	error: {[key: string]: string};
 	setError: (error: {[key: string]: string}) => void;
 }) => {
-	console.log("formInputs:", reqQuests);
+	console.log("formInputs:", existingQuest);
 	//input: a list of all (quests: {id, title}), and a level requirment
 	return (
 		<div>
@@ -218,11 +220,10 @@ export const RequirementsInput = ({
 				setError={setError}
 			/>
 			<RequirementsQuestInput
+				existingQuest={existingQuest}
 				reqQuests={reqQuests}
 				setReqQuests={setReqQuests}
 				allQuests={allQuests}
-				error={error}
-				setError={setError}
 			/>
 		</div>
 	)
@@ -248,6 +249,25 @@ export const RewardsInput = ({
 				error={error}
 				setError={setError}
 			/>
+		</div>
+	)
+};
+
+export const ProgressConditionInput = ({
+	reqHabits, setReqHabits,
+	allHabits,
+	error, setError
+}: {
+	reqHabits: { id: string; title: string }[];
+	setReqHabits: (habits: { id: string; title: string }[]) => void;
+	allHabits: { id: string; title: string }[];
+	error: {[key: string]: string};
+	setError: (error: {[key: string]: string}) => void;
+}) => {
+	return (
+		<div>
+			<hr className="separator"></hr>
+			<h3>Progress Conditions</h3>
 		</div>
 	)
 };

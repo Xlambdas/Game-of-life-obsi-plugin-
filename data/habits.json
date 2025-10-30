@@ -18,7 +18,7 @@
       "unit": "days"
     },
     "streak": {
-      "current": 1,
+      "current": 2,
       "best": 2,
       "history": [
         {
@@ -40,11 +40,15 @@
         {
           "date": "2025-10-27T18:34:34.067Z",
           "success": true
+        },
+        {
+          "date": "2025-10-29T17:36:46.791Z",
+          "success": true
         }
       ],
       "isCompletedToday": true,
-      "nextDate": "2025-10-29T18:34:34.067Z",
-      "lastCompletedDate": "2025-10-27T18:34:34.067Z"
+      "nextDate": "2025-10-31T17:36:46.791Z",
+      "lastCompletedDate": "2025-10-29T17:36:46.791Z"
     },
     "progress": {
       "level": 1,
@@ -115,7 +119,7 @@
       "unit": "days"
     },
     "streak": {
-      "current": 1,
+      "current": 2,
       "best": 2,
       "history": [
         {
@@ -133,11 +137,19 @@
         {
           "date": "2025-10-16T18:50:56.954Z",
           "success": true
+        },
+        {
+          "date": "2025-10-29T17:36:48.356Z",
+          "success": true
+        },
+        {
+          "date": "2025-10-30T11:12:27.508Z",
+          "success": true
         }
       ],
-      "isCompletedToday": false,
-      "nextDate": "2025-10-17T18:50:56.954Z",
-      "lastCompletedDate": "2025-10-16T18:50:56.954Z"
+      "isCompletedToday": true,
+      "nextDate": "2025-10-31T11:12:27.508Z",
+      "lastCompletedDate": "2025-10-30T11:12:27.508Z"
     },
     "progress": {
       "level": 1,
@@ -374,17 +386,21 @@
       "unit": "days"
     },
     "streak": {
-      "current": 1,
-      "best": 1,
+      "current": 2,
+      "best": 2,
       "history": [
         {
           "date": "2025-10-27T18:34:37.752Z",
           "success": true
+        },
+        {
+          "date": "2025-10-30T11:12:25.656Z",
+          "success": true
         }
       ],
       "isCompletedToday": true,
-      "nextDate": "2025-10-30T18:34:37.752Z",
-      "lastCompletedDate": "2025-10-27T18:34:37.752Z"
+      "nextDate": "2025-11-02T11:12:25.656Z",
+      "lastCompletedDate": "2025-10-30T11:12:25.656Z"
     },
     "progress": {
       "level": 1,
