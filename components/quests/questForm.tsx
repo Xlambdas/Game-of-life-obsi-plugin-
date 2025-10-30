@@ -49,7 +49,16 @@ export const QuestFormUI = ({
 				console.error("Error loading quests:", error);
 			}
 		};
+		const loadHabits = async () => {
+			try {
+				const habits = await appContext.dataService.loadAllHabits();
+				setAllHabits(habits.map((h: any) => ({ id: h.id, title: h.title, targetStreak: h.streak.best || 0 })));
+			} catch (error) {
+				console.error("Error loading habits:", error);
+			}
+		};
 		loadQuests();
+		loadHabits();
 	}, [appContext.dataService]);
 
 	const handleSubmit = async (e: React.FormEvent) => {
@@ -59,7 +68,7 @@ export const QuestFormUI = ({
 			title, shortDescription, description,
 			category, priority, difficulty,
 			dueDate: dueDate ? new Date(dueDate) : undefined,
-			levelMin, reqQuests, condQuests,
+			levelMin, reqQuests, condQuests, condHabits,
 			attributeRewards,
 			appContext
 		});
@@ -132,12 +141,14 @@ export const QuestFormUI = ({
 						setError={setError}
 					/>
 					<ProgressConditionInput
+						existingQuest={existingQuest}
+						allQuests={allQuests}
 						condQuests={condQuests}
 						setCondQuests={setCondQuests}
+
+						allHabits={allHabits}
 						condHabits={condHabits}
 						setCondHabits={setCondHabits}
-						allQuests={allQuests}
-						allHabits={allHabits}
 						error={error}
 						setError={setError}
 					/>

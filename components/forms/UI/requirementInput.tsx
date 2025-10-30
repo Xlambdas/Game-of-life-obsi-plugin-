@@ -122,9 +122,9 @@ export const RequirementsQuestInput: React.FC<RequirementsQuestInputProps> = ({
 							key={quest.id}
 							value={quest.id}
 							disabled={
-							selectedQuestIds.includes(quest.id) &&
-							requirement.id !== quest.id ||
-							existingQuest?.id === quest.id
+								selectedQuestIds.includes(quest.id) &&
+								requirement.id !== quest.id ||
+								existingQuest?.id === quest.id
 							}
 						>
 							{quest.title}

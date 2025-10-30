@@ -145,7 +145,11 @@ const QuestItem: React.FC<QuestItemProps> = ({ quest, activeTab, onComplete, onM
 					type="checkbox"
 					checked={quest.progression.isCompleted}
 					onChange={() => onComplete(quest, !quest.progression.isCompleted)}
-					disabled={activeTab === "upcoming"}
+					disabled={
+						activeTab === "upcoming" ||
+						(quest.progression?.subtasks?.conditionQuests?.length ?? 0) > 0 ||
+						(quest.progression?.subtasks?.conditionHabits?.length ?? 0) > 0
+					}
 					className="quest-checkbox"
 				/>
 				<span className={`quest-title ${quest.progression.isCompleted ? "completed" : ""}`}>

@@ -254,11 +254,13 @@ export const RewardsInput = ({
 };
 
 export const ProgressConditionInput = ({
+	existingQuest,
 	condQuests, setCondQuests,
 	condHabits, setCondHabits,
 	allQuests, allHabits,
 	error, setError
 }: {
+	existingQuest?: any;
 	condQuests: { id: string; title: string; targetProgress: number }[];
 	setCondQuests: (quests: { id: string; title: string; targetProgress: number }[]) => void;
 	condHabits: { id: string; title: string; targetStreak: number }[];
@@ -273,17 +275,21 @@ export const ProgressConditionInput = ({
 			<hr className="separator"></hr>
 			<h3>Progress Conditions</h3>
 			<ConditionQuestInput
+				existingQuest={existingQuest}
 				condQuests={condQuests}
 				setCondQuests={setCondQuests}
 				allQuests={allQuests}
 				error={error}
 				setError={setError}
 			/>
-			{/* <ConditionHabitInput
+			<br/>
+			<ConditionHabitInput
 				condHabits={condHabits}
 				setCondHabits={setCondHabits}
 				allHabits={allHabits}
-			/> */}
+				error={error}
+				setError={setError}
+			/>
 		</div>
 	)
 };

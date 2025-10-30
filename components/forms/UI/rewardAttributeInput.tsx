@@ -79,13 +79,17 @@ export const RewardAttributeInput: React.FC<RewardAttributeInputProps> = ({
 				<div
 					key={index}
 					className="attribute-pair"
-					style={{ display: "flex", alignItems: "center", marginBottom: "8px" }}
+					style={{
+						display: "flex",
+						alignItems: "center",
+						marginBottom: "8px"
+					}}
 				>
 					<select
 					value={pair.attribute}
 					onChange={(e) => handleChange(index, "attribute", e.target.value)}
-					className="attribute-select"
-					style={{ width: "50%", marginRight: "8px" }}
+					className="input"
+					style={{ flex: 1, marginRight: "8px" }}
 					>
 					<option value="" disabled={!!pair.attribute}>
 						Select attribute...

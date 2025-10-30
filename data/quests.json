@@ -19,7 +19,7 @@
       "progress": 0,
       "dueDate": "2025-12-12T00:00:00.000Z",
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-10-30T12:48:43.437Z",
+      "lastUpdated": "2025-10-30T13:42:49.154Z",
       "subtasks": [],
       "attempts": 10,
       "failures": 11,
@@ -115,7 +115,7 @@
       "completedAt": "2025-10-10T21:53:47.951Z",
       "progress": 100,
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-10-30T12:48:43.437Z",
+      "lastUpdated": "2025-10-30T13:42:49.154Z",
       "subtasks": [],
       "attempts": 1,
       "failures": 0,
@@ -202,7 +202,7 @@
       "completedAt": "2025-10-16T19:13:01.473Z",
       "progress": 100,
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-10-30T12:48:43.437Z",
+      "lastUpdated": "2025-10-30T13:42:49.154Z",
       "subtasks": [],
       "attempts": 1,
       "failures": 0,
@@ -289,7 +289,7 @@
       "completedAt": null,
       "progress": 0,
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-10-30T12:48:43.437Z",
+      "lastUpdated": "2025-10-30T13:42:49.154Z",
       "subtasks": [],
       "attempts": 0,
       "failures": 0,
@@ -376,7 +376,7 @@
       "completedAt": null,
       "progress": 0,
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-10-30T12:48:43.437Z",
+      "lastUpdated": "2025-10-30T13:42:49.154Z",
       "subtasks": [],
       "attempts": 0,
       "failures": 0,
@@ -459,13 +459,13 @@
       "isTimeSensitive": false
     },
     "progression": {
-      "isCompleted": false,
-      "completedAt": null,
-      "progress": 0,
+      "isCompleted": true,
+      "completedAt": "2025-10-30T13:42:51.851Z",
+      "progress": 100,
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-10-30T12:48:43.437Z",
+      "lastUpdated": "2025-10-30T13:42:51.851Z",
       "subtasks": [],
-      "attempts": 0,
+      "attempts": 1,
       "failures": 0,
       "timeSpentMinutes": 0
     },
@@ -550,7 +550,7 @@
       "completedAt": null,
       "progress": 0,
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-10-30T12:48:43.437Z",
+      "lastUpdated": "2025-10-30T13:42:49.154Z",
       "subtasks": [],
       "attempts": 0,
       "failures": 0,
@@ -637,7 +637,7 @@
       "completedAt": null,
       "progress": 0,
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-10-30T12:48:43.437Z",
+      "lastUpdated": "2025-10-30T13:42:49.154Z",
       "subtasks": [],
       "attempts": 0,
       "failures": 0,
@@ -729,7 +729,7 @@
       "completedAt": null,
       "progress": 0,
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-10-30T12:48:43.437Z",
+      "lastUpdated": "2025-10-30T13:42:49.154Z",
       "subtasks": [],
       "attempts": 0,
       "failures": 0,
@@ -821,7 +821,7 @@
       "completedAt": null,
       "progress": 0,
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-10-30T12:48:43.437Z",
+      "lastUpdated": "2025-10-30T13:42:49.154Z",
       "subtasks": [],
       "attempts": 0,
       "failures": 0,
@@ -913,7 +913,7 @@
       "completedAt": null,
       "progress": 0,
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-10-30T12:48:43.437Z",
+      "lastUpdated": "2025-10-30T13:42:49.154Z",
       "subtasks": [],
       "attempts": 0,
       "failures": 0,
@@ -1009,7 +1009,7 @@
       "completedAt": null,
       "progress": 0,
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-10-30T12:48:43.437Z",
+      "lastUpdated": "2025-10-30T13:42:49.154Z",
       "subtasks": [],
       "attempts": 0,
       "failures": 0,
@@ -1105,7 +1105,7 @@
       "completedAt": null,
       "progress": 0,
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-10-30T12:48:43.437Z",
+      "lastUpdated": "2025-10-30T13:42:49.154Z",
       "subtasks": [],
       "attempts": 0,
       "failures": 0,
@@ -1209,7 +1209,7 @@
       "completedAt": null,
       "progress": 0,
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-10-30T12:48:43.437Z",
+      "lastUpdated": "2025-10-30T13:42:49.154Z",
       "subtasks": [],
       "attempts": 0,
       "failures": 0,
@@ -1305,7 +1305,7 @@
       "completedAt": null,
       "progress": 0,
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-10-30T12:48:43.437Z",
+      "lastUpdated": "2025-10-30T13:42:49.154Z",
       "subtasks": [],
       "attempts": 0,
       "failures": 0,
@@ -1401,7 +1401,7 @@
       "completedAt": null,
       "progress": 0,
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-10-30T12:48:43.437Z",
+      "lastUpdated": "2025-10-30T13:42:49.154Z",
       "subtasks": {
         "conditionQuests": [],
         "conditionHabits": []
@@ -1491,7 +1491,7 @@
       "completedAt": null,
       "progress": 0,
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-10-30T12:49:00.413Z",
+      "lastUpdated": "2025-10-30T13:42:49.154Z",
       "subtasks": {
         "conditionQuests": [
           {
@@ -1534,6 +1534,122 @@
         {
           "id": "quest_4nm7t5i",
           "title": "quest_n213"
+        },
+        {
+          "id": "quest_75cmuni",
+          "title": "test"
+        },
+        {
+          "id": "quest_7wjzqoj",
+          "title": "not required level"
+        }
+      ],
+      "attributes": {
+        "strength": 0,
+        "agility": 0,
+        "endurance": 0,
+        "charisma": 0,
+        "wisdom": 0,
+        "perception": 0,
+        "intelligence": 0,
+        "willpower": 0,
+        "spirit": 0,
+        "flow": 0,
+        "reputation": 0,
+        "resilience": 0
+      },
+      "timeAvailableMinutes": 30,
+      "tagsRequired": []
+    },
+    "meta": {
+      "difficulty": "easy",
+      "category": "Undefined",
+      "tags": [],
+      "isSystemQuest": false,
+      "createdBy": "system",
+      "linkedToGoal": "",
+      "estimatedDurationMinutes": 30,
+      "recommendedTimeOfDay": "any",
+      "energyRequired": 0,
+      "willpowerRequired": 0
+    },
+    "failureConsequence": {
+      "description": "You failed the quest. Try again!",
+      "spiritLoss": 0,
+      "XPLoss": 0,
+      "lockoutTimeMinutes": 0
+    },
+    "notes": "This is a system-generated quest to help you get started. Complete it to unlock more features."
+  },
+  "quest_skbde60": {
+    "id": "quest_skbde60",
+    "title": "progress with habit cond",
+    "shortDescription": "conditititittiti",
+    "description": "test maxi full dsecv",
+    "created_at": "2025-10-30T13:31:20.217Z",
+    "settings": {
+      "type": "quest",
+      "category": "Physical",
+      "priority": "medium",
+      "difficulty": "medium",
+      "isSecret": false,
+      "isTimeSensitive": true
+    },
+    "progression": {
+      "isCompleted": false,
+      "completedAt": null,
+      "progress": 0,
+      "dueDate": "2026-12-12T00:00:00.000Z",
+      "startedAt": "1970-01-01T00:00:00.000Z",
+      "lastUpdated": "2025-10-30T13:42:49.154Z",
+      "subtasks": {
+        "conditionQuests": [
+          {
+            "id": "quest_4nm7t5i",
+            "title": "quest_n213",
+            "targetProgress": 100
+          }
+        ],
+        "conditionHabits": [
+          {
+            "id": "habit_1xe8m9p",
+            "title": "first habit",
+            "targetStreak": 21
+          }
+        ]
+      },
+      "attempts": 1,
+      "failures": 1,
+      "timeSpentMinutes": 0
+    },
+    "reward": {
+      "XP": 10,
+      "items": [],
+      "attributes": {
+        "strength": 1,
+        "agility": 1,
+        "endurance": 1,
+        "charisma": 0,
+        "wisdom": 0,
+        "perception": 0,
+        "intelligence": 1,
+        "willpower": 0,
+        "spirit": 0,
+        "flow": 0,
+        "reputation": 0,
+        "resilience": 0
+      },
+      "unlocks": [],
+      "badges": [],
+      "title": "Novice Adventurer",
+      "spiritBoost": 0
+    },
+    "requirements": {
+      "level": 2,
+      "previousQuests": [
+        {
+          "id": "quest_ne13t8a",
+          "title": "test prerequised quest"
         }
       ],
       "attributes": {

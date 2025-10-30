@@ -10,7 +10,7 @@ export async function validateAndBuildQuest({
 	existingQuest,
 	title, shortDescription, description,
 	category, priority, difficulty,
-	dueDate, levelMin, reqQuests, condQuests, attributeRewards,
+	dueDate, levelMin, reqQuests, condQuests, condHabits, attributeRewards,
 	appContext
 }: {
 	existingQuest?: any,
@@ -24,6 +24,7 @@ export async function validateAndBuildQuest({
 	levelMin: number,
 	reqQuests: { id: string, title: string }[] | null,
 	condQuests: { id: string, title: string, targetProgress: number }[] | null,
+	condHabits: { id: string, title: string, targetStreak: number }[] | null,
 	attributeRewards: AttributeBlock,
 	appContext: ReturnType<typeof useAppContext>
 }): Promise<{ quest: Quest | null; errors: { [key: string]: string } }> {
@@ -61,6 +62,19 @@ export async function validateAndBuildQuest({
 		}
 	}
 
+	if (condHabits) {
+		const invalidCondHabits = condHabits.filter(ch =>
+			!ch.id ||
+			typeof ch.targetStreak !== "number" ||
+			!Number.isFinite(ch.targetStreak) ||
+			ch.targetStreak < 1
+		);
+		if (invalidCondHabits.length > 0) {
+			errors.condHabits = "All condition habits must be selected and have a target streak of at least 1.";
+		}
+	}
+
+	// Get user for attribute reward validation
 	const user = appContext.getUser();
 	console.log("requirements prerequisiteQuest", reqQuests);
 
@@ -111,6 +125,7 @@ export async function validateAndBuildQuest({
 			subtasks: {
 				...((existingQuest?.progression.subtasks) || DEFAULT_QUEST.progression.subtasks),
 				conditionQuests: condQuests && condQuests.length > 0 ? condQuests : [],
+				conditionHabits: condHabits && condHabits.length > 0 ? condHabits : [],
 			},
 		},
 		requirements: {
