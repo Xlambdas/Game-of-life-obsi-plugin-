@@ -86,7 +86,7 @@ export default class DataService {
 	// -----------------------
 	// generic get
 	get(key: 'user' | 'quests' | 'habits'): UserSettings | Record<string, Quest> | Record<string, Habit> {
-		document.dispatchEvent(new CustomEvent("dbUpdated"));
+		
 		if (key === 'user') {
 			return this.user;
 		}

@@ -19,7 +19,11 @@ export const SideView: React.FC = () => {
 	const [habits, setHabits] = useState<Habit[]>([]);
 	const [user, setUser] = useState<UserSettings | null>(null);
 
+	const [loading, setLoading] = useState(false);
+
 	const loadData = async () => {
+		if (loading) return; // prevent re-entry
+		setLoading(true);
 		const loadedUser = appService.dataService.getUser();
 		const loadedQuests = await appService.dataService.getQuests();
 		const loadedHabits = await appService.dataService.getHabits();
@@ -37,10 +41,10 @@ export const SideView: React.FC = () => {
 	}, [appService]);
 
 	useEffect(() => {
-		const handleReload = () => loadData();
+		const handleReload = () => { if (!loading) loadData(); };
 		document.addEventListener("dbUpdated", handleReload);
 		return () => document.removeEventListener("dbUpdated", handleReload);
-	}, []);
+	}, [loading]);
 
 	if (!user) return <p>Loading...</p>;
 	return (

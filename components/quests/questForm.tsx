@@ -7,17 +7,24 @@ import { FormHeader, FormFooter } from "../forms/UI/formHelpers";
 import { validateAndBuildQuest } from "./questHelpers";
 import { TitleInput, ShortDescription_CategoryInput, SupplementaryInput, DueDateInput, RequirementsInput, RewardsInput, ProgressConditionInput } from "components/forms/UI/formInputs";
 
+interface QuestFormUIProps {
+	existingQuest?: any,
+	onSuccess: (quest: Quest) => void,
+	onCancel?: () => void,
+	onDelete?: () => void,
+	isUnlocked: (feature: string) => boolean,
+	allQuests?: {id: string, title: string; targetProgress: number}[],
+	allHabits?: {id: string, title: string; targetStreak: number}[],
+}
+
 export const QuestFormUI = ({
 	existingQuest,
 	onSuccess,
 	onCancel,
 	onDelete,
-}: {
-	existingQuest?: any,
-	onSuccess: (quest: Quest) => void,
-	onCancel?: () => void,
-	onDelete?: () => void,
-}) => {
+	isUnlocked = () => true,
+
+}: QuestFormUIProps) => {
 	/* Form to create or modify a quest */
     const [title, setTitle] = useState(existingQuest?.title || "");
 	const [shortDescription, setShortDescription] = useState(existingQuest?.shortDescription || "");
@@ -79,13 +86,6 @@ export const QuestFormUI = ({
 			setError(errors);
 		}
 	};
-
-	const player = appContext.dataService.getUser();
-
-	const isUnlocked = (feature: string): boolean => {
-		const unlockedFeatures = appContext.unlocksService.unlocksQuestForm(player.xpDetails.level || 1);
-		return unlockedFeatures.includes(feature);
-	}
 
     return (
         <form onSubmit={handleSubmit} className="quest-form">

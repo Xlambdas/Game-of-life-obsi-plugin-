@@ -52,6 +52,15 @@ export class GenericForm extends Modal {
 			this.close();
 		};
 
+		const isUnlocked = (feature: string) => {
+			if (this.mode === 'quest-create' || this.mode === 'quest-modify') {
+				return service.unlocksService.unlocksQuestForm(dataService.getUser().xpDetails.level || 1).includes(feature);
+			} else if (this.mode === 'habit-create' || this.mode === 'habit-modify') {
+				return service.unlocksService.unlocksHabitForm(dataService.getUser().xpDetails.level || 1).includes(feature);
+			}
+			return false;
+		};
+
 		const handleDelete = async () => {
 			if (!this.data) return;
 			if (this.mode === "quest-modify") {
@@ -77,6 +86,7 @@ export class GenericForm extends Modal {
 					onSuccess={handleSubmit}
 					onCancel={this.mode === 'quest-create' ? () => this.close() : undefined}
 					onDelete={this.mode === 'quest-modify' ? handleDelete : undefined}
+					isUnlocked={isUnlocked}
 				/>
 			);
 		} else if (this.mode === 'habit-create' || this.mode === 'habit-modify') {

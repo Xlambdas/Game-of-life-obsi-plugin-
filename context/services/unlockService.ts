@@ -1,12 +1,30 @@
 // from file (service/default):
 import { AppContextService } from "../appContextService";
-import { UNLOCK_QUEST_FORM, UNLOCK_HABIT_FORM } from "data/unlocks";
+import { UNLOCK_QUEST_FORM, UNLOCK_HABIT_FORM, UNLOCK_VIEW, UNLOCK_ELEMENT } from "data/unlocks";
 
 export default class UnlocksService {
 	private appService: AppContextService;
 
 	constructor(appService: AppContextService) {
 		this.appService = appService;
+	}
+
+	public static onUnlockView(viewName: string): boolean {
+		const user = AppContextService.getInstance().dataService.getUser();
+		if (!user) return false;
+		const playerLevel = user.xpDetails.level || 0;
+		const unlockLevels = UNLOCK_VIEW;
+		const requiredLevel = unlockLevels[viewName];
+		return playerLevel >= requiredLevel;
+	}
+
+	public static onUnlockElement(elementName: string): boolean {
+		const user = AppContextService.getInstance().dataService.getUser();
+		if (!user) return false;
+		const playerLevel = user.xpDetails.level || 0;
+		const unlockLevels = UNLOCK_ELEMENT;
+		const requiredLevel = unlockLevels[elementName];
+		return playerLevel >= requiredLevel;
 	}
 
 	public unlocksQuestForm(playerLevel: number): string[] {

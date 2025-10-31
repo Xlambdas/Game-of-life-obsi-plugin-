@@ -2,11 +2,13 @@ import { Plugin } from 'obsidian';
 // from files - services:
 import { AppContextService } from './context/appContextService';
 import ViewService from './context/services/viewService';
+import UnlocksService from './context/services/unlockService';
 // from files - other
 // import { CreateQuestModal } from './modal/questModal';
 import { selfSettingsTab } from './UI/settingsTab';
 import { GenericForm } from 'components/forms/genericForm';
 import { openFullscreenMainView } from 'helpers/sideViewSetting';
+import { Unlock } from 'lucide-react';
 
 export default class GOL extends Plugin {
 	private viewService!: ViewService;
@@ -31,48 +33,67 @@ export default class GOL extends Plugin {
 			new selfSettingsTab(this.app, this)
 		);
 
-		this.addRibbonIcon("sword", "Open sideView", () => {
-			this.viewService.openSideView();
-		});
+		UnlocksService.onUnlockView("side") && (
+			this.addRibbonIcon("sword", "Open sideView", () => {
+				this.viewService.openSideView();
+			})
+		) && (
+			this.addCommand({
+				id: 'open-side-view',
+				name: 'Open Side View',
+				callback: () => {
+					this.viewService.openSideView();
+				}
+			})
+		);
 
-		this.addRibbonIcon("swords", "Open mainView", () => {
-			this.viewService.openMainView();
-		});
+		UnlocksService.onUnlockView("main") && (
+			this.addRibbonIcon("swords", "Open mainView", () => {
+				this.viewService.openMainView();
+			})
+		) && (
+			this.addCommand({
+				id: 'open-main-view',
+				name: 'Open Main View',
+				callback: () => {
+					this.viewService.openMainView();
+				}
+			})
+		);
+
 		this.addRibbonIcon("plus-square", "Create New Habit", () => {
 			new GenericForm(this.app, 'habit-create').open();
 		});
 
-		this.addCommand({
-			id: 'open-side-view',
-			name: 'Open side View',
-			callback: () => {
-				this.viewService.openSideView();
-			}
-		});
+		UnlocksService.onUnlockElement("habit") && (
+			this.addCommand({
+				id: 'create-new-habit',
+				name: 'Create New Habit',
+				callback: () => {
+					new GenericForm(this.app, 'habit-create').open();
+				}
+			})
+		);
 
-		this.addCommand({
-			id: 'create-new-habit',
-			name: 'Create New Habit',
-			callback: () => {
-				new GenericForm(this.app, 'habit-create').open();
-			}
-		});
+		UnlocksService.onUnlockElement("quest") && (
+			this.addCommand({
+				id: 'create-new-quest',
+				name: 'Create New Quest',
+				callback: () => {
+					new GenericForm(this.app, 'quest-create').open();
+				}
+			})
+		);
 
-		this.addCommand({
-			id: 'create-new-quest',
-			name: 'Create New Quest',
-			callback: () => {
-				new GenericForm(this.app, 'quest-create').open();
-			}
-		});
-
-		this.addCommand({
-			id: 'open-fullscreen-main-view',
-			name: 'Open Fullscreen Main View',
-			callback: () => {
-				openFullscreenMainView();
-			}
-		});
+		UnlocksService.onUnlockView("full") && (
+			this.addCommand({
+				id: 'open-fullscreen-main-view',
+				name: 'Open Fullscreen Main View',
+				callback: () => {
+					openFullscreenMainView();
+				}
+			})
+		);
 	}
 
 	onunload() {
