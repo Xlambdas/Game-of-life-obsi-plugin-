@@ -53,6 +53,13 @@ export const HabitFormUI = ({
 		}
 	};
 
+	const player = appContext.dataService.getUser();
+
+	const isUnlocked = (feature: string): boolean => {
+		const unlockedFeatures = appContext.unlocksService.unlocksHabitForm(player.xpDetails.level || 1);
+		return unlockedFeatures.includes(feature);
+	}
+
 	return (
 		<form onSubmit={handleSubmit} className="quest-form">
 			{/* Header */}
@@ -71,6 +78,7 @@ export const HabitFormUI = ({
 			{/* Short Description */}
 			<ShortDescription_CategoryInput
 				type="habit"
+				isUnlocked={isUnlocked}
 				shortDescription={shortDescription}
 				setShortDescription={setShortDescription}
 				category={category}
@@ -79,20 +87,23 @@ export const HabitFormUI = ({
 				setError={setError}
 			/>
 			{/* Recurrence */}
-			<RecurrenceInput
-				interval={interval}
-				setInterval={setInterval}
-				unit={unit}
-				setUnit={setUnit}
-				error={error}
-				setError={setError}
-			/>
+			{isUnlocked("recurrence") && (
+				<RecurrenceInput
+					interval={interval}
+					setInterval={setInterval}
+					unit={unit}
+					setUnit={setUnit}
+					error={error}
+					setError={setError}
+				/>
+			)}
 
 			{/* Advanced Settings */}
 			{showAdvanced && (
 				<div className="form-section">
 					<SupplementaryInput
 						type="Habit"
+						isUnlocked={isUnlocked}
 						description={description}
 						setDescription={setDescription}
 						priority={priority}
@@ -100,14 +111,17 @@ export const HabitFormUI = ({
 						difficulty={difficulty}
 						setDifficulty={setDifficulty}
 					/>
-					<RewardsInput
-						attributeRewards={attributeRewards}
-						setAttributeRewards={setAttributeRewards}
-						error={error}
-						setError={setError}
-					/>
+					{isUnlocked("rewards") && (
+						<RewardsInput
+							attributeRewards={attributeRewards}
+							setAttributeRewards={setAttributeRewards}
+							error={error}
+							setError={setError}
+						/>
+					)}
 				</div>
 			)}
+
 			{/* Footer */}
 			<FormFooter
 				onCancel={onCancel}

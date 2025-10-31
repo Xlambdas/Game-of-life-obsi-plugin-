@@ -71,7 +71,7 @@ export default class DataService {
 				break;
 			case 'habits':
 				path = this.habitsPath;
-				console.log("Saving habits:", this.habits);
+				// console.log("Saving habits:", this.habits);
 				content = JSON.stringify(this.habits, null, 2);
 				break;
 			default:

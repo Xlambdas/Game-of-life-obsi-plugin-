@@ -80,7 +80,6 @@ export const HabitList: React.FC<HabitListProps> = ({ habits, onHabitUpdate, onU
 	}
 
 	const handleCheckbox = async (habit: Habit, completed: boolean) => {
-		// console.log(`Toggling habit ${habit} to ${completed}`);
 		const updatedHabit = await appService.habitService.updateHabitCompletion(habit, completed);
 		await appService.habitService.saveHabit(updatedHabit);
 		const updatedHabits = habitState.map(h => h.id === updatedHabit.id ? updatedHabit : h);

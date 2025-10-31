@@ -42,15 +42,6 @@ export const SideView: React.FC = () => {
 		return () => document.removeEventListener("dbUpdated", handleReload);
 	}, []);
 
-	const handleAddXP = async (amount: number) => {
-		if (!user) return;
-		const updatedUser = await appService.xpService.addXP(user, amount);
-		setUser(updatedUser);
-		console.log(`Added ${amount} XP to user. New user: ${updatedUser}`);
-		new Notice(`You gained ${amount} XP!`);
-		loadData();
-	};
-
 	if (!user) return <p>Loading...</p>;
 	return (
 		<div>
@@ -67,9 +58,6 @@ export const SideView: React.FC = () => {
 					onUserUpdate={setUser}
 				/>
 			</div>
-			<button onClick={() => handleAddXP(10)} className="btn">
-				Add 10 XP
-			</button>
 		</div>
 	);
 };

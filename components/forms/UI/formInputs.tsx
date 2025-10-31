@@ -44,12 +44,14 @@ export const TitleInput = ({
 
 export const ShortDescription_CategoryInput = ({
 	type = "quest",
+	isUnlocked,
 	shortDescription, setShortDescription,
 	category, setCategory,
 	error,
 	setError
 }: {
 	type?: string; // "quest" or "habit"
+	isUnlocked: (feature: string) => boolean;
 	shortDescription: string;
 	setShortDescription: (desc: string) => void;
 	category: string;
@@ -78,31 +80,35 @@ export const ShortDescription_CategoryInput = ({
 			<p className="helper-text">
 				A brief overview of the {type}'s objectives. Keep it concise yet informative !
 			</p>
-			<label className="label-select">
-				<span>Category</span>
-				<select
-					name="category"
-					className="input"
-					value={category}
-					onChange={e => setCategory(e.target.value)}
-				>
-					<option value="">-- Select Category --</option>
-					{DEFAULT_CATEGORIES.map((cat) => (
-						<option key={cat} value={cat}>{cat.charAt(0).toUpperCase() + cat.slice(1)}</option>
-					))}
-				</select>
-			</label>
+			{isUnlocked("category") && (
+				<label className="label-select">
+					<span>Category</span>
+					<select
+						name="category"
+						className="input"
+						value={category}
+						onChange={e => setCategory(e.target.value)}
+					>
+						<option value="">-- Select Category --</option>
+						{DEFAULT_CATEGORIES.map((cat) => (
+							<option key={cat} value={cat}>{cat.charAt(0).toUpperCase() + cat.slice(1)}</option>
+						))}
+					</select>
+				</label>
+			)}
 		</div>
 	)
 };
 
 export const SupplementaryInput = ({
 	type = "Quest",
+	isUnlocked,
 	description, setDescription,
 	priority, setPriority,
 	difficulty, setDifficulty,
 }: {
 	type?: string; // "Quest" or "Habit"
+	isUnlocked: (feature: string) => boolean;
 	description: string;
 	setDescription: (desc: string) => void;
 	priority: string;
@@ -126,20 +132,25 @@ export const SupplementaryInput = ({
 				The more vivid and detailed your description is, the more powerful and motivating it becomes. Add purpose, emotion, and clarity!
 			</p>
 			<hr className="separator"></hr>
-			<h3>{type} Parameters</h3>
-			<label className="label-select">
-				<span>Priority</span>
-				<select
-					name="priority"
-					className="input"
-					value={priority}
-					onChange={e => setPriority(e.target.value)}
-				>
-					{DEFAULT_PRIORITIES.map(pri => (
-						<option key={pri} value={pri}>{pri.charAt(0).toUpperCase() + pri.slice(1)}</option>
-					))}
-				</select>
-			</label>
+			{(isUnlocked("priority") || isUnlocked("difficulty")) && (
+				<h3>{type} Parameters</h3>
+			)}
+			{isUnlocked("priority") && (
+				<label className="label-select">
+					<span>Priority</span>
+					<select
+						name="priority"
+						className="input"
+						value={priority}
+						onChange={e => setPriority(e.target.value)}
+					>
+						{DEFAULT_PRIORITIES.map(pri => (
+							<option key={pri} value={pri}>{pri.charAt(0).toUpperCase() + pri.slice(1)}</option>
+						))}
+					</select>
+				</label>
+			)}
+			{isUnlocked("difficulty") && (
 			<label className="label-select">
 				<span>Difficulty</span>
 				<select
@@ -153,6 +164,7 @@ export const SupplementaryInput = ({
 					))}
 				</select>
 			</label>
+			)}
 		</div>
 	)
 };

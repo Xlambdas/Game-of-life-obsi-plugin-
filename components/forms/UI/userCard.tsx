@@ -9,7 +9,6 @@ interface UserCardProps {
 
 export const UserCard: React.FC<UserCardProps> = ({ user }) => {
 	/* Card displaying user information and XP progress */
-
     return (
 		<div className="card">
 			<h2 className="card-title">Level {user.xpDetails.level}</h2>
@@ -22,13 +21,7 @@ export const UserCard: React.FC<UserCardProps> = ({ user }) => {
 			</div>
 			<div>
 				<p className="card-subtitle">
-					<strong>Name :</strong> {user.persona.name}
-				</p>
-				<p className="card-subtitle">
-					<strong>Classe :</strong> {user.persona.class}
-				</p>
-				<p className="card-subtitle">
-					<strong>Total XP :</strong> {user.xpDetails.xp}
+					<strong>Persona :</strong> {user.persona.name} ({user.persona.class})
 				</p>
 			</div>
 		</div>

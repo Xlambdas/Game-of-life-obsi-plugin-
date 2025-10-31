@@ -18,8 +18,8 @@
       "unit": "days"
     },
     "streak": {
-      "current": 2,
-      "best": 2,
+      "current": 3,
+      "best": 3,
       "history": [
         {
           "date": "2025-10-09T18:31:15.711Z",
@@ -44,11 +44,15 @@
         {
           "date": "2025-10-29T17:36:46.791Z",
           "success": true
+        },
+        {
+          "date": "2025-10-31T09:52:21.413Z",
+          "success": true
         }
       ],
       "isCompletedToday": true,
-      "nextDate": "2025-10-31T17:36:46.791Z",
-      "lastCompletedDate": "2025-10-29T17:36:46.791Z"
+      "nextDate": "2025-11-02T09:52:21.413Z",
+      "lastCompletedDate": "2025-10-31T09:52:21.413Z"
     },
     "progress": {
       "level": 1,
@@ -119,8 +123,8 @@
       "unit": "days"
     },
     "streak": {
-      "current": 2,
-      "best": 2,
+      "current": 3,
+      "best": 3,
       "history": [
         {
           "date": "2025-10-10T13:37:32.346Z",
@@ -145,11 +149,15 @@
         {
           "date": "2025-10-30T11:12:27.508Z",
           "success": true
+        },
+        {
+          "date": "2025-10-31T10:13:35.063Z",
+          "success": true
         }
       ],
       "isCompletedToday": true,
-      "nextDate": "2025-10-31T11:12:27.508Z",
-      "lastCompletedDate": "2025-10-30T11:12:27.508Z"
+      "nextDate": "2025-11-01T10:13:35.063Z",
+      "lastCompletedDate": "2025-10-31T10:13:35.063Z"
     },
     "progress": {
       "level": 1,

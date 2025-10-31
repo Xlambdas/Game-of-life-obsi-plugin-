@@ -80,6 +80,13 @@ export const QuestFormUI = ({
 		}
 	};
 
+	const player = appContext.dataService.getUser();
+
+	const isUnlocked = (feature: string): boolean => {
+		const unlockedFeatures = appContext.unlocksService.unlocksQuestForm(player.xpDetails.level || 1);
+		return unlockedFeatures.includes(feature);
+	}
+
     return (
         <form onSubmit={handleSubmit} className="quest-form">
 			{/* Header */}
@@ -98,6 +105,7 @@ export const QuestFormUI = ({
 			{/* Short Description */}
 			<ShortDescription_CategoryInput
 				type="quest"
+				isUnlocked={isUnlocked}
 				shortDescription={shortDescription}
 				setShortDescription={setShortDescription}
 				category={category}
@@ -111,6 +119,7 @@ export const QuestFormUI = ({
 				<div className="form-section">
 					<SupplementaryInput
 						type="Quest"
+						isUnlocked={isUnlocked}
 						description={description}
 						setDescription={setDescription}
 						priority={priority}
@@ -118,40 +127,47 @@ export const QuestFormUI = ({
 						difficulty={difficulty}
 						setDifficulty={setDifficulty}
 					/>
-					<DueDateInput
-						dueDate={dueDate}
-						setDueDate={setDueDate}
-						error={error}
-						setError={setError}
-					/>
-					<RequirementsInput
-						existingQuest={existingQuest}
-						levelMin={levelMin}
-						setLevelMin={setLevelMin}
-						reqQuests={reqQuests}
-						setReqQuests={setReqQuests}
-						allQuests={allQuests}
-						error={error}
-						setError={setError}
-					/>
-					<RewardsInput
-						attributeRewards={attributeRewards}
-						setAttributeRewards={setAttributeRewards}
-						error={error}
-						setError={setError}
-					/>
-					<ProgressConditionInput
-						existingQuest={existingQuest}
-						allQuests={allQuests}
-						condQuests={condQuests}
-						setCondQuests={setCondQuests}
-
-						allHabits={allHabits}
-						condHabits={condHabits}
-						setCondHabits={setCondHabits}
-						error={error}
-						setError={setError}
-					/>
+					{isUnlocked("dueDate") && (
+						<DueDateInput
+							dueDate={dueDate}
+							setDueDate={setDueDate}
+							error={error}
+							setError={setError}
+						/>
+					)}
+					{isUnlocked("requirements") && (
+						<RequirementsInput
+							existingQuest={existingQuest}
+							levelMin={levelMin}
+							setLevelMin={setLevelMin}
+							reqQuests={reqQuests}
+							setReqQuests={setReqQuests}
+							allQuests={allQuests}
+							error={error}
+							setError={setError}
+						/>
+					)}
+					{isUnlocked("attributeRewards") && (
+						<RewardsInput
+							attributeRewards={attributeRewards}
+							setAttributeRewards={setAttributeRewards}
+							error={error}
+							setError={setError}
+						/>
+					)}
+					{isUnlocked("progressConditions") && (
+						<ProgressConditionInput
+							existingQuest={existingQuest}
+							allQuests={allQuests}
+							condQuests={condQuests}
+							setCondQuests={setCondQuests}
+							allHabits={allHabits}
+							condHabits={condHabits}
+							setCondHabits={setCondHabits}
+							error={error}
+							setError={setError}
+						/>
+					)}
 				</div>
 			)}
 			{/* Footer */}

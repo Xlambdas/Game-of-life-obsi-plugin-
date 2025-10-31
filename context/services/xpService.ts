@@ -2,7 +2,6 @@ import { Notice } from "obsidian";
 // from files (services, default):
 import { AppContextService } from "../appContextService";
 import { UserSettings } from "data/DEFAULT";
-import max from "uuid/dist/cjs/max";
 
 export interface XpCalc {
 	totalXp: number;
