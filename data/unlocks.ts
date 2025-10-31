@@ -21,7 +21,7 @@ export const UNLOCK_HABIT_FORM: Record<string, number> = {
 
 export const UNLOCK_VIEW: Record<string, number> = {
 	side: 1,
-	main: 3,
+	main: 1,
 	dashboard: 5,
 	full: 7,
 };

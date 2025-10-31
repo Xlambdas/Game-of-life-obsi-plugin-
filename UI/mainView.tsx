@@ -63,14 +63,11 @@ export const MainView: React.FC = () => {
 	const completedHabits = habits.filter(h => h.streak.isCompletedToday).length;
 	const completionPercent = totalHabits ? Math.round((completedHabits / totalHabits) * 100) : 0;
 
-    if (1 === 1) {return <p>Loading...</p>}
 	return (
 		<div className="main-view">
 		<div className="dashboard-container">
 			{/* Left Column */}
 			<div className="dashboard-left column">
-				<UserCard user={user} />
-
 				{/* Attributes Panel */}
 				<div className="card">
 					<h2>Attributes</h2>
@@ -99,7 +96,7 @@ export const MainView: React.FC = () => {
 					</ul>
 					)}
 				</div>
-				<div className="calendar-card card">
+				{/* <div className="calendar-card card">
 					<h2>Activity Calendar</h2>
 					<Calendar
 						onClickDay={(value) => console.log("Selected:", value)}
@@ -118,7 +115,7 @@ export const MainView: React.FC = () => {
 						<span className="legend-item"><span className="color-box green"></span> Habit done</span>
 						<span className="legend-item"><span className="color-box yellow"></span> Quest day</span>
 					</div>
-				</div>
+				</div> */}
 			</div>
 
 			{/* Right Column */}
@@ -162,7 +159,7 @@ export const MainView: React.FC = () => {
 				) : (
 				<ul className="list">
 					{quests.map((quest) => (
-					<li key={quest.title} className="list-item">
+					<li key={quest.id} className="list-item">
 						<span>{quest.title}</span>
 						<span className="meta">{quest.settings.priority} / {quest.settings.difficulty}</span>
 					</li>
@@ -186,7 +183,7 @@ export const MainView: React.FC = () => {
 			</div>
 
 			{/* Habits Completion Pie */}
-			<div className="card">
+			{/* <div className="card">
 				<h2>Habits Completion</h2>
 				<ResponsiveContainer width="100%" height={200}>
 				<PieChart>
@@ -207,12 +204,12 @@ export const MainView: React.FC = () => {
 					<Tooltip contentStyle={{ backgroundColor: "#1a1a1a", border: "none" }} />
 				</PieChart>
 				</ResponsiveContainer>
+			</div> */}
 			</div>
-			</div>
-			<div className="full-width column">
+			{/* <div className="full-width column">
 				<h2>Skills Map</h2>
 				<SkillsView />
-			</div>
+			</div> */}
 		</div>
 		</div>
 	);
