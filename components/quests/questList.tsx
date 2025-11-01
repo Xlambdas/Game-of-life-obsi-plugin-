@@ -83,6 +83,63 @@ export const QuestList: React.FC<QuestListProps> = ({ quests, user, onQuestUpdat
 	}
 
 	const handleCompleteQuest = async (quest: Quest, completed: boolean) => {
+    try {
+        const updatedQuest = await appService.questService.questCompletion(quest, completed);
+        await appService.questService.saveQuest(updatedQuest);
+
+        // Refresh ALL quests to update their statuses (requirements, etc.)
+        let allQuests = await appService.dataService.loadAllQuests();
+		allQuests = Object.values(allQuests).map(q =>
+            q.id === updatedQuest.id ? updatedQuest : q
+        );
+
+		// Step 3: If uncompleting, check for dependent quests
+        if (!completed) {
+			// Find all quests that depend on this quest
+			allQuests = allQuests.map(q => {
+				// Check if this quest has the uncompleted quest as a requirement
+				const hasAsDependency =
+					q.requirements.previousQuests?.some(q => q.id === quest.id) ||
+					q.progression.subtasks?.conditionQuests?.some(cq => cq.id === quest.id);
+
+				// If it does and it's currently completed, uncomplete it
+				if (hasAsDependency && q.progression.isCompleted) {
+					return {
+						...q,
+						progression: {
+							...q.progression,
+							isCompleted: false,
+							completedAt: null,
+							progress: 0,
+							lastUpdated: new Date()
+						}
+					};
+				}
+				return q;
+			});
+        }
+
+        const refreshedQuests = await Promise.all(
+            Object.values(allQuests).map(q => appService.questService.refreshQuests(q))
+        );
+        setQuestState(refreshedQuests);
+        await appService.dataService.saveAllQuests(refreshedQuests);
+
+        // Update user XP
+        let user = await appService.xpService.updateXPFromAttributes(quest.reward.attributes || {}, completed);
+        await appService.dataService.saveUser(user);
+
+        if (onUserUpdate) onUserUpdate(user);
+        if (onQuestUpdate) onQuestUpdate(refreshedQuests);
+        if (completed) new Notice(`Quest "${quest.title}" completed!`);
+    } catch (error) {
+        console.error("Error completing quest:", error);
+        new Notice("An error occurred while updating the quest. Please try again.");
+    }
+};
+
+
+	const handleCompleteQuest_old = async (quest: Quest, completed: boolean) => {
 		// Update Quest as completed or not, update user XP and attributes.
 		try {
 			const updatedQuest = await appService.questService.questCompletion(quest, completed);
@@ -97,6 +154,8 @@ export const QuestList: React.FC<QuestListProps> = ({ quests, user, onQuestUpdat
 			if (onUserUpdate) onUserUpdate(user);
 			if (onQuestUpdate) onQuestUpdate(updatedQuests);
 			if (completed) new Notice(`Quest "${quest.title}" completed!`);
+			// add a document event to notify other components
+			// document.dispatchEvent(new CustomEvent("dbUpdated"));
 		} catch (error) {
 			console.error("Error completing quest:", error);
 			new Notice("An error occurred while updating the quest. Please try again.");

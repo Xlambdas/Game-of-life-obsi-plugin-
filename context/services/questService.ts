@@ -41,6 +41,7 @@ export default class QuestService {
 
 
 	async refreshQuests(quest: Quest): Promise<Quest> {
+		console.log("Refreshing quest progress :", quest);
 		const subtasks = quest.progression.subtasks;
 		if (!subtasks) return {
 			...quest,

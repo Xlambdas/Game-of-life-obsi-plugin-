@@ -47,6 +47,10 @@ export const SideView: React.FC = () => {
 		return () => document.removeEventListener("dbUpdated", handleReload);
 	}, [loading]);
 
+	const handleQuestUpdate = (updatedQuests: Quest[]) => {
+        setQuests(updatedQuests);
+    };
+
 	if (!user) return <p>Loading...</p>;
 	return (
 		<div>
@@ -56,6 +60,7 @@ export const SideView: React.FC = () => {
 					quests={quests}
 					user={user}
 					onUserUpdate={setUser}
+					onQuestUpdate={handleQuestUpdate}
 				/>
 				<hr className="separator"></hr>
 				<HabitList
