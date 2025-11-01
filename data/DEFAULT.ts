@@ -68,7 +68,7 @@ export interface UserSettings {
 			xp: number;
 		}; // todo : same as habits
 	};
-	completedQuests: string[]; // List of completed quest IDs // todo
+	completedQuests: Record<string, { id: string, title: string }> ; // List of completed quest IDs // todo
 	objectives: string[]; // todo
 	challenges: string[]; // todo
 	buffs: {
@@ -178,7 +178,7 @@ export const DEFAULT_SETTINGS: UserSettings = {
 	skills: {},
 	habits: {},
 	quests: {},
-	completedQuests: [],
+	completedQuests: {},
 	objectives: [],
 	challenges: [],
 	buffs: {},

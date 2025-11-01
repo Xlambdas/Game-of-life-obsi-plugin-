@@ -253,4 +253,28 @@ export default class DataService {
 		return `${prefix}_${ts}${rand}`;
 	}
 
+	updateQuestList(): UserSettings { //todo
+		// Update user's quest list based on completed quests
+		const userQuests = this.user.completedQuests && typeof this.user.completedQuests === 'object' 
+			? { ...this.user.completedQuests } 
+			: {};
+		
+		// Safely get completed quests (this.quests is a map of id -> Quest)
+		const completedQuests = Object.values(this.quests).filter((quest: any) => quest?.progression?.isCompleted);
+		
+		// Add completed quests to the user's list
+		for (const cq of completedQuests) {
+			const id = (cq as any).id;
+			const title = (cq as any).title;
+			
+			if (id == null) continue;
+			
+			// Only add if not already in the record
+			if (!userQuests[id]) {
+				userQuests[id] = { id, title: title || 'Untitled Quest' };
+			}
+		}
+		
+		return { ...this.user, completedQuests: userQuests };
+	}
 }

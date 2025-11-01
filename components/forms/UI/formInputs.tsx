@@ -219,7 +219,7 @@ export const RequirementsInput = ({
 	error: {[key: string]: string};
 	setError: (error: {[key: string]: string}) => void;
 }) => {
-	console.log("formInputs:", existingQuest);
+	// console.log("formInputs:", existingQuest);
 	//input: a list of all (quests: {id, title}), and a level requirment
 	return (
 		<div>

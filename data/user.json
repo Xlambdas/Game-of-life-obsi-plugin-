@@ -33,33 +33,44 @@
     }
   },
   "xpDetails": {
-    "xp": 106,
-    "level": 2,
+    "xp": 62,
+    "level": 1,
     "maxLevel": 100,
-    "newXp": 6,
-    "lvlThreshold": 120,
+    "newXp": 62,
+    "lvlThreshold": 100,
     "freePts": 0
   },
   "attribute": {
     "strength": 12,
     "agility": 2,
     "endurance": 10,
-    "charisma": 7,
-    "wisdom": 17,
-    "perception": 20,
-    "intelligence": 35,
+    "charisma": 4,
+    "wisdom": 12,
+    "perception": 12,
+    "intelligence": 10,
     "willpower": 0,
     "spirit": 0,
     "flow": 0,
-    "reputation": 3,
+    "reputation": 0,
     "resilience": 0
   },
   "skills": {},
   "habits": {},
   "quests": {},
-  "completedQuests": [
-    "quest_75cmuni"
-  ],
+  "completedQuests": {
+    "quest_75cmuni": {
+      "id": "quest_75cmuni",
+      "title": ""
+    },
+    "quest_2lq8td6": {
+      "id": "quest_2lq8td6",
+      "title": ""
+    },
+    "quest_bqlor4o": {
+      "id": "quest_bqlor4o",
+      "title": "title n_2"
+    }
+  },
   "objectives": [],
   "challenges": [],
   "buffs": {},

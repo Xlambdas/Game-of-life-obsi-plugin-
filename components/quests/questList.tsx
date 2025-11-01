@@ -44,7 +44,7 @@ export const QuestList: React.FC<QuestListProps> = ({ quests, user, onQuestUpdat
 		const savedSort = localStorage.getItem("questListSortBy");
 		if (savedOpen) setIsOpen(savedOpen === "true");
 		if (savedFilter) setFilter(savedFilter);
-		if (savedTab === "active" || savedTab === "completed" || savedTab === "all") {
+		if (savedTab === "active" || savedTab === "completed" || savedTab === "all" || savedTab === "upcoming") {
 			setActiveTab(savedTab);
 		}
 		if (savedSort === "priority" || savedSort === "xp" || savedSort === "difficulty" || savedSort === "date") {
@@ -67,7 +67,7 @@ export const QuestList: React.FC<QuestListProps> = ({ quests, user, onQuestUpdat
 		localStorage.setItem("questListFilter", value);
 	};
 
-	const handleSetActiveTab = (tab: "active" | "completed" | "all") => {
+	const handleSetActiveTab = (tab: "active" | "completed" | "all" | "upcoming") => {
 		setActiveTab(tab);
 		localStorage.setItem("questListActiveTab", tab);
 	};
@@ -89,7 +89,10 @@ export const QuestList: React.FC<QuestListProps> = ({ quests, user, onQuestUpdat
 			await appService.questService.saveQuest(updatedQuest);
 			const updatedQuests = questState.map(q => q.id === updatedQuest.id ? updatedQuest : q);
 			setQuestState(updatedQuests);
-			const user = await appService.xpService.updateXPFromAttributes(quest.reward.attributes || {}, completed);
+
+			let user = await appService.xpService.updateXPFromAttributes(quest.reward.attributes || {}, completed);
+			// user = appService.dataService.updateQuestList();
+			// console.log(user);
 			await appService.dataService.saveUser(user);
 			if (onUserUpdate) onUserUpdate(user);
 			if (onQuestUpdate) onQuestUpdate(updatedQuests);
@@ -111,11 +114,12 @@ export const QuestList: React.FC<QuestListProps> = ({ quests, user, onQuestUpdat
 					!filter ||
 					quest.title.toLowerCase().includes(filter.toLowerCase()) ||
 					quest.description.toLowerCase().includes(filter.toLowerCase());
+				const validateRequirements = appService.questService.validateRequirements(quest, user, questState);
 				const matchesTab =
-					activeTab === "all" && validateRequirements(quest, user) ||
-					(activeTab === "active" && !quest.progression.isCompleted) ||
+					activeTab === "all" && validateRequirements ||
+					(activeTab === "active" && validateRequirements && !quest.progression.isCompleted) ||
 					(activeTab === "completed" && quest.progression.isCompleted) ||
-					(activeTab === "upcoming" && !quest.progression.isCompleted && !validateRequirements(quest, user));
+					(activeTab === "upcoming" && !quest.progression.isCompleted && !validateRequirements);
 
 				return matchesSearch && matchesTab;
 			})
@@ -155,35 +159,4 @@ export const QuestList: React.FC<QuestListProps> = ({ quests, user, onQuestUpdat
 			getDaysUntil={handleGetDaysUntil}
 		/>
 	);
-};
-
-
-const validateRequirements = (quest: Quest, user: UserSettings) => {
-	// Check if user meets the level requirement for the quest
-	const userLevel = user.xpDetails.level ?? 1;
-	const userAttributes = user.attribute ?? DEFAULT_ATTRIBUTES;
-	const questLevel = quest.requirements.level || 1;
-	const questAttributes = quest.requirements.attributes || {};
-	// If no requirements, always valid
-	if (questLevel <= 1 && Object.keys(questAttributes).length === 0) return true;
-	// Check level requirement
-	if (questLevel > userLevel) return false;
-
-	// Check if user meets the attribute requirements for the quest
-	for (const [attr, reqValue] of Object.entries(questAttributes)) {
-		const userValue = userAttributes[attr as keyof typeof userAttributes] ?? 0;
-		if (userValue < (reqValue ?? 0)) return false;
-	}
-
-	if (quest.requirements.previousQuests && quest.requirements.previousQuests.length > 0) {
-		// Check if all previous quests are completed
-		const userQuests = Array.isArray(user.quests) ? user.quests : [];
-		const allCompleted = quest.requirements.previousQuests.every(prevQuestId => {
-			const prevQuest = userQuests.find(q => q.id === prevQuestId);
-			return prevQuest?.progression.isCompleted;
-		});
-		if (!allCompleted) return false;
-	}
-	// console.log("Quest requirements met for quest:", quest.title);
-	return true;
 };

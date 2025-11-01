@@ -34,6 +34,7 @@ export const SideView: React.FC = () => {
 		}
 		setQuests(Object.values(loadedQuests));
 		setHabits(Object.values(loadedHabits));
+		setLoading(false);
 	};
 	useEffect(() => {
 		if (!appService) return;

@@ -79,6 +79,8 @@ export const QuestFormUI = ({
 			attributeRewards,
 			appContext
 		});
+		console.log("Submitting : ", quest);
+
 		if (quest) {
 			onSuccess(quest);
 		}
