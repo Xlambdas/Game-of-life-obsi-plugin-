@@ -40,7 +40,7 @@ export default class QuestService {
 	}
 
 
-	async refreshQuests(quest: Quest): Promise<Quest> {
+	async refreshQuests_old(quest: Quest): Promise<Quest> {
 		console.log("Refreshing quest progress :", quest);
 		const subtasks = quest.progression.subtasks;
 		if (!subtasks) return {
@@ -91,7 +91,7 @@ export default class QuestService {
 		if (conditionHabits.length > 0) {
 			const allHabits = await this.appContext.dataService.loadAllHabits();
 			for (const conditionHabit of conditionHabits) {
-				const actualHabit = allHabits.find(h => h.id === conditionHabit.id);				
+				const actualHabit = allHabits.find(h => h.id === conditionHabit.id);
 				if (actualHabit) {
 					// Calculate how much this subtask contributes (weighted equally among all subtasks)
 					const subtaskWeight = 100 / lenSubtask;
@@ -125,6 +125,100 @@ export default class QuestService {
 			},
 		};
 	}
+
+	async refreshQuests(quest: Quest): Promise<Quest> {
+    // console.log("Refreshing quest progress :", quest);
+    const subtasks = quest.progression.subtasks;
+    
+    if (!subtasks) return {
+        ...quest,
+        progression: {
+            ...quest.progression,
+            completedAt: quest.progression.isCompleted ? quest.progression.completedAt : null,
+            progress: quest.progression.isCompleted ? 100 : 0,
+            lastUpdated: new Date(),
+        },
+    };
+
+    const conditionQuests = subtasks.conditionQuests || [];
+    const conditionHabits = subtasks.conditionHabits || [];
+    const lenSubtask = conditionQuests.length + conditionHabits.length;
+
+    if (lenSubtask === 0) return {
+        ...quest,
+        progression: {
+            ...quest.progression,
+            isCompleted: quest.progression.isCompleted,
+            completedAt: quest.progression.isCompleted ? quest.progression.completedAt : null,
+            progress: quest.progression.isCompleted ? 100 : 0,
+            lastUpdated: new Date(),
+        },
+    };
+
+    let temporaryProgress = 0;
+
+    // Handle conditionQuests
+    if (conditionQuests.length > 0) {
+        const allQuests = await this.appContext.dataService.loadAllQuests();
+        for (const conditionQuest of conditionQuests) {
+            const actualQuest = allQuests.find(q => q.id === conditionQuest.id);
+            
+            if (actualQuest) {
+                // Calculate how much this subtask contributes (weighted equally among all subtasks)
+                const subtaskWeight = 100 / lenSubtask;
+
+                // Calculate progress as a percentage of target
+                // If targetProgress is 100, we want actualProgress (e.g., 38) to directly translate
+                // If targetProgress is 50, we want 50 progress to equal 100% of this subtask
+                const progressRatio = Math.min(
+                    actualQuest.progression.progress / (conditionQuest.targetProgress || 100),
+                    1 // Cap at 100%
+                );
+                temporaryProgress += subtaskWeight * progressRatio;
+            }
+        }
+    }
+    
+    if (conditionHabits.length > 0) {
+        const allHabits = await this.appContext.dataService.loadAllHabits();
+        for (const conditionHabit of conditionHabits) {
+            const actualHabit = allHabits.find(h => h.id === conditionHabit.id);
+            
+            if (actualHabit) {
+                // Calculate how much this subtask contributes (weighted equally among all subtasks)
+                const subtaskWeight = 100 / lenSubtask;
+
+                // Calculate progress as a percentage of target
+                const progressRatio = Math.min(
+                    actualHabit.streak.best / (conditionHabit.targetStreak || 1),
+                    1 // Cap at 100%
+                );
+                temporaryProgress += subtaskWeight * progressRatio;
+            }
+        }
+    }
+
+    // Round to avoid floating point issues
+    temporaryProgress = Math.round(temporaryProgress);
+
+    // If quest is already completed, keep it at 100
+    if (quest.progression.isCompleted) temporaryProgress = 100;
+    if (temporaryProgress > 100) temporaryProgress = 100;
+
+    const shouldBeCompleted = temporaryProgress >= 100;
+
+    return {
+        ...quest,
+        progression: {
+            ...quest.progression,
+            isCompleted: shouldBeCompleted,
+            completedAt: shouldBeCompleted ? (quest.progression.completedAt || new Date()) : null,
+            progress: temporaryProgress,
+            lastUpdated: new Date(),
+            attempts: shouldBeCompleted && !quest.progression.isCompleted ? quest.progression.attempts + 1 : quest.progression.attempts,
+        },
+    };
+}
 
 
 	validateRequirements = (quest: Quest, user: UserSettings, quests: Quest[]): boolean => {
@@ -171,5 +265,89 @@ export default class QuestService {
 		}
 		return true;
 	};
+
+	async refreshQuestsWithContext(quest: Quest, questContext: Quest[]): Promise<Quest> {
+		// console.log("Refreshing quest progress with context:", quest);
+		const subtasks = quest.progression.subtasks;
+		
+		if (!subtasks) return {
+			...quest,
+			progression: {
+				...quest.progression,
+				completedAt: quest.progression.isCompleted ? quest.progression.completedAt : null,
+				progress: quest.progression.isCompleted ? 100 : 0,
+				lastUpdated: new Date(),
+			},
+		};
+
+		const conditionQuests = subtasks.conditionQuests || [];
+		const conditionHabits = subtasks.conditionHabits || [];
+		const lenSubtask = conditionQuests.length + conditionHabits.length;
+
+		if (lenSubtask === 0) return {
+			...quest,
+			progression: {
+				...quest.progression,
+				isCompleted: quest.progression.isCompleted,
+				completedAt: quest.progression.isCompleted ? quest.progression.completedAt : null,
+				progress: quest.progression.isCompleted ? 100 : 0,
+				lastUpdated: new Date(),
+			},
+		};
+
+		let temporaryProgress = 0;
+
+		// Handle conditionQuests - USE PROVIDED CONTEXT INSTEAD OF DATABASE
+		if (conditionQuests.length > 0) {
+			for (const conditionQuest of conditionQuests) {
+				const actualQuest = questContext.find(q => q.id === conditionQuest.id);
+				
+				if (actualQuest) {
+					const subtaskWeight = 100 / lenSubtask;
+					const progressRatio = Math.min(
+						actualQuest.progression.progress / (conditionQuest.targetProgress || 100),
+						1
+					);
+					temporaryProgress += subtaskWeight * progressRatio;
+				}
+			}
+		}
+		
+		// Handle conditionHabits - still load from database since habits aren't changing
+		if (conditionHabits.length > 0) {
+			const allHabits = await this.appContext.dataService.loadAllHabits();
+			for (const conditionHabit of conditionHabits) {
+				const actualHabit = allHabits.find(h => h.id === conditionHabit.id);
+				
+				if (actualHabit) {
+					const subtaskWeight = 100 / lenSubtask;
+					const progressRatio = Math.min(
+						actualHabit.streak.best / (conditionHabit.targetStreak || 1),
+						1
+					);
+					temporaryProgress += subtaskWeight * progressRatio;
+				}
+			}
+		}
+
+		temporaryProgress = Math.round(temporaryProgress);
+
+		if (quest.progression.isCompleted) temporaryProgress = 100;
+		if (temporaryProgress > 100) temporaryProgress = 100;
+
+		const shouldBeCompleted = temporaryProgress >= 100;
+
+		return {
+			...quest,
+			progression: {
+				...quest.progression,
+				isCompleted: shouldBeCompleted,
+				completedAt: shouldBeCompleted ? (quest.progression.completedAt || new Date()) : null,
+				progress: temporaryProgress,
+				lastUpdated: new Date(),
+				attempts: shouldBeCompleted && !quest.progression.isCompleted ? quest.progression.attempts + 1 : quest.progression.attempts,
+			},
+		};
+	}
 }
 

@@ -138,30 +138,6 @@ export const QuestList: React.FC<QuestListProps> = ({ quests, user, onQuestUpdat
     }
 };
 
-
-	const handleCompleteQuest_old = async (quest: Quest, completed: boolean) => {
-		// Update Quest as completed or not, update user XP and attributes.
-		try {
-			const updatedQuest = await appService.questService.questCompletion(quest, completed);
-			await appService.questService.saveQuest(updatedQuest);
-			const updatedQuests = questState.map(q => q.id === updatedQuest.id ? updatedQuest : q);
-			setQuestState(updatedQuests);
-
-			let user = await appService.xpService.updateXPFromAttributes(quest.reward.attributes || {}, completed);
-			// user = appService.dataService.updateQuestList();
-			// console.log(user);
-			await appService.dataService.saveUser(user);
-			if (onUserUpdate) onUserUpdate(user);
-			if (onQuestUpdate) onQuestUpdate(updatedQuests);
-			if (completed) new Notice(`Quest "${quest.title}" completed!`);
-			// add a document event to notify other components
-			// document.dispatchEvent(new CustomEvent("dbUpdated"));
-		} catch (error) {
-			console.error("Error completing quest:", error);
-			new Notice("An error occurred while updating the quest. Please try again.");
-		}
-	};
-
 	const handleModify = (quest: Quest) => {
 		new GenericForm(appService.getApp(), 'quest-modify', quest).open();
 	};
