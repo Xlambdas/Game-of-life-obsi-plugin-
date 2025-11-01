@@ -87,7 +87,7 @@ export const HabitList: React.FC<HabitListProps> = ({ habits, onHabitUpdate, onU
 			const updatedHabits = habitState.map(h => h.id === updatedHabit.id ? updatedHabit : h);
 			setHabitState(updatedHabits);
 			// Update user XP based on habit completion :
-			const newUser = await appService.xpService.updateXPFromAttributes(habit.reward.attributes || {}, completed);
+			const newUser = await appService.xpService.updateXPFromAttributes(habit.reward.attributes || {}, completed, 'habit', habit.progress.level);
 			await appService.dataService.saveUser(newUser);
 
 			// Refresh quest that may depend on this habit :
@@ -183,7 +183,7 @@ export const HabitList: React.FC<HabitListProps> = ({ habits, onHabitUpdate, onU
 			setHabitState(updatedHabits);
 			
 			// Step 2: Update user XP
-			const newUser = await appService.xpService.updateXPFromAttributes(habit.reward.attributes || {}, completed);
+			const newUser = await appService.xpService.updateXPFromAttributes(habit.reward.attributes || {}, completed, 'habit', habit.progress.level);
 			await appService.dataService.saveUser(newUser);
 			
 			// Step 3: Refresh quests in dependency order

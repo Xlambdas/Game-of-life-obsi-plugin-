@@ -74,7 +74,6 @@ export default class HabitService {
 			Throws error if trying to complete an already completed date or uncomplete a non-completed date.
 		*/
 		this.updateDates(habit, date); // ensure dates are up to date
-		const isCompletedToday = this.isCompleted(habit, date); // ensure completion status is up to date
 		const normalizeDate = (d: Date | string) => new Date(d).toDateString();
 		const dateStr = normalizeDate(date);
 
@@ -108,6 +107,8 @@ export default class HabitService {
 
 		const isCompleted = this.isCompleted({ ...habit, streak: { ...habit.streak, history, nextDate: nextDate, lastCompletedDate: lastDate } });
 		const { current, best } = this.computeStreaks(history, habit.recurrence);
+
+		const progress = this.calculateProgress(habit);
 
 		const updatedHabit: Habit = {
 			...habit,
@@ -244,6 +245,17 @@ export default class HabitService {
 		}
 
 		return { current, best };
+	}
+
+	calculateProgress(habit: Habit): Habit {
+		// Calculate the progress part of the habit : milestones, level (adding attributes, xp)
+		if (habit.progress.milestones.length > 0) {
+			const nextMilestone = habit.progress.milestones.find(m => m.target > habit.streak.current);
+			if (nextMilestone) {
+			}
+			return habit;
+		}
+		return habit;
 	}
 
 	refreshHabits(habit: Habit): Habit {

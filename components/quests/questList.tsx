@@ -126,7 +126,7 @@ export const QuestList: React.FC<QuestListProps> = ({ quests, user, onQuestUpdat
         await appService.dataService.saveAllQuests(refreshedQuests);
 
         // Update user XP
-        let user = await appService.xpService.updateXPFromAttributes(quest.reward.attributes || {}, completed);
+        let user = await appService.xpService.updateXPFromAttributes(quest.reward.attributes || {}, completed, 'quest');
         await appService.dataService.saveUser(user);
 
         if (onUserUpdate) onUserUpdate(user);

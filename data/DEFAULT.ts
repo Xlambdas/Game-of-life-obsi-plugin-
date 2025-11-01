@@ -269,7 +269,7 @@ export interface Quest extends BaseTask {
 	progression: {
 		isCompleted: boolean;
 		completedAt: Date | null; // Auto-generated
-		progress: number; // Auto-generated: 0 to 100 // todo: do algo
+		progress: number; // Auto-generated: 0 to 100
 		dueDate?: Date; // todo: do algo
 		startedAt?: Date; // Auto-generated when the quest is started // todo: do algo
 		lastUpdated?: Date; // Auto-generated when the quest is updated // todo: do algo
