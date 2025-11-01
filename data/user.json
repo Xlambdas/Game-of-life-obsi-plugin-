@@ -33,10 +33,10 @@
     }
   },
   "xpDetails": {
-    "xp": 60,
+    "xp": 61,
     "level": 1,
     "maxLevel": 100,
-    "newXp": 60,
+    "newXp": 61,
     "lvlThreshold": 100,
     "freePts": 0
   },
@@ -47,7 +47,7 @@
     "charisma": 4,
     "wisdom": 11,
     "perception": 11,
-    "intelligence": 10,
+    "intelligence": 11,
     "willpower": 0,
     "spirit": 0,
     "flow": 0,

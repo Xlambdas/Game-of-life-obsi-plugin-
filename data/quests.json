@@ -14,17 +14,17 @@
       "isTimeSensitive": false
     },
     "progression": {
-      "isCompleted": false,
-      "completedAt": null,
-      "progress": 0,
+      "isCompleted": true,
+      "completedAt": "2025-11-01T14:37:37.102Z",
+      "progress": 100,
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-11-01T13:31:35.795Z",
+      "lastUpdated": "2025-11-01T14:37:37.144Z",
       "subtasks": {
         "conditionQuests": [],
         "conditionHabits": []
       },
-      "attempts": 45,
-      "failures": 45,
+      "attempts": 48,
+      "failures": 47,
       "timeSpentMinutes": 0
     },
     "reward": {
@@ -106,21 +106,15 @@
     "progression": {
       "isCompleted": false,
       "completedAt": null,
-      "progress": 38,
+      "progress": 0,
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-11-01T13:31:35.797Z",
+      "lastUpdated": "2025-11-01T14:37:37.144Z",
       "subtasks": {
         "conditionQuests": [],
-        "conditionHabits": [
-          {
-            "id": "habit_bigo9td",
-            "title": "new habit",
-            "targetStreak": 8
-          }
-        ]
+        "conditionHabits": []
       },
-      "attempts": 0,
-      "failures": 0,
+      "attempts": 2,
+      "failures": 2,
       "timeSpentMinutes": 0
     },
     "reward": {
@@ -188,7 +182,7 @@
   "quest_ok33fsp": {
     "id": "quest_ok33fsp",
     "title": "title n_2",
-    "shortDescription": "2 cond quest",
+    "shortDescription": "2 cond quest + 1 cond habit",
     "description": "",
     "created_at": "2025-11-01T13:03:15.098Z",
     "settings": {
@@ -202,9 +196,9 @@
     "progression": {
       "isCompleted": false,
       "completedAt": null,
-      "progress": 29,
+      "progress": 37,
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-11-01T13:31:35.799Z",
+      "lastUpdated": "2025-11-01T14:37:37.147Z",
       "subtasks": {
         "conditionQuests": [
           {
