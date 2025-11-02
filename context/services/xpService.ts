@@ -22,65 +22,6 @@ export default class XpService {
 		this.difficulty = this.appService.getUser().settings.difficulty;
 	}
 
-	public async updateXPFromAttributes_old(
-		attributes: Partial<UserSettings["attribute"]>,
-		isCompleted: boolean
-	): Promise<UserSettings> {
-		/* Update user's attributes and XP details.
-		- Adds provided attribute values to user's current ones.
-		- Recalculates total XP as the sum of all attributes.
-		- Returns the updated UserSettings object (no persistence here).
-		*/
-		const user = this.appService.getUser();
-		if (!user) throw new Error("No user found");
-		const diffMultiplier = { easy: 1.2, normal: 1.0, hard: 0.8, expert: 0.6 }[user.settings.difficulty] as number;
-
-		const currentAttributes = { ...user.attribute };
-		const xpMultiplier = { easy: 1.2, normal: 1.0, hard: 0.8, expert: 0.6 }[this.difficulty] as number;
-
-		let addedXP = 0;
-		for (const [key, value] of Object.entries(attributes)) {
-			if (value !== undefined && typeof value === "number") {
-				const xpChange = value * xpMultiplier;
-				addedXP += xpChange;
-
-				if (!isCompleted) { // substract attribute
-					currentAttributes[key as keyof typeof currentAttributes] =
-						Math.max((currentAttributes[key as keyof typeof currentAttributes] ?? 0) - xpChange, 0);
-				} else { // add attribute
-					currentAttributes[key as keyof typeof currentAttributes] =
-						(currentAttributes[key as keyof typeof currentAttributes] ?? 0) + xpChange;
-				}
-			}
-		}
-		if (!isCompleted) {
-			addedXP = -addedXP;
-		}
-
-		// Recalculate the total XP as the sum of all attributes :
-		if (isCompleted && addedXP > 0) {
-			new Notice(`You gained ${Math.round(addedXP)} XP from attributes!`);
-		} else if (!isCompleted && addedXP < 0) {
-			new Notice(`You lost ${Math.round(Math.abs(addedXP))} XP from attributes.`);
-		}
-		const newUser = await this.addXP(user, addedXP);
-		const totalAttributeXp = Object.values(currentAttributes)
-			.filter(v => typeof v === "number")
-			.reduce((acc, val) => acc + (val ?? 0), 0);
-
-		const updatedXpDetails = {
-			...newUser.xpDetails,
-			xp: totalAttributeXp,
-		};
-
-		// 5. Return updated user object (no save)
-		return {
-			...newUser,
-			xpDetails: updatedXpDetails,
-			attribute: currentAttributes,
-		};
-	}
-
 	public async updateXPFromAttributes(
 		attributes: Partial<UserSettings["attribute"]>,
 		isCompleted: boolean,
@@ -188,160 +129,36 @@ export default class XpService {
 				.reduce((acc, val) => acc + (val ?? 0), 0)
 		);
 
-		// Calculate the XP change
-		const oldTotalXP = user.xpDetails.xp || 0;
-		const xpChange = newTotalXP - oldTotalXP;
-
-		// Show notice
-		if (isCompleted && xpChange > 0) {
-			const difficultyText = user.settings.difficulty !== 'normal'
-				? ` (${user.settings.difficulty}: ${difficultyPercent}%)`
-				: '';
-			const classText = userClass !== 'default' && Object.keys(attributes).some(k => affinities[k as keyof typeof affinities])
-				? ` 🌟 ${userClass} bonus!`
-				: '';
-			new Notice(`+${totalAttributeGain} attributes gained! (+${xpChange} XP)${difficultyText}${classText}`);
-		} else if (!isCompleted && xpChange < 0) {
-			new Notice(`-${totalAttributeGain} attributes lost. (${xpChange} XP)`);
-		}
+		const calc = this.computeXpFromTotal(newTotalXP, user.xpDetails.maxLevel);
 
 		// Update XP details based on attributes (source of truth)
-		const updatedXpDetails = {
-			...user.xpDetails,
-			xp: newTotalXP, // XP = sum of attributes (already rounded)
-		};
+		let updatedXpDetails = { ...user.xpDetails };
+		if (calc.level > user.xpDetails.maxLevel) {
+			updatedXpDetails = {
+				...user.xpDetails,
+				xp: newTotalXP, // XP = sum of attributes
+				newXp: calc.newXp + user.xpDetails.lvlThreshold, // if not the biggest level possible sum of any remaining XP
+			};
+		} else {
+			updatedXpDetails = {
+				...user.xpDetails,
+				xp: newTotalXP, // XP = sum of attributes
+				level: calc.level,
+				newXp: calc.newXp,
+				lvlThreshold: calc.lvlThreshold,
+			};
+		}
 
-		// Calculate level from XP
-		const xpCalc = this.computeXpFromTotal(newTotalXP, user.xpDetails.maxLevel);
-		updatedXpDetails.level = xpCalc.level;
-		updatedXpDetails.newXp = xpCalc.newXp;
-		updatedXpDetails.lvlThreshold = xpCalc.lvlThreshold;
+		await this.appService.updateUserData({
+			xpDetails: updatedXpDetails,
+			attribute: currentAttributes
+		});
 
 		return {
 			...user,
 			xpDetails: updatedXpDetails,
 			attribute: currentAttributes,
 		};
-	}
-
-	// Helper method to calculate level from XP (you already have this, but ensuring it's used)
-	private calculateLevelFromXP(totalXp: number): number {
-		const calc = this.computeXpFromTotal(totalXp);
-		return calc.level;
-	}
-
-	private computeXpFromTotal(totalXp: number, maxLevel?: number): XpCalc {
-		/* Calcule level/newXp/lvlThreshold à partir du total XP.
-			maxLevel optionnel : si défini, plafonne le level à cette valeur.
-			Retourne un objet { totalXp, level, newXp, lvlThreshold }.
-		*/
-		let total = Math.max(0, Math.trunc(totalXp)); // normalisation
-		const baseThreshold = 100;
-		let level = 1;
-		let threshold = baseThreshold;
-		let remaining = total;
-
-		const capLevel = typeof maxLevel === "number" ? Math.max(1, Math.trunc(maxLevel)) : Infinity;
-
-		while (remaining >= threshold && level < capLevel) {
-			remaining -= threshold;
-			level += 1;
-			threshold = Math.floor(threshold * 1.2);
-		}
-
-		// If user has reached max level, cap remaining XP to just below next threshold
-		if (level >= capLevel) {
-			remaining = Math.min(remaining, Math.max(0, threshold - 1));
-			level = capLevel;
-		}
-
-		return {
-			totalXp: total,
-			level,
-			newXp: remaining,
-			lvlThreshold: threshold,
-		};
-	}
-
-	public async addXP(
-		user: UserSettings,
-		amount: number
-	): Promise<UserSettings> {
-		/* add (or remove) XP to a user, updating their xpDetails accordingly.
-			Triggers a level-up Notice if applicable.
-			Persists the updated xpDetails via appService.updateUserData.
-			Returns the updated UserSettings object.
-		*/
-		const currentXp = Math.max(0, user.xpDetails?.xp ?? 0);
-		const maxLevel = user.xpDetails?.maxLevel;
-		const newTotal = Math.max(0, currentXp + Math.trunc(amount));
-
-		const calc = this.computeXpFromTotal(newTotal, maxLevel);
-
-		const prevLevel = user.xpDetails?.level ?? 1;
-		if (calc.level > prevLevel) {
-			new Notice(`congrats — level ${calc.level} reached!`);
-		}
-
-		const updatedXpDetails = {
-			...user.xpDetails,
-			xp: calc.totalXp,
-			level: calc.level,
-			newXp: calc.newXp,
-			lvlThreshold: calc.lvlThreshold,
-		};
-
-		// Persist the updated xpDetails
-		await this.appService.updateUserData({ xpDetails: updatedXpDetails });
-
-		const updatedUser: UserSettings = {
-			...user,
-			xpDetails: updatedXpDetails,
-		};
-
-		return updatedUser;
-	}
-
-	public async normalizeUserXpOnLoad(): Promise<void> {
-		/* load the user from appService, recalcule et persiste ses xpDetails si incohérence détectée.
-			Utilisé au chargement de l'app pour corriger d'éventuelles erreurs.
-		*/
-		const user = this.appService.getUser();
-		if (!user) return;
-
-		const xpTotal = Math.max(0, user.xpDetails?.xp ?? 0);
-		const maxLevel = user.xpDetails?.maxLevel;
-		const calc = this.computeXpFromTotal(xpTotal, maxLevel);
-
-		const needsUpdate =
-			user.xpDetails?.level !== calc.level ||
-			user.xpDetails?.newXp !== calc.newXp ||
-			user.xpDetails?.lvlThreshold !== calc.lvlThreshold ||
-			user.xpDetails?.xp !== calc.totalXp;
-
-		if (needsUpdate) {
-			const updated = {
-				...user.xpDetails,
-				xp: calc.totalXp,
-				level: calc.level,
-				newXp: calc.newXp,
-				lvlThreshold: calc.lvlThreshold,
-			};
-			await this.appService.updateUserData({ xpDetails: updated });
-		}
-	}
-
-	public getDaysUntil_old(today: Date, targetDate: Date): number {
-		/* Calculate days until the next occurrence of targetDay (0=Sunday, 6=Saturday).
-			If today is targetDay, returns 0.
-		*/
-		const todayMidnight = new Date(today);
-		todayMidnight.setHours(0, 0, 0, 0);
-		const targetMidnight = new Date(targetDate);
-		targetMidnight.setHours(0, 0, 0, 0);
-		const diffTime = targetMidnight.getTime() - todayMidnight.getTime();
-		const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-		return diffDays >= 0 ? diffDays : 0;
 	}
 
 	public getDaysUntil(today: Date, targetDate: Date, type: 'quest'| 'habit'): string {
@@ -379,15 +196,13 @@ export default class XpService {
 		*/
 		const user = this.appService.getUser();
 		if (!user) throw new Error("No user found");
-
 		const currentFreePts = user.xpDetails.freePts ?? 0;
-		
+
 		// Validate
 		if (pointsToSpend < 1) {
 			new Notice("Must spend at least 1 point.");
 			return user;
 		}
-		
 		if (pointsToSpend > currentFreePts) {
 			new Notice(`Not enough free points! You have ${currentFreePts} available.`);
 			return user;
@@ -418,17 +233,74 @@ export default class XpService {
 		};
 
 		// Save to database
-		await this.appService.updateUserData({ 
+		await this.appService.updateUserData({
 			xpDetails: updatedXpDetails,
 			attribute: currentAttributes
 		});
-
-		new Notice(`+${pointsToSpend} ${attributeKey}! (${updatedXpDetails.freePts} free points remaining)`);
 
 		return {
 			...user,
 			xpDetails: updatedXpDetails,
 			attribute: currentAttributes,
+		};
+	}
+
+	public async goNextLevel(user: UserSettings): Promise<Partial<UserSettings>> {
+		/* Advances the user to the next level and updates maxLevel */
+		const currentMaxLevel = user.xpDetails.maxLevel;
+		if (currentMaxLevel === user.xpDetails.level && user.xpDetails.newXp >= user.xpDetails.lvlThreshold) {
+			const newMaxLevel = currentMaxLevel + 1;
+			console.log("Increasing maxLevel from", currentMaxLevel, "to", newMaxLevel);
+
+			// Recalculate with the updated maxLevel
+			const calc = this.computeXpFromTotal(user.xpDetails.xp, newMaxLevel);
+
+			const updatedXpDetails = {
+				...user.xpDetails,
+				level: calc.level,
+				newXp: calc.newXp,
+				lvlThreshold: calc.lvlThreshold,
+				maxLevel: newMaxLevel,
+			};
+
+			await this.appService.updateUserData({
+				xpDetails: updatedXpDetails
+			});
+
+			return {
+				...user,
+				xpDetails: updatedXpDetails,
+			};
+		} else {
+			return user;
+		}
+	}
+
+	private computeXpFromTotal(totalXp: number, maxLevel: number): XpCalc {
+		/* Calculates level/newXp/lvlThreshold from total XP.
+			maxLevel: if defined, caps the level at this value.
+			Returns { totalXp, level, newXp, lvlThreshold }.
+		*/
+		let total = Math.max(0, Math.trunc(totalXp));
+		const baseThreshold = 100;
+		let level = 1;
+		let threshold = baseThreshold;
+		let remaining = total;
+
+		const capLevel = typeof maxLevel === "number" ? Math.max(1, Math.trunc(maxLevel)) : Infinity;
+
+		// Calculate what level the XP would naturally be at
+		while (remaining >= threshold && level <= capLevel) {
+			remaining -= threshold;
+			level += 1;
+			threshold = Math.floor(threshold * 1.2);
+		}
+
+		return {
+			totalXp: total,
+			level: level,
+			newXp: remaining,
+			lvlThreshold: threshold,
 		};
 	}
 }

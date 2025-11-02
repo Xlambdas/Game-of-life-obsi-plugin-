@@ -1,7 +1,8 @@
 import React from "react";
 // from file (default):
 import { Quest } from "../../data/DEFAULT";
-import { ChevronDown, SortAsc, Filter } from "lucide-react";
+// from file (components):
+import { ProgressBar } from "../smallComponents";
 
 interface QuestSideViewProps {
 	filteredQuests: Quest[];
@@ -193,34 +194,4 @@ const QuestItem: React.FC<QuestItemProps> = ({ quest, activeTab, onComplete, onM
 			</div>
 		</div>
 	);
-};
-
-
-
-type Props = {
-  value: number;       // 0..max
-  max?: number;        // default 100
-  showPercent?: boolean;
-  className?: string;
-};
-
-export const ProgressBar: React.FC<Props> = ({ value, max = 100, showPercent = false, className = "" }) => {
-
-  const safeVal = typeof value === "number" && !isNaN(value) ? value : 0;
-  const pct = Math.max(0, Math.min(100, Math.round((safeVal / max) * 100)));
-
-  return (
-    <div className={`progress ${pct === 100 ? "completed" : ""} ${className}`}>
-      <div
-        className="progress__fill"
-        style={{ width: `${pct}%` }}
-        role="progressbar"
-        aria-valuemin={0}
-        aria-valuemax={max}
-        aria-valuenow={safeVal}
-        aria-label={`Progression ${pct}%`}
-      />
-      {showPercent && <span className="progress-meta">{pct}%</span>}
-    </div>
-  );
 };

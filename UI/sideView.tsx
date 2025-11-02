@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { useAppContext } from "../context/appContext";
 import { UserSettings, Quest, Habit } from "../data/DEFAULT";
 // from files (UI, components):
-import { UserCard } from "../components/forms/UI/userCard";
+import { UserCard } from "../components/userCard";
 import { QuestList } from "../components/quests/questList";
 import { HabitList } from "components/habits/habitList";
 
@@ -54,7 +54,7 @@ export const SideView: React.FC = () => {
 	if (!user) return <p>Loading...</p>;
 	return (
 		<div>
-			<UserCard user={user} />
+			<UserCard app={appService.getApp()} context={appService} user={user} />
 			<div className="card">
 				<QuestList
 					quests={quests}

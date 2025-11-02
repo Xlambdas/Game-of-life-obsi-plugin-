@@ -12,7 +12,7 @@ export const UNLOCK_QUEST_FORM: Record<string, number> = {
 
 export const UNLOCK_HABIT_FORM: Record<string, number> = {
 	category: 1,
-	recurrence: 2,
+	recurrence: 1,//2,
 	description: 1,
 	priority: 3,
 	difficulty: 3,

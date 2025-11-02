@@ -7,7 +7,6 @@ import { Quest, Habit } from "data/DEFAULT";
 // from files (UI) :
 import { QuestFormUI } from "../quests/questForm";
 import { HabitFormUI } from "../habits/habitForm";
-import QuestService from 'context/services/questService';
 
 type DataType = Quest | Habit;
 

@@ -57,7 +57,6 @@ export default class DataService {
 	private async save(type: 'user' | 'quests' | 'habits'): Promise<void> {
 		let path: string;
 		let content: string;
-		document.dispatchEvent(new CustomEvent("dbUpdated"));
 
 		switch (type) {
 			case 'user':
@@ -81,12 +80,12 @@ export default class DataService {
 		const folder = path.substring(0, path.lastIndexOf("/"));
 		await this.vault.adapter.mkdir(folder);
 		await this.vault.adapter.write(path, content);
+		document.dispatchEvent(new CustomEvent("dbUpdated"));
 	}
 
 	// -----------------------
 	// generic get
 	get(key: 'user' | 'quests' | 'habits'): UserSettings | Record<string, Quest> | Record<string, Habit> {
-		
 		if (key === 'user') {
 			return this.user;
 		}
@@ -131,13 +130,29 @@ export default class DataService {
 		(this.user as any)[key] = value;
 		await this.save('user');
 	}
+
 	async updateUser(newData: Partial<UserSettings>): Promise<void> {
-		this.user = { ...this.user, ...newData };
+		console.log("📝 BEFORE UPDATE:", JSON.stringify(this.user.xpDetails));
+		console.log("📝 NEW DATA:", JSON.stringify(newData.xpDetails));
+
+		// Deep merge for nested objects
+		this.user = {
+			...this.user,
+			...newData,
+			xpDetails: newData.xpDetails
+				? { ...this.user.xpDetails, ...newData.xpDetails }
+				: this.user.xpDetails,
+			attribute: newData.attribute
+				? { ...this.user.attribute, ...newData.attribute }
+				: this.user.attribute,
+		};
+
+		console.log("📝 AFTER UPDATE:", JSON.stringify(this.user.xpDetails));
 		await this.save('user');
 	}
 
 	getUser(): UserSettings {
-		return this.user;
+		return { ...this.user };
 	}
 
 	// ------------------------
@@ -251,30 +266,5 @@ export default class DataService {
 		const ts = Date.now().toString(36).slice(-4);
 		const rand = Math.random().toString(36).substring(2, 5);
 		return `${prefix}_${ts}${rand}`;
-	}
-
-	updateQuestList(): UserSettings { //todo
-		// Update user's quest list based on completed quests
-		const userQuests = this.user.completedQuests && typeof this.user.completedQuests === 'object' 
-			? { ...this.user.completedQuests } 
-			: {};
-		
-		// Safely get completed quests (this.quests is a map of id -> Quest)
-		const completedQuests = Object.values(this.quests).filter((quest: any) => quest?.progression?.isCompleted);
-		
-		// Add completed quests to the user's list
-		for (const cq of completedQuests) {
-			const id = (cq as any).id;
-			const title = (cq as any).title;
-			
-			if (id == null) continue;
-			
-			// Only add if not already in the record
-			if (!userQuests[id]) {
-				userQuests[id] = { id, title: title || 'Untitled Quest' };
-			}
-		}
-		
-		return { ...this.user, completedQuests: userQuests };
 	}
 }

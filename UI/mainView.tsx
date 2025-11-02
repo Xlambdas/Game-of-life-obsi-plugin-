@@ -9,8 +9,6 @@ import "react-calendar/dist/Calendar.css";
 // from files (services, Default):
 import { useAppContext } from "context/appContext";
 import { UserSettings, Quest, Habit } from "../data/DEFAULT";
-// from files (UI, components):
-import { UserCard } from "../components/forms/UI/userCard";
 
 
 export const MainView: React.FC = () => {

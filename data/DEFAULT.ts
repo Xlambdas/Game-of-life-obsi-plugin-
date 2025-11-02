@@ -156,7 +156,7 @@ export const DEFAULT_SETTINGS: UserSettings = {
 	xpDetails: {
 		xp: 0,
 		level: 1,
-		maxLevel: 100,
+		maxLevel: 1,
 		newXp: 0,
 		lvlThreshold: 100,
 		freePts: 0,
