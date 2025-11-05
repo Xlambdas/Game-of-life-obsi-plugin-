@@ -53,7 +53,7 @@ interface LevelContainerProps {
 const LevelContainer: React.FC<LevelContainerProps> = ({ user, onClose, onNextLevel }) => {
 	return (
 		<div className="level-up-container">
-			<h2>Congratulations!</h2>
+			<h2 style={{ textAlign: 'center' }}>Next Level</h2>
 			<p>You've reached Level {user.xpDetails.level}!</p>
 			<button className="next-level-button" onClick={onNextLevel}>
 				Next Level

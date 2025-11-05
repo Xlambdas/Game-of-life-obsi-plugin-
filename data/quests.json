@@ -18,13 +18,13 @@
       "completedAt": null,
       "progress": 0,
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-11-02T18:20:16.291Z",
+      "lastUpdated": "2025-11-05T14:59:30.411Z",
       "subtasks": {
         "conditionQuests": [],
         "conditionHabits": []
       },
-      "attempts": 56,
-      "failures": 56,
+      "attempts": 57,
+      "failures": 57,
       "timeSpentMinutes": 0
     },
     "reward": {
@@ -108,13 +108,13 @@
       "completedAt": null,
       "progress": 0,
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-11-02T18:20:16.291Z",
+      "lastUpdated": "2025-11-05T14:59:30.411Z",
       "subtasks": {
         "conditionQuests": [],
         "conditionHabits": []
       },
-      "attempts": 7,
-      "failures": 7,
+      "attempts": 8,
+      "failures": 8,
       "timeSpentMinutes": 0
     },
     "reward": {
@@ -196,9 +196,9 @@
     "progression": {
       "isCompleted": false,
       "completedAt": null,
-      "progress": 3,
+      "progress": 6,
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-11-02T18:20:16.371Z",
+      "lastUpdated": "2025-11-05T15:40:23.917Z",
       "subtasks": {
         "conditionQuests": [
           {
@@ -305,13 +305,13 @@
       "completedAt": null,
       "progress": 0,
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-11-02T18:20:16.291Z",
+      "lastUpdated": "2025-11-05T14:59:30.411Z",
       "subtasks": {
         "conditionQuests": [],
         "conditionHabits": []
       },
-      "attempts": 12,
-      "failures": 12,
+      "attempts": 13,
+      "failures": 13,
       "timeSpentMinutes": 0
     },
     "reward": {
@@ -395,13 +395,13 @@
       "completedAt": null,
       "progress": 0,
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-11-02T18:20:16.291Z",
+      "lastUpdated": "2025-11-05T14:59:30.411Z",
       "subtasks": {
         "conditionQuests": [],
         "conditionHabits": []
       },
-      "attempts": 15,
-      "failures": 15,
+      "attempts": 16,
+      "failures": 16,
       "timeSpentMinutes": 0
     },
     "reward": {
