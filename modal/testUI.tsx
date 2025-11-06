@@ -71,10 +71,6 @@ const UserStatsContent: React.FC<UserStatsContentProps> = ({ user, onClose, onSp
 
 	return (
 		<div className="game-modal-container">
-			<button onClick={onClose} className="game-modal-close">
-				<X size={24} />
-			</button>
-
 			{/* Header Section */}
 			<div className="game-modal-header">
 				<div className="game-status-badge">STATUS</div>

@@ -21,7 +21,7 @@ export const UNLOCK_HABIT_FORM: Record<string, number> = {
 
 export const UNLOCK_VIEW: Record<string, number> = {
 	side: 1,
-	main: 1,
+	main: 2,
 	dashboard: 5,
 	full: 7,
 };
@@ -29,7 +29,7 @@ export const UNLOCK_VIEW: Record<string, number> = {
 export const UNLOCK_ELEMENT: Record<string, number> = {
 	habit: 1,
 	quest: 1,
-	obj: 3,
-	task: 2,
-	note: 3,
+	objectif: 4,
+	task: 3,
+	note: 4,
 };

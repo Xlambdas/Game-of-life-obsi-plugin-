@@ -17,7 +17,7 @@ export class UserModal extends Modal {
 		super(app);
 		this.user = AppContextService.getInstance().getUser();
 		this.modalEl.addClass('user-stats-modal');
-		const service = AppContextService.getInstance();
+		// const service = AppContextService.getInstance();
 	}
 
 	async handleSpendPoint(attribute: keyof UserSettings["attribute"]): Promise<void> {
@@ -106,8 +106,8 @@ const UserStatsContent: React.FC<UserStatsContentProps> = ({ user, onClose, onSp
 					<div className="user-xp-total">Total XP: {localUser.xpDetails.xp}</div>
 					<div className="progress-bar-wrapper">
 						<div className="progress-bar">
-							<div 
-								className="progress-bar-fill" 
+							<div
+								className="progress-bar-fill"
 								style={{ width: `${Math.min(100, (localUser.xpDetails.newXp / localUser.xpDetails.lvlThreshold) * 100)}%` }}
 							/>
 						</div>

@@ -1,6 +1,6 @@
 import { App, PluginSettingTab, Setting } from "obsidian";
 // from files (services, plugin, default) :
-import GOL from "../plugin";
+import GOL from "../src/plugin";
 import { AppContextService } from "../context/appContextService";
 import { DEFAULT_SETTINGS } from "../data/DEFAULT";
 // from files (UI) :

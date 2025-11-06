@@ -1,11 +1,11 @@
 import { Plugin } from 'obsidian';
 // from files - services:
-import { AppContextService } from './context/appContextService';
-import ViewService from './context/services/viewService';
-import UnlocksService from './context/services/unlockService';
+import { AppContextService } from '../context/appContextService';
+import ViewService from '../context/services/viewService';
+import UnlocksService from '../context/services/unlockService';
 // from files - other
 // import { CreateQuestModal } from './modal/questModal';
-import { selfSettingsTab } from './UI/settingsTab';
+import { selfSettingsTab } from '../UI/settingsTab';
 import { GenericForm } from 'components/forms/genericForm';
 import { openFullscreenMainView } from 'helpers/sideViewSetting';
 import { Unlock } from 'lucide-react';

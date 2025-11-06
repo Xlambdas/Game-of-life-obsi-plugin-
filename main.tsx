@@ -9,6 +9,6 @@
  * @author XLambdas
  */
 
-import GOL from './plugin';
+import GOL from './src/plugin';
 
 export default GOL;

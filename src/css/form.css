@@ -1,0 +1,195 @@
+/* ---------------------- Quest Form Styles ---------------------- */
+.quest-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+    padding: 1rem;
+    /* background-color: var(--background-primary, #1e1e1e);
+    color: var(--text-normal, #fff);
+    border-radius: 8px; */
+}
+
+/* Header */
+.form-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.8rem;
+}
+.form-header h1 {
+    font-size: 1.3rem;
+    font-weight: 700;
+}
+.form-footer {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-top: 1rem;
+	font-size: 0.8rem;
+}
+
+/* Inputs & Textarea */
+.input,
+.form-section input,
+.form-section textarea, 
+.label-select select {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border-radius: 6px;
+    border: 1px solid var(--background-modifier-border, #555);
+    background-color: var(--background-secondary, #2a2a2a);
+    color: var(--text-normal, #fff);
+    font-size: 0.9rem;
+    outline: none;
+    transition: border 0.2s ease, background-color 0.2s ease;
+}
+
+.input:focus,
+.form-section input:focus,
+.form-section textarea:focus {
+    border: 1px solid var(--interactive-accent, #4a90e2);
+    background-color: var(--background-secondary, #2a2a2a);
+	/* border-color: var(--interactive-accent); */
+}
+
+/* Error style for title input */
+.quest-form .input-error {
+    border: 2px solid #c1413f !important;
+    background-color: rgba(109, 34, 33, 0.1) !important;
+}
+
+/* Form sections */
+.form-section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+}
+.form-section label {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+.helper-text {
+    font-size: 0.8rem;
+    font-style: italic;
+    color: var(--text-muted);
+    margin-top: 0.2rem;
+}
+
+.label-select{
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+	margin-bottom: 0.4rem;
+}
+.label-select span {
+	display: inline-block;
+	min-width: 120px;
+	font-weight: 500;
+}
+
+.label-select select.input {
+	flex: 1;
+	width: auto;
+}
+
+
+select.input {
+	width: 100%;
+    padding: 5px 5px;
+    border-radius: 6px;
+    border: 1px solid var(--interactive-border, #555);
+    background: var(--background-primary, #1e1e1e);
+    color: var(--text-normal, #fff);
+    outline: none;
+    transition: border 0.2s ease, background-color 0.2s ease;
+    appearance: none; /* supprime le style par défaut */
+}
+
+/* Buttons */
+.button-group {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+.button-group button {
+    padding: 0.5rem 1.2rem;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    font-size: 0.9rem;
+    transition: background-color 0.2s;
+}
+.button-group button[type="submit"] {
+    background-color: var(--interactive-accent, #4a90e2);
+    color: var(--text-on-accent, #fff);
+}
+.button-group button[type="submit"]:hover {
+    background-color: var(--interactive-accent-hover, #357ABD);
+}
+.button-group button[type="button"] {
+    background-color: var(--background-modifier-border, #555);
+    color: var(--text-muted, #aaa);
+}
+.button-group button[type="button"]:hover {
+    background-color: var(--background-modifier-hover, #666);
+    color: var(--text-normal, #fff);
+}
+
+/* Toggle switch */
+.switch {
+    position: relative;
+    width: 40px;
+    height: 20px;
+}
+.switch input {
+    display: none;
+}
+.slider {
+    position: absolute;
+    cursor: pointer;
+    background-color: var(--background-modifier-border, #555);
+    border-radius: 20px;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    transition: 0.3s;
+}
+.slider::before {
+    content: "";
+    position: absolute;
+    height: 16px;
+    width: 16px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    border-radius: 50%;
+    transition: 0.3s;
+}
+input:checked + .slider {
+    background-color: var(--interactive-accent, #4a90e2);
+}
+input:checked + .slider::before {
+    transform: translateX(20px);
+}
+
+
+
+/* else */
+.required-note {
+    color: var(--text-muted, #aaa);
+    font-size: 0.9rem;
+	margin-top: 0.9rem;
+}
+
+.separator {
+	height: 1px;
+	background-color: var(--background-modifier-border, #555);
+	margin-top: 0.5rem;
+	margin-bottom: 0.5rem;
+	border: none;
+	opacity: 0.8;
+	/* border-top: 1px solid var(--background-modifier-border); */
+}

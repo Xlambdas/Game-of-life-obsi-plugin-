@@ -22,6 +22,7 @@ export const SideView: React.FC = () => {
 	const [loading, setLoading] = useState(false);
 
 	const loadData = async () => {
+		console.log("Loading data for SideView...");
 		if (loading) return; // prevent re-entry
 		setLoading(true);
 		const loadedUser = appService.dataService.getUser();
