@@ -226,9 +226,7 @@ export default class XpService {
 		const updatedXpDetails = {
 			...user.xpDetails,
 			xp: newTotalXP,
-			level: xpCalc.level,
 			newXp: xpCalc.newXp,
-			lvlThreshold: xpCalc.lvlThreshold,
 			freePts: currentFreePts - pointsToSpend,
 		};
 

@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { Notice } from 'obsidian';
 // from files (Service, DEFAULT):
 import { useAppContext } from 'context/appContext';
-import { DEFAULT_HABIT, Habit, AttributeBlock, DEFAULT_ATTRIBUTES} from 'data/DEFAULT';
+import { DEFAULT_HABIT, Habit } from 'data/DEFAULT';
+import { attributeDetails } from 'data/attributeDetails';
 // from file (UI, components):
 import { FormHeader, FormFooter } from 'components/forms/UI/formHelpers';
 import { validateAndBuildHabit } from './habitHelpers';

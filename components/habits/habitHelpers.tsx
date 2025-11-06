@@ -1,7 +1,8 @@
 import { Notice } from "obsidian";
 // from file (services, default):
 import { useAppContext } from "../../context/appContext";
-import { DEFAULT_HABIT, DEFAULT_CATEGORIES, DefaultCategory, DEFAULT_DIFFICULTIES, DefaultDifficulty, DEFAULT_PRIORITIES, DefaultPriority, Habit, DefaultRecurrence, AttributeBlock, DEFAULT_ATTRIBUTES } from "../../data/DEFAULT";
+import { DEFAULT_HABIT, DEFAULT_CATEGORIES, DefaultCategory, DEFAULT_DIFFICULTIES, DefaultDifficulty, DEFAULT_PRIORITIES, DefaultPriority, Habit, DefaultRecurrence } from "../../data/DEFAULT";
+import { AttributeBlock, DEFAULT_ATTRIBUTES } from "data/attributeDetails";
 // from file (UI, components):
 import { validateValue } from "../forms/UI/formHelpers";
 

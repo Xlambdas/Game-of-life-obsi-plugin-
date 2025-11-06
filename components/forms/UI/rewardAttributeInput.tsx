@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 // from file (Default):
-import { DEFAULT_ATTRIBUTES } from "data/DEFAULT";
+import { DEFAULT_ATTRIBUTES } from "data/attributeDetails";
 
 
 export interface AttributeReward {

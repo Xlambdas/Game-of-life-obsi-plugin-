@@ -10,7 +10,6 @@ import { GenericForm } from 'components/forms/genericForm';
 import { openFullscreenMainView } from 'helpers/sideViewSetting';
 import { Unlock } from 'lucide-react';
 import { UserModal } from 'modal/userInfoModal';
-import { UserModal_test } from 'modal/testUI';
 
 export default class GOL extends Plugin {
 	private viewService!: ViewService;
@@ -102,14 +101,6 @@ export default class GOL extends Plugin {
 			name: 'Open User Info Modal',
 			callback: () => {
 				new UserModal(this.app).open();
-			}
-		});
-
-		this.addCommand({
-			id: 'open-user-info-modal',
-			name: 'Open User Info Modal test',
-			callback: () => {
-				new UserModal_test(this.app).open();
 			}
 		});
 	}

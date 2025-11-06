@@ -1,3 +1,5 @@
+import { AttributeBlock, DEFAULT_ATTRIBUTES } from "./attributeDetails";
+
 /*
 * User Default Settings
 */
@@ -210,36 +212,6 @@ export const DEFAULT_DIFFICULTIES = ['easy', 'medium', 'hard', 'expert'] as cons
 export type DefaultDifficulty = typeof DEFAULT_DIFFICULTIES[number];
 export const DEFAULT_RECURRENCES = ['days', 'weeks', 'months', 'years'] as const;
 export type DefaultRecurrence = typeof DEFAULT_RECURRENCES[number];
-
-export type AttributeBlock = {
-	strength: number;
-	agility: number;
-	endurance: number;
-	charisma: number;
-	wisdom: number;
-	perception: number;
-	intelligence: number;
-	willpower: number;
-	spirit: number;
-	flow: number;
-	reputation: number;
-	resilience: number;
-}
-
-export const DEFAULT_ATTRIBUTES: AttributeBlock = {
-	strength: 0,
-	agility: 0,
-	endurance: 0,
-	charisma: 0,
-	wisdom: 0,
-	perception: 0,
-	intelligence: 0,
-	willpower: 0,
-	spirit: 0,
-	flow: 0,
-	reputation: 0,
-	resilience: 0,
-};
 
 export type TaskType = 'quest' | 'habit'; // | 'skill' | 'goal'; //todo : add skills/goals/...
 

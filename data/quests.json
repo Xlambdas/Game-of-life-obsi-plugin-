@@ -18,7 +18,7 @@
       "completedAt": "2025-11-05T19:06:14.066Z",
       "progress": 100,
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-11-06T13:22:00.744Z",
+      "lastUpdated": "2025-11-06T22:40:01.696Z",
       "subtasks": {
         "conditionQuests": [],
         "conditionHabits": []
@@ -108,7 +108,7 @@
       "completedAt": null,
       "progress": 0,
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-11-06T13:22:00.744Z",
+      "lastUpdated": "2025-11-06T22:40:01.696Z",
       "subtasks": {
         "conditionQuests": [],
         "conditionHabits": []
@@ -198,7 +198,7 @@
       "completedAt": null,
       "progress": 40,
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-11-06T13:22:00.857Z",
+      "lastUpdated": "2025-11-06T22:40:01.789Z",
       "subtasks": {
         "conditionQuests": [
           {
@@ -305,7 +305,7 @@
       "completedAt": null,
       "progress": 0,
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-11-06T13:22:00.744Z",
+      "lastUpdated": "2025-11-06T22:40:01.697Z",
       "subtasks": {
         "conditionQuests": [],
         "conditionHabits": []
@@ -395,7 +395,7 @@
       "completedAt": null,
       "progress": 0,
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-11-06T13:22:00.744Z",
+      "lastUpdated": "2025-11-06T22:40:01.697Z",
       "subtasks": {
         "conditionQuests": [],
         "conditionHabits": []

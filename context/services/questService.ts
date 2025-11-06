@@ -1,7 +1,8 @@
 import { App } from 'obsidian';
 // from files (services, default) :
 import { AppContextService } from '../appContextService';
-import { DEFAULT_ATTRIBUTES, Quest, UserSettings } from '../../data/DEFAULT';
+import { Quest, UserSettings } from '../../data/DEFAULT';
+import { DEFAULT_ATTRIBUTES } from '../../data/attributeDetails';
 // from files (UI):
 // import { CreateQuestModal } from '../../modal/questModal';
 

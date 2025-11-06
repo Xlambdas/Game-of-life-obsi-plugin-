@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, use } from "react";
 import { Notice } from "obsidian";
 // from files (services, default):
 import { useAppContext } from "../../context/appContext";
-import { AttributeBlock, DEFAULT_ATTRIBUTES, Quest, UserSettings } from "../../data/DEFAULT";
+import { Quest, UserSettings } from "../../data/DEFAULT";
 // from file (UI):
 import { QuestSideView } from "./questSideView";
 // import { ModifyQuestModal } from "modal/questModal";

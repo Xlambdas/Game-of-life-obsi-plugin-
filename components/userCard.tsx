@@ -5,7 +5,7 @@ import { UserSettings } from "../data/DEFAULT";
 import { AppContextService } from "../context/appContextService";
 // from file (UI, helpers) :
 import { ProgressBar } from "./smallComponents";
-import { UserModal_test } from "modal/testUI";
+import { UserModal } from "modal/userInfoModal";
 import { NextLevelModal } from "modal/NextLevelModal";
 import { User, Trophy } from "lucide-react";
 
@@ -33,7 +33,7 @@ export const UserCard: React.FC<UserCardProps> = ({app, context, user, onNextLev
 				marginBottom: '12px'
 			}}>
 				<button
-					onClick={() => new UserModal_test(app).open()}
+					onClick={() => new UserModal(app).open()}
 					className="user-modal-button"
 					title="View Stats & Spend Points"
 				>
