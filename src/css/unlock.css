@@ -10,12 +10,22 @@
 	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
+/* Hide info icon by default */
 .unlock-info-icon {
 	position: absolute;
 	top: 8px;
 	right: 8px;
-	opacity: 0.6;
+	opacity: 0;
 	font-size: 14px;
+	transition: opacity 0.3s ease, transform 0.3s ease;
+	transform: scale(0.8);
+	pointer-events: none; /* Prevents icon from blocking hover events */
+}
+
+/* Show info icon when hovering over unlock item */
+.unlock-item.clickable:hover .unlock-info-icon {
+	opacity: 0.8;
+	transform: scale(1);
 }
 
 /* Overlay */

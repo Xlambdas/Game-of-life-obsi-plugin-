@@ -34,10 +34,10 @@
   },
   "xpDetails": {
     "xp": 119,
-    "level": 1,
-    "maxLevel": 1,
-    "newXp": 119,
-    "lvlThreshold": 100,
+    "level": 2,
+    "maxLevel": 2,
+    "newXp": 19,
+    "lvlThreshold": 120,
     "freePts": 15
   },
   "attribute": {
