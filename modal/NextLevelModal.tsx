@@ -52,19 +52,26 @@ interface LevelContainerProps {
 	onNextLevel: () => Promise<void>;
 }
 
-
+interface UnlockItem {
+	category: string;
+	name: string;
+	description?: string;
+	benefits?: string[];
+	icon?: string;
+}
 
 
 
 const LevelContainer: React.FC<LevelContainerProps> = ({ user, onClose, onNextLevel }) => {
 	const isNextLevel = user.xpDetails.newXp >= user.xpDetails.lvlThreshold;
 	const nextLevel = user.xpDetails.level + 1;
-	const currentUnlocks = getUnlocksForLevel(user.xpDetails.level);
 	const upcomingUnlocks = getUnlocksForLevel(nextLevel);
+	const [selectedUnlock, setSelectedUnlock] = React.useState<UnlockItem | null>(null);
 
 
 	return (
 		<div className="user-modal-content">
+			{/* header */}
 			{isNextLevel ? (
 				<div>
 					<div className="level-up-message">
@@ -79,21 +86,73 @@ const LevelContainer: React.FC<LevelContainerProps> = ({ user, onClose, onNextLe
 				</div>
 			)}
 
+			{/* body - with unlocks */}
 			<div>
 				{upcomingUnlocks.length > 0 && (
 					<div className="unlocks-section">
 						<h2>Next Level Previews</h2>
 						<div className="unlocks-grid">
 							{upcomingUnlocks.map((unlock, index) => (
-								<div key={index} className="unlock-item">
+								<div
+									key={index}
+									className="unlock-item"
+									onClick={() => setSelectedUnlock(unlock)}
+								>
 									<span className="unlock-category">{unlock.category}</span>
 									<span className="unlock-name">{unlock.name}</span>
+									<span className="unlock-info-icon">ⓘ</span>
 								</div>
 							))}
 						</div>
 					</div>
 				)}
 			</div>
+
+			{/* Unlock Detail Popover */}
+			{selectedUnlock && (
+				<div
+					className="unlock-detail-overlay"
+					onClick={() => setSelectedUnlock(null)}
+				>
+					<div
+						className="unlock-detail-card"
+						onClick={(e) => e.stopPropagation()}
+					>
+						<div className="unlock-detail-header">
+							<div>
+								<h3 className="unlock-detail-name">{selectedUnlock.name}</h3>
+							</div>
+							<span className="unlock-detail-category">{selectedUnlock.category}</span>
+						</div>
+
+						<div className="unlock-detail-body">
+							{selectedUnlock.description && (
+								<p className="unlock-description">{selectedUnlock.description}</p>
+							)}
+
+							{selectedUnlock.benefits && selectedUnlock.benefits.length > 0 && (
+								<div className="unlock-benefits">
+									<h4>Benefits:</h4>
+									<ul>
+										{selectedUnlock.benefits.map((benefit, i) => (
+											<li key={i}>{benefit}</li>
+										))}
+									</ul>
+								</div>
+							)}
+						</div>
+
+						<div className="unlock-detail-footer">
+							<button
+								className="unlock-detail-close-btn"
+								onClick={() => setSelectedUnlock(null)}
+							>
+								Got it!
+							</button>
+						</div>
+					</div>
+				</div>
+			)}
 
 			{/* second part */}
 			{isNextLevel ? (
@@ -118,99 +177,6 @@ const LevelContainer: React.FC<LevelContainerProps> = ({ user, onClose, onNextLe
 					Close
 				</button>
 			)}
-		</div>
-	);
-};
-
-
-
-
-const LevelContainer_new: React.FC<LevelContainerProps> = ({ user, onClose, onNextLevel }) => {
-	const isNextLevel = user.xpDetails.newXp >= user.xpDetails.lvlThreshold;
-	const nextLevel = user.xpDetails.level + 1;
-	const currentUnlocks = getUnlocksForLevel(user.xpDetails.level);
-	const upcomingUnlocks = getUnlocksForLevel(nextLevel);
-
-	return (
-		<div className="level-up-container">
-			{isNextLevel ? (
-				<>
-					<div className="level-up-header">
-						<h1>🎉 Level Up!</h1>
-						<p className="level-display">Level {user.xpDetails.level} → Level {nextLevel}</p>
-					</div>
-					<div className="level-up-animation">
-						<p>Congratulations! You can now advance to the next level!</p>
-					</div>
-
-					{upcomingUnlocks.length > 0 && (
-						<div className="unlocks-section">
-							<h2>🔓 New Unlocks at Level {nextLevel}</h2>
-							<div className="unlocks-grid">
-								{upcomingUnlocks.map((unlock, index) => (
-									<div key={index} className="unlock-item">
-										<span className="unlock-category">{unlock.category}</span>
-										<span className="unlock-name">{unlock.name}</span>
-									</div>
-								))}
-							</div>
-						</div>
-					)}
-
-					<button
-						className="next-level-button"
-						onClick={async () => {
-							await onNextLevel();
-							new Notice(`You've advanced to level ${nextLevel}!`);
-							onClose();
-						}}
-					>
-						Advance to Level {nextLevel}
-					</button>
-				</>
-			) : (
-				<>
-					<h2>Current Progress</h2>
-					<p className="xp-progress">
-						You have <strong>{user.xpDetails.newXp}</strong> XP
-					</p>
-					<p className="xp-needed">
-						Need <strong>{user.xpDetails.lvlThreshold - user.xpDetails.newXp}</strong> more XP to reach Level {nextLevel}
-					</p>
-
-					{currentUnlocks.length > 0 && (
-						<div className="unlocks-section">
-							<h2>✨ Current Level Unlocks (Level {user.xpDetails.level})</h2>
-							<div className="unlocks-grid">
-								{currentUnlocks.map((unlock, index) => (
-									<div key={index} className="unlock-item unlocked">
-										<span className="unlock-category">{unlock.category}</span>
-										<span className="unlock-name">{unlock.name}</span>
-									</div>
-								))}
-							</div>
-						</div>
-					)}
-
-					{upcomingUnlocks.length > 0 && (
-						<div className="unlocks-section">
-							<h2>🔒 Next Level Preview (Level {nextLevel})</h2>
-							<div className="unlocks-grid">
-								{upcomingUnlocks.map((unlock, index) => (
-									<div key={index} className="unlock-item locked">
-										<span className="unlock-category">{unlock.category}</span>
-										<span className="unlock-name">{unlock.name}</span>
-									</div>
-								))}
-							</div>
-						</div>
-					)}
-				</>
-			)}
-
-			<button className="close-button" onClick={onClose}>
-				Close
-			</button>
 		</div>
 	);
 };
