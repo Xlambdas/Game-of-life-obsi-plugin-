@@ -394,7 +394,7 @@
       "unit": "days"
     },
     "streak": {
-      "current": 1,
+      "current": 2,
       "best": 2,
       "history": [
         {
@@ -406,13 +406,17 @@
           "success": true
         },
         {
-          "date": "2025-11-06T08:45:55.000Z",
+          "date": "2025-11-06T22:42:44.373Z",
+          "success": true
+        },
+        {
+          "date": "2025-11-07T19:22:34.316Z",
           "success": true
         }
       ],
       "isCompletedToday": true,
-      "nextDate": "2025-11-07T08:45:55.000Z",
-      "lastCompletedDate": "2025-11-06T08:45:55.000Z"
+      "nextDate": "2025-11-08T19:22:34.316Z",
+      "lastCompletedDate": "2025-11-07T19:22:34.316Z"
     },
     "progress": {
       "level": 1,

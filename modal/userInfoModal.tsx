@@ -5,13 +5,14 @@ import { App, Modal, Notice } from 'obsidian';
 import { AppContextService } from '../context/appContextService';
 import { UserSettings } from '../data/DEFAULT';
 import { attributeDetails } from '../data/attributeDetails';
-import { Plus } from 'lucide-react';
+import { CaseUpper, Plus } from 'lucide-react';
 // from file (UI, helpers) :
 import { ProgressBar } from 'components/smallComponents';
 
 import { useState, useEffect } from 'react';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import { personaImages } from '../data/image';
+import { text } from 'stream/consumers';
 
 interface StatsModalProps {
 	user: UserSettings;
@@ -108,6 +109,8 @@ const StatsModal: React.FC<StatsModalProps> = ({ user: initialUser, onSpendPoint
 		}
 	};
 
+	const userProgress =  user.xpDetails.newXp < user.xpDetails.lvlThreshold ? Math.min(user.xpDetails.newXp / user.xpDetails.lvlThreshold, 1) : 100;
+
 	return (
 		<div className="stats-modal-wrapper">
 			{/* LEFT PANEL - STATS */}
@@ -151,43 +154,46 @@ const StatsModal: React.FC<StatsModalProps> = ({ user: initialUser, onSpendPoint
 				<div className="stats-info-section">
 					{/* Left side - Stats bars */}
 					<div className="stats-info-left">
-						<div className="stats-info-box">
-							<div className="stats-info-row">
-								<div className="stats-info-icon">⭐</div>
-								<div>Free Points:</div>
-								<div className={`stats-info-value ${user.xpDetails.freePts > 0 ? 'free-points' : ''}`}>
-									{user.xpDetails.freePts}
-								</div>
-							</div>
-						</div>
+						{/* <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+							<p className="persona-class">{user.persona.class}</p>
+							<p className="persona-name">{user.persona.name}</p>
+							<p className="persona-level">Level {user.xpDetails.level}</p>
+						</div> */}
 
-						{/* XP */}
-						<div className="stats-bar-container">
-							<div className="stats-bar-label">
-								<div>⚡</div>
-								<div>XP:</div>
-							</div>
+						{/* XP Bar */}
+						<div className="stats-bar-row">
+							<div className="stats-bar-label">XP</div>
 							<div className="stats-progress-wrapper">
-								<div
-									className="stats-progress-fill xp-fill"
-									style={{ width: `${(user.xpDetails.newXp / user.xpDetails.lvlThreshold) * 100}%` }}
-								/>
-								<div className="stats-progress-text">
-									{user.xpDetails.newXp} / {user.xpDetails.lvlThreshold}
-								</div>
+								<div className="stats-progress-fill xp-fill" style={{ width: userProgress }} />
 							</div>
 						</div>
 
 						{/* Mana */}
-						<div className="stats-bar-container">
-							<div className="stats-bar-label">
-								<div>🔮</div>
-								<div>Mana:</div>
-							</div>
+						<div className="stats-bar-row">
+							<div className="stats-bar-label">Mana</div>
 							<div className="stats-progress-wrapper">
-								<div className="stats-progress-fill mana-fill" style={{ width: `100%` }} />
-								<div className="stats-progress-text">{user.xpDetails.xp}</div>
+								<div className="stats-progress-fill mana-fill" style={{ width: user.persona.mana }} />
 							</div>
+						</div>
+
+						{/* Health */}
+						<div className="stats-bar-row">
+							<div className="stats-bar-label">Health</div>
+							<div className="stats-progress-wrapper">
+								<div className="stats-progress-fill health-fill" style={{ width: user.persona.health }} />
+							</div>
+						</div>
+
+						{/* Free Points */}
+						<div className="free-points-container">
+							<span className="free-points-label">Free Points:</span>
+							<span
+								className={`free-points-value ${
+									user.xpDetails.freePts > 0 ? 'has-points' : ''
+								}`}
+							>
+								{user.xpDetails.freePts}
+							</span>
 						</div>
 					</div>
 
@@ -198,20 +204,20 @@ const StatsModal: React.FC<StatsModalProps> = ({ user: initialUser, onSpendPoint
 							alt={user.persona.name}
 							className="persona-image"
 						/>
-						<div className="persona-info-overlay">
-							<div className="persona-class">{user.persona.class}</div>
-							<div className="persona-name">{user.persona.name}</div>
-						</div>
 					</div>
 				</div>
 
 
-				{/* Level Display */} //todo: to re-add level box design?
+				{/* Level Display //todo: to re-add level box design? */}
 				{/* <div className="level-display-box">
 					<div className="level-display-label">Level</div>
 					<div className="level-display-number">{user.xpDetails.level}</div>
 					<div className="level-display-class">{user.persona.class}</div>
 					<div className="level-display-title">{user.persona.name}</div>
+				</div> */}
+				{/* <div className="persona-info-overlay">
+					<div className="persona-class">{user.persona.class}</div>
+					<div className="persona-name">{user.persona.name}</div>
 				</div> */}
 			</div>
 
