@@ -28,25 +28,26 @@
 	background: var(--background-secondary-alt);
 	border: 2px solid var(--interactive-accent);
 	flex: 1;
-	margin: 3px;
 	border-radius: 8px;
 	padding: 1.5rem;
 	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 	animation: ease-in-out 2s infinite;
 }
 
-.stats-panel h2 {
+.stats-panel h2, .attributes-panel h2 {
 	text-align: center;
 	font-size: 18px;
 	font-weight: bold;
 	text-transform: uppercase;
 	letter-spacing: 2px;
 	color: var(--text-normal);
+	margin-top: 0px;
+	margin-bottom: 0px;
 }
 
 /* Radar Chart Section */
 .radar-chart-container {
-	margin-bottom: 30px;
+	margin-bottom: 10px;
 }
 
 /* Stats Info Boxes */
@@ -217,40 +218,40 @@
 	border-radius: 8px;
 	padding: 20px;
 	background: var(--background-secondary);
-}
-
-.attributes-panel-title {
-	text-align: center;
-	margin-bottom: 20px;
-	font-size: 18px;
-	font-weight: bold;
-	text-transform: uppercase;
-	letter-spacing: 2px;
-	color: var(--text-normal);
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+	gap: 0.8rem;
 }
 
 /* Attributes Grid */
 .attributes-grid {
 	display: grid;
 	grid-template-columns: 1fr 1fr;
-	gap: 12px;
-	margin-bottom: 20px;
+	gap: 4px;
+	margin-bottom: 0px;
 }
 
 /* Individual Attribute Card */
 .attribute-card {
-	padding: 12px;
+	padding: 6px 8px;
 	background: var(--background-primary);
 	border-radius: 6px;
 	border: 1px solid var(--background-modifier-border);
+	/* cursor: pointer;
+	transition: all 0.2s ease; */
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	position: relative;
 	cursor: pointer;
 	transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
-	position: relative;
+	margin-bottom: 0%;
 }
 
 .attribute-card:hover {
 	transform: translateY(-2px);
-	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 	border-color: var(--interactive-accent);
 }
 
@@ -263,28 +264,29 @@
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	margin-bottom: 8px;
+	margin-bottom: 4px;
 }
 
 .attribute-card-info {
 	display: flex;
 	align-items: center;
-	gap: 8px;
+	gap: 6px;
 }
 
 .attribute-card-icon {
-	font-size: 20px;
+	font-size: 16px;
+	color: var(--interactive-accent);
 }
 
 .attribute-card-name {
-	font-size: 14px;
-	font-weight: bold;
+	font-size: 13px;
+	font-weight: 600;
 	color: var(--text-normal);
 }
 
 .attribute-card-value {
-	font-size: 18px;
-	font-weight: bold;
+	font-size: 15px;
+	font-weight: 700;
 	color: var(--interactive-success);
 }
 
@@ -503,9 +505,10 @@
 	background: var(--background-secondary);
 	border: 2px solid var(--background-modifier-border);
 	border-radius: 12px;
-	padding: 1rem 1.5rem;
-	gap: 1.5rem;
+	padding: 1rem;
+	gap: 1rem;
 	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+	margin-bottom: 0rem;
 }
 
 .stats-info-left {
@@ -529,9 +532,9 @@
 	max-width: 220px;
 	height: auto;
 	object-fit: contain;
-	transform: scale(1.1); /* slightly larger */
 	filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
 	transition: transform 0.3s ease;
+	image-rendering: pixelated;
 }
 
 .persona-info-overlay {
@@ -573,3 +576,139 @@
 /* todo dark/light mode adjustments */
 
 
+/* ===========================
+   RIGHT PANEL - Compact Attributes (harmonized with left)
+   =========================== */
+
+/* Upgrade Button - smaller */
+.attribute-upgrade-btn {
+	padding: 4px;
+	font-size: 12px;
+	font-weight: 600;
+	background: var(--interactive-success);
+	border: none;
+	border-radius: 4px;
+	color: white;
+	cursor: pointer;
+	transition: all 0.2s ease;
+}
+
+.attribute-upgrade-btn:hover {
+	background: var(--interactive-success-hover);
+}
+
+/* Info icon - subtle */
+.attribute-info-icon {
+	position: absolute;
+	top: 6px;
+	right: 6px;
+	font-size: 12px;
+	color: var(--text-muted);
+	opacity: 0;
+	transition: opacity 0.2s ease;
+}
+
+.attribute-card:hover .attribute-info-icon {
+	opacity: 0.8;
+}
+
+/* ===========================
+   ATTRIBUTE DETAIL OVERLAY - Compact style
+   =========================== */
+
+.attribute-detail-overlay {
+	position: fixed;
+	inset: 0;
+	background: rgba(0, 0, 0, 0.4);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 1000;
+	backdrop-filter: blur(2px);
+}
+
+.attribute-detail-card {
+	background: var(--background-secondary-alt);
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 10px;
+	padding: 1rem;
+	width: 320px;
+	max-height: 70vh;
+	overflow-y: auto;
+	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+	animation: slideUp 0.25s ease;
+}
+
+.attribute-detail-header {
+	display: flex;
+	align-items: center;
+	gap: 0.8rem;
+	margin-bottom: 0.6rem;
+}
+
+.attribute-detail-icon {
+	font-size: 22px;
+	color: var(--interactive-accent);
+}
+
+.attribute-detail-info {
+	flex: 1;
+}
+
+.attribute-detail-category {
+	font-size: 10px;
+	font-weight: 600;
+	text-transform: uppercase;
+	color: var(--text-muted);
+}
+
+.attribute-detail-name {
+	margin: 0;
+	font-size: 16px;
+	font-weight: 700;
+	color: var(--text-normal);
+}
+
+.attribute-detail-value {
+	font-size: 18px;
+	font-weight: bold;
+	color: var(--interactive-success);
+}
+
+.attribute-detail-body {
+	font-size: 13px;
+	color: var(--text-muted);
+	line-height: 1.4;
+	margin-bottom: 0.8rem;
+}
+
+.attribute-benefits h4 {
+	font-size: 12px;
+	margin-bottom: 4px;
+	color: var(--text-normal);
+	text-transform: uppercase;
+}
+
+.attribute-benefits li {
+	margin-left: 1rem;
+	margin-bottom: 4px;
+	list-style: disc;
+}
+
+.attribute-detail-footer {
+	text-align: right;
+}
+
+.attribute-detail-close-btn {
+	padding: 4px 10px;
+	font-size: 12px;
+	border: none;
+	border-radius: 4px;
+	background: var(--interactive-accent);
+	color: white;
+	cursor: pointer;
+}
+
+.attribute-detail-close-btn:hover {
+	background: var(--interactive-accent-hover);
+}

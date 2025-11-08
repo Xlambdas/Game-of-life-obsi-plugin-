@@ -78,10 +78,10 @@ export class UserModal extends Modal {
 
 
 const StatsModal: React.FC<StatsModalProps> = ({ user: initialUser, onSpendPoint, app }) => {
-	type AttrKey = keyof typeof attributeDetails;
+  type AttrKey = keyof UserSettings['attribute'];
 
 	const [user, setUser] = useState<UserSettings>(initialUser);
-	const [selected, setSelected] = useState<null | (AttrKey & { value: number })>(null);
+	const [selectedAttribute, setSelectedAttribute] = useState<AttrKey | null>(null);
 	// const [imageSrc, setImageSrc] = React.useState<string>('');
 
 	React.useEffect(() => {
@@ -111,6 +111,20 @@ const StatsModal: React.FC<StatsModalProps> = ({ user: initialUser, onSpendPoint
 
 	const userProgress =  user.xpDetails.newXp < user.xpDetails.lvlThreshold ? Math.min(user.xpDetails.newXp / user.xpDetails.lvlThreshold, 1) : 100;
 
+	const [currentImage, setCurrentImage] = useState(personaImages['good_guys']);
+	useEffect(() => {
+		const interval = setInterval(() => {
+			// Random chance to blink (about once every 10 seconds on average)
+			if (Math.random() < 0.1) {
+				setCurrentImage(personaImages['guys_GOL-close eyes']);
+				setTimeout(() => {
+					setCurrentImage(personaImages['good_guys']);
+				}, 500); // blink lasts 1 second
+			}
+		}, 1000); // check every second
+		return () => clearInterval(interval);
+	}, []);
+
 	return (
 		<div className="stats-modal-wrapper">
 			{/* LEFT PANEL - STATS */}
@@ -133,7 +147,7 @@ const StatsModal: React.FC<StatsModalProps> = ({ user: initialUser, onSpendPoint
 								dataKey="value"
 								stroke="#8884d8"
 								fill="url(#grad)"
-								fillOpacity={0.6}
+								fillOpacity={0.8}
 							/>
 							<defs>
 								<radialGradient id="grad" cx="50%" cy="50%" r="50%">
@@ -200,7 +214,7 @@ const StatsModal: React.FC<StatsModalProps> = ({ user: initialUser, onSpendPoint
 					{/* Right side - Persona image */}
 					<div className="persona-image-container">
 						<img
-							src={personaImages['big_guys_GOL']}
+							src={currentImage}
 							alt={user.persona.name}
 							className="persona-image"
 						/>
@@ -223,85 +237,86 @@ const StatsModal: React.FC<StatsModalProps> = ({ user: initialUser, onSpendPoint
 
 			{/* RIGHT PANEL - ATTRIBUTES */}
 			<div className="attributes-panel">
-			<div className="attributes-panel-title">Attributes</div>
+				<h2>Attributes</h2>
 
-			<div className="attributes-grid">
-				{(Object.entries(user.attribute) as [AttrKey, number][]).map(([key, value]) => {
-				const detail = attributeDetails[key];
-				return (
-					<div
-					key={String(key)}
-					className={`attribute-card ${selected && selected === (key as any) ? 'selected' : ''}`}
-					onClick={() => setSelected({ ...(key as any), value } as any)}
-					>
-					<div className="attribute-card-header">
-						<div className="attribute-card-info">
-						<div className="attribute-card-icon">{detail?.icon}</div>
-						<div className="attribute-card-name">{detail?.name || String(key)}</div>
-						</div>
-						<div className="attribute-card-value">{value}</div>
-					</div>
+				<div className="attributes-grid">
+					{(Object.entries(user.attribute) as [AttrKey, number][]).map(([key, value]) => {
+						const detail = attributeDetails[key];
+						return (
+							<div
+								key={key}
+								className={`attribute-card ${selectedAttribute === key ? 'selected' : ''}`}
+								onClick={() => setSelectedAttribute(key)}
+							>
+								<div className="attribute-card-header">
+									<div className="attribute-card-info">
+										<div className="attribute-card-icon">
+											{detail?.icon}
+										</div>
+										<div className="attribute-card-name">
+											{detail?.name || String(key)}
+										</div>
+									</div>
+									<div className="attribute-card-value">{value}</div>
+								</div>
 
-					{user.xpDetails.freePts > 0 && (
-						<button
-						className="attribute-upgrade-btn"
-						onClick={(e) => {
-							e.stopPropagation();
-							handleSpendPoint(key as keyof UserSettings['attribute']);
-						}}
-						>
-						+ UPGRADE
-						</button>
-					)}
+								{user.xpDetails.freePts > 0 && (
+									<button
+										className="attribute-upgrade-btn"
+										onClick={(e) => {
+											e.stopPropagation();
+											handleSpendPoint(key as keyof UserSettings['attribute']);
+										}}
+									>
+										+ UPGRADE
+									</button>
+								)}
 
-					<div className="attribute-info-icon">ⓘ</div>
-					</div>
-				);
-				})}
-			</div>
-
-			{selected && (() => {
-				const key = (selected as any) as AttrKey;
-				const detail = attributeDetails[key];
-				const value = user.attribute[key as keyof typeof user.attribute];
-
-				return (
-				<div className="attribute-detail-overlay" onClick={() => setSelected(null)}>
-					<div className="attribute-detail-card" onClick={(e) => e.stopPropagation()}>
-					<div className="attribute-detail-header">
-						<div className="attribute-detail-icon">{detail?.icon}</div>
-						<div className="attribute-detail-info">
-						<div className="attribute-detail-category">{detail?.name?.toUpperCase() || ''}</div>
-						<h3 className="attribute-detail-name">{detail?.fullName || detail?.name || String(key)}</h3>
-						</div>
-						<div className="attribute-detail-value">{value}</div>
-					</div>
-
-					<div className="attribute-detail-body">
-						<p className="attribute-description">{detail?.description}</p>
-
-						{detail?.benefits && (
-						<div className="attribute-benefits">
-							<h4>Benefits</h4>
-							<ul>
-							{detail.benefits.map((b: string, i: number) => <li key={i}>{b}</li>)}
-							</ul>
-						</div>
-						)}
-					</div>
-
-					<div className="attribute-detail-footer">
-						<button className="attribute-detail-close-btn" onClick={() => setSelected(null)}>Close</button>
-					</div>
-					</div>
+								<div className="attribute-info-icon">ⓘ</div>
+							</div>
+						);
+					})}
 				</div>
-				);
-			})()}
+
+				{selectedAttribute && (() => {
+					const key = selectedAttribute;
+					const detail = attributeDetails[key];
+					const value = user.attribute[key];
+					return (
+						<div className="attribute-detail-overlay" onClick={() => setSelectedAttribute(null)}>
+						<div className="attribute-detail-card" onClick={(e) => e.stopPropagation()}>
+							<div className="attribute-detail-header">
+							<div className="attribute-detail-icon">{detail?.icon}</div>
+							<div className="attribute-detail-info">
+								<div className="attribute-detail-category">{detail?.name?.toUpperCase()}</div>
+								<h3 className="attribute-detail-name">{detail?.fullName || detail?.name}</h3>
+							</div>
+							<div className="attribute-detail-value">{value}</div>
+							</div>
+
+							<div className="attribute-detail-body">
+							<p className="attribute-description">{detail?.description}</p>
+							{detail?.benefits && (
+								<div className="attribute-benefits">
+								<h4>Benefits</h4>
+								<ul>
+									{detail.benefits.map((b, i) => <li key={i}>{b}</li>)}
+								</ul>
+								</div>
+							)}
+							</div>
+
+							<div className="attribute-detail-footer">
+							<button className="attribute-detail-close-btn" onClick={() => setSelectedAttribute(null)}>Close</button>
+							</div>
+						</div>
+						</div>
+					);
+				})()}
 			</div>
 		</div>
-	);
+	)
 };
-
 
 const StatsModal_old: React.FC<StatsModalProps> = ({ user: initialUser, onSpendPoint }) => {
 	type SelectedAttribute = {

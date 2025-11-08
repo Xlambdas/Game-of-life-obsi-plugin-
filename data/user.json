@@ -33,12 +33,12 @@
     }
   },
   "xpDetails": {
-    "xp": 124,
+    "xp": 126,
     "level": 1,
     "maxLevel": 1,
-    "newXp": 124,
+    "newXp": 126,
     "lvlThreshold": 100,
-    "freePts": 11
+    "freePts": 9
   },
   "attribute": {
     "strength": 22,
@@ -52,7 +52,7 @@
     "spirit": 6,
     "flow": 5,
     "reputation": 3,
-    "resilience": 2
+    "resilience": 4
   },
   "skills": {},
   "habits": {},

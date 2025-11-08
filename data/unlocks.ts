@@ -29,7 +29,8 @@ export const UNLOCK_VIEW: Record<string, number> = {
 export const UNLOCK_ELEMENT: Record<string, number> = {
 	habit: 1,
 	quest: 1,
-	objectif: 4,
-	task: 3,
+	objectif: 3,
+	task: 4,
 	note: 4,
+	guys: 5,
 };

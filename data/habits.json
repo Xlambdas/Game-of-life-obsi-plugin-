@@ -62,7 +62,7 @@
           "success": true
         }
       ],
-      "isCompletedToday": true,
+      "isCompletedToday": false,
       "nextDate": "2025-11-08T08:45:53.633Z",
       "lastCompletedDate": "2025-11-06T08:45:53.633Z"
     },
@@ -321,7 +321,7 @@
           "success": true
         }
       ],
-      "isCompletedToday": true,
+      "isCompletedToday": false,
       "nextDate": "2025-11-08T15:40:23.799Z",
       "lastCompletedDate": "2025-11-05T15:40:23.799Z"
     },
@@ -414,7 +414,7 @@
           "success": true
         }
       ],
-      "isCompletedToday": true,
+      "isCompletedToday": false,
       "nextDate": "2025-11-08T19:22:34.316Z",
       "lastCompletedDate": "2025-11-07T19:22:34.316Z"
     },
