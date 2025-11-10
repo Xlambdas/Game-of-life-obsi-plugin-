@@ -2114,8 +2114,7 @@ input:checked + .slider::before {
 .stats-modal-wrapper {
 	display: flex;
 	flex: 2;
-	/* background-color: var(--background-primary); */
-	/* color: var(--text-normal); */
+
 }
 
 /* ===========================
@@ -2141,6 +2140,7 @@ input:checked + .slider::before {
 	color: var(--text-normal);
 	margin-top: 0px;
 	margin-bottom: 0px;
+	letter-spacing: 1px;
 }
 
 /* Radar Chart Section */
@@ -2313,7 +2313,7 @@ input:checked + .slider::before {
 	flex: 1;
 	margin: 3px;
 	border: 1px solid var(--background-modifier-border);
-	border-radius: 8px;
+	border-radius: 10px;
 	padding: 20px;
 	background: var(--background-secondary);
 	display: flex;
@@ -2325,7 +2325,7 @@ input:checked + .slider::before {
 /* Attributes Grid */
 .attributes-grid {
 	display: grid;
-	grid-template-columns: 1fr 1fr;
+	grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
 	gap: 4px;
 	margin-bottom: 0px;
 }
@@ -2334,7 +2334,7 @@ input:checked + .slider::before {
 .attribute-card {
 	padding: 6px 8px;
 	background: var(--background-primary);
-	border-radius: 6px;
+	border-radius: 8px;
 	border: 1px solid var(--background-modifier-border);
 	/* cursor: pointer;
 	transition: all 0.2s ease; */
@@ -2344,74 +2344,85 @@ input:checked + .slider::before {
 	position: relative;
 	cursor: pointer;
 	transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
-	margin-bottom: 0%;
+	margin-bottom: 0px;
 }
 
 .attribute-card:hover {
-	transform: translateY(-2px);
+	transform: translateY(-2px) scale(1.02);
 	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 	border-color: var(--interactive-accent);
 }
 
 .attribute-card.selected {
 	border: 2px solid var(--interactive-accent);
-	box-shadow: 0 0 0 1px var(--interactive-accent);
+	box-shadow: 0 0 0 10px rgba(0, 200, 255, 0.3);
 }
 
 .attribute-card-header {
-	display: flex;
+	display: grid;
 	align-items: center;
-	justify-content: space-between;
-	margin-bottom: 4px;
+	grid-template-columns: 1fr auto;
+	margin-bottom: 2px;
+	/* justify-content: space-between; */
 }
 
-.attribute-card-info {
-	display: flex;
-	align-items: center;
-	gap: 6px;
-}
-
-.attribute-card-icon {
-	font-size: 16px;
-	color: var(--interactive-accent);
-}
 
 .attribute-card-name {
-	font-size: 13px;
+	/* display: inline-block;
+	padding: 4px 12px;
+	background: var(--interactive-accent);
+	color: white;
+	border-radius: 12px;
+	font-size: 12px;
+	font-weight: 600; */
+	text-align: left;
+	/* background: linear-gradient(90deg, var(--interactive-accent), var(--interactive-accent-hover)); */
+	color: var(--text-muted);
+	opacity: 0.9;
+	/* border-radius: 8px; */
+	/* padding: 4px 10px; */
+	font-size: 12px;
 	font-weight: 600;
-	color: var(--text-normal);
+	letter-spacing: 0.5px;
+	white-space: nowrap; /* empêche le retour à la ligne */
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 .attribute-card-value {
-	font-size: 15px;
-	font-weight: 700;
+	font-size: 14px;
+	min-width: 32px;
+	font-weight: 600;
 	color: var(--interactive-success);
+	padding-left: 10px;
+	text-align: right;
 }
 
 /* Upgrade Button */
 .attribute-upgrade-btn {
 	width: 100%;
 	padding: 6px;
-	background: var(--interactive-success);
+	background: linear-gradient(90deg, var(--interactive-success), var(--interactive-success-hover));
 	border: none;
 	border-radius: 4px;
 	color: white;
 	font-weight: bold;
 	cursor: pointer;
-	font-size: 14px;
-	transition: background 0.2s;
+	font-size: 13px;
+	transition: all 0.2s ease;
 }
 
 .attribute-upgrade-btn:hover {
-	background: var(--interactive-success-hover);
+	filter: brightness(1.1);
 	box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+	transform: translateY(-1px);
 }
 
 .attribute-upgrade-btn:active {
-	transform: scale(0.98);
+	transform: scale(0.97);
 }
 
-/* Info Icon (reusing NextLevelModal pattern) */
+/* Info Icon */
 .attribute-info-icon {
 	position: absolute;
 	top: 8px;

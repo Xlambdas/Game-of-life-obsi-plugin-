@@ -218,6 +218,7 @@ export default class XpService {
 				.filter(v => typeof v === "number")
 				.reduce((acc, val) => acc + (val ?? 0), 0)
 		);
+		const newXp = newTotalXP - (user.xpDetails.xp - user.xpDetails.newXp);
 
 		// Recalculate level
 		const xpCalc = this.computeXpFromTotal(newTotalXP, user.xpDetails.maxLevel);
@@ -226,7 +227,7 @@ export default class XpService {
 		const updatedXpDetails = {
 			...user.xpDetails,
 			xp: newTotalXP,
-			newXp: xpCalc.newXp,
+			newXp: newXp+pointsToSpend,
 			freePts: currentFreePts - pointsToSpend,
 		};
 
@@ -288,7 +289,7 @@ export default class XpService {
 		const capLevel = typeof maxLevel === "number" ? Math.max(1, Math.trunc(maxLevel)) : Infinity;
 
 		// Calculate what level the XP would naturally be at
-		while (remaining >= threshold && level <= capLevel) {
+		while (remaining >= threshold && level < capLevel) {
 			remaining -= threshold;
 			level += 1;
 			threshold = Math.floor(threshold * 1.2);

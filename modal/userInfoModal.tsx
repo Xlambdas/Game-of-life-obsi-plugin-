@@ -13,6 +13,7 @@ import { useState, useEffect } from 'react';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import { personaImages } from '../data/image';
 import { text } from 'stream/consumers';
+import { NextLevelModal } from './NextLevelModal';
 
 interface StatsModalProps {
 	user: UserSettings;
@@ -78,7 +79,7 @@ export class UserModal extends Modal {
 
 
 const StatsModal: React.FC<StatsModalProps> = ({ user: initialUser, onSpendPoint, app }) => {
-  type AttrKey = keyof UserSettings['attribute'];
+	type AttrKey = keyof UserSettings['attribute'];
 
 	const [user, setUser] = useState<UserSettings>(initialUser);
 	const [selectedAttribute, setSelectedAttribute] = useState<AttrKey | null>(null);
@@ -109,7 +110,18 @@ const StatsModal: React.FC<StatsModalProps> = ({ user: initialUser, onSpendPoint
 		}
 	};
 
+	const handleNextLevel = () => {
+		const modal = new NextLevelModal(app, user);
+
+		modal.onClose = () => {
+			const updatedUser = AppContextService.getInstance().getUser();
+			setUser(updatedUser);
+		};
+		modal.open();
+	};
+
 	const userProgress =  user.xpDetails.newXp < user.xpDetails.lvlThreshold ? Math.min(user.xpDetails.newXp / user.xpDetails.lvlThreshold, 1) : 100;
+	console.log("User Progress:", userProgress);
 
 	const [currentImage, setCurrentImage] = useState(personaImages['good_guys']);
 	useEffect(() => {
@@ -178,7 +190,7 @@ const StatsModal: React.FC<StatsModalProps> = ({ user: initialUser, onSpendPoint
 						<div className="stats-bar-row">
 							<div className="stats-bar-label">XP</div>
 							<div className="stats-progress-wrapper">
-								<div className="stats-progress-fill xp-fill" style={{ width: userProgress }} />
+								<div className="stats-progress-fill xp-fill" style={{ width: `${userProgress}%` }} />
 							</div>
 						</div>
 
@@ -209,6 +221,18 @@ const StatsModal: React.FC<StatsModalProps> = ({ user: initialUser, onSpendPoint
 								{user.xpDetails.freePts}
 							</span>
 						</div>
+
+						{userProgress >= 100 && (
+							<button
+								onClick={() => {
+									handleNextLevel();
+								}}
+								className="next-level-button"
+								title="View Unlocks"
+							>
+								<span className="next-level">Next Level</span>
+							</button>
+						)}
 					</div>
 
 					{/* Right side - Persona image */}
@@ -249,13 +273,8 @@ const StatsModal: React.FC<StatsModalProps> = ({ user: initialUser, onSpendPoint
 								onClick={() => setSelectedAttribute(key)}
 							>
 								<div className="attribute-card-header">
-									<div className="attribute-card-info">
-										<div className="attribute-card-icon">
-											{detail?.icon}
-										</div>
-										<div className="attribute-card-name">
-											{detail?.name || String(key)}
-										</div>
+									<div className="attribute-card-name">
+										{detail?.fullName || String(key)}
 									</div>
 									<div className="attribute-card-value">{value}</div>
 								</div>
@@ -268,7 +287,7 @@ const StatsModal: React.FC<StatsModalProps> = ({ user: initialUser, onSpendPoint
 											handleSpendPoint(key as keyof UserSettings['attribute']);
 										}}
 									>
-										+ UPGRADE
+										UPGRADE
 									</button>
 								)}
 
@@ -317,385 +336,3 @@ const StatsModal: React.FC<StatsModalProps> = ({ user: initialUser, onSpendPoint
 		</div>
 	)
 };
-
-const StatsModal_old: React.FC<StatsModalProps> = ({ user: initialUser, onSpendPoint }) => {
-	type SelectedAttribute = {
-		key: keyof typeof attributeDetails;
-		name: string;
-		fullName: string;
-		icon: string;
-		description: string;
-		benefits: string[];
-		value: number;
-	};
-
-  const [user, setUser] = useState(initialUser);
-  const [selectedAttribute, setSelectedAttribute] = useState<SelectedAttribute | null>(null);
-
-  // Update local state when prop changes
-  useEffect(() => {
-    setUser(initialUser);
-  }, [initialUser]);
-
-  // Prepare radar chart data
-  const radarData = (Object.entries(user.attribute) as [keyof typeof attributeDetails, number][])
-    .map(([key, value]) => ({
-      attribute: attributeDetails[key]?.name || key,
-      value: value,
-      fullMark: 25
-    }));
-
-  const handleSpendPoint = async (attrKey: keyof UserSettings["attribute"]) => {
-    if (user.xpDetails.freePts > 0) {
-      await onSpendPoint(attrKey);
-      // The parent will update and pass new user data
-    }
-  };
-
-  return (
-    <div style={{
-      display: 'flex',
-      gap: '24px',
-      padding: '24px',
-      backgroundColor: '#1a1a1a',
-      color: '#e0e0e0',
-      borderRadius: '12px',
-      fontFamily: 'monospace',
-      maxWidth: '1100px',
-      margin: '0 auto'
-    }}>
-      {/* Left Panel - Stats */}
-      <div style={{
-        flex: '1',
-        border: '2px solid #444',
-        borderRadius: '8px',
-        padding: '20px',
-        backgroundColor: '#252525'
-      }}>
-        <h2 style={{
-          textAlign: 'center',
-          marginBottom: '20px',
-          fontSize: '18px',
-          fontWeight: 'bold',
-          textTransform: 'uppercase',
-          letterSpacing: '2px'
-        }}>Stats</h2>
-
-        {/* Radar Chart */}
-        <div style={{ marginBottom: '30px' }}>
-          <ResponsiveContainer width="100%" height={300}>
-            <RadarChart data={radarData}>
-              <PolarGrid stroke="#444" />
-              <PolarAngleAxis 
-                dataKey="attribute" 
-                tick={{ fill: '#e0e0e0', fontSize: 12 }}
-              />
-              <PolarRadiusAxis 
-                angle={90} 
-                domain={[0, 25]}
-                tick={{ fill: '#888' }}
-              />
-              <Radar
-                name="Attributes"
-                dataKey="value"
-                stroke="#8884d8"
-                fill="#8884d8"
-                fillOpacity={0.6}
-              />
-            </RadarChart>
-          </ResponsiveContainer>
-        </div>
-
-        {/* Free Points */}
-        <div style={{
-          marginBottom: '20px',
-          padding: '12px',
-          backgroundColor: '#333',
-          borderRadius: '6px',
-          border: '1px solid #555'
-        }}>
-          <div style={{
-            fontSize: '14px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px'
-          }}>
-            <span style={{ fontSize: '20px' }}>⭐</span>
-            <span>Free Points:</span>
-            <span style={{
-              fontWeight: 'bold',
-              fontSize: '18px',
-              color: '#ffd700',
-              marginLeft: 'auto'
-            }}>{user.xpDetails.freePts}</span>
-          </div>
-        </div>
-
-        {/* XP Bar */}
-        <div style={{ marginBottom: '12px' }}>
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            marginBottom: '4px',
-            fontSize: '14px'
-          }}>
-            <span>⚡</span>
-            <span>XP:</span>
-          </div>
-          <div style={{
-            width: '100%',
-            height: '24px',
-            backgroundColor: '#333',
-            borderRadius: '4px',
-            overflow: 'hidden',
-            border: '1px solid #555',
-            position: 'relative'
-          }}>
-            <div style={{
-              width: `${(user.xpDetails.newXp / user.xpDetails.lvlThreshold) * 100}%`,
-              height: '100%',
-              backgroundColor: '#4caf50',
-              transition: 'width 0.3s ease'
-            }} />
-            <div style={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              fontSize: '12px',
-              fontWeight: 'bold',
-              textShadow: '1px 1px 2px rgba(0,0,0,0.8)'
-            }}>
-              {user.xpDetails.newXp} / {user.xpDetails.lvlThreshold}
-            </div>
-          </div>
-        </div>
-
-        {/* Mana Bar */}
-        <div style={{ marginBottom: '12px' }}>
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            marginBottom: '4px',
-            fontSize: '14px'
-          }}>
-            <span>🔮</span>
-            <span>Mana:</span>
-          </div>
-          <div style={{
-            width: '100%',
-            height: '24px',
-            backgroundColor: '#333',
-            borderRadius: '4px',
-            overflow: 'hidden',
-            border: '1px solid #555',
-            position: 'relative'
-          }}>
-            <div style={{
-              width: '100%',
-              height: '100%',
-              backgroundColor: '#2196f3'
-            }} />
-            <div style={{
-              position: 'absolute',
-              top: '50%',
-              left: '50%',
-              transform: 'translate(-50%, -50%)',
-              fontSize: '12px',
-              fontWeight: 'bold',
-              textShadow: '1px 1px 2px rgba(0,0,0,0.8)'
-            }}>
-              {user.xpDetails.xp}
-            </div>
-          </div>
-        </div>
-
-        {/* Level Display */}
-        <div style={{
-          marginTop: '20px',
-          textAlign: 'center',
-          padding: '12px',
-          backgroundColor: '#333',
-          borderRadius: '6px',
-          border: '1px solid #555'
-        }}>
-          <div style={{ fontSize: '12px', color: '#888', marginBottom: '4px' }}>LEVEL</div>
-          <div style={{ fontSize: '32px', fontWeight: 'bold', color: '#ffd700' }}>
-            {user.xpDetails.level}
-          </div>
-          <div style={{ fontSize: '12px', color: '#888', marginTop: '8px' }}>
-            {user.persona.class}
-          </div>
-          <div style={{ fontSize: '14px', color: '#e0e0e0' }}>
-            {user.persona.name}
-          </div>
-        </div>
-      </div>
-
-      {/* Right Panel - Attributes */}
-      <div style={{
-        flex: '1',
-        border: '2px solid #444',
-        borderRadius: '8px',
-        padding: '20px',
-        backgroundColor: '#252525'
-      }}>
-        <h2 style={{
-          textAlign: 'center',
-          marginBottom: '20px',
-          fontSize: '18px',
-          fontWeight: 'bold',
-          textTransform: 'uppercase',
-          letterSpacing: '2px'
-        }}>Attributes</h2>
-
-        {/* Attributes Grid */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: '12px',
-          marginBottom: '20px'
-        }}>
-          {(Object.entries(user.attribute) as [keyof typeof attributeDetails, number][]).map(([key, value]) => {
-            const detail = attributeDetails[key];
-            return (
-              <div
-                key={String(key)}
-                style={{
-                  padding: '12px',
-                  backgroundColor: '#333',
-                  borderRadius: '6px',
-                  border: '1px solid #555',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  position: 'relative'
-                }}
-                onClick={() => setSelectedAttribute({ key, ...detail, value })}
-              >
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  marginBottom: '8px'
-                }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ fontSize: '20px' }}>{detail?.icon}</span>
-                    <span style={{ fontSize: '14px', fontWeight: 'bold' }}>
-                      {detail?.name || key}
-                    </span>
-                  </div>
-                  <span style={{
-                    fontSize: '18px',
-                    fontWeight: 'bold',
-                    color: '#4caf50'
-                  }}>
-                    {value}
-                  </span>
-                </div>
-                {user.xpDetails.freePts > 0 && (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleSpendPoint(key as keyof UserSettings["attribute"]);
-                    }}
-                    style={{
-                      width: '100%',
-                      padding: '6px',
-                      backgroundColor: '#4caf50',
-                      border: 'none',
-                      borderRadius: '4px',
-                      color: 'white',
-                      fontWeight: 'bold',
-                      cursor: 'pointer',
-                      fontSize: '14px'
-                    }}
-                  >
-                    + UPGRADE
-                  </button>
-                )}
-                <div style={{
-                  position: 'absolute',
-                  top: '8px',
-                  right: '8px',
-                  fontSize: '12px',
-                  color: '#888'
-                }}>
-                  ⓘ
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Selected Attribute Detail */}
-        {selectedAttribute && (
-          <div style={{
-            padding: '16px',
-            backgroundColor: '#2a2a2a',
-            borderRadius: '8px',
-            border: '2px solid #4caf50',
-            marginTop: '20px'
-          }}>
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '12px',
-              marginBottom: '12px',
-              paddingBottom: '12px',
-              borderBottom: '1px solid #444'
-            }}>
-              <span style={{ fontSize: '28px' }}>{selectedAttribute.icon}</span>
-              <div>
-                <div style={{ fontSize: '12px', color: '#888' }}>ATTRIBUTE</div>
-                <div style={{ fontSize: '18px', fontWeight: 'bold' }}>
-                  {selectedAttribute.fullName}
-                </div>
-              </div>
-              <div style={{
-                marginLeft: 'auto',
-                fontSize: '24px',
-                fontWeight: 'bold',
-                color: '#4caf50'
-              }}>
-                {selectedAttribute.value}
-              </div>
-            </div>
-            <p style={{
-              fontSize: '14px',
-              lineHeight: '1.6',
-              marginBottom: '12px',
-              color: '#ccc'
-            }}>
-              {selectedAttribute.description}
-            </p>
-            {selectedAttribute.benefits && (
-              <div>
-                <div style={{
-                  fontSize: '12px',
-                  fontWeight: 'bold',
-                  marginBottom: '8px',
-                  color: '#4caf50'
-                }}>
-                  BENEFITS:
-                </div>
-                <ul style={{
-                  margin: 0,
-                  paddingLeft: '20px',
-                  fontSize: '13px',
-                  color: '#ccc'
-                }}>
-                  {selectedAttribute.benefits.map((benefit, i) => (
-                    <li key={i} style={{ marginBottom: '4px' }}>{benefit}</li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-    </div>
-  );
-};
-

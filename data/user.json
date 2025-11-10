@@ -33,26 +33,26 @@
     }
   },
   "xpDetails": {
-    "xp": 126,
-    "level": 1,
-    "maxLevel": 1,
-    "newXp": 126,
-    "lvlThreshold": 100,
-    "freePts": 9
+    "xp": 145,
+    "level": 2,
+    "maxLevel": 2,
+    "newXp": 45,
+    "lvlThreshold": 120,
+    "freePts": 7
   },
   "attribute": {
-    "strength": 22,
+    "strength": 26,
     "agility": 13,
-    "endurance": 19,
-    "charisma": 6,
-    "wisdom": 11,
-    "perception": 13,
-    "intelligence": 19,
+    "endurance": 25,
+    "charisma": 8,
+    "wisdom": 13,
+    "perception": 15,
+    "intelligence": 20,
     "willpower": 5,
     "spirit": 6,
     "flow": 5,
-    "reputation": 3,
-    "resilience": 4
+    "reputation": 4,
+    "resilience": 5
   },
   "skills": {},
   "habits": {},
