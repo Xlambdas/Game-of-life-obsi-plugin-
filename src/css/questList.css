@@ -1,37 +1,5 @@
 /* ---------------------- questlist style general ---------------------- */
 
-.quest-list {
-    margin: 0;
-    padding: 0;
-}
-
-/* Controls */
-.quest-controls {
-    margin: 4px 0;
-    padding: 0 2px;
-}
-
-.quest-search {
-	width: 100%;
-	margin-bottom: 2px;
-}
-
-
-
-.quest-description {
-    font-size: 0.85em;
-    color: var(--text-muted);
-    margin: 4px 0;
-    white-space: normal;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    line-clamp: 3;
-    -webkit-box-orient: vertical;
-    line-height: 1.4;
-    max-height: 4.2em;
-}
 
 .quest-tabs {
     display: flex;

@@ -129,18 +129,18 @@
 }
 
 /* ===========================
-   QUEST & HABIT LISTS
-   ========================== */
+	QUEST & HABIT LISTS
+    ========================== */
+
+.sideview-list {
+    margin: 0;
+    padding: 0;
+}
 
 .quests-container, .habits-container {
 	display: flex;
 	flex-direction: column;
 	gap: 6px;
-	margin: 0;
-	padding: 0;
-}
-
-.habit-list-container {
 	margin: 0;
 	padding: 0;
 }
@@ -157,6 +157,17 @@
 	border: none;
 	border-top: 1px solid var(--background-modifier-border);
 	margin: 4px 0;
+}
+
+/* Controls */
+.quest-controls, .habit-controls {
+    margin: 4px 0;
+    padding: 0 2px;
+}
+
+.list-search {
+	width: 100%;
+	margin-bottom: 2px;
 }
 
 .quest-controls-row,
@@ -203,7 +214,7 @@
 }
 
 /* Habit Filter Button */
-.habit-filter-button {
+.list-filter-button {
 	flex: 1;
 	display: flex;
 	align-items: center;
@@ -222,13 +233,13 @@
 	width: 100%;
 }
 
-.habit-filter-button:hover {
+.list-filter-button:hover {
 	background: var(--background-modifier-hover);
 }
 
 /* Dropdowns */
 .quest-filter-dropdown,
-.quest-sort-dropdown {
+.list-sort-dropdown {
 	flex: 1;
 	display: flex;
 	position: relative;
@@ -237,7 +248,7 @@
 }
 
 .quest-filter-button,
-.quest-sort-button {
+.list-sort-button {
 	width: 100%;
 	padding: 4px 8px;
 	font-size: 11px;
@@ -254,15 +265,16 @@
 }
 
 .quest-filter-button::after,
-.quest-sort-button::after {
+.list-sort-button::after {
 	content: '▼';
 	float: right;
 	font-size: 8px;
 	opacity: 0.6;
+	margin-left: 4px;
 }
 
 .quest-filter-options,
-.quest-sort-options {
+.list-sort-options {
 	display: none;
 	position: absolute;
 	top: 100%;
@@ -278,12 +290,12 @@
 }
 
 .quest-filter-dropdown:hover .quest-filter-options,
-.quest-sort-dropdown:hover .quest-sort-options {
+.list-sort-dropdown:hover .list-sort-options {
 	display: block;
 }
 
 .quest-filter-option,
-.quest-sort-option {
+.list-sort-option {
 	display: block;
 	width: 100%;
 	padding: 4px 8px;
@@ -295,19 +307,19 @@
 }
 
 .quest-filter-option:hover,
-.quest-sort-option:hover {
+.list-sort-option:hover {
 	background: var(--background-modifier-hover);
 }
 
 .quest-filter-option.active,
-.quest-sort-option.active {
+.list-sort-option.active {
 	background: var(--interactive-accent);
 	color: var(--text-on-accent);
 }
 
 /* ===========================
-   ITEMS
-   ========================== */
+    ITEMS
+    ========================== */
 
 .quest-item,
 .habit-item {
@@ -317,7 +329,7 @@
 	background: var(--background-primary);
 }
 
-.quest-header {
+.quest-header, .habit-header {
 	display: flex;
 	align-items: stretch;
 	gap: 6px;
@@ -325,7 +337,7 @@
 	height: 24px;
 }
 
-.quest-checkbox-section {
+.quest-checkbox-section, .habit-checkbox-section {
 	display: flex;
 	align-items: center;
 	gap: 4px;
@@ -333,19 +345,20 @@
 	min-width: 0;
 }
 
-.quest-title {
+.quest-title,
+.habit-title {
 	flex: 1;
 	font-size: 12px;
 	font-weight: 500;
 	margin: 0;
 	min-width: 0;
-	max-width: 12ch;
 	overflow: hidden;
 	position: relative;
 	white-space: nowrap;
 }
 
-.quest-title span {
+.quest-title span,
+.habit-title span {
 	display: inline-block;
 	white-space: nowrap;
 	transform: translateX(0);
@@ -353,30 +366,27 @@
 }
 
 /* Scroll animation on hover */
-.quest-item:hover .quest-title.scrollable span {
-	transform: translateX(calc(-100% + 12ch));
+.quest-item:hover .quest-title.scrollable span,
+.habit-item:hover .habit-title.scrollable span {
+	transform: translateX(calc(-100% + 8ch));
 	transition: transform 6s linear;
 }
 
 /* Reset when not hovering */
-.quest-item:not(:hover) .quest-title span {
+.quest-item:not(:hover) .quest-title span,
+.habit-item:not(:hover) .habit-title span {
 	transform: translateX(0);
 	transition: transform 0.5s ease-out;
 }
 
-.quest-title.completed span, .quest-title.scrollable.completed span {
+.quest-title.completed span, .quest-title.scrollable.completed span,
+.habit-title.completed span, .habit-title.scrollable.completed span {
 	text-decoration: line-through;
 	color: var(--text-muted);
 	opacity: 0.6;
 }
 
-.quest-title.completed span, .quest-title.scrollable.completed span {
-	text-decoration: line-through;
-    color: var(--text-muted);
-	opacity: 0.6;
-}
-
-.quest-system-badge {
+.list-system-badge {
 	font-size: 10px;
 	font-weight: 500;
 	padding: 6px 4px;
@@ -386,28 +396,21 @@
 	height: 24px;
 }
 
-.quest-edit-button {
-	padding: 2px 4px;
+.list-edit-button {
+    padding: 2px 6px;
 	font-size: 10px;
 	font-weight: 500;
-	background: transparent;
-	border: 1px solid var(--background-modifier-border);
+    background: none;
+    border: none;
 	border-radius: 3px;
 	height: 24px;
 	width: 40px;
-	cursor: pointer;
-}
-
-.quest-edit-button {
-    padding: 2px 6px;
-    background: none;
-    border: none;
     cursor: pointer;
     flex-shrink: 0;
     margin-left: 4px;
 }
 
-.quest-edit-button:hover {
+.list-edit-button:hover {
 	background: var(--background-modifier-hover);
 }
 
@@ -418,11 +421,10 @@
 	margin: 4px 0;
 	line-height: 1.3;
 	display: -webkit-box;
-	
 	overflow: hidden;
 }
 
-.quest-xp {
+.quest-xp, .habit-xp {
 	font-size: 10px;
 	color: var(--text-accent);
 	margin-top: 4px;

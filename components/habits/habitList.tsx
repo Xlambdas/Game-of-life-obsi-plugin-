@@ -79,117 +79,19 @@ export const HabitList: React.FC<HabitListProps> = ({ habits, onHabitUpdate, onU
 		return appService.xpService.getDaysUntil(new Date(), targetDate, 'habit');
 	}
 
-	const handleCheckbox_old = async (habit: Habit, completed: boolean) => {
-		try {
-			// Update habit completion status :
-			const updatedHabit = await appService.habitService.updateHabitCompletion(habit, completed);
-			await appService.habitService.saveHabit(updatedHabit);
-			const updatedHabits = habitState.map(h => h.id === updatedHabit.id ? updatedHabit : h);
-			setHabitState(updatedHabits);
-			// Update user XP based on habit completion :
-			const newUser = await appService.xpService.updateXPFromAttributes(habit.reward.attributes || {}, completed, 'habit', habit.progress.level);
-			await appService.dataService.saveUser(newUser);
-
-			// Refresh quest that may depend on this habit :
-			let allQuests = await appService.dataService.loadAllQuests();
-			let questsArray = Object.values(allQuests);
-
-			// Find all quests that depend on this habit (directly)
-        const directlyAffectedQuestIds = new Set<string>();
-        questsArray.forEach(quest => {
-            if (quest.progression.subtasks?.conditionHabits?.some(ch => ch.id === habit.id)) {
-                directlyAffectedQuestIds.add(quest.id);
-            }
-        });
-        
-        if (directlyAffectedQuestIds.size > 0) {
-            // Build complete dependency chain
-            const allAffectedQuestIds = new Set<string>(directlyAffectedQuestIds);
-            let foundNewDependents = true;
-            
-            // Keep searching until no new dependents are found
-            while (foundNewDependents) {
-                foundNewDependents = false;
-                questsArray.forEach(quest => {
-                    // Skip if already in the affected set
-                    if (allAffectedQuestIds.has(quest.id)) return;
-                    
-                    // Check if this quest depends on any affected quest
-                    const dependsOnAffectedQuest = quest.progression.subtasks?.conditionQuests?.some(
-                        cq => allAffectedQuestIds.has(cq.id)
-                    );
-                    
-                    const dependsOnAffectedInRequirements = quest.requirements.previousQuests?.some(
-                        pq => {
-                            const pqId = typeof pq === 'string' ? pq : pq.id;
-                            return allAffectedQuestIds.has(pqId);
-                        }
-                    );
-                    
-                    if (dependsOnAffectedQuest || dependsOnAffectedInRequirements) {
-                        allAffectedQuestIds.add(quest.id);
-                        foundNewDependents = true;
-                    }
-                });
-            }
-            
-            // console.log("All affected quests:", Array.from(allAffectedQuestIds));
-            
-            // Sort quests by dependency order
-            const sortedQuestIds = topologicalSort(questsArray, allAffectedQuestIds);
-            
-            // console.log("Refresh order:", sortedQuestIds);
-            
-            // Create a map for quick lookup and update
-            const questMap = new Map(questsArray.map(q => [q.id, q]));
-            
-            // Refresh in dependency order
-            for (const questId of sortedQuestIds) {
-                const quest = questMap.get(questId);
-                if (quest) {
-                    const refreshedQuest = await appService.questService.refreshQuests(quest);
-                    questMap.set(questId, refreshedQuest);
-                    
-                    // Update the array immediately so subsequent refreshes see the new data
-                    questsArray = questsArray.map(q => q.id === questId ? refreshedQuest : q);
-                }
-            }
-            
-            await appService.dataService.saveAllQuests(questsArray);
-            
-            // Trigger a global update
-            document.dispatchEvent(new CustomEvent("dbUpdated", {
-                detail: {
-                    type: 'habit',
-                    action: 'complete',
-                    data: habit
-                }
-            }));
-        }
-			// Notify parent component of updates
-			if (onHabitUpdate) onHabitUpdate(updatedHabits);
-			if (onUserUpdate) onUserUpdate(newUser);
-		} catch (error) {
-			console.error("Error updating habit completion:", error);
-		}
-	};
-
 	const handleCheckbox = async (habit: Habit, completed: boolean) => {
 		try {
-			// Step 1: Update the habit
 			const updatedHabit = await appService.habitService.updateHabitCompletion(habit, completed);
 			await appService.habitService.saveHabit(updatedHabit);
 			const updatedHabits = habitState.map(h => h.id === updatedHabit.id ? updatedHabit : h);
 			setHabitState(updatedHabits);
-			
-			// Step 2: Update user XP
+
 			const newUser = await appService.xpService.updateXPFromAttributes(habit.reward.attributes || {}, completed, 'habit', habit.progress.level);
 			await appService.dataService.saveUser(newUser);
-			
-			// Step 3: Refresh quests in dependency order
+
 			let allQuests = await appService.dataService.loadAllQuests();
 			let questsArray = Object.values(allQuests);
-			
+
 			// Find all quests that depend on this habit (directly)
 			const directlyAffectedQuestIds = new Set<string>();
 			questsArray.forEach(quest => {
@@ -197,56 +99,43 @@ export const HabitList: React.FC<HabitListProps> = ({ habits, onHabitUpdate, onU
 					directlyAffectedQuestIds.add(quest.id);
 				}
 			});
-			
 			if (directlyAffectedQuestIds.size > 0) {
 				// Build complete dependency chain
 				const allAffectedQuestIds = new Set<string>(directlyAffectedQuestIds);
 				let foundNewDependents = true;
-				
+
 				while (foundNewDependents) {
 					foundNewDependents = false;
 					questsArray.forEach(quest => {
 						if (allAffectedQuestIds.has(quest.id)) return;
-						
 						const dependsOnAffectedQuest = quest.progression.subtasks?.conditionQuests?.some(
 							cq => allAffectedQuestIds.has(cq.id)
 						);
-						
 						const dependsOnAffectedInRequirements = quest.requirements.previousQuests?.some(
 							pq => {
 								const pqId = typeof pq === 'string' ? pq : pq.id;
 								return allAffectedQuestIds.has(pqId);
 							}
 						);
-						
 						if (dependsOnAffectedQuest || dependsOnAffectedInRequirements) {
 							allAffectedQuestIds.add(quest.id);
 							foundNewDependents = true;
 						}
 					});
 				}
-				
-				// console.log("All affected quests:", Array.from(allAffectedQuestIds));
-				
 				// Sort quests by dependency order
 				const sortedQuestIds = topologicalSort(questsArray, allAffectedQuestIds);
-				
-				// console.log("Refresh order:", sortedQuestIds);
-				
 				// Refresh in dependency order, passing the current quest state
 				for (const questId of sortedQuestIds) {
 					const questIndex = questsArray.findIndex(q => q.id === questId);
 					if (questIndex !== -1) {
 						const quest = questsArray[questIndex];
-						// USE THE NEW METHOD WITH CONTEXT
 						const refreshedQuest = await appService.questService.refreshQuestsWithContext(quest, questsArray);
 						questsArray[questIndex] = refreshedQuest;
-						// console.log(`Refreshed ${quest.title}: progress ${quest.progression.progress}% -> ${refreshedQuest.progression.progress}%`);
 					}
 				}
-				
 				await appService.dataService.saveAllQuests(questsArray);
-				
+
 				document.dispatchEvent(new CustomEvent("dbUpdated", {
 					detail: {
 						type: 'habit',
@@ -255,18 +144,14 @@ export const HabitList: React.FC<HabitListProps> = ({ habits, onHabitUpdate, onU
 					}
 				}));
 			}
-			
-			// Step 4: Notify parent
 			if (onHabitUpdate) onHabitUpdate(updatedHabits);
 			if (onUserUpdate) onUserUpdate(newUser);
-			
 		} catch (error) {
 			console.error("Error updating habit:", error);
 		}
 	};
 
 	const handleModify = (habit: Habit) => {
-		// console.log("Modifying habit:", habit);
 		new GenericForm(appService.getApp(), 'habit-modify', habit).open();
 	};
 
@@ -346,28 +231,26 @@ export const HabitList: React.FC<HabitListProps> = ({ habits, onHabitUpdate, onU
 function topologicalSort(allQuests: Quest[], affectedIds: Set<string>): string[] {
     const graph = new Map<string, string[]>();
     const inDegree = new Map<string, number>();
-    
     // Initialize for all affected quests
     affectedIds.forEach(id => {
         graph.set(id, []);
         inDegree.set(id, 0);
     });
-    
+
     // Build the dependency graph for ALL affected quests
     affectedIds.forEach(questId => {
         const quest = allQuests.find(q => q.id === questId);
         if (!quest) return;
-        
+
         // Find dependencies (what this quest depends ON)
         const dependencies: string[] = [];
-        
+
         // Check conditionQuests
         quest.progression.subtasks?.conditionQuests?.forEach(cq => {
             if (affectedIds.has(cq.id)) {
                 dependencies.push(cq.id);
             }
         });
-        
         // Check previousQuests
         quest.requirements.previousQuests?.forEach(pq => {
             const pqId = typeof pq === 'string' ? pq : pq.id;
@@ -375,7 +258,6 @@ function topologicalSort(allQuests: Quest[], affectedIds: Set<string>): string[]
                 dependencies.push(pqId);
             }
         });
-        
         // Update the graph
         dependencies.forEach(depId => {
             // depId -> questId (depId must be done before questId)
@@ -385,40 +267,33 @@ function topologicalSort(allQuests: Quest[], affectedIds: Set<string>): string[]
             }
             graph.get(depId)!.push(questId);
         });
-        
         // Set in-degree
         inDegree.set(questId, (inDegree.get(questId) || 0) + dependencies.length);
     });
-    
-    // console.log("Dependency graph:", Object.fromEntries(graph));
-    // console.log("In-degrees:", Object.fromEntries(inDegree));
-    
-    // Kahn's algorithm for topological sort
+	// Kahn's algorithm for topological sort
     const queue: string[] = [];
     const result: string[] = [];
-    
+
     // Start with quests that have no dependencies (in-degree = 0)
     inDegree.forEach((degree, questId) => {
         if (degree === 0) {
             queue.push(questId);
         }
     });
-    
     while (queue.length > 0) {
         const current = queue.shift()!;
         result.push(current);
-        
+
         // Process all quests that depend on current
         const dependents = graph.get(current) || [];
         dependents.forEach(dependent => {
             const newDegree = (inDegree.get(dependent) || 0) - 1;
             inDegree.set(dependent, newDegree);
-            
+
             if (newDegree === 0) {
                 queue.push(dependent);
             }
         });
     }
-    
     return result;
 }

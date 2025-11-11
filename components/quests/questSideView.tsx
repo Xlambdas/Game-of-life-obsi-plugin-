@@ -39,7 +39,7 @@ export const QuestSideView: React.FC<QuestSideViewProps> = (props) => {
 	return (
 		<div className="quests-container">
 			<details
-				className="quest-list"
+				className="sideview-list"
 				open={isOpen}
 				onToggle={handleToggle}
 			>
@@ -52,14 +52,14 @@ export const QuestSideView: React.FC<QuestSideViewProps> = (props) => {
 					placeholder="Search quests..."
 					value={filter}
 					onChange={(e) => setFilter(e.target.value)}
-					className="quest-search"
+					className="list-search"
 				/>
 
 				<div className="quest-controls-row">
 				{/* Tabs: Active / Completed / All */}
 
 				<button
-					className="habit-filter-button"
+					className="list-filter-button"
 					onClick={() => {
 						const next =
 							activeTab === "active"
@@ -76,25 +76,25 @@ export const QuestSideView: React.FC<QuestSideViewProps> = (props) => {
 				</button>
 
 				{/* Sorting */}
-				<div className="quest-sort-dropdown">
-					<button className="quest-sort-button">
+				<div className="list-sort-dropdown">
+					<button className="list-sort-button">
 					Sort by: {sortBy.charAt(0).toUpperCase() + sortBy.slice(1)}
 					</button>
-					<div className="quest-sort-options">
+					<div className="list-sort-options">
 					<button
-						className={`quest-sort-option ${sortBy === "priority" ? "active" : ""}`}
+						className={`list-sort-option ${sortBy === "priority" ? "active" : ""}`}
 						onClick={() => setSortBy("priority")}
 					>
 						Priority
 					</button>
 					<button
-						className={`quest-sort-option ${sortBy === "difficulty" ? "active" : ""}`}
+						className={`list-sort-option ${sortBy === "difficulty" ? "active" : ""}`}
 						onClick={() => setSortBy("difficulty")}
 					>
 						Difficulty
 					</button>
 					<button
-						className={`quest-sort-option ${sortBy === "date" ? "active" : ""}`}
+						className={`list-sort-option ${sortBy === "date" ? "active" : ""}`}
 						onClick={() => setSortBy("date")}
 					>
 						Date
@@ -144,34 +144,36 @@ const QuestItem: React.FC<QuestItemProps> = ({ quest, activeTab, onComplete, onM
 		<div className="quest-item">
 			<div className="quest-header">
 				<div className="quest-checkbox-section">
-				<input
-					type="checkbox"
-					checked={quest.progression.isCompleted}
-					onChange={() => onComplete(quest, !quest.progression.isCompleted)}
-					disabled={
-						activeTab === "upcoming" ||
-						(quest.progression?.subtasks?.conditionQuests?.length ?? 0) > 0 ||
-						(quest.progression?.subtasks?.conditionHabits?.length ?? 0) > 0
-					}
-					className="quest-checkbox"
-				/>
-				<span className={`quest-title ${quest.progression.isCompleted ? "completed" : ""} ${quest.title.length > 12 ? "scrollable" : ""}`}>
-					<span>{quest.title}</span>
-				</span>
-				{isEditable ? (
-					<button
-						className="quest-edit-button"
-						onClick={() => onModify(quest)}
-						aria-label="Edit quest"
+					<input
+						type="checkbox"
+						checked={quest.progression.isCompleted}
+						onChange={() => onComplete(quest, !quest.progression.isCompleted)}
+						disabled={
+							activeTab === "upcoming" ||
+							(quest.progression?.subtasks?.conditionQuests?.length ?? 0) > 0 ||
+							(quest.progression?.subtasks?.conditionHabits?.length ?? 0) > 0
+						}
+						className="quest-checkbox"
+					/>
+					<span className={
+						`quest-title ${quest.progression.isCompleted ? "completed" : ""} ${quest.title.length > 12 ? "scrollable" : ""}`}
 					>
-						Edit
-					</button>
-				): quest.meta.isSystemQuest ? (
-					<span className="quest-system-badge">System</span>
-				) : null}
+						<span>{quest.title}</span>
+					</span>
+					{isEditable ? (
+						<button
+							className="list-edit-button"
+							onClick={() => onModify(quest)}
+							aria-label="Edit quest"
+						>
+							Edit
+						</button>
+					): quest.meta.isSystemQuest ? (
+						<span className="list-system-badge">System</span>
+					) : null}
 				</div>
 			</div>
-			<ProgressBar value={quest.progression.progress} max={100} showPercent={false} className="quest-progress-bar" />
+			<ProgressBar value={quest.progression.progress} max={100} showPercent={false} />
 
 			{quest.shortDescription && (
 				<div className="quest-description">
@@ -196,26 +198,5 @@ const QuestItem: React.FC<QuestItemProps> = ({ quest, activeTab, onComplete, onM
 				)))}
 			</div>
 		</div>
-	);
-};
-
-
-const QuestTitle: React.FC<{ title: string; completed?: boolean }> = ({ title, completed }) => {
-	const titleRef = React.useRef<HTMLSpanElement>(null);
-	const [isOverflowing, setIsOverflowing] = React.useState(false);
-
-	React.useEffect(() => {
-		const el = titleRef.current;
-		if (!el) return;
-		setIsOverflowing(el.scrollWidth > el.clientWidth);
-	}, [title]);
-
-	return (
-		<span
-			className={`quest-title ${completed ? "completed" : ""} ${isOverflowing ? "scrollable" : ""}`}
-			title={title}
-		>
-			<span ref={titleRef}>{title}</span>
-		</span>
 	);
 };

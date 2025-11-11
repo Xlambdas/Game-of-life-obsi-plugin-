@@ -41,83 +41,83 @@ export const HabitSideView: React.FC<HabitSideViewProps> = (props) => {
 
 	return (
 		<div className="habits-container">
-		<details
-			className="quest-list"
-			open={isOpen}
-			onToggle={handleToggle}
-		>
-		<summary className="accordion-title">
-			Habits ({completedCount} / {totalCount} - {percent}%)
-		</summary>
+			<details
+				className="sideview-list"
+				open={isOpen}
+				onToggle={handleToggle}
+			>
+				<summary className="accordion-title">
+					Habits ({completedCount} / {totalCount} - {percent}%)
+				</summary>
 
-		{/* Barre de recherche + filtres */}
-		<div className="quest-controls">
-			<input
-				type="text"
-				placeholder="Search habits..."
-				value={filter}
-				onChange={(e) => setFilter(e.target.value)}
-				className="quest-search"
-			/>
+				{/* Barre de recherche + filtres */}
+				<div className="habit-controls">
+					<input
+						type="text"
+						placeholder="Search habits..."
+						value={filter}
+						onChange={(e) => setFilter(e.target.value)}
+						className="list-search"
+					/>
 
-			<div className="habit-controls-row">
-			{/* today / upcoming */}
-				<button
-					className="habit-filter-button"
-					onClick={() => setActiveTab(activeTab === "today" ? "upcoming" : "today")}
-				>
-					{activeTab === "today" ? "Today" : "Upcoming"}
-				</button>
+					<div className="habit-controls-row">
+					{/* today / upcoming */}
+						<button
+							className="list-filter-button"
+							onClick={() => setActiveTab(activeTab === "today" ? "upcoming" : "today")}
+						>
+							{activeTab === "today" ? "Today" : "Upcoming"}
+						</button>
 
-			{/* Sort By */}
-			<div className="quest-sort-dropdown">
-				<button className="quest-sort-button">
-					Sort by: {sortBy.charAt(0).toUpperCase() + sortBy.slice(1)}
-				</button>
-				<div className="quest-sort-options">
-				<button
-					className={`quest-sort-option ${sortBy === "priority" ? "active" : ""}`}
-					onClick={() => setSortBy("priority")}
-				>
-					Priority
-				</button>
-				<button
-					className={`quest-sort-option ${sortBy === "difficulty" ? "active" : ""}`}
-					onClick={() => setSortBy("difficulty")}
-				>
-					Difficulty
-				</button>
-				<button
-					className={`quest-sort-option ${sortBy === "recurrence" ? "active" : ""}`}
-					onClick={() => setSortBy("recurrence")}
-				>
-					Recurrence
-				</button>
+						{/* Sort By */}
+						<div className="list-sort-dropdown">
+							<button className="list-sort-button">
+								Sort by: {sortBy.charAt(0).toUpperCase() + sortBy.slice(1)}
+							</button>
+							<div className="list-sort-options">
+								<button
+									className={`list-sort-option ${sortBy === "priority" ? "active" : ""}`}
+									onClick={() => setSortBy("priority")}
+								>
+									Priority
+								</button>
+								<button
+									className={`list-sort-option ${sortBy === "difficulty" ? "active" : ""}`}
+									onClick={() => setSortBy("difficulty")}
+								>
+									Difficulty
+								</button>
+								<button
+									className={`list-sort-option ${sortBy === "recurrence" ? "active" : ""}`}
+									onClick={() => setSortBy("recurrence")}
+								>
+									Recurrence
+								</button>
+							</div>
+						</div>
+					</div>
 				</div>
-			</div>
-			</div>
-		</div>
 
-		{/* Liste des Habits */}
-		{filteredHabits.length === 0 ? (
-			<div className="no-habits-message">
-			{filter ? "No habits match your search" : "No habits available"}
-			</div>
-		) : (
-			<div className="habits-container">
-			{filteredHabits.map((habit) => (
-				<HabitItem
-					key={habit.id}
-					habit={habit}
-					activeTab={activeTab}
-					onComplete={handleComplete}
-					onModify={handleModifyHabit}
-					getDaysUntil={getDaysUntil}
-				/>
-			))}
-			</div>
-		)}
-		</details>
+				{/* Liste des Habits */}
+				{filteredHabits.length === 0 ? (
+					<div className="no-habits-message">
+						{filter ? "No habits match your search" : "No habits available"}
+					</div>
+				) : (
+					<div className="habits-container">
+						{filteredHabits.map((habit) => (
+							<HabitItem
+								key={habit.id}
+								habit={habit}
+								activeTab={activeTab}
+								onComplete={handleComplete}
+								onModify={handleModifyHabit}
+								getDaysUntil={getDaysUntil}
+							/>
+						))}
+					</div>
+				)}
+			</details>
 		</div>
 	);
 }
@@ -141,36 +141,39 @@ const HabitItem: React.FC<HabitItemProps> = ({ habit, activeTab, onComplete, onM
 	};
 
 	return (
-		<div className="quest-item">
-			<div className="quest-header">
-				<div className="quest-checkbox-section">
+		<div className="habit-item">
+			<div className="habit-header">
+				<div className="habit-checkbox-section">
 					<input
 						type="checkbox"
 						checked={habit.streak.isCompletedToday}
 						onChange={handleToggle}
 						disabled={activeTab === "upcoming"}
-						className="quest-checkbox"
+						className="habit-checkbox"
 					/>
-					<span className={`quest-title ${habit.streak.isCompletedToday ? "completed" : ""}`}>
-						{habit.title}
-						{habit.isSystemHabit && <span className="quest-system-badge">System</span>}
+					<span className={
+						`habit-title ${habit.streak.isCompletedToday ? "completed" : ""} ${habit.title.length > 12 ? "scrollable" : ""}`}
+					>
+						<span>{habit.title}</span>
 					</span>
-					{isEditable && (
+					{isEditable ? (
 						<button
-							className="quest-edit-button"
+							className="list-edit-button"
 							onClick={() => onModify(habit)}
-							aria-label="Edit quest"
+							aria-label="Edit habit"
 						>
 							Edit
 						</button>
-					)}
+					) : habit.isSystemHabit ? (
+					<span className="list-system-badge">System</span>
+					) : null}
 				</div>
 			</div>
 
 			{habit.shortDescription && (
-				<div className="quest-description">{habit.shortDescription}</div>
+				<div className="habit-description">{habit.shortDescription}</div>
 			)}
-			<div className="quest-xp">
+			<div className="habit-xp">
 				{activeTab === "today" && habit.reward.attributes ? (
 					Object.entries(habit.reward.attributes)
 						.filter(([_, v]) => v !== 0 && v !== null && v !== undefined)
