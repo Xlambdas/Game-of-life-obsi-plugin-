@@ -16,15 +16,15 @@ export const ProgressBar: React.FC<Props> = ({ value, max = 100, showPercent = f
 
 	return (
 		<div className={`progress ${pct === 100 ? "completed" : ""} ${className}`}>
-		<div
-			className="progress__fill"
-			style={{ width: `${pct}%` }}
-			role="progressbar"
-			aria-valuemin={0}
-			aria-valuemax={max}
-			aria-valuenow={safeVal}
-			aria-label={`Progression ${pct}%`}
-		/>
+			<div
+				className="progress__fill"
+				style={{ width: `${pct}%` }}
+				role="progressbar"
+				aria-valuemin={0}
+				aria-valuemax={max}
+				aria-valuenow={safeVal}
+				aria-label={`Progression: ${pct}%`}
+			/>
 		{showPercent && <span className="progress-meta">{pct}%</span>}
 		</div>
 	);

@@ -43,24 +43,3 @@
 .habit-actions {
     margin-left: 10px;
 }
-
-.habit-filter-button {
-	font-weight: 500;
-	cursor: pointer;
-    position: relative;
-    display: flex;
-    flex: 1;
-    min-width: 100px;
-    height: 100%;
-	padding: 6px 8px;
-    background-color: var(--background-primary);
-    border: 1px solid var(--background-modifier-border);
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.9em;
-    width: 100%;
-    text-align: left;
-    box-sizing: border-box;
-    display: flex;
-    align-items: center;
-}

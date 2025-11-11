@@ -72,6 +72,11 @@ export class MainViewSetting extends ItemView {
 	async onOpen() {
 		const container = this.containerEl.children[1] as HTMLElement;
 		container.empty();
+		container.style.margin = "0";
+		container.style.padding = "0";
+		container.style.width = "100%";
+		container.style.height = "100%";
+		container.style.overflow = "hidden";
 
 		this.root = ReactDOM.createRoot(container);
 		this.root.render(

@@ -1,11 +1,6 @@
 /* ===========================
-	USER MODAL - Main Container
-	========================== */
-
-.user-stats-modal .modal {
-	max-width: 1200px;
-	width: 90vw;
-}
+   USER MODAL - Main Container
+   ========================== */
 
 .user-modal-container {
 	background: var(--background-primary);
@@ -16,12 +11,11 @@
 .stats-modal-wrapper {
 	display: flex;
 	flex: 2;
-
 }
 
 /* ===========================
-	LEFT PANEL - Stats & Charts
-	=========================== */
+   LEFT PANEL - Stats & Charts
+   =========================== */
 
 .stats-panel {
 	background: var(--background-secondary-alt);
@@ -30,19 +24,18 @@
 	border-radius: 8px;
 	padding: 1.5rem;
 	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-	animation: ease-in-out 2s infinite;
 }
 
-.stats-panel h2, .attributes-panel h2 {
+.stats-panel h2,
+.attributes-panel h2 {
 	text-align: center;
 	font-size: 18px;
 	font-weight: bold;
 	text-transform: uppercase;
-	letter-spacing: 2px;
+	letter-spacing: 1px;
 	color: var(--text-normal);
 	margin-top: 0px;
 	margin-bottom: 0px;
-	letter-spacing: 1px;
 }
 
 /* Radar Chart Section */
@@ -50,59 +43,29 @@
 	margin-bottom: 10px;
 }
 
-/* Stats Info Boxes */
-.stats-info-box {
-	margin-bottom: 20px;
-	padding: 12px;
-	background: var(--background-primary);
-	border-radius: 6px;
-	border: 1px solid var(--background-modifier-border);
-}
-
-.stats-info-row {
+/* Stats Info Section */
+.stats-info-section {
 	display: flex;
+	justify-content: space-between;
 	align-items: center;
-	gap: 8px;
-	font-size: 14px;
+	background: var(--background-secondary);
+	border: 2px solid var(--background-modifier-border);
+	border-radius: 12px;
+	padding: 1rem;
+	gap: 1rem;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+	margin-bottom: 0rem;
 }
 
-.stats-info-icon {
-	font-size: 20px;
-}
-
-.stats-info-value {
-	font-weight: bold;
-	font-size: 18px;
-	color: var(--interactive-accent);
-	margin-left: auto;
-}
-
-.stats-info-value.free-points {
-	/* color: #ffd700; */
-	color: #22c55e;
-	font-weight: bold;
-}
-
-/* --- Free points --- */
-.free-points-container {
+.stats-info-left {
+	flex: 1;
 	display: flex;
-	justify-content: flex-end;
-	align-items: center;
-	gap: 0.3rem;
-	margin-top: 0.2rem;
-	font-size: 0.8rem;
-	color: var(--text-faint);
-	opacity: 0.85;
-}
-
-.free-points-value.has-points {
-	color: #22c55e;
-	font-weight: 600;
-	font-size: 0.85rem;
+	flex-direction: column;
+	gap: 0.4rem;
+	min-width: 180px;
 }
 
 /* Progress Bars */
-
 .stats-bar-row {
 	display: flex;
 	align-items: center;
@@ -124,7 +87,6 @@
 	border: 1px solid var(--background-modifier-border);
 	border-radius: 6px;
 	overflow: hidden;
-	/* box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2); */
 }
 
 .stats-progress-fill {
@@ -147,64 +109,63 @@
 	background: linear-gradient(90deg, #ef4444, #dc2626);
 }
 
-
-.stats-progress-text {
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	font-size: 12px;
-	font-weight: bold;
-	text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
-	color: var(--text-on-accent);
-}
-
-/* XP Section */
-.xp-section {
+/* Free Points */
+.free-points-container {
 	display: flex;
-	flex-direction: column;
+	justify-content: flex-end;
+	align-items: center;
 	gap: 0.3rem;
+	margin-top: 0.2rem;
+	font-size: 0.8rem;
+	color: var(--text-faint);
+	opacity: 0.85;
 }
 
-.xp-label {
-	font-weight: 500;
-	color: var(--text-normal);
+.free-points-value.has-points {
+	color: #22c55e;
+	font-weight: 600;
+	font-size: 0.85rem;
 }
 
-/* Level Display */
-.level-display-box {
-	margin-top: 20px;
-	text-align: center;
-	padding: 12px;
-	background: var(--background-primary);
+/* Next Level Button */
+.next-level-button {
+	padding: 8px 16px;
+	background: linear-gradient(90deg, var(--interactive-accent), var(--interactive-accent-hover));
+	border: none;
 	border-radius: 6px;
-	border: 1px solid var(--background-modifier-border);
-}
-
-.level-display-label {
-	font-size: 12px;
-	color: var(--text-muted);
-	margin-bottom: 4px;
-	text-transform: uppercase;
-	letter-spacing: 1px;
-}
-
-.level-display-number {
-	font-size: 32px;
+	color: white;
 	font-weight: bold;
-	color: #ffd700;
-}
-
-.level-display-class {
-	font-size: 12px;
-	color: var(--text-muted);
-	margin-top: 8px;
-	text-transform: uppercase;
-}
-
-.level-display-title {
+	cursor: pointer;
 	font-size: 14px;
-	color: var(--text-normal);
+	transition: all 0.2s ease;
+	margin-top: 0.5rem;
+}
+
+.next-level-button:hover {
+	filter: brightness(1.1);
+	transform: translateY(-1px);
+}
+
+.next-level-button:active {
+	transform: scale(0.97);
+}
+
+/* Persona Image */
+.persona-image-container {
+	flex: 0 0 220px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.persona-image {
+	width: 100%;
+	max-width: 220px;
+	height: auto;
+	object-fit: contain;
+	filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
+	transition: transform 0.3s ease;
+	image-rendering: pixelated;
 }
 
 /* ===========================
@@ -238,14 +199,12 @@
 	background: var(--background-primary);
 	border-radius: 8px;
 	border: 1px solid var(--background-modifier-border);
-	/* cursor: pointer;
-	transition: all 0.2s ease; */
+	cursor: pointer;
+	transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;
 	position: relative;
-	cursor: pointer;
-	transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
 	margin-bottom: 0px;
 }
 
@@ -265,28 +224,16 @@
 	align-items: center;
 	grid-template-columns: 1fr auto;
 	margin-bottom: 2px;
-	/* justify-content: space-between; */
 }
 
-
 .attribute-card-name {
-	/* display: inline-block;
-	padding: 4px 12px;
-	background: var(--interactive-accent);
-	color: white;
-	border-radius: 12px;
-	font-size: 12px;
-	font-weight: 600; */
 	text-align: left;
-	/* background: linear-gradient(90deg, var(--interactive-accent), var(--interactive-accent-hover)); */
 	color: var(--text-muted);
 	opacity: 0.9;
-	/* border-radius: 8px; */
-	/* padding: 4px 10px; */
 	font-size: 12px;
 	font-weight: 600;
 	letter-spacing: 0.5px;
-	white-space: nowrap; /* empêche le retour à la ligne */
+	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
 }
@@ -302,15 +249,15 @@
 
 /* Upgrade Button */
 .attribute-upgrade-btn {
+	padding: 4px;
+	font-size: 12px;
+	font-weight: 600;
 	width: 100%;
-	padding: 6px;
 	background: linear-gradient(90deg, var(--interactive-success), var(--interactive-success-hover));
 	border: none;
 	border-radius: 4px;
 	color: white;
-	font-weight: bold;
 	cursor: pointer;
-	font-size: 13px;
 	transition: all 0.2s ease;
 }
 
@@ -327,296 +274,13 @@
 /* Info Icon */
 .attribute-info-icon {
 	position: absolute;
-	top: 8px;
-	right: 8px;
-	opacity: 0;
-	font-size: 14px;
-	transition: opacity 0.3s ease, transform 0.3s ease;
-	transform: scale(0.8);
-	pointer-events: none;
-	color: var(--text-muted);
-}
-
-.attribute-card:hover .attribute-info-icon {
-	opacity: 0.8;
-	transform: scale(1);
-}
-
-/* ===========================
-   ATTRIBUTE DETAIL OVERLAY
-   (Matching NextLevelModal style)
-   =========================== */
-
-.attribute-detail-overlay {
-	position: fixed;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	background: rgba(0, 0, 0, 0.5);
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	z-index: 1000;
-	animation: fadeIn 0.2s;
-}
-
-.attribute-detail-card {
-	background: var(--background-primary);
-	border-radius: 12px;
-	max-width: 500px;
-	width: 90%;
-	max-height: 80vh;
-	overflow-y: auto;
-	box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-	animation: slideUp 0.3s;
-}
-
-.attribute-detail-header {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	padding: 20px;
-	border-bottom: 1px solid var(--background-modifier-border);
-	gap: 12px;
-}
-
-.attribute-detail-icon {
-	font-size: 28px;
-}
-
-.attribute-detail-info {
-	flex: 1;
-}
-
-.attribute-detail-category {
-	display: inline-block;
-	padding: 4px 12px;
-	background: var(--interactive-accent);
-	color: white;
-	border-radius: 12px;
-	font-size: 12px;
-	font-weight: 600;
-	margin-bottom: 8px;
-	text-transform: uppercase;
-}
-
-.attribute-detail-name {
-	margin: 0;
-	font-size: 24px;
-	color: var(--text-normal);
-}
-
-.attribute-detail-value {
-	font-size: 24px;
-	font-weight: bold;
-	color: var(--interactive-success);
-	margin-left: auto;
-}
-
-.attribute-detail-body {
-	padding: 20px;
-}
-
-.attribute-description {
-	color: var(--text-normal);
-	line-height: 1.6;
-	margin-bottom: 16px;
-}
-
-.attribute-benefits h4 {
-	margin: 0 0 12px 0;
-	color: var(--text-normal);
-	font-size: 16px;
-	text-transform: uppercase;
-	letter-spacing: 1px;
-}
-
-.attribute-benefits ul {
-	margin: 0;
-	padding-left: 20px;
-}
-
-.attribute-benefits li {
-	margin-bottom: 8px;
-	color: var(--text-muted);
-	line-height: 1.5;
-}
-
-.attribute-detail-footer {
-	padding: 16px 20px;
-	border-top: 1px solid var(--background-modifier-border);
-	display: flex;
-	justify-content: flex-end;
-}
-
-.attribute-detail-close-btn {
-	padding: 10px 24px;
-	background: var(--interactive-accent);
-	color: white;
-	border: none;
-	border-radius: 6px;
-	cursor: pointer;
-	font-weight: 500;
-	transition: background 0.2s;
-}
-
-.attribute-detail-close-btn:hover {
-	background: var(--interactive-accent-hover);
-}
-
-/* ===========================
-   ANIMATIONS
-   =========================== */
-
-@keyframes fadeIn {
-	from { opacity: 0; }
-	to { opacity: 1; }
-}
-
-@keyframes slideUp {
-	from {
-		opacity: 0;
-		transform: translateY(20px);
-	}
-	to {
-		opacity: 1;
-		transform: translateY(0);
-	}
-}
-
-/* ===========================
-   RESPONSIVE DESIGN
-   =========================== */
-
-@media (max-width: 768px) {
-	.stats-modal-wrapper {
-		flex-direction: column;
-		padding: 2px;
-	}
-	
-	.attributes-grid {
-		grid-template-columns: 1fr;
-	}
-	
-	.stats-panel,
-	.attributes-panel {
-		padding: 16px;
-	}
-	
-	.user-stats-modal .modal {
-		width: 95vw;
-	}
-}
-
-.stats-info-section {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	background: var(--background-secondary);
-	border: 2px solid var(--background-modifier-border);
-	border-radius: 12px;
-	padding: 1rem;
-	gap: 1rem;
-	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-	margin-bottom: 0rem;
-}
-
-.stats-info-left {
-	flex: 1;
-	display: flex;
-	flex-direction: column;
-	gap: 0.4rem;
-	min-width: 180px;
-}
-
-/* Persona image */
-.persona-image-container {
-	flex: 0 0 220px; /* gives more horizontal room */
-	display: flex;
-	justify-content: center;
-	align-items: center;
-}
-
-.persona-image {
-	width: 100%;
-	max-width: 220px;
-	height: auto;
-	object-fit: contain;
-	filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.4));
-	transition: transform 0.3s ease;
-	image-rendering: pixelated;
-}
-
-.persona-info-overlay {
-	position: absolute;
-	bottom: 0;
-	left: 0;
-	right: 0;
-	background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.7) 70%, transparent 100%);
-	padding: 12px 8px 8px;
-	text-align: center;
-}
-
-.persona-class {
-	font-size: 1rem;
-	color: var(--text-accent);
-	margin-bottom: 0.2rem;
-	color: #cbc9c9;
-	text-transform: uppercase;
-	letter-spacing: 1px;
-}
-
-.persona-name {
-	font-size: 1.4rem;
-	font-weight: 700;
-	text-transform: uppercase;
-	color: var(--interactive-accent);
-	line-height: 1.2;
-}
-
-.persona-level {
-	font-size: 1rem;
-	color: var(--text-accent);
-	margin-bottom: 0.2rem;
-}
-
-
-
-
-/* todo dark/light mode adjustments */
-
-
-/* ===========================
-   RIGHT PANEL - Compact Attributes (harmonized with left)
-   =========================== */
-
-/* Upgrade Button - smaller */
-.attribute-upgrade-btn {
-	padding: 4px;
-	font-size: 12px;
-	font-weight: 600;
-	background: var(--interactive-success);
-	border: none;
-	border-radius: 4px;
-	color: white;
-	cursor: pointer;
-	transition: all 0.2s ease;
-}
-
-.attribute-upgrade-btn:hover {
-	background: var(--interactive-success-hover);
-}
-
-/* Info icon - subtle */
-.attribute-info-icon {
-	position: absolute;
 	top: 6px;
 	right: 6px;
 	font-size: 12px;
 	color: var(--text-muted);
 	opacity: 0;
 	transition: opacity 0.2s ease;
+	pointer-events: none;
 }
 
 .attribute-card:hover .attribute-info-icon {
@@ -624,7 +288,7 @@
 }
 
 /* ===========================
-   ATTRIBUTE DETAIL OVERLAY - Compact style
+   ATTRIBUTE DETAIL OVERLAY
    =========================== */
 
 .attribute-detail-overlay {
@@ -700,6 +364,11 @@
 	text-transform: uppercase;
 }
 
+.attribute-benefits ul {
+	margin: 0;
+	padding-left: 20px;
+}
+
 .attribute-benefits li {
 	margin-left: 1rem;
 	margin-bottom: 4px;
@@ -722,4 +391,39 @@
 
 .attribute-detail-close-btn:hover {
 	background: var(--interactive-accent-hover);
+}
+
+/* ===========================
+   ANIMATIONS
+   =========================== */
+
+@keyframes slideUp {
+	from {
+		opacity: 0;
+		transform: translateY(20px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+/* ===========================
+   RESPONSIVE DESIGN
+   =========================== */
+
+@media (max-width: 768px) {
+	.stats-modal-wrapper {
+		flex-direction: column;
+		padding: 2px;
+	}
+	
+	.attributes-grid {
+		grid-template-columns: 1fr;
+	}
+	
+	.stats-panel,
+	.attributes-panel {
+		padding: 16px;
+	}
 }

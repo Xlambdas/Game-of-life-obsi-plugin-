@@ -1,4 +1,3 @@
-import { Notice } from "obsidian";
 import * as React from "react";
 import { useEffect, useState } from "react";
 // from files (services, Default):
@@ -52,22 +51,27 @@ export const SideView: React.FC = () => {
         setQuests(updatedQuests);
     };
 
-	if (!user) return <p>Loading...</p>;
+	if (!user) return <p className="side-view-loading">Loading...</p>;
 	return (
 		<div>
-			<UserCard app={appService.getApp()} context={appService} user={user} />
-			<div className="card">
-				<QuestList
-					quests={quests}
-					user={user}
-					onUserUpdate={setUser}
-					onQuestUpdate={handleQuestUpdate}
-				/>
-				<hr className="separator"></hr>
-				<HabitList
-					habits={habits}
-					onUserUpdate={setUser}
-				/>
+			<div className="side-view-header">
+				<UserCard app={appService.getApp()} context={appService} user={user} />
+			</div>
+			<div className="side-view-content">
+				<div className="card">
+					<QuestList
+						quests={quests}
+						user={user}
+						onUserUpdate={setUser}
+						onQuestUpdate={handleQuestUpdate}
+					/>
+					<hr className="separator"></hr>
+					<HabitList
+						habits={habits}
+						onUserUpdate={setUser}
+					/>
+				</div>
+
 			</div>
 		</div>
 	);

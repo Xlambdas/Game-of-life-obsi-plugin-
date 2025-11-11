@@ -30,7 +30,7 @@ export const UserCard: React.FC<UserCardProps> = ({app, context, user, onNextLev
 				display: 'flex',
 				alignItems: 'center',
 				justifyContent: 'space-between',
-				marginBottom: '12px'
+				marginBottom: '4px'
 			}}>
 				<button
 					onClick={() => new UserModal(app).open()}
@@ -59,18 +59,16 @@ export const UserCard: React.FC<UserCardProps> = ({app, context, user, onNextLev
 						</span>
 					)}
 				</button>
-
 			</div>
 			<div className="progress-container">
 				<ProgressBar
 					value={user.xpDetails.newXp}
 					max={user.xpDetails.lvlThreshold}
 					showPercent={false}
-					className="xp-progress-bar"
 				/>
-				<p className="xp-text">
+				<div className="xp-text">
 					{user.xpDetails.newXp}/{user.xpDetails.lvlThreshold}
-				</p>
+				</div>
 			</div>
 		</div>
 	);

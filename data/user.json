@@ -33,20 +33,20 @@
     }
   },
   "xpDetails": {
-    "xp": 145,
-    "level": 2,
-    "maxLevel": 2,
-    "newXp": 45,
-    "lvlThreshold": 120,
+    "xp": 149,
+    "level": 1,
+    "maxLevel": 1,
+    "newXp": 149,
+    "lvlThreshold": 100,
     "freePts": 7
   },
   "attribute": {
     "strength": 26,
     "agility": 13,
-    "endurance": 25,
-    "charisma": 8,
+    "endurance": 27,
+    "charisma": 9,
     "wisdom": 13,
-    "perception": 15,
+    "perception": 16,
     "intelligence": 20,
     "willpower": 5,
     "spirit": 6,

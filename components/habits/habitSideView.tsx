@@ -40,6 +40,7 @@ export const HabitSideView: React.FC<HabitSideViewProps> = (props) => {
 	const percent = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
 	return (
+		<div className="habits-container">
 		<details
 			className="quest-list"
 			open={isOpen}
@@ -117,6 +118,7 @@ export const HabitSideView: React.FC<HabitSideViewProps> = (props) => {
 			</div>
 		)}
 		</details>
+		</div>
 	);
 }
 

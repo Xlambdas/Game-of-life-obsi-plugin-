@@ -1,91 +1,22 @@
-
-/* ---------------------- sidebar Styles ---------------------- */
-
-.sidebar {
-	width: 100%;
-	padding: 10px;
-	background-color: #2d2d2d;
-	color: white;
-	height: auto;
-	border-radius: 10px;
-	/* position: fixed; */
-	top: 0;
-	left: 0;
-}
-
-.card {
-	background-color: #444;
-	/* width: 100%; */
-	border-radius: 10px;
-	padding: 10px;
-	margin-bottom: 5px;
-	margin-top: 5px;
-	margin-right: 3px;
-	margin-left: 3px;
-	position: relative;
-}
-
-.card-title {
-	margin-top: 4px;
-	font-size: 18px;
-	font-weight: bold;
-}
-
-.card-subtitle {
-	font-size: 14px;
-	color: #bbb;
-	margin-top: 2px;
-	margin-bottom: 0px;
-}
-
-.xp-text {
-	font-size: 14px;
-	margin-top: 5px;
-	color: #bbb;
-}
-
-/* ---------------------- questlist style ---------------------- */
+/* ---------------------- questlist style general ---------------------- */
 
 .quest-list {
     margin: 0;
     padding: 0;
 }
 
+/* Controls */
 .quest-controls {
-    margin: 5px 0;
-    padding: 0 2px;
-}
-
-.quest-controls-row {
-    display: flex;
-    gap: 4px;
-    margin-top: 4px;
-    flex-wrap: wrap;
-    padding: 0 2px;
-    align-items: stretch;
-}
-
-.quest-item {
-    padding: 8px;
     margin: 4px 0;
-    border: 1px solid var(--background-modifier-border);
-    border-radius: 4px;
-    background-color: var(--background-primary);
+    padding: 0 2px;
 }
 
-.quest-title.completed {
-    text-decoration: line-through;
-    color: var(--text-muted);
+.quest-search {
+	width: 100%;
+	margin-bottom: 2px;
 }
 
-.quest-edit-button {
-    padding: 2px 6px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    flex-shrink: 0;
-    margin-left: 4px;
-}
+
 
 .quest-description {
     font-size: 0.85em;
@@ -100,19 +31,6 @@
     -webkit-box-orient: vertical;
     line-height: 1.4;
     max-height: 4.2em;
-}
-
-.quest-xp {
-    font-size: 0.8em;
-    color: var(--text-accent);
-    margin-top: 2px;
-}
-
-.quest-search {
-    width: 100%;
-    margin-bottom: 4px;
-    padding: 4px;
-    font-size: 0.9em;
 }
 
 .quest-tabs {
@@ -136,93 +54,6 @@
     border-color: var(--interactive-accent);
 }
 
-.quests-container {
-    margin: 0;
-    padding: 0;
-}
-
-
-.quest-filter-dropdown,
-.quest-sort-dropdown {
-    position: relative;
-    display: flex;
-    flex: 1;
-    min-width: 100px;
-    height: 100%;
-}
-
-.quest-filter-button,
-.quest-sort-button {
-    padding: 6px 8px;
-    background-color: var(--background-primary);
-    border: 1px solid var(--background-modifier-border);
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.9em;
-    width: 100%;
-    text-align: left;
-    position: relative;
-    box-sizing: border-box;
-    height: 100%;
-    display: flex;
-    align-items: center;
-}
-
-.quest-filter-button::after,
-.quest-sort-button::after {
-    content: '▼';
-    position: absolute;
-    right: 8px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 0.8em;
-}
-
-.quest-filter-options,
-.quest-sort-options {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background-color: var(--background-primary);
-    border: 1px solid var(--background-modifier-border);
-    border-radius: 4px;
-    margin-top: 2px;
-    z-index: 1000;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    width: 100%;
-}
-
-.quest-filter-dropdown:hover .quest-filter-options,
-.quest-sort-dropdown:hover .quest-sort-options {
-    display: block;
-}
-
-.quest-filter-option,
-.quest-sort-option {
-    display: block;
-    width: 100%;
-    padding: 6px 8px;
-    border: none;
-    background: none;
-    text-align: left;
-    cursor: pointer;
-    font-size: 0.9em;
-    color: var(--text-normal);
-}
-
-.quest-filter-option:hover,
-.quest-sort-option:hover {
-    background-color: var(--background-modifier-hover);
-}
-
-.quest-filter-option.active,
-.quest-sort-option.active {
-    background-color: var(--interactive-accent);
-    color: var(--text-on-accent);
-}
-
 @media (max-width: 400px) {
     .quest-controls-row {
         flex-direction: column;
@@ -235,18 +66,3 @@
     }
 }
 
-.quest-system-badge {
-    background-color: var(--interactive-accent);
-    color: var(--text-on-accent);
-    font-size: 0.7em;
-    padding: 2px 6px;
-    border-radius: 4px;
-    margin-left: 8px;
-    font-weight: 500;
-}
-
-.accordion-title {
-	font-size: 16px;
-	font-weight: bold;
-	margin-bottom: 10px;
-}

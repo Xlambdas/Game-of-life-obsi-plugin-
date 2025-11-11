@@ -1,0 +1,451 @@
+/* ===========================
+    SIDE VIEW
+    ========================== */
+
+.view-content {
+	padding: 8px;
+}
+
+.side-view-loading {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding: 2rem;
+	color: var(--text-muted);
+	font-size: 14px;
+}
+
+.side-view-header {
+	flex: 0 0 auto;
+	position: sticky;
+	top: 0;
+	z-index: 10;
+	width: 100%;
+}
+
+.side-view-header > * {
+	width: 100%; /* ensures UserCard also stretches */
+	display: block;
+}
+
+.side-view-content {
+	top: 0;
+	z-index: 10;
+	flex: 1 1 auto;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	width: 100%;
+	align-items: stretch;
+}
+
+.side-view-content .card {
+	background: var(--background-secondary);
+	border: 2px solid var(--background-modifier-border);
+	border-radius: 6px;
+	flex: 1 1 auto;
+	overflow-y: auto;
+	padding: 8px;
+	box-sizing: border-box;
+	width: 100%;
+}
+
+/* ===========================
+    CARD
+    ========================== */
+
+.card {
+	display: flex;
+	flex-direction: column;
+}
+
+.side-view-header .card {
+	background: var(--background-secondary);
+	border: 1px solid var(--interactive-accent);
+	border-width: 2px 1px;
+	border-radius: 8px;
+	padding: 8px;
+	margin-bottom: 8px;
+}
+
+.card-title {
+	font-size: 14px;
+	font-weight: 600;
+	margin: 0;
+}
+
+/* ===========================
+    USER CARD
+    ========================== */
+
+.user-modal-button {
+	position: relative;
+	width: 28px;
+	height: 28px;
+	padding: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: var(--interactive-accent);
+	border: none;
+	border-radius: 4px;
+	color: var(--text-on-accent);
+	cursor: pointer;
+}
+
+.user-modal-button:hover {
+	background: var(--interactive-accent-hover);
+}
+
+.free-points-indicator {
+	position: absolute;
+	top: -4px;
+	right: -4px;
+	min-width: 14px;
+	height: 14px;
+	padding: 0 3px;
+	background: #22c55e;
+	color: white;
+	font-size: 9px;
+	font-weight: 700;
+	border-radius: 7px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.progress-container {
+	display: flex;
+	align-items: center;
+}
+
+.xp-text {
+	font-size: 11px;
+	color: var(--text-muted);
+	white-space: nowrap;
+	min-width: 50px;
+	text-align: right;
+	padding: 0;
+}
+
+/* ===========================
+   QUEST & HABIT LISTS
+   ========================== */
+
+.quests-container, .habits-container {
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	margin: 0;
+	padding: 0;
+}
+
+.habit-list-container {
+	margin: 0;
+	padding: 0;
+}
+
+.accordion-title {
+	font-size: 13px;
+	font-weight: 600;
+	cursor: pointer;
+	padding: 3px 0;
+	margin: 0 0 4px 0;
+}
+
+.separator {
+	border: none;
+	border-top: 1px solid var(--background-modifier-border);
+	margin: 4px 0;
+}
+
+.quest-controls-row,
+.habit-controls-row {
+    display: flex;
+    gap: 4px;
+	margin-bottom: 6px;
+    margin-top: 4px;
+    flex-wrap: wrap;
+    padding: 0 2px;
+    align-items: stretch;
+}
+
+
+
+
+
+/* Tabs */
+.quest-tabs {
+	display: flex;
+	gap: 4px;
+	flex: 1;
+}
+
+.quest-tab {
+	flex: 1;
+	padding: 4px 6px;
+	font-size: 11px;
+	border: 1px solid var(--background-modifier-border);
+	background: var(--background-primary);
+	border-radius: 3px;
+	cursor: pointer;
+	text-align: center;
+}
+
+.quest-tab:hover {
+	background: var(--background-modifier-hover);
+}
+
+.quest-tab.active {
+	background: var(--interactive-accent);
+	color: var(--text-on-accent);
+	border-color: var(--interactive-accent);
+}
+
+/* Habit Filter Button */
+.habit-filter-button {
+	flex: 1;
+	display: flex;
+	align-items: center;
+	padding: 4px 8px;
+	font-size: 11px;
+	font-weight: 500;
+	text-align: left;
+	position: relative;
+	cursor: pointer;
+	border: 1px solid var(--background-modifier-border);
+	background: var(--background-primary);
+	box-sizing: border-box;
+	border-radius: 8px;
+	min-width: 100px;
+	height: 100%;
+	width: 100%;
+}
+
+.habit-filter-button:hover {
+	background: var(--background-modifier-hover);
+}
+
+/* Dropdowns */
+.quest-filter-dropdown,
+.quest-sort-dropdown {
+	flex: 1;
+	display: flex;
+	position: relative;
+	min-width: 100px;
+	height: 100%;
+}
+
+.quest-filter-button,
+.quest-sort-button {
+	width: 100%;
+	padding: 4px 8px;
+	font-size: 11px;
+	border: 1px solid var(--background-modifier-border);
+	background: var(--background-primary);
+	border-radius: 8px;
+	cursor: pointer;
+	text-align: left;
+	position: relative;
+    box-sizing: border-box;
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.quest-filter-button::after,
+.quest-sort-button::after {
+	content: '▼';
+	float: right;
+	font-size: 8px;
+	opacity: 0.6;
+}
+
+.quest-filter-options,
+.quest-sort-options {
+	display: none;
+	position: absolute;
+	top: 100%;
+	left: 0;
+	right: 0;
+	background: var(--background-primary);
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 3px;
+	margin-top: 2px;
+	z-index: 1000;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+	width: 100%;
+}
+
+.quest-filter-dropdown:hover .quest-filter-options,
+.quest-sort-dropdown:hover .quest-sort-options {
+	display: block;
+}
+
+.quest-filter-option,
+.quest-sort-option {
+	display: block;
+	width: 100%;
+	padding: 4px 8px;
+	border: none;
+	background: none;
+	text-align: left;
+	cursor: pointer;
+	font-size: 11px;
+}
+
+.quest-filter-option:hover,
+.quest-sort-option:hover {
+	background: var(--background-modifier-hover);
+}
+
+.quest-filter-option.active,
+.quest-sort-option.active {
+	background: var(--interactive-accent);
+	color: var(--text-on-accent);
+}
+
+/* ===========================
+   ITEMS
+   ========================== */
+
+.quest-item,
+.habit-item {
+	padding: 6px;
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 4px;
+	background: var(--background-primary);
+}
+
+.quest-header {
+	display: flex;
+	align-items: stretch;
+	gap: 6px;
+	margin-bottom: 4px;
+	height: 24px;
+}
+
+.quest-checkbox-section {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	flex: 1;
+	min-width: 0;
+}
+
+.quest-title {
+	flex: 1;
+	font-size: 12px;
+	font-weight: 500;
+	margin: 0;
+	min-width: 0;
+	max-width: 12ch;
+	overflow: hidden;
+	position: relative;
+	white-space: nowrap;
+}
+
+.quest-title span {
+	display: inline-block;
+	white-space: nowrap;
+	transform: translateX(0);
+	transition: transform 0.5s ease-out;
+}
+
+/* Scroll animation on hover */
+.quest-item:hover .quest-title.scrollable span {
+	transform: translateX(calc(-100% + 12ch));
+	transition: transform 6s linear;
+}
+
+/* Reset when not hovering */
+.quest-item:not(:hover) .quest-title span {
+	transform: translateX(0);
+	transition: transform 0.5s ease-out;
+}
+
+.quest-title.completed span, .quest-title.scrollable.completed span {
+	text-decoration: line-through;
+	color: var(--text-muted);
+	opacity: 0.6;
+}
+
+.quest-title.completed span, .quest-title.scrollable.completed span {
+	text-decoration: line-through;
+    color: var(--text-muted);
+	opacity: 0.6;
+}
+
+.quest-system-badge {
+	font-size: 10px;
+	font-weight: 500;
+	padding: 6px 4px;
+	background: var(--interactive-accent);
+	color: var(--text-on-accent);
+	border-radius: 3px;
+	height: 24px;
+}
+
+.quest-edit-button {
+	padding: 2px 4px;
+	font-size: 10px;
+	font-weight: 500;
+	background: transparent;
+	border: 1px solid var(--background-modifier-border);
+	border-radius: 3px;
+	height: 24px;
+	width: 40px;
+	cursor: pointer;
+}
+
+.quest-edit-button {
+    padding: 2px 6px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    flex-shrink: 0;
+    margin-left: 4px;
+}
+
+.quest-edit-button:hover {
+	background: var(--background-modifier-hover);
+}
+
+.quest-description,
+.habit-description {
+	font-size: 11px;
+	color: var(--text-muted);
+	margin: 4px 0;
+	line-height: 1.3;
+	display: -webkit-box;
+	
+	overflow: hidden;
+}
+
+.quest-xp {
+	font-size: 10px;
+	color: var(--text-accent);
+	margin-top: 4px;
+	line-height: 1.4;
+}
+
+.no-quests-message,
+.no-habits-message {
+	padding: 12px;
+	text-align: center;
+	color: var(--text-muted);
+	font-size: 11px;
+	font-style: italic;
+}
+
+
+
+
+/* ===========================
+    PROGRESS BARS
+    ========================== */
+
+.quests-container.progress {
+	height: 8px;
+	border-radius: 3px;
+}
