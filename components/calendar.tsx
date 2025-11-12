@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Habit } from 'data/DEFAULT';
+import { Habit } from '../data/DEFAULT';
 
 interface CalendarViewProps {
     habits: Habit[];
@@ -18,15 +18,25 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ habits, onCompleteHa
         return new Date(date.getFullYear(), date.getMonth(), 1).getDay();
     };
 
-    const isHabitAvailableForDate = (habit: Habit, date: Date): boolean => {
-        const habitDate = new Date(habit.created_at);
-        const today = new Date();
-        
-        if (date > today) return false;
-        if (date < habitDate) return false;
+    const normalizeDateToMidnight = (date: Date): Date => {
+        const normalized = new Date(date);
+        normalized.setHours(0, 0, 0, 0);
+        return normalized;
+    };
 
-        const diffTime = Math.abs(date.getTime() - habitDate.getTime());
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const isHabitAvailableForDate = (habit: Habit, date: Date): boolean => {
+        const habitDate = normalizeDateToMidnight(new Date(habit.created_at));
+        const checkDate = normalizeDateToMidnight(date);
+        const today = normalizeDateToMidnight(new Date());
+        
+        // Can't complete habits in the future
+        if (checkDate > today) return false;
+        
+        // Can't complete habits before they were created
+        if (checkDate < habitDate) return false;
+
+        const diffTime = checkDate.getTime() - habitDate.getTime();
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
         switch (habit.recurrence.unit) {
             case 'days':
@@ -34,10 +44,10 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ habits, onCompleteHa
             case 'weeks':
                 return diffDays % (habit.recurrence.interval * 7) === 0;
             case 'months':
-                const monthsDiff = (date.getFullYear() - habitDate.getFullYear()) * 12 + 
-                                 (date.getMonth() - habitDate.getMonth());
+                const monthsDiff = (checkDate.getFullYear() - habitDate.getFullYear()) * 12 + 
+                                 (checkDate.getMonth() - habitDate.getMonth());
                 return monthsDiff % habit.recurrence.interval === 0 && 
-                       date.getDate() === habitDate.getDate();
+                       checkDate.getDate() === habitDate.getDate();
             default:
                 return false;
         }
@@ -48,9 +58,10 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ habits, onCompleteHa
     };
 
     const isHabitCompletedForDate = (habit: Habit, date: Date): boolean => {
+        const checkDate = normalizeDateToMidnight(date);
         return habit.streak.history.some(entry => {
-            const entryDate = new Date(entry.date);
-            return entryDate.toDateString() === date.toDateString();
+            const entryDate = normalizeDateToMidnight(new Date(entry.date));
+            return entryDate.getTime() === checkDate.getTime() && entry.success;
         });
     };
 
@@ -58,7 +69,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ habits, onCompleteHa
         const daysInMonth = getDaysInMonth(currentDate);
         const firstDay = getFirstDayOfMonth(currentDate);
         const days = [];
-        const today = new Date();
+        const today = normalizeDateToMidnight(new Date());
 
         for (let i = 0; i < firstDay; i++) {
             days.push(<div key={`empty-${i}`} className="calendar-day empty"></div>);
@@ -66,19 +77,31 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ habits, onCompleteHa
 
         for (let day = 1; day <= daysInMonth; day++) {
             const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+            const normalizedDate = normalizeDateToMidnight(date);
             const habitsForDay = getHabitsForDate(date);
-            const isSelected = selectedDate?.toDateString() === date.toDateString();
-            const isToday = date.toDateString() === today.toDateString();
+            const isSelected = selectedDate && normalizeDateToMidnight(selectedDate).getTime() === normalizedDate.getTime();
+            const isToday = normalizedDate.getTime() === today.getTime();
+            const isFuture = normalizedDate > today;
+
+            // Calculate completion status for the day
+            const completedCount = habitsForDay.filter(h => isHabitCompletedForDate(h, date)).length;
+            const totalCount = habitsForDay.length;
+            const allCompleted = totalCount > 0 && completedCount === totalCount;
+            const partiallyCompleted = completedCount > 0 && completedCount < totalCount;
 
             days.push(
                 <div
                     key={day}
-                    className={`calendar-day ${isSelected ? 'selected' : ''} ${habitsForDay.length > 0 ? 'has-habits' : ''} ${isToday ? 'today' : ''}`}
-                    onClick={() => setSelectedDate(date)}
+                    className={`calendar-day ${isSelected ? 'selected' : ''} ${habitsForDay.length > 0 ? 'has-habits' : ''} ${isToday ? 'today' : ''} ${isFuture ? 'future' : ''} ${allCompleted ? 'all-completed' : ''} ${partiallyCompleted ? 'partial-completed' : ''}`}
+                    onClick={() => !isFuture && setSelectedDate(date)}
                 >
                     <span className="day-number">{day}</span>
                     {habitsForDay.length > 0 && (
-                        <div className="habits-dot" title={`${habitsForDay.length} habits available`} />
+                        <div className="habits-indicator">
+                            <span className="habits-count" title={`${completedCount}/${totalCount} habits completed`}>
+                                {completedCount}/{totalCount}
+                            </span>
+                        </div>
                     )}
                 </div>
             );
@@ -91,24 +114,36 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ habits, onCompleteHa
         if (!selectedDate) return null;
 
         const habitsForSelectedDate = getHabitsForDate(selectedDate);
-        const today = new Date();
+        const today = normalizeDateToMidnight(new Date());
+        const selectedNormalized = normalizeDateToMidnight(selectedDate);
+        const canModify = selectedNormalized <= today;
 
         return (
             <div className="selected-date-habits">
                 <div className="selected-date-header">
-                    <h3>{selectedDate.toLocaleDateString()}</h3>
+                    <h3>{selectedDate.toLocaleDateString('en-US', { 
+                        weekday: 'short', 
+                        year: 'numeric', 
+                        month: 'short', 
+                        day: 'numeric' 
+                    })}</h3>
                     <button 
                         className="close-selection"
                         onClick={() => setSelectedDate(null)}
+                        aria-label="Close"
                     >
                         ×
                     </button>
                 </div>
+                {!canModify && (
+                    <div className="future-date-notice">
+                        Cannot modify habits for future dates
+                    </div>
+                )}
                 {habitsForSelectedDate.length > 0 ? (
                     <ul className="habits-checklist">
                         {habitsForSelectedDate.map(habit => {
                             const isCompleted = isHabitCompletedForDate(habit, selectedDate);
-                            const canComplete = selectedDate <= today;
 
                             return (
                                 <li key={habit.id} className={`habit-item ${isCompleted ? 'completed' : ''}`}>
@@ -117,7 +152,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ habits, onCompleteHa
                                             type="checkbox"
                                             checked={isCompleted}
                                             onChange={() => onCompleteHabit(habit, !isCompleted, selectedDate)}
-                                            disabled={!canComplete}
+                                            disabled={!canModify}
                                         />
                                         <div className="habit-info">
                                             <span className="habit-title">{habit.title}</span>
@@ -129,7 +164,7 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ habits, onCompleteHa
                         })}
                     </ul>
                 ) : (
-                    <p>No habits available for this day</p>
+                    <p className="no-habits-message">No habits scheduled for this day</p>
                 )}
             </div>
         );
@@ -141,26 +176,28 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ habits, onCompleteHa
                 <button
                     onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1))}
                     className="calendar-nav-button"
+                    aria-label="Previous month"
                 >
                     ←
                 </button>
-                <h2>{currentDate.toLocaleString('default', { month: 'short', year: 'numeric' })}</h2>
+                <h2>{currentDate.toLocaleString('default', { month: 'long', year: 'numeric' })}</h2>
                 <button
                     onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1))}
                     className="calendar-nav-button"
+                    aria-label="Next month"
                 >
                     →
                 </button>
             </div>
             <div className="calendar-grid">
                 <div className="calendar-weekdays">
-                    <div>S</div>
-                    <div>M</div>
-                    <div>T</div>
-                    <div>W</div>
-                    <div>T</div>
-                    <div>F</div>
-                    <div>S</div>
+                    <div>Sun</div>
+                    <div>Mon</div>
+                    <div>Tue</div>
+                    <div>Wed</div>
+                    <div>Thu</div>
+                    <div>Fri</div>
+                    <div>Sat</div>
                 </div>
                 <div className="calendar-days">
                     {renderCalendar()}
@@ -169,4 +206,4 @@ export const CalendarView: React.FC<CalendarViewProps> = ({ habits, onCompleteHa
             {renderSelectedDateHabits()}
         </div>
     );
-}; 
+};

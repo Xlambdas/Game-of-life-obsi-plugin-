@@ -7,6 +7,8 @@ import { UserSettings, Quest, Habit } from "../data/DEFAULT";
 import { UserCard } from "../components/userCard";
 import { QuestList } from "../components/quests/questList";
 import { HabitList } from "components/habits/habitList";
+import { Notice } from "obsidian";
+import { SidebarCalendar } from "components/sidebarCalendar";
 
 export const SideView: React.FC = () => {
 	/* SideView component that displays user info, quests, and habits.
@@ -51,9 +53,14 @@ export const SideView: React.FC = () => {
         setQuests(updatedQuests);
     };
 
+	const handleCompleteHabit = (habit: Habit, completed: boolean, date: Date) => {
+		new Notice('todo later on completing habit from calendar');
+		// Placeholder for handling habit completion from CalendarView
+	};
+
 	if (!user) return <p className="side-view-loading">Loading...</p>;
 	return (
-		<div>
+		<div className="side-view-container">
 			<div className="side-view-header">
 				<UserCard app={appService.getApp()} context={appService} user={user} />
 			</div>
@@ -71,7 +78,11 @@ export const SideView: React.FC = () => {
 						onUserUpdate={setUser}
 					/>
 				</div>
-
+				<div className="card">
+					<SidebarCalendar
+						habits={habits}
+					/>
+				</div>
 			</div>
 		</div>
 	);

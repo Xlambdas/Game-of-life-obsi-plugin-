@@ -127,29 +127,6 @@
 	font-size: 0.85rem;
 }
 
-/* Next Level Button */
-.next-level-button {
-	padding: 8px 16px;
-	background: linear-gradient(90deg, var(--interactive-accent), var(--interactive-accent-hover));
-	border: none;
-	border-radius: 6px;
-	color: white;
-	font-weight: bold;
-	cursor: pointer;
-	font-size: 14px;
-	transition: all 0.2s ease;
-	margin-top: 0.5rem;
-}
-
-.next-level-button:hover {
-	filter: brightness(1.1);
-	transform: translateY(-1px);
-}
-
-.next-level-button:active {
-	transform: scale(0.97);
-}
-
 /* Persona Image */
 .persona-image-container {
 	flex: 0 0 220px;

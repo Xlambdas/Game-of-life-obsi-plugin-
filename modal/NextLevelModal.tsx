@@ -15,7 +15,6 @@ export class NextLevelModal extends Modal {
 	constructor(app: App, user: UserSettings) {
 		super(app);
 		this.user = user;
-		//this.modalEl.addClass('game-ui-modal');
 	}
 
 	public nextLevel = async (): Promise<void> => {
