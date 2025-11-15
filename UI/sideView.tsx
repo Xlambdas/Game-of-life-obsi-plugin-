@@ -21,41 +21,85 @@ export const SideView: React.FC = () => {
 	const [user, setUser] = useState<UserSettings | null>(null);
 
 	const [loading, setLoading] = useState(false);
+	const loadingRef = React.useRef(false);
+	const lastLoadTime = React.useRef(0);
+	let open_load = true;
 
-	const loadData = async () => {
-		console.log("Loading data for SideView...");
-		if (loading) return; // prevent re-entry
+	const loadData = React.useCallback(async () => {
+		if (loadingRef.current) return; // prevent re-entry
+		// console.log("-----> Loading data for SideView...");
+		loadingRef.current = true;
 		setLoading(true);
-		const loadedUser = appService.dataService.getUser();
-		const loadedQuests = await appService.dataService.getQuests();
-		const loadedHabits = await appService.dataService.getHabits();
-		if (loadedUser && typeof loadedUser === 'object' && 'settings' in loadedUser) {
-			setUser(loadedUser as UserSettings);
-		} else {
-			setUser(null);
+		try {
+			const loadedUser = appService.dataService.getUser();
+			// console.log("Loaded user:", loadedUser);
+			const loadedQuests = await appService.dataService.getQuests();
+			// console.log("-<>----------");
+			// console.log("Loaded quests:", loadedQuests);
+			const loadedHabits = await appService.dataService.getHabits();
+			// console.log("------<>-----");
+			// console.log("Loaded habits:", loadedHabits);
+			if (loadedUser && typeof loadedUser === 'object' && 'settings' in loadedUser) {
+				setUser(loadedUser as UserSettings);
+			} else {
+				setUser(null);
+			}
+			if (open_load) {
+				// console.log("><---><User data loaded in SideView");
+				open_load = false;
+				const updatedQuests = await Promise.all(
+					Object.values(loadedQuests).map((q: Quest) => appService.questService.refreshQuests(q))
+				);
+				// await appService.dataService.refreshAllData();
+				const updatedHabits = await Promise.all(
+					Object.values(loadedHabits).map((h: Habit) => appService.habitService.refreshHabits(h))
+				);
+				// console.log("Updated quests after refresh:", updatedQuests);
+				// console.log("Updated habits after refresh:", updatedHabits);
+				await appService.dataService.saveAllQuests(updatedQuests);
+				await appService.dataService.saveAllHabits(updatedHabits);
+				setUser(loadedUser as UserSettings);
+				setQuests(updatedQuests);
+				setHabits(updatedHabits);
+
+			} else {
+				setQuests(Object.values(loadedQuests));
+				setHabits(Object.values(loadedHabits));
+			}
+		} catch (error) {
+			console.error("Error loading data in SideView:", error);
+			new Notice("Error loading data in SideView. See console for details.");
+		} finally {
+			console.log("✅ loadData finished - resetting loadingRef");
+			loadingRef.current = false;
+			setLoading(false);
 		}
-		setQuests(Object.values(loadedQuests));
-		setHabits(Object.values(loadedHabits));
-		setLoading(false);
-	};
-	useEffect(() => {
-		if (!appService) return;
-		loadData();
 	}, [appService]);
 
 	useEffect(() => {
-		const handleReload = () => { if (!loading) loadData(); };
+		// console.log("🎯 useEffect triggered - appService:", !!appService);
+		if (!appService) return;
+		// console.log(">-----< usestate effect sideview loading:", loading);
+		loadData();
+		const handleReload = () => {
+			// console.log("🔄 dbUpdated event triggered");
+			loadData();
+		};
 		document.addEventListener("dbUpdated", handleReload);
-		return () => document.removeEventListener("dbUpdated", handleReload);
-	}, [loading]);
+
+		return () => {
+			console.log("useEffect cleanup");
+			document.removeEventListener("dbUpdated", handleReload);}
+	}, [appService]);
 
 	const handleQuestUpdate = (updatedQuests: Quest[]) => {
         setQuests(updatedQuests);
     };
 
-	const handleCompleteHabit = (habit: Habit, completed: boolean, date: Date) => {
-		new Notice('todo later on completing habit from calendar');
-		// Placeholder for handling habit completion from CalendarView
+	const handleCompleteHabit = (updatedHabit: Habit[]) => {
+		new Notice("Habit updated!");
+		// console.log("Updated habit received in SideView:", updatedHabit);
+		setHabits(updatedHabit);
 	};
 
 	if (!user) return <p className="side-view-loading">Loading...</p>;
@@ -76,10 +120,13 @@ export const SideView: React.FC = () => {
 					<HabitList
 						habits={habits}
 						onUserUpdate={setUser}
+						onHabitUpdate={handleCompleteHabit}
 					/>
 				</div>
 				<div className="card">
 					<SidebarCalendar
+						app={appService.getApp()}
+						context={appService}
 						habits={habits}
 					/>
 				</div>

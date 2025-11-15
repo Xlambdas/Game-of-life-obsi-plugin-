@@ -3,6 +3,7 @@ import { App } from 'obsidian';
 import { AppContextService } from '../appContextService';
 import { Quest, UserSettings } from '../../data/DEFAULT';
 import { DEFAULT_ATTRIBUTES } from '../../data/attributeDetails';
+import { DateHelper } from 'helpers/dateHelpers';
 // from files (UI):
 // import { CreateQuestModal } from '../../modal/questModal';
 
@@ -31,8 +32,8 @@ export default class QuestService {
 			progression: {
 				...quest.progression,
 				isCompleted: completed,
-				completedAt: completed ? new Date() : null,
-				lastUpdated: new Date(),
+				completedAt: completed ? DateHelper.today() : null,
+				lastUpdated: DateHelper.today(),
 				attempts: completed ? quest.progression.attempts + 1 : quest.progression.attempts,
 				failures: !completed ? quest.progression.failures + 1 : quest.progression.failures,
 			},
@@ -50,7 +51,7 @@ export default class QuestService {
 				...quest.progression,
 				completedAt: quest.progression.isCompleted ? quest.progression.completedAt : null,
 				progress: quest.progression.isCompleted ? 100 : 0,
-				lastUpdated: new Date(),
+				lastUpdated: DateHelper.today(),
 			},
 		};
 
@@ -65,7 +66,7 @@ export default class QuestService {
 				isCompleted: quest.progression.isCompleted,
 				completedAt: quest.progression.isCompleted ? quest.progression.completedAt : null,
 				progress: quest.progression.isCompleted ? 100 : 0,
-				lastUpdated: new Date(),
+				lastUpdated: DateHelper.today(),
 			},
 		};
 
@@ -75,7 +76,7 @@ export default class QuestService {
 		if (conditionQuests.length > 0) {
 			const allQuests = await this.appContext.dataService.loadAllQuests();
 			for (const conditionQuest of conditionQuests) {
-				const actualQuest = allQuests.find(q => q.id === conditionQuest.id);				
+				const actualQuest = allQuests.find(q => q.id === conditionQuest.id);
 				if (actualQuest) {
 					// Calculate how much this subtask contributes (weighted equally among all subtasks)
 					const subtaskWeight = 100 / lenSubtask;
@@ -119,9 +120,9 @@ export default class QuestService {
 			progression: {
 				...quest.progression,
 				isCompleted: progress >= 100,
-				completedAt: progress >= 100 ? new Date() : null,
+				completedAt: progress >= 100 ? DateHelper.today() : null,
 				progress: progress,
-				lastUpdated: new Date(),
+				lastUpdated: DateHelper.today(),
 				attempts: progress >= 100 ? quest.progression.attempts + 1 : quest.progression.attempts,
 			},
 		};
@@ -130,14 +131,14 @@ export default class QuestService {
 	async refreshQuests(quest: Quest): Promise<Quest> {
     // console.log("Refreshing quest progress :", quest);
     const subtasks = quest.progression.subtasks;
-    
+
     if (!subtasks) return {
         ...quest,
         progression: {
             ...quest.progression,
             completedAt: quest.progression.isCompleted ? quest.progression.completedAt : null,
             progress: quest.progression.isCompleted ? 100 : 0,
-            lastUpdated: new Date(),
+            lastUpdated: DateHelper.today(),
         },
     };
 
@@ -152,7 +153,7 @@ export default class QuestService {
             isCompleted: quest.progression.isCompleted,
             completedAt: quest.progression.isCompleted ? quest.progression.completedAt : null,
             progress: quest.progression.isCompleted ? 100 : 0,
-            lastUpdated: new Date(),
+            lastUpdated: DateHelper.today(),
         },
     };
 
@@ -179,12 +180,12 @@ export default class QuestService {
             }
         }
     }
-    
+
     if (conditionHabits.length > 0) {
         const allHabits = await this.appContext.dataService.loadAllHabits();
         for (const conditionHabit of conditionHabits) {
             const actualHabit = allHabits.find(h => h.id === conditionHabit.id);
-            
+
             if (actualHabit) {
                 // Calculate how much this subtask contributes (weighted equally among all subtasks)
                 const subtaskWeight = 100 / lenSubtask;
@@ -213,9 +214,9 @@ export default class QuestService {
         progression: {
             ...quest.progression,
             isCompleted: shouldBeCompleted,
-            completedAt: shouldBeCompleted ? (quest.progression.completedAt || new Date()) : null,
+            completedAt: shouldBeCompleted ? (quest.progression.completedAt || DateHelper.today()) : null,
             progress: temporaryProgress,
-            lastUpdated: new Date(),
+            lastUpdated: DateHelper.today(),
             attempts: shouldBeCompleted && !quest.progression.isCompleted ? quest.progression.attempts + 1 : quest.progression.attempts,
         },
     };
@@ -231,7 +232,7 @@ export default class QuestService {
 		// Validate attribute requirements
 		const userAttributes = user.attribute ?? DEFAULT_ATTRIBUTES;
 		const questAttributes = quest.requirements.attributes || {};
-		
+
 		for (const [attr, reqValue] of Object.entries(questAttributes)) {
 			const userValue = (userAttributes as any)[attr] ?? 0;
 			if (userValue < (reqValue ?? 0)) return false;
@@ -277,7 +278,7 @@ export default class QuestService {
 				...quest.progression,
 				completedAt: quest.progression.isCompleted ? quest.progression.completedAt : null,
 				progress: quest.progression.isCompleted ? 100 : 0,
-				lastUpdated: new Date(),
+				lastUpdated: DateHelper.today(),
 			},
 		};
 
@@ -292,17 +293,17 @@ export default class QuestService {
 				isCompleted: quest.progression.isCompleted,
 				completedAt: quest.progression.isCompleted ? quest.progression.completedAt : null,
 				progress: quest.progression.isCompleted ? 100 : 0,
-				lastUpdated: new Date(),
+				lastUpdated: DateHelper.today(),
 			},
 		};
 
 		let temporaryProgress = 0;
 
-		// Handle conditionQuests - USE PROVIDED CONTEXT INSTEAD OF DATABASE
+		// Handle conditionQuests
 		if (conditionQuests.length > 0) {
 			for (const conditionQuest of conditionQuests) {
 				const actualQuest = questContext.find(q => q.id === conditionQuest.id);
-				
+
 				if (actualQuest) {
 					const subtaskWeight = 100 / lenSubtask;
 					const progressRatio = Math.min(
@@ -313,13 +314,13 @@ export default class QuestService {
 				}
 			}
 		}
-		
-		// Handle conditionHabits - still load from database since habits aren't changing
+
+		// Handle conditionHabits
 		if (conditionHabits.length > 0) {
 			const allHabits = await this.appContext.dataService.loadAllHabits();
 			for (const conditionHabit of conditionHabits) {
 				const actualHabit = allHabits.find(h => h.id === conditionHabit.id);
-				
+
 				if (actualHabit) {
 					const subtaskWeight = 100 / lenSubtask;
 					const progressRatio = Math.min(
@@ -343,9 +344,9 @@ export default class QuestService {
 			progression: {
 				...quest.progression,
 				isCompleted: shouldBeCompleted,
-				completedAt: shouldBeCompleted ? (quest.progression.completedAt || new Date()) : null,
+				completedAt: shouldBeCompleted ? (quest.progression.completedAt || DateHelper.today()) : null,
 				progress: temporaryProgress,
-				lastUpdated: new Date(),
+				lastUpdated: DateHelper.today(),
 				attempts: shouldBeCompleted && !quest.progression.isCompleted ? quest.progression.attempts + 1 : quest.progression.attempts,
 			},
 		};

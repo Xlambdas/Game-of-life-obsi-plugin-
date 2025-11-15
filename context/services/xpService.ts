@@ -2,6 +2,7 @@ import { Notice } from "obsidian";
 // from files (services, default):
 import { AppContextService } from "../appContextService";
 import { UserSettings } from "data/DEFAULT";
+import { DateString } from "helpers/dateHelpers";
 
 export interface XpCalc {
 	totalXp: number;
@@ -161,28 +162,27 @@ export default class XpService {
 		};
 	}
 
-	public getDaysUntil(today: Date, targetDate: Date, type: 'quest'| 'habit'): string {
+	public getDaysUntil(today: DateString, targetDate: DateString, type: 'quest'| 'habit'): string {
 		const todayMidnight = new Date(today);
 		todayMidnight.setHours(0, 0, 0, 0);
 		const targetMidnight = new Date(targetDate);
 		targetMidnight.setHours(0, 0, 0, 0);
-		// console.log("Calculating days until:", todayMidnight, targetMidnight);
-		const diffTime = targetMidnight.getTime() - todayMidnight.getTime();
-		const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-		if (type === 'habit') {
-			if (diffDays <= 0) return "Today";
-			if (diffDays === 1) return "Next tomorrow";
-			if (diffDays < 7) return `Next in ${diffDays} days`;
+		const diffDays = Math.ceil((targetMidnight.getTime() - todayMidnight.getTime()) / 86400000);
 
-			const diffWeeks = Math.floor(diffDays / 7);
-			const remainingDays = diffDays % 7;
-
-			if (remainingDays === 0) return `Next in ${diffWeeks} week${diffWeeks > 1 ? "s" : ""}`;
-			return `Next in ${diffWeeks} week${diffWeeks > 1 ? "s" : ""} and ${remainingDays} day${remainingDays > 1 ? "s" : ""}`;
-		} else {
+		if (type === 'quest') {
 			return diffDays >= 0 ? diffDays.toString() : "0";
 		}
+
+		if (diffDays <= 0) return "Today";
+		if (diffDays === 1) return "Next tomorrow";
+		if (diffDays < 7) return `Next in ${diffDays} days`;
+
+		const weeks = Math.floor(diffDays / 7);
+		const remainingDays = diffDays % 7;
+
+		if (remainingDays === 0) return `Next in ${weeks} week${weeks > 1 ? "s" : ""}`;
+		return `Next in ${weeks} week${weeks > 1 ? "s" : ""} and ${remainingDays} day${remainingDays > 1 ? "s" : ""}`;
 	}
 
 	public async spendFreePoints(

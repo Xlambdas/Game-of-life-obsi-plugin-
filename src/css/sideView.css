@@ -58,14 +58,16 @@
 .card {
 	display: flex;
 	flex-direction: column;
+	margin-left: 0 !important;
+	margin-right: 0 !important;
 }
 
-.side-view-header .card {
+.side-view-header .card{
 	background: var(--background-secondary);
 	border: 1px solid var(--interactive-accent);
 	border-width: 2px 1px;
 	border-radius: 8px;
-	padding: 8px;
+	padding: 4px;
 	margin-bottom: 8px;
 }
 

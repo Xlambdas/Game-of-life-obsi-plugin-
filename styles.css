@@ -307,6 +307,184 @@ input:checked + .slider::before {
 
 /* ---------------------- habitlist style ---------------------- */
 
+.habit-list-date-container {
+  padding: 0;
+  max-width: 500px;
+}
+
+.habit-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--background-modifier-border);
+}
+
+.habit-modal-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.habit-modal-subtitle {
+  margin: 4px 0 0;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.habit-modal-close-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: var(--text-muted);
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+}
+
+.habit-modal-close-btn:hover {
+  background: var(--background-modifier-hover);
+}
+
+.habitList-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.habitList-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--background-modifier-border);
+  transition: background-color 0.2s;
+}
+
+.habitList-item:hover:not(.habitList-disabled) {
+  background: var(--background-modifier-hover);
+}
+
+.habitList-item-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.habitList-checkbox-container {
+  position: relative;
+}
+
+.habitList-checkbox {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.habitList-checkbox-label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--text-muted);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.habitList-checkbox:checked + .habitList-checkbox-label {
+  background: var(--interactive-accent);
+  border-color: var(--interactive-accent);
+}
+
+.habitList-checkbox:disabled + .habitList-checkbox-label {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.habitList-checkbox-icon {
+  width: 16px;
+  height: 16px;
+  color: white;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.habitList-checkbox:checked + .habitList-checkbox-label .habitList-checkbox-icon {
+  opacity: 1;
+}
+
+.habitList-title {
+  flex: 1;
+  font-size: 15px;
+}
+
+.habitList-completed .habitList-title {
+  color: var(--text-muted);
+  text-decoration: line-through;
+}
+
+.habitList-disabled {
+  opacity: 0.6;
+}
+
+.habit-unavailable-badge {
+  font-size: 12px;
+  padding: 2px 8px;
+  background: var(--background-modifier-error);
+  color: var(--text-on-accent);
+  border-radius: 12px;
+}
+
+.habit-loading-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--background-modifier-border);
+  border-top-color: var(--interactive-accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.habitList-modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--background-modifier-border);
+  display: flex;
+  justify-content: flex-end;
+}
+
+.habitList-close-button {
+  padding: 8px 24px;
+  background: var(--interactive-accent);
+  color: var(--text-on-accent);
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.habitList-close-button:hover {
+  background: var(--interactive-accent-hover);
+}
+
+.habitList-empty-state {
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--text-muted);
+}
 
 
 /* modal.css */
@@ -1401,14 +1579,16 @@ input:checked + .slider::before {
 .card {
 	display: flex;
 	flex-direction: column;
+	margin-left: 0 !important;
+	margin-right: 0 !important;
 }
 
-.side-view-header .card {
+.side-view-header .card{
 	background: var(--background-secondary);
 	border: 1px solid var(--interactive-accent);
 	border-width: 2px 1px;
 	border-radius: 8px;
-	padding: 8px;
+	padding: 4px;
 	margin-bottom: 8px;
 }
 

@@ -1,3 +1,4 @@
+import { DateHelper, DateString } from "helpers/dateHelpers";
 import { AttributeBlock, DEFAULT_ATTRIBUTES } from "./attributeDetails";
 
 /*
@@ -220,7 +221,7 @@ export interface BaseTask {
 	title: string;
 	shortDescription: string;
 	description: string;
-	created_at: Date; // Auto-generated
+	created_at: DateString; // Auto-generated
 	settings: {
 		type: TaskType; // Auto-generated
 		priority?: DefaultPriority; // todo: add algo to set priority based on user level/xp/...
@@ -240,11 +241,11 @@ export interface Quest extends BaseTask {
 
 	progression: {
 		isCompleted: boolean;
-		completedAt: Date | null; // Auto-generated
+		completedAt: DateString | null; // Auto-generated
 		progress: number; // Auto-generated: 0 to 100
-		dueDate?: Date; // todo: do algo
-		startedAt?: Date; // Auto-generated when the quest is started // todo: do algo
-		lastUpdated?: Date; // Auto-generated when the quest is updated // todo: do algo
+		dueDate?: DateString; // todo: do algo
+		startedAt?: DateString; // Auto-generated when the quest is started // todo: do algo
+		lastUpdated?: DateString; // Auto-generated when the quest is updated // todo: do algo
 		subtasks?: {
 			conditionQuests: { id: string; title: string; targetProgress: number }[];
 			conditionHabits: { id: string; title: string; targetStreak: number }[];
@@ -300,7 +301,7 @@ export const DEFAULT_QUEST: Quest = {
 	title: "Tutorial Quest",
 	shortDescription: "Learn the basics of the game.",
 	description: "This is your first quest. Complete it to understand how the game works.",
-	created_at: new Date(), // Auto generated
+	created_at: DateHelper.today(), // Auto generated
 	settings: {
 		type: 'quest', // Auto generated
 		category: 'Undefined',
@@ -313,9 +314,9 @@ export const DEFAULT_QUEST: Quest = {
 		isCompleted: false,
 		completedAt: null, // Auto generated
 		progress: 0, // Auto generated (0-100) // todo: do algo
-		dueDate: new Date(0), // todo do algo
-		startedAt: new Date(0), // todo do algo
-		lastUpdated: new Date(0), // todo do algo
+		dueDate: DateHelper.today(), // todo do algo
+		startedAt: DateHelper.today(), // todo do algo
+		lastUpdated: DateHelper.today(), // todo do algo
 		subtasks: {
 			conditionQuests: [],
 			conditionHabits: [],
@@ -380,12 +381,12 @@ export interface Habit extends BaseTask {
 		current: number; // auto generated
 		best: number; // auto generated
 		history: {
-			date: Date; // auto generated
+			date: DateString; // auto generated
 			success: boolean; // auto generated
 		}[];
 		isCompletedToday: boolean; // Auto generated based on history
-		nextDate: Date; // Auto generated based on recurrence
-		lastCompletedDate: Date; // Auto generated based on history
+		nextDate: DateString; // Auto generated based on recurrence
+		lastCompletedDate: DateString; // Auto generated based on history
 	};
 	progress: {
 		level: number; // habit level progression
@@ -418,7 +419,7 @@ export const DEFAULT_HABIT: Habit = {
 	title: "drink water",
 	shortDescription: "Stay hydrated",
 	description: "This is your first habit.",
-	created_at: new Date(),
+	created_at: DateHelper.today(), // Auto generated
 	settings: {
 		type: 'habit',
 		category: 'undefined',
@@ -436,8 +437,8 @@ export const DEFAULT_HABIT: Habit = {
 		best: 0,
 		history: [],
 		isCompletedToday: false, // Auto generated
-		nextDate: new Date(), // Auto generated based on recurrence
-		lastCompletedDate: new Date(0) // Auto generated
+		nextDate: DateHelper.today(), // Auto generated based on recurrence
+		lastCompletedDate: DateHelper.toDateString(new Date(0)) // Auto generated
 	},
 	progress: {
 		level: 1, // habit level progression

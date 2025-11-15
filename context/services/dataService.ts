@@ -132,8 +132,8 @@ export default class DataService {
 	}
 
 	async updateUser(newData: Partial<UserSettings>): Promise<void> {
-		console.log("📝 BEFORE UPDATE:", JSON.stringify(this.user.xpDetails));
-		console.log("📝 NEW DATA:", JSON.stringify(newData.xpDetails));
+		// console.log("📝 BEFORE UPDATE:", JSON.stringify(this.user.xpDetails));
+		// console.log("📝 NEW DATA:", JSON.stringify(newData.xpDetails));
 
 		// Deep merge for nested objects
 		this.user = {
@@ -147,7 +147,7 @@ export default class DataService {
 				: this.user.attribute,
 		};
 
-		console.log("📝 AFTER UPDATE:", JSON.stringify(this.user.xpDetails));
+		console.log("UPDATE - User ", JSON.stringify(this.user));
 		await this.save('user');
 	}
 
@@ -241,6 +241,10 @@ export default class DataService {
 		return this.habits;
 	}
 
+	async getHabitbyID(habitID: string): Promise<Habit | undefined> {
+		return this.habits[habitID];
+	}
+
 	async deleteAllHabits(): Promise<void> {
 		this.habits = {};
 		await this.save('habits');
@@ -258,6 +262,11 @@ export default class DataService {
 		await this.loadHabits();
 		return Object.values(this.habits);
 	}
+
+	// async refreshAllData(): Promise<void> {
+	// 	await this.loadQuests();
+
+	// }
 
 	// -----------------------
 	// helpers

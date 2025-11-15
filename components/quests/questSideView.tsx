@@ -3,6 +3,7 @@ import React from "react";
 import { Quest } from "../../data/DEFAULT";
 // from file (components):
 import { ProgressBar } from "../smallComponents";
+import { DateString } from "helpers/dateHelpers";
 
 interface QuestSideViewProps {
 	filteredQuests: Quest[];
@@ -16,7 +17,7 @@ interface QuestSideViewProps {
 	setActiveTab: (tab: "active" | "completed" | "all" | "upcoming") => void;
 	setSortBy: (sort: "priority" | "xp" | "difficulty" | "date") => void;
 	handleModifyQuest: (quest: Quest) => void;
-	getDaysUntil: (targetDate: Date) => string;
+	getDaysUntil: (startDate: DateString, targetDate: DateString) => string;
 }
 
 export const QuestSideView: React.FC<QuestSideViewProps> = (props) => {
@@ -133,7 +134,7 @@ interface QuestItemProps {
 	activeTab?: "active" | "completed" | "all" | "upcoming";
 	onComplete: (quest: Quest, completed: boolean) => void;
 	onModify: (quest: Quest) => void;
-	getDaysUntil: (targetDate: Date) => string;
+	getDaysUntil: (startDate: DateString, targetDate: DateString) => string;
 }
 
 const QuestItem: React.FC<QuestItemProps> = ({ quest, activeTab, onComplete, onModify, getDaysUntil }) => {
@@ -183,7 +184,7 @@ const QuestItem: React.FC<QuestItemProps> = ({ quest, activeTab, onComplete, onM
 
 			{/* Remaining days */}
 			{quest.progression.dueDate && !quest.progression.isCompleted ? <div className="quest-xp">
-				<strong>{getDaysUntil(new Date(quest.progression.dueDate))} days remaining</strong>
+				<strong>{getDaysUntil(new Date().toISOString(), quest.progression.dueDate)} days remaining</strong>
 			</div> : null}
 
 			{/* Attributes rewards */}

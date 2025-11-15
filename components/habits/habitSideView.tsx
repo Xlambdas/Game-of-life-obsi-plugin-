@@ -1,6 +1,7 @@
 import React from "react";
 // from file (Default):
 import { Habit } from "../../data/DEFAULT";
+import { DateString } from "helpers/dateHelpers";
 
 interface HabitSideViewProps {
 	filteredHabits: Habit[];
@@ -14,7 +15,7 @@ interface HabitSideViewProps {
 	setActiveTab: (tab: "today" | "upcoming") => void;
 	setSortBy: (sort: "priority" | "xp" | "difficulty" | "recurrence") => void;
 	handleModifyHabit: (habit: Habit) => void;
-	getDaysUntil: (targetDate: Date) => string;
+	getDaysUntil: (startDate: DateString, targetDate: DateString) => string;
 }
 
 export const HabitSideView: React.FC<HabitSideViewProps> = (props) => {
@@ -127,7 +128,7 @@ interface HabitItemProps {
 	activeTab: "today" | "upcoming";
 	onComplete: (habit: Habit, completed: boolean) => void;
 	onModify: (habit: Habit) => void;
-	getDaysUntil: (targetDate: Date) => string;
+	getDaysUntil: (startDate: DateString, targetDate: DateString) => string;
 }
 
 
@@ -137,7 +138,7 @@ const HabitItem: React.FC<HabitItemProps> = ({ habit, activeTab, onComplete, onM
 	const isEditable = !habit.isSystemHabit;
 
 	const handleToggle = () => {
-		onComplete(habit, !habit.streak.isCompletedToday);
+		onComplete(habit, habit.streak.isCompletedToday);
 	};
 
 	return (
@@ -146,10 +147,10 @@ const HabitItem: React.FC<HabitItemProps> = ({ habit, activeTab, onComplete, onM
 				<div className="habit-checkbox-section">
 					<input
 						type="checkbox"
-						checked={habit.streak.isCompletedToday}
+						checked={habit.streak.isCompletedToday ? true : false}
 						onChange={handleToggle}
 						disabled={activeTab === "upcoming"}
-						className="habit-checkbox"
+						className={`habit-checkbox ${habit.streak.isCompletedToday ? "completed" : ""}`}
 					/>
 					<span className={
 						`habit-title ${habit.streak.isCompletedToday ? "completed" : ""} ${habit.title.length > 12 ? "scrollable" : ""}`}
@@ -184,7 +185,7 @@ const HabitItem: React.FC<HabitItemProps> = ({ habit, activeTab, onComplete, onM
 							</span>
 						))
 				) : (
-					<span><strong>{getDaysUntil(new Date(habit.streak.nextDate || new Date()))}</strong><br/></span>
+					<span><strong>{habit.streak.nextDate ? getDaysUntil(new Date().toISOString(), habit.streak.nextDate) : ""}</strong><br/></span>
 				)}
 				Streak: {habit.streak.current} (Best: {habit.streak.best})
 			</div>

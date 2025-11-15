@@ -14,17 +14,17 @@
       "isTimeSensitive": false
     },
     "progression": {
-      "isCompleted": true,
-      "completedAt": "2025-11-12T07:20:23.696Z",
-      "progress": 100,
+      "isCompleted": false,
+      "completedAt": null,
+      "progress": 0,
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-11-12T23:02:27.524Z",
+      "lastUpdated": "2025-11-15",
       "subtasks": {
         "conditionQuests": [],
         "conditionHabits": []
       },
       "attempts": 59,
-      "failures": 58,
+      "failures": 59,
       "timeSpentMinutes": 0
     },
     "reward": {
@@ -108,13 +108,13 @@
       "completedAt": null,
       "progress": 0,
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-11-12T23:02:27.524Z",
+      "lastUpdated": "2025-11-15",
       "subtasks": {
         "conditionQuests": [],
         "conditionHabits": []
       },
-      "attempts": 9,
-      "failures": 9,
+      "attempts": 10,
+      "failures": 10,
       "timeSpentMinutes": 0
     },
     "reward": {
@@ -196,9 +196,9 @@
     "progression": {
       "isCompleted": false,
       "completedAt": null,
-      "progress": 43,
+      "progress": 11,
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-11-12T23:02:27.770Z",
+      "lastUpdated": "2025-11-15",
       "subtasks": {
         "conditionQuests": [
           {
@@ -301,17 +301,17 @@
       "isTimeSensitive": false
     },
     "progression": {
-      "isCompleted": false,
-      "completedAt": null,
-      "progress": 0,
+      "isCompleted": true,
+      "completedAt": "2025-11-15",
+      "progress": 100,
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-11-12T23:02:27.524Z",
+      "lastUpdated": "2025-11-15",
       "subtasks": {
         "conditionQuests": [],
         "conditionHabits": []
       },
-      "attempts": 13,
-      "failures": 13,
+      "attempts": 15,
+      "failures": 14,
       "timeSpentMinutes": 0
     },
     "reward": {
@@ -395,13 +395,13 @@
       "completedAt": null,
       "progress": 0,
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-11-12T23:02:27.524Z",
+      "lastUpdated": "2025-11-15",
       "subtasks": {
         "conditionQuests": [],
         "conditionHabits": []
       },
-      "attempts": 16,
-      "failures": 16,
+      "attempts": 17,
+      "failures": 17,
       "timeSpentMinutes": 0
     },
     "reward": {
@@ -485,7 +485,7 @@
       "completedAt": null,
       "progress": 0,
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-11-12T23:02:27.524Z",
+      "lastUpdated": "2025-11-15",
       "subtasks": {
         "conditionQuests": [],
         "conditionHabits": []

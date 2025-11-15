@@ -8,6 +8,7 @@ import { QuestSideView } from "./questSideView";
 // import { ModifyQuestModal } from "modal/questModal";
 import { GenericForm } from "../forms/genericForm";
 import { on } from "events";
+import { DateString } from "helpers/dateHelpers";
 
 interface QuestListProps {
 	quests: Quest[];
@@ -78,8 +79,8 @@ export const QuestList: React.FC<QuestListProps> = ({ quests, user, onQuestUpdat
 	};
 
 
-	const handleGetDaysUntil = (targetDate: Date): string => {
-		return appService.xpService.getDaysUntil(new Date(), targetDate, 'quest');
+	const handleGetDaysUntil = (startDate: DateString, targetDate: DateString): string => {
+		return appService.xpService.getDaysUntil(startDate, targetDate, 'quest');
 	}
 
 	const handleCompleteQuest = async (quest: Quest, completed: boolean) => {
@@ -93,7 +94,7 @@ export const QuestList: React.FC<QuestListProps> = ({ quests, user, onQuestUpdat
             q.id === updatedQuest.id ? updatedQuest : q
         );
 
-		// Step 3: If uncompleting, check for dependent quests
+		// If uncompleting, check for dependent quests
         if (!completed) {
 			// Find all quests that depend on this quest
 			allQuests = allQuests.map(q => {
@@ -111,7 +112,7 @@ export const QuestList: React.FC<QuestListProps> = ({ quests, user, onQuestUpdat
 							isCompleted: false,
 							completedAt: null,
 							progress: 0,
-							lastUpdated: new Date()
+							lastUpdated: new Date().toISOString(),
 						}
 					};
 				}
