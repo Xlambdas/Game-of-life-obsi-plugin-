@@ -128,6 +128,7 @@ export const SideView: React.FC = () => {
 						app={appService.getApp()}
 						context={appService}
 						habits={habits}
+						onHabitsUpdate={handleCompleteHabit}
 					/>
 				</div>
 			</div>

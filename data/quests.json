@@ -14,16 +14,16 @@
       "isTimeSensitive": false
     },
     "progression": {
-      "isCompleted": false,
-      "completedAt": null,
-      "progress": 0,
+      "isCompleted": true,
+      "completedAt": "2025-11-15",
+      "progress": 100,
       "startedAt": "1970-01-01T00:00:00.000Z",
       "lastUpdated": "2025-11-15",
       "subtasks": {
         "conditionQuests": [],
         "conditionHabits": []
       },
-      "attempts": 59,
+      "attempts": 60,
       "failures": 59,
       "timeSpentMinutes": 0
     },
@@ -196,7 +196,7 @@
     "progression": {
       "isCompleted": false,
       "completedAt": null,
-      "progress": 11,
+      "progress": 33,
       "startedAt": "1970-01-01T00:00:00.000Z",
       "lastUpdated": "2025-11-15",
       "subtasks": {
@@ -481,16 +481,16 @@
       "isTimeSensitive": false
     },
     "progression": {
-      "isCompleted": false,
-      "completedAt": null,
-      "progress": 0,
+      "isCompleted": true,
+      "completedAt": "2025-11-15",
+      "progress": 100,
       "startedAt": "1970-01-01T00:00:00.000Z",
       "lastUpdated": "2025-11-15",
       "subtasks": {
         "conditionQuests": [],
         "conditionHabits": []
       },
-      "attempts": 0,
+      "attempts": 1,
       "failures": 0,
       "timeSpentMinutes": 0
     },

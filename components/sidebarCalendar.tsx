@@ -1,24 +1,19 @@
-import React, { use, useEffect, useState } from 'react';
-import { ChevronLeft, ChevronRight, Circle, Check, Flame, Zap } from 'lucide-react';
-import { Habit } from 'data/DEFAULT';
-import { App, Modal, Notice } from 'obsidian';
-import { HabitList } from './habits/habitList';
+import React, { use, useCallback, useEffect, useState } from 'react';
 import { AppContextService } from 'context/appContextService';
-import { HabitListDateModal } from 'modal/habitListModal';
+import { App, Modal, Notice } from 'obsidian';
+import { ChevronLeft, ChevronRight, Circle, Check, Flame, Zap } from 'lucide-react';
+// From file (Default, Helpers):
+import { Habit } from 'data/DEFAULT';
 import { DateHelper, DateString } from 'helpers/dateHelpers';
-
-interface PairDateHabit {
-	date: DateString;
-	habits: { habitID: string, habitTitle: string, completed: boolean, couldBeCompleted: boolean }[];
-}
+// From file UI :
+import { HabitListDateModal } from 'modal/habitListModal';
 
 interface SidebarCalendarProps {
 	app: App;
 	context: AppContextService;
 	habits: Habit[];
-	onHabitsUpdate?: (updatedHabits: Habit[]) => void;
+	onHabitsUpdate: (updatedHabits: Habit[]) => void;
 }
-
 
 export const SidebarCalendar: React.FC<SidebarCalendarProps> = ({
 	app,
@@ -27,7 +22,7 @@ export const SidebarCalendar: React.FC<SidebarCalendarProps> = ({
 	onHabitsUpdate
 }) => {
 	const habitService = context.habitService;
-	const [selectedDate, setSelectedDate] = useState<DateString | null>(DateHelper.today());
+	const [selectedDate, setSelectedDate] = useState<DateString | null>(null);
 	const [dateHabit, setDateHabit] = useState<{
 		habitID: string;
 		habitTitle: string;
@@ -59,6 +54,8 @@ export const SidebarCalendar: React.FC<SidebarCalendarProps> = ({
 		})();
 	}, [selectedDate, habitState]);
 
+	// ------------------
+	// Calendar Helpers :
 	const getDaysInMonth = (dateStr: DateString): { daysInMonth: number; startingDayOfWeek: number } => {
 		const date = new Date(dateStr);
 		const year = date.getFullYear();
@@ -113,28 +110,72 @@ export const SidebarCalendar: React.FC<SidebarCalendarProps> = ({
 		return dateHabit.filter(h => h.completed).length;
 	};
 
-	const toggleHabitCompletion = async (habitId: string) => {
-		if (!selectedDate) return;
-		// console.log("<><><><><><>Toggling habit completion for habitId:", habitId, "on date:", selectedDate);
+
+	// ----------------------------------------
+	// method for habit completion toggling :
+	const toggleHabitCompletion = async (habitId: string, dateStr: DateString) => {
+		if (!dateStr) return;
+		// console.log("<><><><><><>Toggling habit completion for habitId:", habitId, "on date:", dateStr);
 		const habit = habitState.find(h => h.id === habitId);
 		if (!habit) {
 			console.warn("Habit not found for id:", habitId);
 			return;
 		}
-		await habitService.handleCheckbox(habit, habitState, habitService.isCompleted(habit, selectedDate), selectedDate, setHabitState, onHabitsUpdate);
+		await habitService.handleCheckbox(
+			habit,
+			habitState,
+			habitService.isCompleted(habit, dateStr),
+			dateStr,
+			setHabitState,
+			onHabitsUpdate
+		);
+		if (selectedDate === dateStr) {
+			const updatedResult = await habitService.pairDateHabit(dateStr);
+			setDateHabit(updatedResult);
+		}
 	};
 
+	const handleDateClick = async (day: number) => {
+		// console.log("<------> start, handleDateClick for day:", day);
+		const newDate = DateHelper.formatDateString(new Date(currentDate).getFullYear(), new Date(currentDate).getMonth() + 1, day);
+		setSelectedDate(newDate);
+		console.log("newdate:", newDate);
+		const result = await habitService.pairDateHabit(newDate);
+		setDateHabit(result);
+		console.log("result:", result);
+
+		const modalToggleHabitCompletion = async (habitId: string, dateStr: DateString) => {
+			// update on a deeper level to avoid stale state issues
+			const freshHabits = await context.dataService.getHabits();
+			const freshHabitsArray = Object.values(freshHabits) as Habit[];
+
+			const habit = freshHabitsArray.find(h => h.id === habitId);
+			if (!habit) {
+				console.warn("❌ Habit not found for id:", habitId);
+				return;
+			}
+			const currentStatus = habitService.isCompleted(habit, dateStr);
+			// Be sure to update the local state as well
+			await habitService.handleCheckbox(
+				habit,
+				freshHabitsArray,
+				currentStatus,
+				dateStr,
+				setHabitState,
+				onHabitsUpdate
+			);
+		};
+		new HabitListDateModal(app, context, newDate, result, modalToggleHabitCompletion).open();
+	};
+
+
+	// For second version of the calendar with inline habit list :
 	const isHabitCompleted = (habitID: string) => {
 		if (!selectedDate) return false;
 		const habitData = habitState.find(h => h.id === habitID);
 		if (!habitData) return false;
 		return habitService.isCompleted(habitData as Habit, selectedDate);
 	};
-
-	const handleDateClick = (day: number) => {
-		const newDate = DateHelper.formatDateString(new Date(currentDate).getFullYear(), new Date(currentDate).getMonth() + 1, day);
-		setSelectedDate(newDate);
-	}
 
 	return (
 		<div className="calendar-container">
@@ -168,9 +209,9 @@ export const SidebarCalendar: React.FC<SidebarCalendarProps> = ({
 					return (
 						<button
 							key={index}
-							onClick={() => {
-								handleDateClick(day)
-								}}
+							onClick={async () => {
+								await handleDateClick(day)
+							}}
 							className={`
 								calendar-day
 								${isTodayDate ? 'today' : ''}
@@ -183,7 +224,7 @@ export const SidebarCalendar: React.FC<SidebarCalendarProps> = ({
 				})}
 			</div>
 
-			{selectedDate && dateHabit.length > 0 && (
+			{1>=2 && selectedDate && dateHabit.length > 0 && (
 				<div className="calendar-habit-list">
 					<h4 className="calendar-habit-list-title">
 						Habits for {selectedDate}
@@ -192,7 +233,7 @@ export const SidebarCalendar: React.FC<SidebarCalendarProps> = ({
 						{dateHabit.map((habit) => (
 							<li key={habit.habitID} className="calendar-habit-item">
 								<button
-									onClick={() => toggleHabitCompletion(habit.habitID)}
+									onClick={() => toggleHabitCompletion(habit.habitID, selectedDate)}
 									className="habit-completion-btn"
 								>
 									{isHabitCompleted(habit.habitID) ? (
@@ -220,6 +261,7 @@ export const SidebarCalendar: React.FC<SidebarCalendarProps> = ({
 		</div>
 	);
 }
+
 
 
 

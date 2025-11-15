@@ -1,5 +1,4 @@
 import { Vault, normalizePath } from 'obsidian';
-import { v4 as uuidv4 } from 'uuid';
 // from files (default) :
 import { UserSettings, DEFAULT_SETTINGS, Quest, DEFAULT_QUEST, Habit, DEFAULT_HABIT } from '../../data/DEFAULT';
 
@@ -147,7 +146,7 @@ export default class DataService {
 				: this.user.attribute,
 		};
 
-		console.log("UPDATE - User ", JSON.stringify(this.user));
+		// console.log("UPDATE - User ", JSON.stringify(this.user));
 		await this.save('user');
 	}
 
@@ -262,11 +261,6 @@ export default class DataService {
 		await this.loadHabits();
 		return Object.values(this.habits);
 	}
-
-	// async refreshAllData(): Promise<void> {
-	// 	await this.loadQuests();
-
-	// }
 
 	// -----------------------
 	// helpers
