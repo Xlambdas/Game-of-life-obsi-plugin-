@@ -32,7 +32,9 @@ export const HabitList: React.FC<HabitListProps> = ({ habits, onHabitUpdate,onUs
 			const refreshedHabits = await Promise.all(habitState.map(habit => appService.habitService.refreshHabits(habit)));
 			setHabitState(refreshedHabits);
 			await appService.dataService.saveAllHabits(refreshedHabits);
+			document.dispatchEvent(new CustomEvent("dbUpdated"));
 		};
+		console.log("Refreshing all habits in HabitList...- [useEffect; initial load; HabitList]");
 		refreshAllHabits();
 	}, []);
 

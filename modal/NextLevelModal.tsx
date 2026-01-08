@@ -20,6 +20,12 @@ export class NextLevelModal extends Modal {
 	public nextLevel = async (): Promise<void> => {
 		console.log("Going to next level...");
 		await Promise.resolve(this.xpService.goNextLevel(this.user));
+		document.dispatchEvent(new CustomEvent("dbUpdated", {
+			detail: {
+				type: "user",
+				data: this.user
+			}
+		}));
 	}
 
 	onOpen() {

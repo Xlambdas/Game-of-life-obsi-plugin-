@@ -49,8 +49,8 @@
   }
   .calendar-day {
     height: 23px;
-	min-width: 6px;
-	padding: 2px;
+    min-width: 6px;
+    padding: 2px;
     font-size: 11px;
     border-radius: 2px;
     background: none;
@@ -58,6 +58,7 @@
     cursor: pointer;
     position: relative;
     transition: all 0.15s;
+    color: #dcddde;
   }
   .calendar-day:hover {
     background: #252525;
@@ -72,6 +73,81 @@
     font-weight: 600;
     color: #a78bfa;
   }
+
+  /* Habit completion states */
+  .calendar-day.has-habits {
+    background: #252525;
+  }
+  .calendar-day.has-habits:hover {
+    background: #2a2a2a;
+  }
+
+  /* All habits completed */
+  .calendar-day.all-completed {
+    background: rgba(34, 197, 94, 0.15);
+    color: #4ade80;
+  }
+  .calendar-day.all-completed:hover {
+    background: rgba(34, 197, 94, 0.25);
+  }
+
+  /* Partially completed */
+  .calendar-day.partial-completed {
+    background: rgba(251, 191, 36, 0.15);
+    color: #fbbf24;
+  }
+  .calendar-day.partial-completed:hover {
+    background: rgba(251, 191, 36, 0.25);
+  }
+
+  /* Future dates */
+  .calendar-day.future {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+  .calendar-day.future:hover {
+    background: none;
+  }
+
+  /* Today + completion combinations */
+  .calendar-day.today.all-completed {
+    background: rgba(34, 197, 94, 0.2);
+    box-shadow: inset 0 0 0 1px #4ade80;
+    color: #4ade80;
+  }
+  .calendar-day.today.partial-completed {
+    background: rgba(251, 191, 36, 0.2);
+    box-shadow: inset 0 0 0 1px #fbbf24;
+    color: #fbbf24;
+  }
+
+  /* Day number styling */
+  .calendar-day .day-number {
+    display: block;
+    line-height: 1;
+  }
+
+  /* Habits indicator (counter) */
+  .calendar-day .habits-indicator {
+    position: absolute;
+    bottom: 1px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 7px;
+    font-weight: 600;
+    opacity: 0.7;
+    line-height: 1;
+  }
+  .calendar-day.all-completed .habits-indicator {
+    color: #4ade80;
+    opacity: 1;
+  }
+  .calendar-day.partial-completed .habits-indicator {
+    color: #fbbf24;
+    opacity: 1;
+  }
+  /* === END NEW === */
+
   .calendar-marker {
     position: absolute;
     bottom: 2px;

@@ -79,10 +79,10 @@ export const SideView: React.FC = () => {
 	useEffect(() => {
 		// console.log("🎯 useEffect triggered - appService:", !!appService);
 		if (!appService) return;
-		// console.log(">-----< usestate effect sideview loading:", loading);
+		console.log(">-----< usestate effect sideview loading:", loading);
 		loadData();
 		const handleReload = () => {
-			// console.log("🔄 dbUpdated event triggered");
+			console.log("🔄 dbUpdated event triggered");
 			loadData();
 		};
 		document.addEventListener("dbUpdated", handleReload);
@@ -98,7 +98,7 @@ export const SideView: React.FC = () => {
 
 	const handleCompleteHabit = (updatedHabit: Habit[]) => {
 		new Notice("Habit updated!");
-		// console.log("Updated habit received in SideView:", updatedHabit);
+		console.log("Updated habit received in SideView:", updatedHabit);
 		setHabits(updatedHabit);
 	};
 
@@ -106,16 +106,16 @@ export const SideView: React.FC = () => {
 	return (
 		<div className="side-view-container">
 			<div className="side-view-header">
-				<UserCard app={appService.getApp()} context={appService} user={user} />
+				<UserCard user={user} onUserUpdate={setUser} />
 			</div>
 			<div className="side-view-content">
 				<div className="card">
-					<QuestList
+					{/* <QuestList
 						quests={quests}
 						user={user}
 						onUserUpdate={setUser}
 						onQuestUpdate={handleQuestUpdate}
-					/>
+					/> */}
 					<hr className="separator"></hr>
 					<HabitList
 						habits={habits}
@@ -125,9 +125,8 @@ export const SideView: React.FC = () => {
 				</div>
 				<div className="card">
 					<SidebarCalendar
-						app={appService.getApp()}
-						context={appService}
 						habits={habits}
+						onUserUpdate={setUser}
 						onHabitsUpdate={handleCompleteHabit}
 					/>
 				</div>

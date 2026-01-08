@@ -19,22 +19,33 @@ interface StatsModalProps {
 	user: UserSettings;
 	onSpendPoint: (attribute: keyof UserSettings["attribute"]) => Promise<void>;
 	app: App;
+	onUserUpdate?: (updatedUser: UserSettings) => void;
 }
 
 export class UserModal extends Modal {
 	private user: UserSettings;
 	private root: ReactDOM.Root | null = null;
 	private service: AppContextService = AppContextService.getInstance();
+	private onUserUpdate?: (updatedUser: UserSettings) => void;
 
-	constructor(app: App) {
+	constructor(app: App, onUserUpdate?: (updatedUser: UserSettings) => void) {
 		super(app);
 		this.user = this.service.getUser();
+		this.onUserUpdate = onUserUpdate;
 	}
 
 	async handleSpendPoint(attribute: keyof UserSettings["attribute"]): Promise<void> {
 		try {
+			console.log('----Spending point on attribute:', attribute);
 			await this.service["xpService"].spendFreePoints(attribute, 1);
 			this.user = this.service.getUser();
+			// this.onUserUpdate?.(this.user);
+			document.dispatchEvent(new CustomEvent("dbUpdated", {
+				detail: {
+					type: "user",
+					data: this.user
+				}
+			}));
 			// Re-render to update the UI
 			this.render();
 		} catch (error) {
@@ -47,6 +58,7 @@ export class UserModal extends Modal {
 			this.root.render(
 				<StatsModal
 					user={this.user}
+					onUserUpdate={this.onUserUpdate}
 					onSpendPoint={(attr) => this.handleSpendPoint(attr)}
 					app={this.app}
 				/>
@@ -120,7 +132,7 @@ const StatsModal: React.FC<StatsModalProps> = ({ user: initialUser, onSpendPoint
 		modal.open();
 	};
 
-	const userProgress =  user.xpDetails.newXp < user.xpDetails.lvlThreshold ? Math.min(user.xpDetails.newXp / user.xpDetails.lvlThreshold, 1) : 100;
+	const userProgress =  user.xpDetails.newXp < user.xpDetails.lvlThreshold ? Math.min((user.xpDetails.newXp*100) / user.xpDetails.lvlThreshold, 100) : 100;
 	console.log("User Progress:", userProgress);
 
 	const [currentImage, setCurrentImage] = useState(personaImages['good_guys']);
@@ -182,7 +194,7 @@ const StatsModal: React.FC<StatsModalProps> = ({ user: initialUser, onSpendPoint
 					<div className="stats-info-left">
 						{/* <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
 							<p className="persona-class">{user.persona.class}</p>
-							<p className="persona-name">{user.persona.name}</p>
+							<p className="persona-name">{user.spersona.name}</p>
 							<p className="persona-level">Level {user.xpDetails.level}</p>
 						</div> */}
 
@@ -192,6 +204,12 @@ const StatsModal: React.FC<StatsModalProps> = ({ user: initialUser, onSpendPoint
 							<div className="stats-progress-wrapper">
 								<div className="stats-progress-fill xp-fill" style={{ width: `${userProgress}%` }} />
 							</div>
+							{/* <div className="stats-progress-wrapper" ><ProgressBar
+								value={user.xpDetails.newXp}
+								max={user.xpDetails.lvlThreshold}
+								showPercent={false}
+							/>
+							</div> */}
 						</div>
 
 						{/* Mana */}

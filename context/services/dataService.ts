@@ -79,7 +79,6 @@ export default class DataService {
 		const folder = path.substring(0, path.lastIndexOf("/"));
 		await this.vault.adapter.mkdir(folder);
 		await this.vault.adapter.write(path, content);
-		document.dispatchEvent(new CustomEvent("dbUpdated"));
 	}
 
 	// -----------------------
@@ -163,7 +162,7 @@ export default class DataService {
 	}
 
 	async addQuest(questData: Partial<Quest>): Promise<void> {
-		document.dispatchEvent(new CustomEvent("dbUpdated"));
+		// document.dispatchEvent(new CustomEvent("dbUpdated"));
 		let newId = questData.id;
 		if (!newId || newId === "quest_0") {
 			newId = this.generateId("quest");
@@ -215,13 +214,15 @@ export default class DataService {
 	// ------------------------
 	// Habits
 	async loadHabits(): Promise<void> {
+		console.log("-- Loading habits");
 		await this.ensureDataFile(this.habitsPath, {});
 		const content = await this.vault.adapter.read(this.habitsPath);
 		this.habits = JSON.parse(content);
+		console.log('-- finished loading habit')
 	}
 
 	async addHabit(habitData: Partial<Habit>): Promise<void> {
-		document.dispatchEvent(new CustomEvent("dbUpdated"));
+		// document.dispatchEvent(new CustomEvent("dbUpdated"));
 		let newId = habitData.id;
 		if (!newId || newId === "habit_0") {
 			newId = this.generateId("habit");

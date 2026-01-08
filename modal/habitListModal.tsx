@@ -75,18 +75,19 @@ export const HabitListDateContainer: React.FC<HabitListDateContainerProps> = ({
 		setDisplayHabits(dateHabit);
 	}, [dateHabit]);
 
-	React.useEffect(() => {
-		const handleDbUpdate = async (event: CustomEvent) => {
-			console.log("Modal received dbUpdated event:", event.detail);
-			const updatedDateHabits = await habitService.pairDateHabit(datestr);
-			setDisplayHabits(updatedDateHabits);
-		};
-		document.addEventListener("dbUpdated", handleDbUpdate as EventListener);
+	// React.useEffect(() => {
+	// 	const handleDbUpdate = async (event: CustomEvent) => {
+	// 		console.log("Modal received dbUpdated event:", event.detail);
+	// 		// const updatedDateHabits = await habitService.pairDateHabit(datestr);
+	// 		// setDisplayHabits(updatedDateHabits);
+	// 	};
+	// 	document.addEventListener("dbUpdated", handleDbUpdate as EventListener);
 
-		return () => {
-			document.removeEventListener("dbUpdated", handleDbUpdate as EventListener);
-		};
-	}, [datestr, habitService]);
+	// 	return () => {
+	// 		document.removeEventListener("dbUpdated", handleDbUpdate as EventListener);
+	// 		console.error("HabitListDateContainer unmounted, removed dbUpdated listener");
+	// 	};
+	// }, [datestr, habitService]);
 
 	// ------------------------------------
 	// Complete Habit for a specific date :

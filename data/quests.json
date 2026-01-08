@@ -18,7 +18,7 @@
       "completedAt": "2025-11-15",
       "progress": 100,
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-11-15",
+      "lastUpdated": "2026-01-08",
       "subtasks": {
         "conditionQuests": [],
         "conditionHabits": []
@@ -108,7 +108,7 @@
       "completedAt": null,
       "progress": 0,
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-11-15",
+      "lastUpdated": "2026-01-08",
       "subtasks": {
         "conditionQuests": [],
         "conditionHabits": []
@@ -196,9 +196,9 @@
     "progression": {
       "isCompleted": false,
       "completedAt": null,
-      "progress": 33,
+      "progress": 50,
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-11-15",
+      "lastUpdated": "2026-01-08",
       "subtasks": {
         "conditionQuests": [
           {
@@ -212,13 +212,7 @@
             "targetProgress": 50
           }
         ],
-        "conditionHabits": [
-          {
-            "id": "habit_46ge1h3",
-            "title": "titles",
-            "targetStreak": 21
-          }
-        ]
+        "conditionHabits": []
       },
       "attempts": 0,
       "failures": 0,
@@ -305,7 +299,7 @@
       "completedAt": "2025-11-15",
       "progress": 100,
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-11-15",
+      "lastUpdated": "2026-01-08",
       "subtasks": {
         "conditionQuests": [],
         "conditionHabits": []
@@ -395,7 +389,7 @@
       "completedAt": null,
       "progress": 0,
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-11-15",
+      "lastUpdated": "2026-01-08",
       "subtasks": {
         "conditionQuests": [],
         "conditionHabits": []
@@ -485,7 +479,7 @@
       "completedAt": "2025-11-15",
       "progress": 100,
       "startedAt": "1970-01-01T00:00:00.000Z",
-      "lastUpdated": "2025-11-15",
+      "lastUpdated": "2026-01-08",
       "subtasks": {
         "conditionQuests": [],
         "conditionHabits": []

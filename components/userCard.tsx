@@ -8,21 +8,46 @@ import { ProgressBar } from "./smallComponents";
 import { UserModal } from "modal/userInfoModal";
 import { NextLevelModal } from "modal/NextLevelModal";
 import { User, Trophy } from "lucide-react";
+import { useAppContext } from "context/appContext";
+import { on } from "events";
 
 
 
 interface UserCardProps {
-	app: App;
-	context: AppContextService;
 	user: UserSettings;
+	onUserUpdate?: (updatedUser: UserSettings) => void;
 	onNextLevel?: () => boolean;
 }
 
-export const UserCard: React.FC<UserCardProps> = ({app, context, user, onNextLevel}) => {
+export const UserCard: React.FC<UserCardProps> = ({user, onUserUpdate, onNextLevel}) => {
 	/* Card displaying user information and XP progress */
+	const appService = useAppContext();
+	const app = appService.getApp();
+	const [currentUser, setCurrentUser] = useState<UserSettings>(user);
 
-	const freePts = user.xpDetails.freePts || 0;
-	const nextLevel = user.xpDetails.newXp >= user.xpDetails.lvlThreshold;
+	useEffect(() => {
+		// Écouter les mises à jour de la database
+		const handleUserUpdate = async (event: CustomEvent) => {
+			console.log("UserCard received dbUpdated event");
+			const freshUser = appService.dataService.getUser();
+			setCurrentUser(freshUser);
+			onUserUpdate?.(freshUser);
+		};
+
+		document.addEventListener("dbUpdated", handleUserUpdate as EventListener);
+
+		return () => {
+			document.removeEventListener("dbUpdated", handleUserUpdate as EventListener);
+		};
+	}, [appService, onUserUpdate]);
+
+	// Mettre à jour quand les props changent aussi
+	useEffect(() => {
+		setCurrentUser(user);
+	}, [user]);
+
+	const freePts = currentUser.xpDetails.freePts || 0;
+	const nextLevel = currentUser.xpDetails.newXp >= currentUser.xpDetails.lvlThreshold;
 
     return (
 		<div className="card">
@@ -33,7 +58,7 @@ export const UserCard: React.FC<UserCardProps> = ({app, context, user, onNextLev
 				marginBottom: '4px'
 			}}>
 				<button
-					onClick={() => new UserModal(app).open()}
+					onClick={() => new UserModal(app, onUserUpdate).open()}
 					className="user-modal-button"
 					title="View Stats & Spend Points"
 				>
@@ -45,10 +70,10 @@ export const UserCard: React.FC<UserCardProps> = ({app, context, user, onNextLev
 					)}
 				</button>
 				<h2 className="card-title" style={{ margin: 0, flex: 1, textAlign: 'center' }}>
-					Level {user.xpDetails.level}
+					Level {currentUser.xpDetails.level}
 				</h2>
 				<button
-					onClick={() => new NextLevelModal(app, user).open()}
+					onClick={() => new NextLevelModal(app, currentUser).open()}
 					className="user-modal-button"
 					title="View Unlocks"
 				>
@@ -62,12 +87,12 @@ export const UserCard: React.FC<UserCardProps> = ({app, context, user, onNextLev
 			</div>
 			<div className="progress-container">
 				<ProgressBar
-					value={user.xpDetails.newXp}
-					max={user.xpDetails.lvlThreshold}
+					value={currentUser.xpDetails.newXp}
+					max={currentUser.xpDetails.lvlThreshold}
 					showPercent={false}
 				/>
 				<div className="xp-text">
-					{user.xpDetails.newXp}/{user.xpDetails.lvlThreshold}
+					{currentUser.xpDetails.newXp}/{currentUser.xpDetails.lvlThreshold}
 				</div>
 			</div>
 		</div>
