@@ -50,78 +50,84 @@ export default class HabitService {
 		new GenericForm(this.appContext.getApp(), 'habit-modify', habit).open();
 	};
 
-
 	updateHistory(habit: Habit): Habit {
-		/* Ensure the habit history has all potential and valid date */
+		/*
+		Generate validatable dates
+		*/
+
 		const todayStr = DateHelper.today();
+		const today = new Date(todayStr);
+
+		const oneMonthAgo = new Date(today);
+		oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+
+		const cutoffStr = DateHelper.toDateString(oneMonthAgo);
+
 		const createdAt = DateHelper.toDateString(habit.created_at);
-		
-		// Récupérer toutes les dates déjà validées (success: true)
+
+		// Generate all possible validatable dates (same as before)
 		const completedDates = habit.streak.history
 			.filter(h => h.success)
 			.map(h => DateHelper.toDateString(h.date))
 			.sort();
-		
-		// Générer toutes les dates depuis created_at jusqu'à aujourd'hui
+
 		const allDates: string[] = [];
 		let currentDate = createdAt;
-		
+
 		while (currentDate <= todayStr) {
 			allDates.push(currentDate);
-			// Passer au jour suivant
 			const date = new Date(currentDate);
 			date.setDate(date.getDate() + 1);
 			currentDate = DateHelper.toDateString(date);
 		}
-		
-		// Fonction pour vérifier si une date est dans la fenêtre de blocage d'une date validée
+
 		const isInBlockedWindow = (dateToCheck: string, completedDate: string): boolean => {
 			const checkDate = new Date(dateToCheck);
 			const completeDate = new Date(completedDate);
 			const diffInDays = Math.abs(
 				Math.floor((checkDate.getTime() - completeDate.getTime()) / (1000 * 60 * 60 * 24))
 			);
-			
-			// La fenêtre de blocage est de (interval - 1) jours de chaque côté
 			const windowSize = habit.recurrence.interval - 1;
-			
 			return diffInDays > 0 && diffInDays <= windowSize;
 		};
-		
-		// Déterminer quelles dates sont validables
+
 		const validatableDates = allDates.filter(date => {
-			// Une date déjà validée reste dans l'historique
-			if (completedDates.includes(date)) {
-				return true;
-			}
-			
-			// Vérifier si la date est bloquée par une date validée
+			if (completedDates.includes(date)) return true;
+
 			for (const completedDate of completedDates) {
-				if (isInBlockedWindow(date, completedDate)) {
-					return false;
-				}
+				if (isInBlockedWindow(date, completedDate)) return false;
 			}
-			
 			return true;
 		});
-		
-		// Créer le nouvel historique
-		const newHistory = validatableDates.map(date => {
+
+		// Rebuild history with false entries
+		const rebuiltHistory = validatableDates.map(date => {
 			const existing = habit.streak.history.find(
 				h => DateHelper.toDateString(h.date) === date
 			);
-			
+
 			return existing || {
 				date: date,
 				success: false
 			};
-		}).sort((a, b) => a.date.localeCompare(b.date));
-		// console.log("Updated habit history:", newHistory);
+		});
+
+		// Trim old false entries (but keep true forever)
+		const trimmedHistory = rebuiltHistory.filter(entry => {
+			const dateStr = DateHelper.toDateString(entry.date);
+
+			if (entry.success) return true;
+
+			return dateStr >= cutoffStr;
+		});
+
 		return {
 			...habit,
 			streak: {
 				...habit.streak,
-				history: newHistory,
+				history: trimmedHistory.sort((a, b) =>
+					a.date.localeCompare(b.date)
+				),
 			},
 		};
 	}

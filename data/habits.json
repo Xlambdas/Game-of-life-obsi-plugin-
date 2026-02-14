@@ -22,32 +22,8 @@
       "best": 12,
       "history": [
         {
-          "date": "2025-11-03",
-          "success": false
-        },
-        {
-          "date": "2025-11-04",
-          "success": false
-        },
-        {
-          "date": "2025-11-05",
-          "success": false
-        },
-        {
-          "date": "2025-11-06",
-          "success": false
-        },
-        {
-          "date": "2025-11-07",
-          "success": false
-        },
-        {
           "date": "2025-11-08",
           "success": true
-        },
-        {
-          "date": "2025-11-09",
-          "success": false
         },
         {
           "date": "2025-11-10",
@@ -68,150 +44,6 @@
         {
           "date": "2025-11-14",
           "success": true
-        },
-        {
-          "date": "2025-11-15",
-          "success": false
-        },
-        {
-          "date": "2025-11-16",
-          "success": false
-        },
-        {
-          "date": "2025-11-17",
-          "success": false
-        },
-        {
-          "date": "2025-11-18",
-          "success": false
-        },
-        {
-          "date": "2025-11-19",
-          "success": false
-        },
-        {
-          "date": "2025-11-20",
-          "success": false
-        },
-        {
-          "date": "2025-11-21",
-          "success": false
-        },
-        {
-          "date": "2025-11-22",
-          "success": false
-        },
-        {
-          "date": "2025-11-23",
-          "success": false
-        },
-        {
-          "date": "2025-11-24",
-          "success": false
-        },
-        {
-          "date": "2025-11-25",
-          "success": false
-        },
-        {
-          "date": "2025-11-26",
-          "success": false
-        },
-        {
-          "date": "2025-11-27",
-          "success": false
-        },
-        {
-          "date": "2025-11-28",
-          "success": false
-        },
-        {
-          "date": "2025-11-29",
-          "success": false
-        },
-        {
-          "date": "2025-11-30",
-          "success": false
-        },
-        {
-          "date": "2025-12-01",
-          "success": false
-        },
-        {
-          "date": "2025-12-02",
-          "success": false
-        },
-        {
-          "date": "2025-12-03",
-          "success": false
-        },
-        {
-          "date": "2025-12-04",
-          "success": false
-        },
-        {
-          "date": "2025-12-05",
-          "success": false
-        },
-        {
-          "date": "2025-12-06",
-          "success": false
-        },
-        {
-          "date": "2025-12-07",
-          "success": false
-        },
-        {
-          "date": "2025-12-08",
-          "success": false
-        },
-        {
-          "date": "2025-12-09",
-          "success": false
-        },
-        {
-          "date": "2025-12-10",
-          "success": false
-        },
-        {
-          "date": "2025-12-11",
-          "success": false
-        },
-        {
-          "date": "2025-12-12",
-          "success": false
-        },
-        {
-          "date": "2025-12-13",
-          "success": false
-        },
-        {
-          "date": "2025-12-14",
-          "success": false
-        },
-        {
-          "date": "2025-12-15",
-          "success": false
-        },
-        {
-          "date": "2025-12-16",
-          "success": false
-        },
-        {
-          "date": "2025-12-17",
-          "success": false
-        },
-        {
-          "date": "2025-12-18",
-          "success": false
-        },
-        {
-          "date": "2025-12-19",
-          "success": false
-        },
-        {
-          "date": "2025-12-20",
-          "success": false
         },
         {
           "date": "2025-12-21",
@@ -256,10 +88,6 @@
         {
           "date": "2025-12-31",
           "success": true
-        },
-        {
-          "date": "2026-01-01",
-          "success": false
         },
         {
           "date": "2026-01-02",
@@ -315,7 +143,7 @@
         },
         {
           "date": "2026-01-15",
-          "success": false
+          "success": true
         },
         {
           "date": "2026-01-16",
@@ -323,7 +151,7 @@
         },
         {
           "date": "2026-01-17",
-          "success": false
+          "success": true
         },
         {
           "date": "2026-01-18",
@@ -442,7 +270,8 @@
       "nextDate": "2026-02-15",
       "lastCompletedDate": "2026-02-14",
       "freeze": {
-        "available": 1
+        "available": 0,
+        "history": []
       }
     },
     "progress": {
@@ -515,8 +344,8 @@
       "unit": "days"
     },
     "streak": {
-      "current": 1,
-      "best": 5,
+      "current": 0,
+      "best": 7,
       "history": [
         {
           "date": "2026-01-01",
@@ -540,27 +369,11 @@
         },
         {
           "date": "2026-01-16",
-          "success": false
-        },
-        {
-          "date": "2026-01-17",
-          "success": false
-        },
-        {
-          "date": "2026-01-18",
-          "success": false
+          "success": true
         },
         {
           "date": "2026-01-19",
-          "success": false
-        },
-        {
-          "date": "2026-01-20",
-          "success": false
-        },
-        {
-          "date": "2026-01-21",
-          "success": false
+          "success": true
         },
         {
           "date": "2026-01-22",
@@ -651,15 +464,25 @@
       "nextDate": "2026-02-16",
       "lastCompletedDate": "2026-02-13",
       "freeze": {
-        "available": 1
+        "available": 0,
+        "history": []
       }
     },
     "progress": {
-      "level": 2,
+      "level": 0,
       "XP": 0,
       "goal": 2000,
       "currentValue": 0,
-      "milestones": []
+      "milestones": [
+        {
+          "target": 7,
+          "reward": {
+            "items": [
+              "Milestone Badge"
+            ]
+          }
+        }
+      ]
     },
     "penalty": {
       "XPLoss": 0,
