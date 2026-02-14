@@ -24,7 +24,7 @@ export const RewardAttributeInput: React.FC<RewardAttributeInputProps> = ({
 	onChange,
 	error, setError
 }) => {
-	// 🔑 initialise UNIQUEMENT les paires non nulles
+	// State to manage the list of attribute-XP pairs
 	const [pairs, setPairs] = useState<AttributeRewardPair[]>(() => {
 		const initPairs = Object.entries(initialValue)
 		.filter(([_, xp]) => xp && xp > 0)
@@ -35,7 +35,7 @@ export const RewardAttributeInput: React.FC<RewardAttributeInputProps> = ({
 		return initPairs.length > 0 ? initPairs : [{ attribute: "", xp: 0 }];
 	});
 
-	// Conversion des paires -> objet statBlock complet
+	// Helper function to convert pairs back to the AttributeReward format
 	const pairsToAttributes = (pairs: AttributeRewardPair[]) => {
 		const result: Record<string, number> = {};
 		Object.keys(DEFAULT_ATTRIBUTES).forEach(attr => {

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, use } from "react";
 import { Notice } from "obsidian";
 // from files (services, default):
 import { useAppContext } from "../../context/appContext";
-import { Quest, UserSettings } from "../../data/DEFAULT";
+import { DEFAULT_DIFFICULTIES, Quest, UserSettings } from "../../data/DEFAULT";
 // from file (UI):
 import { QuestSideView } from "./questSideView";
 // import { ModifyQuestModal } from "modal/questModal";
@@ -167,7 +167,9 @@ export const QuestList: React.FC<QuestListProps> = ({ quests, user, onQuestUpdat
 					case "xp":
 						return b.reward.XP - a.reward.XP;
 					case "difficulty":
-						const difficultyOrder = { easy: 0, medium: 1, hard: 2, expert: 3 };
+						const difficultyOrder = {
+							...DEFAULT_DIFFICULTIES.reduce((acc, diff, index) => ({ ...acc, [diff]: index }), {} as Record<string, number>),
+						};
 						return difficultyOrder[a.settings.difficulty || "easy"] - difficultyOrder[b.settings.difficulty || "easy"];
 					case "date":
 						return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();

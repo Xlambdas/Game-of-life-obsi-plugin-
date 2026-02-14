@@ -97,18 +97,18 @@ export class DateHelper {
 		const today = new Date();
 		const yesterday = new Date(today);
 		yesterday.setDate(yesterday.getDate() - 1);
-		
+
 		if (this.isSameDay(date, today)) {
 			return 'Today';
 		} else if (this.isSameDay(date, yesterday)) {
 			return 'Yesterday';
 		}
-		
-		return date.toLocaleDateString(locale, { 
-			weekday: 'long', 
-			year: 'numeric', 
-			month: 'long', 
-			day: 'numeric' 
+
+		return date.toLocaleDateString(locale, {
+			weekday: 'long',
+			year: 'numeric',
+			month: 'long',
+			day: 'numeric'
 		});
 	}
 

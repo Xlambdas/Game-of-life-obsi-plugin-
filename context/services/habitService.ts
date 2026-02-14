@@ -205,11 +205,20 @@ export default class HabitService {
 		const nextDate = this.calculateNextDate(lastDate, habit.recurrence);
 
 		const previousCurrent = habit.streak.current || 0;
-		const { current, best } = this.computeStreaks(history, habit.recurrence);
+		// const { current, best } = this.computeStreaks(history, habit.recurrence);
+		let { current, best, freezeAvailable, freezeUsedDates } = this.computeStreaks(habit, history, habit.recurrence);
 		const isCompleted = DateHelper.today() < nextDate ? true : false;
 
+		freezeAvailable = this.regenerateFreeze(
+			habit,
+			previousCurrent,
+			current,
+			freezeAvailable
+		);
+		
+
 		// ---- Milestones ----
-		const difficulty = habit.settings.difficulty || 'easy';
+		const difficulty = habit.settings.difficulty || 'normal';
 
 		let { milestones, curve } =
 			this.initializeMilestones(habit, difficulty);
@@ -246,18 +255,12 @@ export default class HabitService {
 			);
 
 		const baseXP = 1;
-
-		const difficultyMultiplier = {
-			easy: 1,
-			medium: 1.5,
-			hard: 2,
-			expert: 3
-		};
+		const difficultyMultiplier = DIFFICULTY_RULES[difficulty as keyof typeof DIFFICULTY_RULES].rewardMultiplier || 1;
 
 		const xpGain =
 			baseXP *
 			newLevel *
-			(difficultyMultiplier[difficulty] || 1);
+			difficultyMultiplier;
 
 		const updatedHabit: Habit = {
 			...habit,
@@ -269,6 +272,10 @@ export default class HabitService {
 				isCompletedToday: isCompleted,
 				nextDate,
 				lastCompletedDate: lastDate,
+				freeze: {
+					available: freezeAvailable,
+					history: freezeUsedDates,
+				}
 			},
 			progress: {
 				...habit.progress,
@@ -292,11 +299,12 @@ export default class HabitService {
 		return DateHelper.addInterval(fromDate, recurrence.interval, recurrence.unit);
 	}
 
-	private computeStreaks(
+	private computeStreaks_old(
 		history: { date: DateString; success: boolean }[],
 		recurrence: { interval: number; unit: "days" | "weeks" | "months" | "years" }
 	): { current: number; best: number } {
-		// ✅ Filter and sort using strings
+		const difficulty = this.appContext.dataService.getUser().settings.difficulty || 'medium';
+		// Filter and sort using strings
 		const successDates = history
 			.filter(h => h.success)
 			.map(h => h.date)
@@ -347,6 +355,119 @@ export default class HabitService {
 		return { current, best };
 	}
 
+	private computeStreaks(
+		habit: Habit,
+		history: { date: DateString; success: boolean }[],
+		recurrence: { interval: number; unit: "days" | "weeks" | "months" | "years" }
+	): { current: number; best: number; freezeAvailable: number, freezeUsedDates: DateString[] } {
+
+		const user = this.appContext.dataService.getUser();
+		const difficulty = user.settings.difficulty || 'normal';
+
+		const maxFreeze =
+			DIFFICULTY_RULES[difficulty as keyof typeof DIFFICULTY_RULES]?.freeze ?? 0;
+
+		let freezeAvailable =
+			habit.streak.freeze?.available ?? maxFreeze;
+
+		const successDates = history
+			.filter(h => h.success)
+			.map(h => h.date)
+			.sort((a, b) => a.localeCompare(b));
+
+		if (successDates.length === 0)
+			return { current: 0, best: 0, freezeAvailable, freezeUsedDates: [] };
+
+		let best = 1;
+		let seq = 1;
+		let freezeUsedDates: DateString[] = [];
+
+
+		for (let i = 1; i < successDates.length; i++) {
+
+			const prev = successDates[i - 1];
+			const curr = successDates[i];
+			const expected = DateHelper.addInterval(prev, recurrence.interval, recurrence.unit);
+
+			if (curr === expected) {
+				seq++;
+			}
+			else if (curr > expected) {
+
+				let missingDate = expected;
+				const missedDates: DateString[] = [];
+
+				while (missingDate < curr) {
+					missedDates.push(missingDate);
+					missingDate = DateHelper.addInterval(
+						missingDate,
+						recurrence.interval,
+						recurrence.unit
+					);
+				}
+
+				const missedCount = missedDates.length;
+
+				if (maxFreeze === Infinity) {
+					seq++;
+				}
+				else if (freezeAvailable >= missedCount) {
+					freezeAvailable -= missedCount;
+					freezeUsedDates.push(...missedDates);
+					seq++;
+				}
+				else {
+					// partial consumption
+					const usable = freezeAvailable;
+					freezeUsedDates.push(...missedDates.slice(0, usable));
+					freezeAvailable = 0;
+					seq = 1;
+				}
+			}
+			else {
+				seq = 1;
+			}
+
+			if (seq > best) best = seq;
+		}
+
+		const today = DateHelper.today();
+		const last = successDates[successDates.length - 1];
+
+		const current = (last === today) ? seq : 0;
+
+		return { current, best, freezeAvailable, freezeUsedDates };
+	}
+
+	private regenerateFreeze(
+		habit: Habit,
+		previousCurrent: number,
+		current: number,
+		freezeAvailable: number
+	): number {
+		const difficulty = this.appContext.dataService.getUser().settings.difficulty || "normal";
+
+		const maxFreeze =
+			DIFFICULTY_RULES[difficulty as keyof typeof DIFFICULTY_RULES]?.freeze ?? 0;
+
+		if (maxFreeze === Infinity || maxFreeze === 0)
+			return freezeAvailable;
+
+		// gain 1 freeze every 7 streak
+		const threshold = 7;
+
+		if (
+			current > previousCurrent &&
+			current % threshold === 0
+		) {
+			freezeAvailable = Math.min(
+				freezeAvailable + 1,
+				maxFreeze
+			);
+		}
+
+		return freezeAvailable;
+	}
 
 	refreshHabits(habit: Habit): Habit {
 		const today = DateHelper.today();
@@ -400,11 +521,17 @@ export default class HabitService {
 				const historyEntry = habit.streak.history.find(
 					entry => DateHelper.toDateString(entry.date) === date
 				);
+
+				const freezeUsed =
+					habit.streak.freeze?.history?.includes(date) ?? false;
+
+
 				return {
 					habitID: habit.id,
 					habitTitle: habit.title,
 					completed: historyEntry?.success === true,
-					couldBeCompleted: true // Si dans history, alors toujours validable
+					couldBeCompleted: !freezeUsed, // Si dans history, alors toujours validable
+					freezeUsed // Si freeze utilisé, alors non validable
 				};
 			});
 	}

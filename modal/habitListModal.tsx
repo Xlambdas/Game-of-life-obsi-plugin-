@@ -10,7 +10,7 @@ import { DateString } from "helpers/dateHelpers";
 interface HabitListDateContainerProps {
 	context: AppContextService;
 	datestr: string;
-	dateHabit: { habitID: string; habitTitle: string; completed: boolean; couldBeCompleted: boolean }[];
+	dateHabit: { habitID: string; habitTitle: string; completed: boolean; couldBeCompleted: boolean; freezeUsed?: boolean }[];
 	toggleHabitCompletion: (habitID: string, dateStr: DateString) => Promise<void>;
 	onClose: () => void;
 }
@@ -19,14 +19,14 @@ export class HabitListDateModal extends Modal {
 	/* Modal to show a list of habits for a specific date in the calendar */
 	private context: AppContextService;
 	private datestr: string;
-	private dateHabit: { habitID: string; habitTitle: string; completed: boolean; couldBeCompleted: boolean }[];
+	private dateHabit: { habitID: string; habitTitle: string; completed: boolean; couldBeCompleted: boolean; freezeUsed?: boolean }[];
 	private toggleHabitCompletion: (habitID: string, dateStr: DateString) => Promise<void>;
 
 	constructor(
 		app: App,
 		context: AppContextService,
 		datestr: string,
-		dateHabit: { habitID: string; habitTitle: string; completed: boolean; couldBeCompleted: boolean }[],
+		dateHabit: { habitID: string; habitTitle: string; completed: boolean; couldBeCompleted: boolean; freezeUsed?: boolean }[],
 		toggleHabitCompletion: (habitID: string, dateStr: DateString) => Promise<void>,
 	) {
 		super(app);
@@ -138,7 +138,11 @@ export const HabitListDateContainer: React.FC<HabitListDateContainerProps> = ({
 										type="checkbox"
 										checked={habit.completed}
 										onChange={() => handleToggleCompletion(habit.habitID)}
-										disabled={!habit.couldBeCompleted || isLoading === habit.habitID}
+										disabled={
+											!habit.couldBeCompleted ||
+											isLoading === habit.habitID ||
+											habit.freezeUsed
+										}
 										className="habitList-checkbox"
 										id={`habit-${habit.habitID}`}
 									/>
@@ -154,9 +158,13 @@ export const HabitListDateContainer: React.FC<HabitListDateContainerProps> = ({
 										</svg>
 									</label>
 								</div>
-								<span className="habitList-title">{habit.habitTitle}</span>
+								<span className="habitList-title">
+									{habit.habitTitle}</span>
 								{!habit.couldBeCompleted && (
 									<span className="habit-unavailable-badge">Unavailable</span>
+								)}
+								{habit.freezeUsed && (
+									<span className="habit-frozen-badge">Frozen</span>
 								)}
 							</div>
 							{isLoading === habit.habitID && (

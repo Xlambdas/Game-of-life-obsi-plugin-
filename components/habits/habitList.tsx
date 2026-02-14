@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 // from files (Service, DEFAULT):
 import { useAppContext } from "context/appContext";
-import { Habit, Quest, UserSettings } from "data/DEFAULT";
+import { Habit, Quest, UserSettings, DEFAULT_DIFFICULTIES } from "data/DEFAULT";
 // from files (UI):
 import { HabitSideView } from "./habitSideView";
 import { GenericForm } from "../forms/genericForm";
@@ -121,7 +121,9 @@ export const HabitList: React.FC<HabitListProps> = ({ habits, onHabitUpdate,onUs
 					case "xp":
 						return b.reward.XP - a.reward.XP;
 					case "difficulty":
-						const difficultyOrder = { easy: 0, medium: 1, hard: 2, expert: 3 };
+						const difficultyOrder = {
+							...DEFAULT_DIFFICULTIES.reduce((acc, diff, index) => ({ ...acc, [diff]: index }), {} as Record<string, number>),
+						};
 						return difficultyOrder[a.settings.difficulty || "easy"] - difficultyOrder[b.settings.difficulty || "easy"];
 					case "recurrence":
 						return new Date(b.streak.nextDate).getTime() - new Date(a.streak.nextDate).getTime();

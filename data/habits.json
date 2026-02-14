@@ -440,7 +440,10 @@
       ],
       "isCompletedToday": true,
       "nextDate": "2026-02-15",
-      "lastCompletedDate": "2026-02-14"
+      "lastCompletedDate": "2026-02-14",
+      "freeze": {
+        "available": 1
+      }
     },
     "progress": {
       "level": 1,
@@ -646,7 +649,10 @@
       ],
       "isCompletedToday": true,
       "nextDate": "2026-02-16",
-      "lastCompletedDate": "2026-02-13"
+      "lastCompletedDate": "2026-02-13",
+      "freeze": {
+        "available": 1
+      }
     },
     "progress": {
       "level": 2,
@@ -679,15 +685,15 @@
     },
     "isSystemHabit": false
   },
-  "habit_wrx7zsb": {
-    "id": "habit_wrx7zsb",
-    "title": "test attributes",
-    "shortDescription": "....",
+  "habit_u52hy44": {
+    "id": "habit_u52hy44",
+    "title": "testttdttebhfhj",
+    "shortDescription": "xdhcfgjk",
     "description": "",
-    "created_at": "2026-02-14",
+    "created_at": "2026-02-12",
     "settings": {
       "type": "habit",
-      "category": "Mental",
+      "category": "undefined",
       "priority": "low",
       "difficulty": "easy",
       "isSecret": false,
@@ -698,17 +704,31 @@
       "unit": "days"
     },
     "streak": {
-      "current": 0,
-      "best": 0,
+      "current": 2,
+      "best": 2,
       "history": [
         {
-          "date": "2026-02-14",
+          "date": "2026-02-12",
+          "success": true
+        },
+        {
+          "date": "2026-02-13",
           "success": false
+        },
+        {
+          "date": "2026-02-14",
+          "success": true
         }
       ],
       "isCompletedToday": true,
       "nextDate": "2026-02-15",
-      "lastCompletedDate": "2026-02-14"
+      "lastCompletedDate": "2026-02-14",
+      "freeze": {
+        "available": 0,
+        "history": [
+          "2026-02-13"
+        ]
+      }
     },
     "progress": {
       "level": 0,
@@ -720,15 +740,124 @@
           "target": 7,
           "reward": {
             "items": [
-              "Hydration Badge"
+              "Milestones Badge"
+            ]
+          }
+        }
+      ]
+    },
+    "penalty": {
+      "XPLoss": 0,
+      "breackStreak": false
+    },
+    "reward": {
+      "XP": 0,
+      "attributes": {
+        "strength": 0,
+        "agility": 0,
+        "endurance": 1,
+        "charisma": 0,
+        "wisdom": 0,
+        "perception": 0,
+        "intelligence": 0,
+        "willpower": 0,
+        "spirit": 0,
+        "flow": 0,
+        "reputation": 0,
+        "resilience": 0
+      },
+      "items": []
+    },
+    "isSystemHabit": false
+  },
+  "habit_ajh8789": {
+    "id": "habit_ajh8789",
+    "title": "freeeeeeeze",
+    "shortDescription": "cvgbhj",
+    "description": "",
+    "created_at": "2026-02-06",
+    "settings": {
+      "type": "habit",
+      "category": "undefined",
+      "priority": "low",
+      "difficulty": "easy",
+      "isSecret": false,
+      "isTimeSensitive": false
+    },
+    "recurrence": {
+      "interval": 1,
+      "unit": "days"
+    },
+    "streak": {
+      "current": 7,
+      "best": 7,
+      "history": [
+        {
+          "date": "2026-02-06",
+          "success": false
+        },
+        {
+          "date": "2026-02-07",
+          "success": true
+        },
+        {
+          "date": "2026-02-08",
+          "success": true
+        },
+        {
+          "date": "2026-02-09",
+          "success": true
+        },
+        {
+          "date": "2026-02-10",
+          "success": true
+        },
+        {
+          "date": "2026-02-11",
+          "success": true
+        },
+        {
+          "date": "2026-02-12",
+          "success": true
+        },
+        {
+          "date": "2026-02-13",
+          "success": false
+        },
+        {
+          "date": "2026-02-14",
+          "success": true
+        }
+      ],
+      "isCompletedToday": true,
+      "nextDate": "2026-02-15",
+      "lastCompletedDate": "2026-02-14",
+      "freeze": {
+        "available": 1,
+        "history": [
+          "2026-02-13"
+        ]
+      }
+    },
+    "progress": {
+      "level": 1,
+      "XP": 1,
+      "goal": 2000,
+      "currentValue": 0,
+      "milestones": [
+        {
+          "target": 7,
+          "reward": {
+            "items": [
+              "Milestones Badge"
             ]
           }
         },
         {
-          "target": 21,
+          "target": 14,
           "reward": {
             "attributes": {
-              "endurance": 2
+              "endurance": 1
             }
           }
         }
@@ -743,11 +872,11 @@
       "attributes": {
         "strength": 0,
         "agility": 0,
-        "endurance": 0,
+        "endurance": 1,
         "charisma": 0,
-        "wisdom": 1,
-        "perception": 1,
-        "intelligence": 1,
+        "wisdom": 0,
+        "perception": 0,
+        "intelligence": 0,
         "willpower": 0,
         "spirit": 0,
         "flow": 0,

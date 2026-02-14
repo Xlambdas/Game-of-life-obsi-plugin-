@@ -5,14 +5,16 @@ import { AttributeBlock, DEFAULT_ATTRIBUTES } from "./attributeDetails";
 
 // calculate difficulty multipliers for XP gain, streaks and milestones
 export const DIFFICULTY_RULES = {
-	easy: { factor: 1.0, rewardMultiplier: 1.0 },
-	medium: { factor: 1.2, rewardMultiplier: 1.3 },
-	hard: { factor: 1.5, rewardMultiplier: 1.6 },
-	expert: { factor: 2.0, rewardMultiplier: 2.0 }
+	easy: { factor: 1.0, rewardMultiplier: 1.0, freeze: Infinity },
+	normal: { factor: 1.1, rewardMultiplier: 1.0, freeze: 4 },
+	medium: { factor: 1.2, rewardMultiplier: 1.3, freeze: 3 },
+	hard: { factor: 1.5, rewardMultiplier: 1.6, freeze: 1 },
+	expert: { factor: 2.0, rewardMultiplier: 2.0, freeze: 0 }
 };
 
 export const MILESTONE_CURVES = {
-	easy: [7, 21, 50, 100, 180, 300],
+	easy: [7, 14, 30, 60, 120, 240, 365],
+	normal: [7, 21, 50, 100, 180, 300],
 	medium: [7, 30, 75, 150, 300],
 	hard: [7, 45, 120, 300],
 	expert: [7, 60, 180, 365]
@@ -228,7 +230,7 @@ export type DefaultCategory = typeof DEFAULT_CATEGORIES[number] | string;
 
 export const DEFAULT_PRIORITIES = ['low', 'medium', 'high'] as const;
 export type DefaultPriority = typeof DEFAULT_PRIORITIES[number];
-export const DEFAULT_DIFFICULTIES = ['easy', 'medium', 'hard', 'expert'] as const;
+export const DEFAULT_DIFFICULTIES = ['easy', 'normal', 'medium', 'hard', 'expert'] as const;
 export type DefaultDifficulty = typeof DEFAULT_DIFFICULTIES[number];
 export const DEFAULT_RECURRENCES = ['days', 'weeks', 'months', 'years'] as const;
 export type DefaultRecurrence = typeof DEFAULT_RECURRENCES[number];
@@ -407,6 +409,10 @@ export interface Habit extends BaseTask {
 		isCompletedToday: boolean; // Auto generated based on history
 		nextDate: DateString; // Auto generated based on recurrence
 		lastCompletedDate: DateString; // Auto generated based on history
+		freeze: { // auto generated
+			available: number; // number of available freezes
+			history: DateString[]; // dates when freeze was used
+		};
 	};
 	progress: {
 		level: number; // habit level progression
@@ -457,7 +463,11 @@ export const DEFAULT_HABIT: Habit = {
 		history: [],
 		isCompletedToday: false, // Auto generated
 		nextDate: DateHelper.today(), // Auto generated based on recurrence
-		lastCompletedDate: DateHelper.toDateString(new Date(0)) // Auto generated
+		lastCompletedDate: DateHelper.toDateString(new Date(0)), // Auto generated
+		freeze: {
+			available: DIFFICULTY_RULES.easy.freeze, // Auto generated based on difficulty
+			history: [], // history of freeze usage
+		}
 	},
 	progress: {
 		level: 0, // habit level progression

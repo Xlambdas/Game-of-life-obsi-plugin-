@@ -1,7 +1,7 @@
 import { Notice } from "obsidian";
 // from file (services, default):
 import { useAppContext } from "../../context/appContext";
-import { DEFAULT_HABIT, DEFAULT_CATEGORIES, DefaultCategory, DEFAULT_DIFFICULTIES, DefaultDifficulty, DEFAULT_PRIORITIES, DefaultPriority, Habit, DefaultRecurrence } from "../../data/DEFAULT";
+import { DEFAULT_HABIT, DEFAULT_CATEGORIES, DefaultCategory, DEFAULT_DIFFICULTIES, DefaultDifficulty, DEFAULT_PRIORITIES, DefaultPriority, Habit, DefaultRecurrence, DIFFICULTY_RULES } from "../../data/DEFAULT";
 import { AttributeBlock, DEFAULT_ATTRIBUTES } from "data/attributeDetails";
 // from file (UI, components):
 import { validateValue } from "../forms/UI/formHelpers";
@@ -82,6 +82,14 @@ export async function validateAndBuildHabit({
 		return { habit: null, errors };
 	}
 
+	// streak freeze logic (if difficulty changed to higher than existing, or if new habit with difficulty)
+	const userDifficulty =
+		user.settings?.difficulty as keyof typeof DIFFICULTY_RULES
+		|| "normal";
+
+	const defaultFreeze =
+		DIFFICULTY_RULES[userDifficulty]?.freeze ?? 0;
+
 
 	const newHabit: Habit = {
 		...(existingHabit || DEFAULT_HABIT),
@@ -98,6 +106,12 @@ export async function validateAndBuildHabit({
 			...existingHabit?.recurrence,
 			interval: interval,
 			unit: unit as DefaultRecurrence,
+		},
+		streak: {
+			...(existingHabit?.streak || DEFAULT_HABIT.streak),
+			freeze: existingHabit?.streak?.freeze || {
+				available: defaultFreeze
+			}
 		},
 		reward: {
 			...((existingHabit?.reward) || DEFAULT_HABIT.reward),
