@@ -88,7 +88,7 @@ export const SideView: React.FC = () => {
 		document.addEventListener("dbUpdated", handleReload);
 
 		return () => {
-			console.log("useEffect cleanup");
+			// console.log("useEffect cleanup");
 			document.removeEventListener("dbUpdated", handleReload);}
 	}, [appService]);
 
@@ -98,7 +98,7 @@ export const SideView: React.FC = () => {
 
 	const handleCompleteHabit = (updatedHabit: Habit[]) => {
 		new Notice("Habit updated!");
-		console.log("Updated habit received in SideView:", updatedHabit);
+		// console.log("Updated habit received in SideView:", updatedHabit);
 		setHabits(updatedHabit);
 	};
 
@@ -110,12 +110,12 @@ export const SideView: React.FC = () => {
 			</div>
 			<div className="side-view-content">
 				<div className="card">
-					{/* <QuestList
+					<QuestList
 						quests={quests}
 						user={user}
 						onUserUpdate={setUser}
 						onQuestUpdate={handleQuestUpdate}
-					/> */}
+					/>
 					<hr className="separator"></hr>
 					<HabitList
 						habits={habits}

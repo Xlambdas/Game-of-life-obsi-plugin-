@@ -88,7 +88,7 @@ export const HabitFormUI = ({
 				setError={setError}
 			/>
 			{/* Recurrence */}
-			{isUnlocked("recurrence") && (
+			{isUnlocked("recurrence") && !existingHabit && (
 				<RecurrenceInput
 					interval={interval}
 					setInterval={setInterval}

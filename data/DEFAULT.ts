@@ -1,6 +1,25 @@
 import { DateHelper, DateString } from "helpers/dateHelpers";
 import { AttributeBlock, DEFAULT_ATTRIBUTES } from "./attributeDetails";
 
+/* Default data structures and values for the game. This includes user settings, quests, habits, and related types. */
+
+// calculate difficulty multipliers for XP gain, streaks and milestones
+export const DIFFICULTY_RULES = {
+	easy: { factor: 1.0, rewardMultiplier: 1.0 },
+	medium: { factor: 1.2, rewardMultiplier: 1.3 },
+	hard: { factor: 1.5, rewardMultiplier: 1.6 },
+	expert: { factor: 2.0, rewardMultiplier: 2.0 }
+};
+
+export const MILESTONE_CURVES = {
+	easy: [7, 21, 50, 100, 180, 300],
+	medium: [7, 30, 75, 150, 300],
+	hard: [7, 45, 120, 300],
+	expert: [7, 60, 180, 365]
+};
+
+
+
 /*
 * User Default Settings
 */
@@ -86,7 +105,7 @@ export interface UserSettings {
 			effect: string; // Description of the debuff effect
 		}; // todo : add calculation for debuff duration and effects
 	};
-	
+
 	achievements: {
 		[id: string]: {
 			title: string;
@@ -213,6 +232,7 @@ export const DEFAULT_DIFFICULTIES = ['easy', 'medium', 'hard', 'expert'] as cons
 export type DefaultDifficulty = typeof DEFAULT_DIFFICULTIES[number];
 export const DEFAULT_RECURRENCES = ['days', 'weeks', 'months', 'years'] as const;
 export type DefaultRecurrence = typeof DEFAULT_RECURRENCES[number];
+
 
 export type TaskType = 'quest' | 'habit'; // | 'skill' | 'goal'; //todo : add skills/goals/...
 
@@ -390,13 +410,12 @@ export interface Habit extends BaseTask {
 	};
 	progress: {
 		level: number; // habit level progression
-		XP: number;
+		XP: number; // not really usefull ?
 		goal: number; // e.g. ml of water
 		currentValue: number; // track current amount vs goal
 		milestones: {
 			target: number; // e.g. 7 days streak
 			reward: {
-				XP: number;
 				attributes?: Partial<AttributeBlock>;
 				items?: string[];
 			};
@@ -407,8 +426,8 @@ export interface Habit extends BaseTask {
 		breackStreak: boolean;
 	};
 	reward: {
-		XP: number;
-		attributes?: AttributeBlock;
+		XP: number; // not really usefull ?
+		attributes: AttributeBlock;
 		items?: string[];
 	};
 	isSystemHabit?: boolean;
@@ -441,13 +460,12 @@ export const DEFAULT_HABIT: Habit = {
 		lastCompletedDate: DateHelper.toDateString(new Date(0)) // Auto generated
 	},
 	progress: {
-		level: 1, // habit level progression
+		level: 0, // habit level progression
 		XP: 0,
 		goal: 2000, // e.g. ml of water
 		currentValue: 0, // track current amount vs goal
 		milestones: [
-			{ target: 7, reward: { XP: 10, items: ["Hydration Badge"] } }, // 7 days streak
-			{ target: 30, reward: { XP: 20, attributes: { endurance: 2 } } },
+			{ target: 7, reward: { items: ["Milestones Badge"] } }, // 7 days streak
 		],
 	},
 	penalty: {

@@ -52,13 +52,26 @@ export async function validateAndBuildHabit({
 		if (invalidAttributes.length > 0) {
 			errors.attributeRewards = "Attribute rewards cannot be negative.";
 		}
-		const sumAttributes = Object.values(updatedAttributes).reduce((sum, val) => sum + val, 0);
-		if (sumAttributes > (3 * (1 + (user.xpDetails.level || 1) / 10))) {
-			errors.attributeRewards = `You can't allocate more than ${3 * (1 + (user.xpDetails.level || 1) / 10)} points in total.`;
-			if (category) {
-				errors.attributeRewards += "\n Keep in mind that selecting a category automatically allocates some points.";
+		const sumAttributes = Object.values(updatedAttributes)
+			.reduce((sum, val) => sum + val, 0);
+
+		// Base allocation
+		const basePoints = 3;
+		// XP bonus coming from habit level progression
+		const habitXPBonus = existingHabit?.progress?.XP || 0;
+		// Base allocation formula
+		const baseMax = basePoints * (1 + (user.xpDetails.level || 1) / 10);
+		// Final allowed allocation
+		const maxAllocation = Math.floor(baseMax + habitXPBonus);
+
+		if (sumAttributes > maxAllocation) {
+			errors.attributeRewards =
+				`You can't allocate more than ${maxAllocation} points in total.`;
+			if (category !== "undefined") {
+				errors.attributeRewards += "\nKeep in mind that selecting a category automatically allocates some points.";
 			}
 		}
+
 	}
 
 	if (Object.keys(errors).length > 0) {

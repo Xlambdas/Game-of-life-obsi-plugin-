@@ -1,10 +1,11 @@
 import { normalize } from "path";
 import { AppContextService } from "../appContextService";
 // from files (default):
-import { Habit, Quest, UserSettings } from "data/DEFAULT";
+import { Habit, Quest, UserSettings, DIFFICULTY_RULES, MILESTONE_CURVES } from "data/DEFAULT";
 import DataService from "./dataService";
 import { GenericForm } from "components/forms/genericForm";
 import { DateHelper, DateString } from "helpers/dateHelpers";
+import { AttributeBlock } from "data/attributeDetails";
 
 interface HabitCompletionResult {
 	updatedHabit: Habit;
@@ -48,198 +49,6 @@ export default class HabitService {
 	public handleModify = (habit: Habit) => {
 		new GenericForm(this.appContext.getApp(), 'habit-modify', habit).open();
 	};
-
-
-	// ------------------------
-	// Habit logic methods :
-	async completeHabit(
-		habit: Habit,
-		completed: boolean,
-		date: DateString | DateString = DateHelper.today()
-	): Promise<HabitCompletionResult> {
-		/* Complete or uncomplete a habit and update all related data:
-		- Habit completion status and streaks
-		- User XP and attributes
-		- Dependent quests progression
-		Returns all updated entities for the UI to handle
-		*/
-
-		// Update the habit
-		const updatedHabit = await this.updateHabitCompletion(habit, completed);
-		await this.saveHabit(updatedHabit);
-
-		// Update user XP based on habit completion
-		const updatedUser = await this.appContext.xpService.updateXPFromAttributes(
-			habit.reward.attributes || {},
-			completed,
-			'habit',
-			habit.progress.level
-		);
-		await this.appContext.dataService.saveUser(updatedUser);
-
-		// Find and update all affected quests
-		let allQuests = await this.appContext.dataService.loadAllQuests();
-		let questsArray = Object.values(allQuests);
-
-		// Find all quests that depend on this habit (directly)
-		const directlyAffectedQuestIds = new Set<string>();
-		questsArray.forEach(quest => {
-			if (quest.progression.subtasks?.conditionHabits?.some(ch => ch.id === habit.id)) {
-				directlyAffectedQuestIds.add(quest.id);
-			}
-		});
-
-		let updatedQuests: Quest[] = [];
-		let affectedQuestIds: string[] = [];
-
-		if (directlyAffectedQuestIds.size > 0) {
-			// Build complete dependency chain
-			const allAffectedQuestIds = this.buildQuestDependencyChain(
-				questsArray,
-				directlyAffectedQuestIds
-			);
-
-			// Sort quests by dependency order
-			const sortedQuestIds = this.topologicalSortQuests(questsArray, allAffectedQuestIds);
-
-			// Refresh in dependency order
-			for (const questId of sortedQuestIds) {
-				const questIndex = questsArray.findIndex(q => q.id === questId);
-				if (questIndex !== -1) {
-					const quest = questsArray[questIndex];
-					const refreshedQuest = await this.appContext.questService.refreshQuestsWithContext(
-						quest,
-						questsArray
-					);
-					questsArray[questIndex] = refreshedQuest;
-				}
-			}
-
-			await this.appContext.dataService.saveAllQuests(questsArray);
-			updatedQuests = questsArray.filter(q => allAffectedQuestIds.has(q.id));
-			affectedQuestIds = Array.from(allAffectedQuestIds);
-		}
-
-		return {
-			updatedHabit,
-			updatedUser,
-			updatedQuests,
-			affectedQuestIds
-		};
-	}
-
-	// Helper: Build the complete dependency chain for affected quests
-	private buildQuestDependencyChain(
-		questsArray: Quest[],
-		directlyAffectedQuestIds: Set<string>
-	): Set<string> {
-		const allAffectedQuestIds = new Set<string>(directlyAffectedQuestIds);
-		let foundNewDependents = true;
-
-		while (foundNewDependents) {
-			foundNewDependents = false;
-			questsArray.forEach(quest => {
-				if (allAffectedQuestIds.has(quest.id)) return;
-
-				const dependsOnAffectedQuest = quest.progression.subtasks?.conditionQuests?.some(
-					cq => allAffectedQuestIds.has(cq.id)
-				);
-				const dependsOnAffectedInRequirements = quest.requirements.previousQuests?.some(
-					pq => {
-						const pqId = typeof pq === 'string' ? pq : pq.id;
-						return allAffectedQuestIds.has(pqId);
-					}
-				);
-
-				if (dependsOnAffectedQuest || dependsOnAffectedInRequirements) {
-					allAffectedQuestIds.add(quest.id);
-					foundNewDependents = true;
-				}
-			});
-		}
-
-		return allAffectedQuestIds;
-	}
-
-	// Helper: Topological sort for quest dependencies
-	private topologicalSortQuests(allQuests: Quest[], affectedIds: Set<string>): string[] {
-		const graph = new Map<string, string[]>();
-		const inDegree = new Map<string, number>();
-
-		// Initialize for all affected quests
-		affectedIds.forEach(id => {
-			graph.set(id, []);
-			inDegree.set(id, 0);
-		});
-
-		// Build the dependency graph
-		affectedIds.forEach(questId => {
-			const quest = allQuests.find(q => q.id === questId);
-			if (!quest) return;
-
-			const dependencies: string[] = [];
-
-			// Check conditionQuests
-			quest.progression.subtasks?.conditionQuests?.forEach(cq => {
-				if (affectedIds.has(cq.id)) {
-					dependencies.push(cq.id);
-				}
-			});
-
-			// Check previousQuests
-			quest.requirements.previousQuests?.forEach(pq => {
-				const pqId = typeof pq === 'string' ? pq : pq.id;
-				if (affectedIds.has(pqId)) {
-					dependencies.push(pqId);
-				}
-			});
-
-			// Update the graph
-			dependencies.forEach(depId => {
-				if (!graph.has(depId)) {
-					graph.set(depId, []);
-					inDegree.set(depId, 0);
-				}
-				graph.get(depId)!.push(questId);
-			});
-
-			inDegree.set(questId, (inDegree.get(questId) || 0) + dependencies.length);
-		});
-
-		// Kahn's algorithm for topological sort
-		const queue: string[] = [];
-		const result: string[] = [];
-
-		inDegree.forEach((degree, questId) => {
-			if (degree === 0) {
-				queue.push(questId);
-			}
-		});
-
-		while (queue.length > 0) {
-			const current = queue.shift()!;
-			result.push(current);
-
-			const dependents = graph.get(current) || [];
-			dependents.forEach(dependent => {
-				const newDegree = (inDegree.get(dependent) || 0) - 1;
-				inDegree.set(dependent, newDegree);
-
-				if (newDegree === 0) {
-					queue.push(dependent);
-				}
-			});
-		}
-
-		return result;
-	}
-
-
-
-
-
-
-
 
 
 	updateHistory(habit: Habit): Habit {
@@ -334,30 +143,11 @@ export default class HabitService {
 		};
 	}
 
-	isCompleted_old(habit: Habit, date: Date | DateString = new Date()): boolean {
-		const dateStr = DateHelper.toDateString(date);
-		return habit.streak.history.some(
-			entry => entry.date === dateStr && entry.success
-		);
-	}
 	isCompleted(habit: Habit, date: DateString): boolean {
 		const historyEntry = habit.streak.history.find(
 			h => DateHelper.toDateString(h.date) === date
 		);
 		return historyEntry?.success === true;
-	}
-	isCompleted_new_old(habit: Habit, date: Date | DateString = new Date()): boolean {
-		const dateStr = DateHelper.toDateString(date);
-		console.log(`[is_completed, habitService] isCompleted check for ${habit.title}: looking for ${dateStr}`);
-		console.log('[is_completed, habitService]  History entries:', habit.streak.history.map(e => `${e.date} (${typeof e.date})`));
-		const result = habit.streak.history.some(
-			entry => {
-				// console.log(` Comparing "${entry.date}" === "${dateStr}": ${entry.date === dateStr}`);
-				return entry.date === dateStr && entry.success;
-			}
-		);
-		console.log(`[is_completed, habitService] Result: ${result}`);
-		return result;
 	}
 
 	async updateHabitCompletion(
@@ -365,7 +155,7 @@ export default class HabitService {
 		completed: boolean,
 		date: Date | DateString = new Date()
 	): Promise<Habit> {
-		// ✅ Convert to DateString immediately
+		// Convert to DateString immediately
 		const dateStr = DateHelper.toDateString(date);
 
 		// console.log(`Updating habit ${habit.id} for date: ${dateStr}`);
@@ -406,7 +196,6 @@ export default class HabitService {
 
 		history = updatedHabitWithHistory.streak.history;
 
-
 		// calculate key dates
 		const lastCompletedEntry = [...history]
 			.filter(e => e.success)
@@ -415,8 +204,60 @@ export default class HabitService {
 		const lastDate = lastCompletedEntry?.date ?? habit.created_at;
 		const nextDate = this.calculateNextDate(lastDate, habit.recurrence);
 
+		const previousCurrent = habit.streak.current || 0;
 		const { current, best } = this.computeStreaks(history, habit.recurrence);
 		const isCompleted = DateHelper.today() < nextDate ? true : false;
+
+		// ---- Milestones ----
+		const difficulty = habit.settings.difficulty || 'easy';
+
+		let { milestones, curve } =
+			this.initializeMilestones(habit, difficulty);
+
+		milestones =
+			this.maybeGenerateNextMilestone(
+				milestones,
+				current,
+				curve
+			);
+
+		const newLevel = milestones.filter(
+			m => current >= m.target
+		).length;
+
+		let updatedRewardAttributes = {
+			...(habit.reward.attributes || {})
+		};
+
+		updatedRewardAttributes =
+			this.applyMilestoneUpgrade(
+				milestones,
+				previousCurrent,
+				current,
+				updatedRewardAttributes
+			);
+
+		updatedRewardAttributes =
+			this.applyMilestoneDowngrade(
+				milestones,
+				previousCurrent,
+				current,
+				updatedRewardAttributes
+			);
+
+		const baseXP = 1;
+
+		const difficultyMultiplier = {
+			easy: 1,
+			medium: 1.5,
+			hard: 2,
+			expert: 3
+		};
+
+		const xpGain =
+			baseXP *
+			newLevel *
+			(difficultyMultiplier[difficulty] || 1);
 
 		const updatedHabit: Habit = {
 			...habit,
@@ -428,6 +269,16 @@ export default class HabitService {
 				isCompletedToday: isCompleted,
 				nextDate,
 				lastCompletedDate: lastDate,
+			},
+			progress: {
+				...habit.progress,
+				level: newLevel,
+				XP: xpGain,
+				milestones: milestones,
+			},
+			reward: {
+				...habit.reward,
+				attributes: updatedRewardAttributes,
 			},
 		};
 
@@ -496,16 +347,6 @@ export default class HabitService {
 		return { current, best };
 	}
 
-	calculateProgress(habit: Habit): Habit {
-		// Calculate the progress part of the habit : milestones, level (adding attributes, xp)
-		if (habit.progress.milestones.length > 0) {
-			const nextMilestone = habit.progress.milestones.find(m => m.target > habit.streak.current);
-			if (nextMilestone) {
-			}
-			return habit;
-		}
-		return habit;
-	}
 
 	refreshHabits(habit: Habit): Habit {
 		const today = DateHelper.today();
@@ -547,7 +388,7 @@ export default class HabitService {
 	}[]> {
 		const habits = await this.appContext.dataService.loadAllHabits();
 		const habitsArray = Object.values(habits) as Habit[];
-		
+
 		return habitsArray
 			.filter(habit => {
 				// Vérifier si la date existe dans l'historique
@@ -559,7 +400,6 @@ export default class HabitService {
 				const historyEntry = habit.streak.history.find(
 					entry => DateHelper.toDateString(entry.date) === date
 				);
-				
 				return {
 					habitID: habit.id,
 					habitTitle: habit.title,
@@ -569,95 +409,7 @@ export default class HabitService {
 			});
 	}
 
-	pairDateHabit_old = async (date: string | Date): Promise<PairDateHabit['habits']> => {
-		// create pair for one date the habits and their completion status.
-		date = toYMDLocal(date);
-		console.log(`- Pairing habits for date: ${date}`);
-
-		const allHabits = await this.appContext.dataService.loadAllHabits();
-		console.log(`--- Habit load (from pairDateHabit) : `, allHabits);
-		const filteredHabits = allHabits
-			.map(habit => {
-				const habitHistory = habit.streak?.history ?? [];
-				console.log('habit history:', habitHistory);
-
-				// Check if habit was completed on the given date
-				const completed = habitHistory.some(entry => {
-					const entryDate = toYMDLocal(entry.date);
-					return entryDate === date && Boolean(entry.success);
-				});
-				console.warn(`Habit: ${habit.title}, Completed on ${date}: ${completed}`);
-
-				return {
-					habitID: habit.id,
-					habitTitle: habit.title,
-					completed: completed,
-					couldBeCompleted: completed || this.couldBeCompletedOnDate(habit, date)
-				};
-			})
-			.filter(habit => habit.couldBeCompleted);
-
-		// console.log(`For date ${date}, paired habits:`, filteredHabits);
-		return filteredHabits;
-	};
-
 	// Helper to determine if a habit could be completed on a specific date
-	couldBeCompletedOnDate_old = (habit: Habit, targetDate: string): boolean => {
-		// console.info('Checking if habit', habit.title, 'could be completed on', targetDate);
-		const normalizeDate = (d: Date | string) => {
-			const dt = new Date(d);
-			return new Date(dt.getFullYear(), dt.getMonth(), dt.getDate());
-		};
-
-		const targetNormalized = normalizeDate(targetDate);
-		const createdAt = normalizeDate(habit.created_at);
-
-		// Si la date cible est avant la création de l'habit
-		if (targetNormalized < createdAt || targetNormalized > normalizeDate(new Date())) {
-			// console.log('Date cible avant création ou dans le futur; target:', targetNormalized, 'createdAt:', createdAt);
-			return false;
-		}
-
-		// Trouver la dernière complétion avant ou égale à la date cible
-		const historyBeforeTarget = habit.streak.history
-			.filter(entry => entry.success)
-			.map(entry => normalizeDate(entry.date))
-			.filter(d => d <= targetNormalized)
-			.sort((a, b) => b.getTime() - a.getTime());
-
-		const lastCompletedBefore = historyBeforeTarget[0] || null;
-		// console.log('Last completed before target:', lastCompletedBefore);
-
-		// Calculer la prochaine date attendue basée sur la dernière complétion ou la création
-		let baseDate = lastCompletedBefore || createdAt;
-		// const nextExpectedDate = baseDate != createdAt ? this.calculateNextDateHelper(baseDate, habit.recurrence) : createdAt;
-
-
-		// console.log('Next expected date for habit', habit.title, 'is', nextExpectedDate, 'and base is', baseDate);
-
-		// if (nextExpectedDate > targetNormalized) {
-			// console.log('----- Habit cannot be completed yet; next expected:', nextExpectedDate, 'target:', targetNormalized);
-			// return false;
-		// }
-
-		const historyAfterTarget = habit.streak.history
-			.map(entry => normalizeDate(entry.date))
-			.filter(d => d > targetNormalized)
-			.sort((a, b) => a.getTime() - b.getTime());
-
-		if (historyAfterTarget.length > 0) {
-			// check if history after target date has a completion, if so, check if it blocks completion
-			const firstAfter = historyAfterTarget[0];
-			// const previousCompletions = this.calculateNextDateHelper(firstAfter, { interval: -habit.recurrence.interval, unit: habit.recurrence.unit });
-			// console.log('First history after target:', firstAfter, 'future completions date:', previousCompletions);
-			// if (targetNormalized > previousCompletions) {
-				// console.log('----- Habit completion blocked by future completion on', firstAfter);
-				// return false;
-			// }
-		}
-		return true;
-	};
-
 	couldBeCompletedOnDate(habit: Habit, date: DateString): boolean {
 		// Vérifier si la date existe dans l'historique
 		const historyEntry = habit.streak.history.find(
@@ -665,74 +417,6 @@ export default class HabitService {
 		);
 		return historyEntry !== undefined;
 	}
-
-	couldBeCompletedOnDate_new_old = (habit: Habit, targetDate: DateString): boolean => {
-		console.log('could be completed : ', habit, '; and target date : ', targetDate)
-		//console.trace('stack trace')
-		const today = DateHelper.today();
-		const createdAt = DateHelper.toDateString(habit.created_at);
-		const targetDateStr = DateHelper.toDateString(targetDate);
-
-		// Si la date cible est avant la création ou dans le futur
-		if (targetDateStr < createdAt || targetDateStr > today) {
-			return false;
-		}
-
-		// Trouver la dernière complétion avant ou égale à la date cible
-		const historyBeforeTarget = habit.streak.history
-			.filter(entry => entry.success && entry.date <= targetDateStr)
-			.sort((a, b) => b.date.localeCompare(a.date));
-
-		const lastCompletedBefore = historyBeforeTarget[0]?.date || null;
-
-		// Calculer la prochaine date attendue basée sur la dernière complétion ou la création
-		let baseDate = lastCompletedBefore || createdAt;
-		const nextExpectedDate = baseDate !== createdAt
-			? DateHelper.addInterval(baseDate, habit.recurrence.interval, habit.recurrence.unit)
-			: createdAt;
-
-		if (nextExpectedDate > targetDateStr) {
-			return false;
-		}
-
-		// Vérifier si une complétion future bloque celle-ci
-		const historyAfterTarget = habit.streak.history
-			.filter(entry => entry.date > targetDateStr)
-			.sort((a, b) => a.date.localeCompare(b.date));
-
-		if (historyAfterTarget.length > 0) {
-			const firstAfter = historyAfterTarget[0].date;
-			const previousCompletionDate = DateHelper.addInterval(
-				firstAfter, 
-				-habit.recurrence.interval, 
-				habit.recurrence.unit
-			);
-			
-			if (targetDateStr < previousCompletionDate) {
-				return false;
-			}
-		}
-
-		return true;
-	};
-
-	public formatDate = (date: Date) => {
-		const today = new Date();
-		const yesterday = new Date(today);
-		yesterday.setDate(yesterday.getDate() - 1);
-		
-		if (date.toDateString() === today.toDateString()) {
-			return 'Today';
-		} else if (date.toDateString() === yesterday.toDateString()) {
-			return 'Yesterday';
-		}
-		return date.toLocaleDateString('en-US', { 
-			weekday: 'long', 
-			year: 'numeric', 
-			month: 'long', 
-			day: 'numeric' 
-		});
-	};
 
 	handleCheckbox = async (
 		habit: Habit,
@@ -817,7 +501,7 @@ export default class HabitService {
 		}
 	};
 
-	reorderHistory(habit: Habit): Habit {
+	private reorderHistory(habit: Habit): Habit {
 		// Reorder the habit history by date ascending
 		const reorderedHistory = [...habit.streak.history].sort((a, b) => {
 			const dateA = new Date(a.date).getTime();
@@ -832,23 +516,133 @@ export default class HabitService {
 			}
 		};
 	}
+
+	// -----------------
+	// Milestone helpers
+
+	private initializeMilestones(
+		habit: Habit,
+		difficulty: keyof typeof MILESTONE_CURVES
+	): { milestones: Habit["progress"]["milestones"]; curve: number[] } {
+
+		const curve = MILESTONE_CURVES[difficulty] || MILESTONE_CURVES.easy;
+		let milestones = [...(habit.progress.milestones || [])];
+
+		if (milestones.length === 0 && curve.length > 0) {
+			milestones.push({
+				target: curve[0],
+				reward: { items: ["Milestone Badge"] }
+			});
+		}
+
+		return { milestones, curve };
+	}
+
+	private maybeGenerateNextMilestone(
+		milestones: Habit["progress"]["milestones"],
+		current: number,
+		curve: number[]
+	) {
+		const lastMilestone = milestones[milestones.length - 1];
+		if (!lastMilestone || current < lastMilestone.target) return milestones;
+
+		const existingTargets = milestones.map(m => m.target);
+		const nextTarget = curve.find(t => !existingTargets.includes(t));
+
+		if (!nextTarget) return milestones;
+
+		return [
+			...milestones,
+			{
+				target: nextTarget,
+				reward: { attributes: { endurance: 1 } }
+			}
+		];
+	}
+
+	private applyMilestoneUpgrade(
+		milestones: Habit["progress"]["milestones"],
+		previousCurrent: number,
+		current: number,
+		rewardAttributes: AttributeBlock
+	): AttributeBlock {
+
+		const newlyReached = milestones.find(
+			m => previousCurrent < m.target && current >= m.target
+		);
+
+		if (!newlyReached?.reward?.attributes) return rewardAttributes;
+
+		const updated = { ...rewardAttributes };
+
+		for (const [key, value] of Object.entries(newlyReached.reward.attributes)) {
+			const attrKey = key as keyof AttributeBlock;
+			updated[attrKey] = (updated[attrKey] || 0) + value;
+		}
+
+		return updated;
+	}
+
+	private applyMilestoneDowngrade(
+		milestones: Habit["progress"]["milestones"],
+		previousCurrent: number,
+		current: number,
+		rewardAttributes: AttributeBlock
+	): AttributeBlock {
+
+		const previousUnlocked = milestones.filter(
+			m => previousCurrent >= m.target
+		).length;
+
+		const currentUnlocked = milestones.filter(
+			m => current >= m.target
+		).length;
+
+		if (previousUnlocked <= currentUnlocked) return rewardAttributes;
+
+		const lostMilestones = milestones
+			.filter(m => previousCurrent >= m.target)
+			.slice(currentUnlocked);
+
+		const updated = { ...rewardAttributes };
+
+		for (const milestone of lostMilestones) {
+
+			if (!milestone.reward?.attributes) continue;
+
+			for (const [key, value] of Object.entries(milestone.reward.attributes)) {
+
+				let remaining = value;
+				const attrKey = key as keyof AttributeBlock;
+
+				const mainValue = updated[attrKey] || 0;
+				const removed = Math.min(mainValue, remaining);
+
+				updated[attrKey] = mainValue - removed;
+				remaining -= removed;
+
+				if (remaining > 0) {
+					const sorted = Object.entries(updated)
+						.sort((a, b) => b[1] - a[1]);
+
+					for (const [otherKey, otherValue] of sorted) {
+
+						if (otherValue <= 0) continue;
+
+						const removeAmount = Math.min(otherValue, remaining);
+						updated[otherKey as keyof AttributeBlock] =
+							otherValue - removeAmount;
+
+						remaining -= removeAmount;
+						if (remaining <= 0) break;
+					}
+				}
+			}
+		}
+
+		return updated;
+	}
 }
-
-
-interface PairDateHabit {
-	date: Date;
-	habits: { habitID: string, habitTitle: string, completed: boolean, couldBeCompleted: boolean }[];
-}
-
-function toYMDLocal(input: string | Date): string {
-	const d = input instanceof Date ? input : new Date(String(input));
-	if (isNaN(d.getTime())) return ""; // invalid date guard
-	const y = d.getFullYear();
-	const m = String(d.getMonth() + 1).padStart(2, "0");
-	const day = String(d.getDate()).padStart(2, "0");
-	return `${y}-${m}-${day}`;
-}
-
 
 
 
