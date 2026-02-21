@@ -16,6 +16,7 @@ interface HabitSideViewProps {
 	setSortBy: (sort: "priority" | "xp" | "difficulty" | "recurrence") => void;
 	handleModifyHabit: (habit: Habit) => void;
 	getDaysUntil: (startDate: DateString, targetDate: DateString) => string;
+	handleOpenDetails: (habit: Habit) => void;
 }
 
 export const HabitSideView: React.FC<HabitSideViewProps> = (props) => {
@@ -32,7 +33,8 @@ export const HabitSideView: React.FC<HabitSideViewProps> = (props) => {
 		setActiveTab,
 		setSortBy,
 		handleModifyHabit,
-		getDaysUntil
+		getDaysUntil,
+		handleOpenDetails,
 	} = props;
 
 	// UI feedback on completion rate
@@ -114,6 +116,7 @@ export const HabitSideView: React.FC<HabitSideViewProps> = (props) => {
 								onComplete={handleComplete}
 								onModify={handleModifyHabit}
 								getDaysUntil={getDaysUntil}
+								openDetails={handleOpenDetails}
 							/>
 						))}
 					</div>
@@ -129,11 +132,12 @@ interface HabitItemProps {
 	onComplete: (habit: Habit, completed: boolean) => void;
 	onModify: (habit: Habit) => void;
 	getDaysUntil: (startDate: DateString, targetDate: DateString) => string;
+	openDetails: (habit: Habit) => void;
 }
 
 
 
-const HabitItem: React.FC<HabitItemProps> = ({ habit, activeTab, onComplete, onModify, getDaysUntil }) => {
+const HabitItem: React.FC<HabitItemProps> = ({ habit, activeTab, onComplete, onModify, getDaysUntil, openDetails }) => {
 	/* Individual habit item with completion and edit options */
 	const isEditable = !habit.isSystemHabit;
 
@@ -142,13 +146,22 @@ const HabitItem: React.FC<HabitItemProps> = ({ habit, activeTab, onComplete, onM
 	};
 
 	return (
-		<div className="habit-item">
+		<div
+			className="habit-item"
+			role="button"
+			tabIndex={0}
+			onClick={() => openDetails(habit)}
+			onKeyDown={(e) => {
+				if (e.key === "Enter") openDetails(habit);
+			}}
+		>
 			<div className="habit-header">
 				<div className="habit-checkbox-section">
 					<input
 						type="checkbox"
-						checked={habit.streak.isCompletedToday ? true : false}
-						onChange={handleToggle}
+						checked={habit.streak.isCompletedToday}
+						onClick={(e) => {e.stopPropagation()}}
+						onChange={() => handleToggle()}
 						disabled={activeTab === "upcoming"}
 						className={`habit-checkbox ${habit.streak.isCompletedToday ? "completed" : ""}`}
 					/>
@@ -160,7 +173,10 @@ const HabitItem: React.FC<HabitItemProps> = ({ habit, activeTab, onComplete, onM
 					{isEditable ? (
 						<button
 							className="list-edit-button"
-							onClick={() => onModify(habit)}
+							onClick={(e) => {
+								e.stopPropagation();
+								onModify(habit);
+							}}
 							aria-label="Edit habit"
 						>
 							Edit

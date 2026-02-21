@@ -252,6 +252,7 @@ export interface BaseTask {
 		isSecret?: boolean; // Auto-generated
 		isTimeSensitive?: boolean; // Auto-generated // todo: do algo to set the limit time
 	};
+	isArchived: boolean; // Auto-generated when the task is archived
 }
 
 /*
@@ -332,6 +333,7 @@ export const DEFAULT_QUEST: Quest = {
 		isSecret: false, // Auto generated
 		isTimeSensitive: false, // Auto generated // todo: do algo to set the limit time
 	},
+	isArchived: false, // Auto generated when the task is archived
 	progression: {
 		isCompleted: false,
 		completedAt: null, // Auto generated
@@ -453,6 +455,7 @@ export const DEFAULT_HABIT: Habit = {
 		isSecret: false,
 		isTimeSensitive: false,
 	},
+	isArchived: false, // Auto generated when the task is archived
 	recurrence: {
 		interval: 1,
 		unit: 'days',

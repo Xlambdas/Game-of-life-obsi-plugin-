@@ -7,7 +7,7 @@ export const UNLOCK_QUEST_FORM: Record<string, number> = {
 	dueDate: 3,
 	requirements: 2,
 	attributeRewards: 1,
-	progressConditions: 3
+	progressConditions: 1 //3
 };
 
 export const UNLOCK_HABIT_FORM: Record<string, number> = {

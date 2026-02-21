@@ -179,3 +179,11 @@
   text-align: center;
   color: var(--text-muted);
 }
+
+
+.habit-item {
+	cursor: pointer;
+}
+.habit-item:hover {
+	background: var(--background-secondary-alt);
+}

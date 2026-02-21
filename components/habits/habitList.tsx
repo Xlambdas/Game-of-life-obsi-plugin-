@@ -149,6 +149,7 @@ export const HabitList: React.FC<HabitListProps> = ({ habits, onHabitUpdate,onUs
 			setSortBy={handleSetSortBy}
 			handleModifyHabit={habitService.handleModify}
 			getDaysUntil={habitService.handleGetDaysUntil}
+			handleOpenDetails={habitService.openHabitDetails}
 		/>
 	);
 };

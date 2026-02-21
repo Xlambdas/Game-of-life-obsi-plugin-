@@ -6,6 +6,7 @@ import DataService from "./dataService";
 import { GenericForm } from "components/forms/genericForm";
 import { DateHelper, DateString } from "helpers/dateHelpers";
 import { AttributeBlock } from "data/attributeDetails";
+import { HabitModal } from "../../modal/habitDetailsModal";
 
 interface HabitCompletionResult {
 	updatedHabit: Habit;
@@ -37,6 +38,10 @@ export default class HabitService {
 		return this.appContext.dataService.getHabitbyID(habitID).then(habit => habit || null);
 	}
 
+	async deleteHabit(habitID: string): Promise<void> {
+		await this.appContext.dataService.deleteHabit(habitID);
+	}
+
 	// -------------------
 	// general functions :
 	public handleGetDaysUntil = (StartDate: DateString, targetDate: DateString): string => {
@@ -48,6 +53,25 @@ export default class HabitService {
 	// Habit Modal related methods :
 	public handleModify = (habit: Habit) => {
 		new GenericForm(this.appContext.getApp(), 'habit-modify', habit).open();
+	};
+
+	public archiveHabit = async (habit: Habit): Promise<void> => {
+		const history = habit.streak.history
+			.filter(h => h.success)
+			.map(h => ({ ...h, date: DateHelper.toDateString(h.date) }));
+		let updatedHabit = {
+			...habit,
+			isArchived: true,
+			streak: {
+				...habit.streak,
+				history: history
+			}
+		};
+		await this.appContext.dataService.addHabit(updatedHabit);
+	}
+
+	public openHabitDetails = (habit: Habit) => {
+		new HabitModal(this.appContext.getApp(), habit).open();
 	};
 
 	updateHistory(habit: Habit): Habit {
@@ -213,7 +237,10 @@ export default class HabitService {
 		const previousCurrent = habit.streak.current || 0;
 		// const { current, best } = this.computeStreaks(history, habit.recurrence);
 		let { current, best, freezeAvailable, freezeUsedDates } = this.computeStreaks(habit, history, habit.recurrence);
-		const isCompleted = DateHelper.today() < nextDate ? true : false;
+		const isCompleted = history.some(
+			e => e.date === DateHelper.today() && e.success
+		);
+
 
 		freezeAvailable = this.regenerateFreeze(
 			habit,
@@ -221,7 +248,7 @@ export default class HabitService {
 			current,
 			freezeAvailable
 		);
-		
+
 
 		// ---- Milestones ----
 		const difficulty = habit.settings.difficulty || 'normal';

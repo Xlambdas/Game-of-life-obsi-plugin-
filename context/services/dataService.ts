@@ -214,11 +214,11 @@ export default class DataService {
 	// ------------------------
 	// Habits
 	async loadHabits(): Promise<void> {
-		console.log("-- Loading habits");
+		// console.log("-- Loading habits");
 		await this.ensureDataFile(this.habitsPath, {});
 		const content = await this.vault.adapter.read(this.habitsPath);
 		this.habits = JSON.parse(content);
-		console.log('-- finished loading habit')
+		// console.log('-- finished loading habit')
 	}
 
 	async addHabit(habitData: Partial<Habit>): Promise<void> {
@@ -234,6 +234,19 @@ export default class DataService {
 
 	async setHabits(habits: Record<string, Habit>): Promise<void> {
 		this.habits = habits;
+		await this.save('habits');
+	}
+
+	async deleteHabit(habitID: string): Promise<void> {
+		// console.log("habits before delete:", JSON.stringify(this.habits));
+		// console.log("deleting habit with ID:", habitID);
+
+		if (!(habitID in this.habits)) {
+			throw new Error(`Habit with id "${habitID}" does not exist`);
+		}
+		delete this.habits[habitID];
+
+		// console.log("habits after delete:", JSON.stringify(this.habits));
 		await this.save('habits');
 	}
 

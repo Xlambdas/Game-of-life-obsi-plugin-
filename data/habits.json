@@ -1,9 +1,9 @@
 {
   "habit_q9x0bo4": {
     "id": "habit_q9x0bo4",
-    "title": "daily title with a lot of charactere",
+    "title": "daily title with a lot of characteree",
     "shortDescription": "everyyyy dayssssss",
-    "description": "",
+    "description": "this is a descritpion erglivnev",
     "created_at": "2025-11-03",
     "settings": {
       "type": "habit",
@@ -13,12 +13,13 @@
       "isSecret": false,
       "isTimeSensitive": false
     },
+    "isArchived": true,
     "recurrence": {
       "interval": 1,
       "unit": "days"
     },
     "streak": {
-      "current": 3,
+      "current": 2,
       "best": 12,
       "history": [
         {
@@ -138,32 +139,12 @@
           "success": true
         },
         {
-          "date": "2026-01-14",
-          "success": false
-        },
-        {
           "date": "2026-01-15",
           "success": true
         },
         {
-          "date": "2026-01-16",
-          "success": false
-        },
-        {
           "date": "2026-01-17",
           "success": true
-        },
-        {
-          "date": "2026-01-18",
-          "success": false
-        },
-        {
-          "date": "2026-01-19",
-          "success": false
-        },
-        {
-          "date": "2026-01-20",
-          "success": false
         },
         {
           "date": "2026-01-21",
@@ -264,19 +245,47 @@
         {
           "date": "2026-02-14",
           "success": true
+        },
+        {
+          "date": "2026-02-15",
+          "success": true
+        },
+        {
+          "date": "2026-02-16",
+          "success": true
+        },
+        {
+          "date": "2026-02-17",
+          "success": true
+        },
+        {
+          "date": "2026-02-18",
+          "success": false
+        },
+        {
+          "date": "2026-02-19",
+          "success": true
+        },
+        {
+          "date": "2026-02-20",
+          "success": true
+        },
+        {
+          "date": "2026-02-21",
+          "success": false
         }
       ],
-      "isCompletedToday": true,
-      "nextDate": "2026-02-15",
-      "lastCompletedDate": "2026-02-14",
+      "isCompletedToday": false,
+      "nextDate": "2026-02-21",
+      "lastCompletedDate": "2026-02-20",
       "freeze": {
         "available": 0,
         "history": []
       }
     },
     "progress": {
-      "level": 1,
-      "XP": 1,
+      "level": 0,
+      "XP": 0,
       "goal": 2000,
       "currentValue": 0,
       "milestones": [
@@ -310,391 +319,6 @@
       "attributes": {
         "strength": 1,
         "agility": 1,
-        "endurance": 2,
-        "charisma": 0,
-        "wisdom": 0,
-        "perception": 0,
-        "intelligence": 0,
-        "willpower": 0,
-        "spirit": 0,
-        "flow": 0,
-        "reputation": 0,
-        "resilience": 0
-      },
-      "items": []
-    },
-    "isSystemHabit": false
-  },
-  "habit_srpsetu": {
-    "id": "habit_srpsetu",
-    "title": "test",
-    "shortDescription": "recu 3j",
-    "description": "",
-    "created_at": "2026-01-01",
-    "settings": {
-      "type": "habit",
-      "category": "undefined",
-      "priority": "low",
-      "difficulty": "easy",
-      "isSecret": false,
-      "isTimeSensitive": false
-    },
-    "recurrence": {
-      "interval": 3,
-      "unit": "days"
-    },
-    "streak": {
-      "current": 0,
-      "best": 7,
-      "history": [
-        {
-          "date": "2026-01-01",
-          "success": true
-        },
-        {
-          "date": "2026-01-04",
-          "success": true
-        },
-        {
-          "date": "2026-01-07",
-          "success": true
-        },
-        {
-          "date": "2026-01-10",
-          "success": true
-        },
-        {
-          "date": "2026-01-13",
-          "success": true
-        },
-        {
-          "date": "2026-01-16",
-          "success": true
-        },
-        {
-          "date": "2026-01-19",
-          "success": true
-        },
-        {
-          "date": "2026-01-22",
-          "success": false
-        },
-        {
-          "date": "2026-01-23",
-          "success": false
-        },
-        {
-          "date": "2026-01-24",
-          "success": false
-        },
-        {
-          "date": "2026-01-25",
-          "success": false
-        },
-        {
-          "date": "2026-01-26",
-          "success": false
-        },
-        {
-          "date": "2026-01-27",
-          "success": false
-        },
-        {
-          "date": "2026-01-28",
-          "success": false
-        },
-        {
-          "date": "2026-01-29",
-          "success": false
-        },
-        {
-          "date": "2026-01-30",
-          "success": false
-        },
-        {
-          "date": "2026-01-31",
-          "success": false
-        },
-        {
-          "date": "2026-02-01",
-          "success": false
-        },
-        {
-          "date": "2026-02-02",
-          "success": false
-        },
-        {
-          "date": "2026-02-03",
-          "success": false
-        },
-        {
-          "date": "2026-02-04",
-          "success": false
-        },
-        {
-          "date": "2026-02-05",
-          "success": false
-        },
-        {
-          "date": "2026-02-06",
-          "success": false
-        },
-        {
-          "date": "2026-02-07",
-          "success": false
-        },
-        {
-          "date": "2026-02-08",
-          "success": false
-        },
-        {
-          "date": "2026-02-09",
-          "success": false
-        },
-        {
-          "date": "2026-02-10",
-          "success": false
-        },
-        {
-          "date": "2026-02-13",
-          "success": true
-        }
-      ],
-      "isCompletedToday": true,
-      "nextDate": "2026-02-16",
-      "lastCompletedDate": "2026-02-13",
-      "freeze": {
-        "available": 0,
-        "history": []
-      }
-    },
-    "progress": {
-      "level": 0,
-      "XP": 0,
-      "goal": 2000,
-      "currentValue": 0,
-      "milestones": [
-        {
-          "target": 7,
-          "reward": {
-            "items": [
-              "Milestone Badge"
-            ]
-          }
-        }
-      ]
-    },
-    "penalty": {
-      "XPLoss": 0,
-      "breackStreak": false
-    },
-    "reward": {
-      "XP": 0,
-      "attributes": {
-        "strength": 0,
-        "agility": 0,
-        "endurance": 1,
-        "charisma": 0,
-        "wisdom": 0,
-        "perception": 0,
-        "intelligence": 0,
-        "willpower": 0,
-        "spirit": 0,
-        "flow": 0,
-        "reputation": 0,
-        "resilience": 0
-      },
-      "items": []
-    },
-    "isSystemHabit": false
-  },
-  "habit_u52hy44": {
-    "id": "habit_u52hy44",
-    "title": "testttdttebhfhj",
-    "shortDescription": "xdhcfgjk",
-    "description": "",
-    "created_at": "2026-02-12",
-    "settings": {
-      "type": "habit",
-      "category": "undefined",
-      "priority": "low",
-      "difficulty": "easy",
-      "isSecret": false,
-      "isTimeSensitive": false
-    },
-    "recurrence": {
-      "interval": 1,
-      "unit": "days"
-    },
-    "streak": {
-      "current": 2,
-      "best": 2,
-      "history": [
-        {
-          "date": "2026-02-12",
-          "success": true
-        },
-        {
-          "date": "2026-02-13",
-          "success": false
-        },
-        {
-          "date": "2026-02-14",
-          "success": true
-        }
-      ],
-      "isCompletedToday": true,
-      "nextDate": "2026-02-15",
-      "lastCompletedDate": "2026-02-14",
-      "freeze": {
-        "available": 0,
-        "history": [
-          "2026-02-13"
-        ]
-      }
-    },
-    "progress": {
-      "level": 0,
-      "XP": 0,
-      "goal": 2000,
-      "currentValue": 0,
-      "milestones": [
-        {
-          "target": 7,
-          "reward": {
-            "items": [
-              "Milestones Badge"
-            ]
-          }
-        }
-      ]
-    },
-    "penalty": {
-      "XPLoss": 0,
-      "breackStreak": false
-    },
-    "reward": {
-      "XP": 0,
-      "attributes": {
-        "strength": 0,
-        "agility": 0,
-        "endurance": 1,
-        "charisma": 0,
-        "wisdom": 0,
-        "perception": 0,
-        "intelligence": 0,
-        "willpower": 0,
-        "spirit": 0,
-        "flow": 0,
-        "reputation": 0,
-        "resilience": 0
-      },
-      "items": []
-    },
-    "isSystemHabit": false
-  },
-  "habit_ajh8789": {
-    "id": "habit_ajh8789",
-    "title": "freeeeeeeze",
-    "shortDescription": "cvgbhj",
-    "description": "",
-    "created_at": "2026-02-06",
-    "settings": {
-      "type": "habit",
-      "category": "undefined",
-      "priority": "low",
-      "difficulty": "easy",
-      "isSecret": false,
-      "isTimeSensitive": false
-    },
-    "recurrence": {
-      "interval": 1,
-      "unit": "days"
-    },
-    "streak": {
-      "current": 7,
-      "best": 7,
-      "history": [
-        {
-          "date": "2026-02-06",
-          "success": false
-        },
-        {
-          "date": "2026-02-07",
-          "success": true
-        },
-        {
-          "date": "2026-02-08",
-          "success": true
-        },
-        {
-          "date": "2026-02-09",
-          "success": true
-        },
-        {
-          "date": "2026-02-10",
-          "success": true
-        },
-        {
-          "date": "2026-02-11",
-          "success": true
-        },
-        {
-          "date": "2026-02-12",
-          "success": true
-        },
-        {
-          "date": "2026-02-13",
-          "success": false
-        },
-        {
-          "date": "2026-02-14",
-          "success": true
-        }
-      ],
-      "isCompletedToday": true,
-      "nextDate": "2026-02-15",
-      "lastCompletedDate": "2026-02-14",
-      "freeze": {
-        "available": 1,
-        "history": [
-          "2026-02-13"
-        ]
-      }
-    },
-    "progress": {
-      "level": 1,
-      "XP": 1,
-      "goal": 2000,
-      "currentValue": 0,
-      "milestones": [
-        {
-          "target": 7,
-          "reward": {
-            "items": [
-              "Milestones Badge"
-            ]
-          }
-        },
-        {
-          "target": 14,
-          "reward": {
-            "attributes": {
-              "endurance": 1
-            }
-          }
-        }
-      ]
-    },
-    "penalty": {
-      "XPLoss": 0,
-      "breackStreak": false
-    },
-    "reward": {
-      "XP": 0,
-      "attributes": {
-        "strength": 0,
-        "agility": 0,
         "endurance": 1,
         "charisma": 0,
         "wisdom": 0,
