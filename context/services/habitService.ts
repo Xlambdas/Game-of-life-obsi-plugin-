@@ -7,6 +7,7 @@ import { GenericForm } from "components/forms/genericForm";
 import { DateHelper, DateString } from "helpers/dateHelpers";
 import { AttributeBlock } from "data/attributeDetails";
 import { HabitModal } from "../../modal/habitDetailsModal";
+import { Notice } from "obsidian";
 
 interface HabitCompletionResult {
 	updatedHabit: Habit;
@@ -38,8 +39,8 @@ export default class HabitService {
 		return this.appContext.dataService.getHabitbyID(habitID).then(habit => habit || null);
 	}
 
-	async deleteHabit(habitID: string): Promise<void> {
-		await this.appContext.dataService.deleteHabit(habitID);
+	async deleteHabit(habitID: string, questService: any): Promise<void> {
+		await this.appContext.dataService.deleteHabitAndCleanQuests(habitID, questService);
 	}
 
 	// -------------------
@@ -321,6 +322,10 @@ export default class HabitService {
 				attributes: updatedRewardAttributes,
 			},
 		};
+
+		if (habit.progress.level !== updatedHabit.progress.level) {
+			new Notice(`Milestone reached! Habit "${habit.title}" is now level ${updatedHabit.progress.level} and grants ${xpGain} XP!`);
+		}
 
 		return updatedHabit;
 	}

@@ -7,6 +7,7 @@ import { Quest, Habit } from "data/DEFAULT";
 // from files (UI) :
 import { QuestFormUI } from "../quests/questForm";
 import { HabitFormUI } from "../habits/habitForm";
+import { ConfirmModal } from 'modal/confirmModal';
 
 type DataType = Quest | Habit;
 
@@ -62,7 +63,7 @@ export class GenericForm extends Modal {
 				const hasAffectedQuests = questsArray.some(quest =>
 					quest.progression.subtasks?.conditionHabits?.some(ch => ch.id === (data as Habit).id)
 				);
-				
+
 				if (hasAffectedQuests) {
 					// Refresh all quests to recalculate progress based on updated habit
 					const refreshedQuests = await Promise.all(questsArray.map(async q => {
@@ -85,7 +86,6 @@ export class GenericForm extends Modal {
 			}
 			return false;
 		};
-
 
 		const handleDelete = async () => {
 			if (!this.data) return;
@@ -144,56 +144,30 @@ export class GenericForm extends Modal {
 				// console.log("Updated quests after deletion:", updatedQuests);
 				await dataService.saveAllQuests(updatedQuests);
 			} else if (this.mode === "habit-modify") {
-				const allHabits = await dataService.loadAllHabits();
-				const updatedHabits = allHabits.filter(h => h.id !== (this.data as Habit).id);
-				await dataService.saveAllHabits(updatedHabits);
+				new ConfirmModal(service.getApp(), {
+					title: "Delete Habit",
+					description: "You are about to delete this habit. Continue?",
+					confirmText: "Delete",
+					cancelText: "Cancel",
+					onConfirm: async () => {
+						await dataService.deleteHabitAndCleanQuests(this.data!.id, service.questService);
+						new Notice("Habit deleted successfully!");
+						document.dispatchEvent(new CustomEvent("dbUpdated"));
+						this.close();
+					},
+				}).open();
+				return;
 
-				// Check and update all quests that reference this habit
-				const allQuests = await dataService.loadAllQuests();
-				let updatedQuests = await Promise.all(allQuests.map(async q => {
-					let needsUpdate = false;
-					let updatedQuest = { ...q };
-					// Remove from conditionHabits
-					if (q.progression.subtasks && q.progression.subtasks.conditionHabits) {
-						const filteredHabits = q.progression.subtasks.conditionHabits.filter(
-							ch => ch.id !== (this.data as Habit).id
-						);
-						if (filteredHabits.length !== q.progression.subtasks.conditionHabits.length) {
-							needsUpdate = true;
-							const existingConditionQuests = q.progression.subtasks.conditionQuests || [];
-							updatedQuest = {
-								...updatedQuest,
-								progression: {
-									...updatedQuest.progression,
-									subtasks: {
-										conditionQuests: existingConditionQuests,
-										conditionHabits: filteredHabits
-									}
-								}
-							};
-						}
-					}
-					// Refresh quest progress if it was updated
-					if (needsUpdate) {
-						return await service["questService"].refreshQuests(updatedQuest);
-					}
-					return q;
-				}));
-				// remove the quests that had this habit as condition
-				await dataService.saveAllQuests(updatedQuests);
 			} else return;
 
 			new Notice(`${this.mode.split("-")[0].charAt(0).toUpperCase() + this.mode.split("-")[0].slice(1)} deleted successfully`);
-			
-			// Dispatch event with more details
-			document.dispatchEvent(new CustomEvent("dbUpdated", { 
-				detail: { 
-					type: this.mode.split("-")[0], 
+			document.dispatchEvent(new CustomEvent("dbUpdated", {
+				detail: {
+					type: this.mode.split("-")[0],
 					action: 'delete',
-					data: this.data 
-				} 
+					data: this.data
+				}
 			}));
-			
 			this.close();
 		};
 

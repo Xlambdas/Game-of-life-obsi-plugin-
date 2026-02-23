@@ -250,6 +250,41 @@ export default class DataService {
 		await this.save('habits');
 	}
 
+	// In DataService
+	async deleteHabitAndCleanQuests(habitID: string, questService: any): Promise<void> {
+		const allHabits = await this.loadAllHabits();
+		const updatedHabits = allHabits.filter(h => h.id !== habitID);
+		await this.saveAllHabits(updatedHabits);
+
+		// 2. Clean up quests that reference this habit
+		const allQuests = Object.values(this.quests);
+		const updatedQuests = await Promise.all(allQuests.map(async q => {
+			if (!q.progression.subtasks?.conditionHabits?.some(ch => ch.id === habitID)) {
+				return q;
+			}
+			const filteredHabits = q.progression.subtasks.conditionHabits.filter(
+				ch => ch.id !== habitID
+			);
+			const updatedQuest = {
+				...q,
+				progression: {
+					...q.progression,
+					subtasks: {
+						conditionQuests: q.progression.subtasks.conditionQuests || [],
+						conditionHabits: filteredHabits
+					}
+				}
+			};
+			return await questService.refreshQuests(updatedQuest);
+		}));
+
+		// 3. Save merged quests (all quests, archived included, already in this.quests)
+		const mergedQuests = { ...this.quests };
+		updatedQuests.forEach(q => { mergedQuests[q.id] = q; });
+		this.quests = mergedQuests;
+		await this.save('quests');
+	}
+
 	async getHabits(): Promise<Record<string, Habit>> {
 		return this.habits;
 	}

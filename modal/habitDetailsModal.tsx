@@ -7,6 +7,7 @@ import { Habit, UserSettings } from 'data/DEFAULT';
 import { DateHelper, DateString } from 'helpers/dateHelpers';
 import { SidebarCalendar } from 'components/sidebarCalendar';
 import { ConfirmModal } from './confirmModal';
+import dataService from 'context/services/dataService';
 
 export class HabitModal extends Modal {
 	private habit: Habit;
@@ -124,7 +125,8 @@ export const HabitDetails: React.FC<HabitDetailsProps> = ({
 			confirmText: "Delete",
 			cancelText: "Cancel",
 			onConfirm: async () => {
-				await habitService.deleteHabit(habit.id);
+				new Notice(`Deleting habit and cleaning up related quests... ${habit.id}`);
+				await habitService.deleteHabit(habit.id, service.questService);
 				triggerReload();
 				onClose();
 				new Notice("Habit deleted successfully!");

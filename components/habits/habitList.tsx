@@ -28,13 +28,24 @@ export const HabitList: React.FC<HabitListProps> = ({ habits, onHabitUpdate,onUs
 
 	useEffect(() => {
 		const refreshAllHabits = async () => {
-			/* Refresh all habits to update their streaks and next dates */
-			const refreshedHabits = await Promise.all(habitState.map(habit => appService.habitService.refreshHabits(habit)));
-			setHabitState(refreshedHabits);
-			await appService.dataService.saveAllHabits(refreshedHabits);
-			document.dispatchEvent(new CustomEvent("dbUpdated"));
+			// Load ALL habits from disk (including archived)
+			const allHabits = await appService.dataService.getHabits();
+			const activeHabits = Object.values(allHabits).filter(h => !h.isArchived);
+
+			// Refresh only active ones
+			const refreshed = await Promise.all(
+				activeHabits.map(habit => appService.habitService.refreshHabits(habit))
+			);
+
+			// Merge back into full record before saving
+			const merged = { ...allHabits };
+			refreshed.forEach(h => { merged[h.id] = h; });
+
+			await appService.dataService.setHabits(merged);
+
+			// Update local state with refreshed active habits only
+			setHabitState(refreshed);
 		};
-		console.log("Refreshing all habits in HabitList...- [useEffect; initial load; HabitList]");
 		refreshAllHabits();
 	}, []);
 
@@ -84,6 +95,7 @@ export const HabitList: React.FC<HabitListProps> = ({ habits, onHabitUpdate,onUs
 	const filteredHabits = useMemo(() => {
 		return habitState
 			.filter((habit) => {
+				if (habit.isArchived) return false;
 				const search = filter.trim().toLowerCase();
 				const matchesSearch =
 					!search ||

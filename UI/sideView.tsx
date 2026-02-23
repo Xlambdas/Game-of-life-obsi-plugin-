@@ -26,45 +26,54 @@ export const SideView: React.FC = () => {
 	let open_load = true;
 
 	const loadData = React.useCallback(async () => {
-		if (loadingRef.current) return; // prevent re-entry
-		// console.log("-----> Loading data for SideView...");
+		if (loadingRef.current) return;
 		loadingRef.current = true;
 		setLoading(true);
 		try {
 			const loadedUser = appService.dataService.getUser();
-			// console.log("Loaded user:", loadedUser);
-			const loadedQuests = await appService.dataService.getQuests();
-			// console.log("-<>----------");
-			// console.log("Loaded quests:", loadedQuests);
-			const loadedHabits = await appService.dataService.getHabits();
-			// console.log("------<>-----");
-			// console.log("Loaded habits:", loadedHabits);
+
+			// Load ALL data (archived included) for saving
+			const allQuests = await appService.dataService.getQuests();
+			const allHabits = await appService.dataService.getHabits();
+
+			// Filtered for display only
+			const activeQuests = Object.values(allQuests).filter(q => !q.isArchived);
+			const activeHabits = Object.values(allHabits).filter(h => !h.isArchived);
+
 			if (loadedUser && typeof loadedUser === 'object' && 'settings' in loadedUser) {
 				setUser(loadedUser as UserSettings);
 			} else {
 				setUser(null);
 			}
-			if (open_load) {
-				// console.log("><---><User data loaded in SideView");
-				open_load = false;
-				const updatedQuests = await Promise.all(
-					Object.values(loadedQuests).map((q: Quest) => appService.questService.refreshQuests(q))
-				);
-				// await appService.dataService.refreshAllData();
-				const updatedHabits = await Promise.all(
-					Object.values(loadedHabits).map((h: Habit) => appService.habitService.refreshHabits(h))
-				);
-				// console.log("Updated quests after refresh:", updatedQuests);
-				// console.log("Updated habits after refresh:", updatedHabits);
-				await appService.dataService.saveAllQuests(updatedQuests);
-				await appService.dataService.saveAllHabits(updatedHabits);
-				setUser(loadedUser as UserSettings);
-				setQuests(updatedQuests);
-				setHabits(updatedHabits);
 
+			if (open_load) {
+				open_load = false;
+
+				// Refresh only active ones
+				const updatedQuests = await Promise.all(
+					activeQuests.map((q: Quest) => appService.questService.refreshQuests(q))
+				);
+				const updatedHabits = await Promise.all(
+					activeHabits.map((h: Habit) => appService.habitService.refreshHabits(h))
+				);
+
+				// Merge updated active back into full list before saving
+				const mergedQuests = { ...allQuests };
+				updatedQuests.forEach(q => { mergedQuests[q.id] = q; });
+
+				const mergedHabits = { ...allHabits };
+				updatedHabits.forEach(h => { mergedHabits[h.id] = h; });
+
+				// Save full merged data (archived ones are preserved)
+				await appService.dataService.setQuests(mergedQuests);
+				await appService.dataService.setHabits(mergedHabits);
+
+				setUser(loadedUser as UserSettings);
+				setQuests(updatedQuests);   // only active in state
+				setHabits(updatedHabits);   // only active in state
 			} else {
-				setQuests(Object.values(loadedQuests));
-				setHabits(Object.values(loadedHabits));
+				setQuests(activeQuests);
+				setHabits(activeHabits);
 			}
 		} catch (error) {
 			console.error("Error loading data in SideView:", error);
