@@ -7,7 +7,8 @@ import { Habit, UserSettings } from 'data/DEFAULT';
 import { DateHelper, DateString } from 'helpers/dateHelpers';
 import { SidebarCalendar } from 'components/sidebarCalendar';
 import { ConfirmModal } from './confirmModal';
-import dataService from 'context/services/dataService';
+import { UNLOCK_HABIT_VIEW } from 'data/unlocks';
+import { HabitListModal } from './AllHabitListModal';
 
 export class HabitModal extends Modal {
 	private habit: Habit;
@@ -44,6 +45,10 @@ export class HabitModal extends Modal {
 					allHabits={[]}
 					service={this.service}
 					onClose={() => this.close()}
+					onOpenAllHabits={() => {
+						this.close();
+						new HabitListModal(this.app).open();
+					}}
 					user={this.user}
 					onUserUpdate={this.onUserUpdate}
 				/>
@@ -62,6 +67,7 @@ interface HabitDetailsProps {
 	allHabits: Habit[];
 	service: AppContextService;
 	onClose: () => void;
+	onOpenAllHabits: () => void;
 	user: UserSettings;
 	onUserUpdate: (updatedUser: UserSettings) => void;
 }
@@ -71,7 +77,7 @@ export const HabitDetails: React.FC<HabitDetailsProps> = ({
 	allHabits,
 	service,
 	onClose,
-	user,
+	onOpenAllHabits,
 	onUserUpdate
 }) => {
 	const habitService = service.habitService;
@@ -79,7 +85,7 @@ export const HabitDetails: React.FC<HabitDetailsProps> = ({
 	const [habits, setHabits] = useState<Habit[]>(allHabits);
 
 	const [loading, setLoading] = useState(false);
-	const [archiveOpen, setArchiveOpen] = useState(false);
+
 	const triggerReload = () => {
 		document.dispatchEvent(new CustomEvent("dbUpdated"));
 	};
@@ -99,21 +105,6 @@ export const HabitDetails: React.FC<HabitDetailsProps> = ({
 	// -------------------
 	// ACTIONS
 	// -------------------
-
-	const handleToggleDate = async (date: DateString) => {
-		setLoading(true);
-
-		const updated = await habitService.updateHabitCompletion(
-			habit,
-			!habitService.isCompleted(habit, date),
-			date
-		);
-
-		await habitService.saveHabit(updated);
-		setHabit(updated);
-		setLoading(false);
-	};
-
 	const handleEdit = () => {
 		habitService.handleModify(habit);
 	};
@@ -134,7 +125,6 @@ export const HabitDetails: React.FC<HabitDetailsProps> = ({
 		}).open();
 	};
 
-
 	const handleArchive = () => {
 		new ConfirmModal(service.getApp(), {
 			title: "Archive Habit",
@@ -153,13 +143,14 @@ export const HabitDetails: React.FC<HabitDetailsProps> = ({
 
 	const handleCompleteHabit = (updatedHabit: Habit[]) => {
 		new Notice("Habit updated!");
-		// console.log("Updated habit received in SideView:", updatedHabit);
 		setHabits(updatedHabit);
 	};
 
 	// -------------------
 	// RENDER
 	// -------------------
+	const statsUnlocked = UNLOCK_HABIT_VIEW.stats <= habit.progress.level ? true : false;
+
 	return (
 		<div className="habit-modal-container">
 			{/* TOP SECTION */}
@@ -189,6 +180,9 @@ export const HabitDetails: React.FC<HabitDetailsProps> = ({
 							<button className="habit-archived-btn" onClick={handleArchive}>
 								Archive
 							</button>
+							<button className="habit-all-habits-btn" onClick={onOpenAllHabits}>
+								All Habits
+							</button>
 						</div>
 					</div>
 				</div>
@@ -198,7 +192,7 @@ export const HabitDetails: React.FC<HabitDetailsProps> = ({
 				</div>
 			</div>
 			{/* BOTTOM STATS */}
-			<div className="habit-stats-section">
+			{statsUnlocked && <div className="habit-stats-section">
 				<h3>Stats</h3>
 				{(() => {
 					const last30Days = DateHelper.addInterval(DateHelper.today(), -1, "months");
@@ -312,7 +306,7 @@ export const HabitDetails: React.FC<HabitDetailsProps> = ({
 						</div>
 					);
 				})()}
-			</div>
+			</div>}
 		</div>
 	);
 };

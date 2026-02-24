@@ -14,9 +14,9 @@ export const UNLOCK_HABIT_FORM: Record<string, number> = {
 	category: 1,
 	recurrence: 1,//2,
 	description: 1,
-	priority: 3,
-	difficulty: 3,
-	rewards: 1//3,
+	priority: 1,//3,
+	difficulty: 1, //3,
+	rewards: 1, //3,
 };
 
 export const UNLOCK_VIEW: Record<string, number> = {
@@ -33,4 +33,8 @@ export const UNLOCK_ELEMENT: Record<string, number> = {
 	task: 4,
 	note: 4,
 	guys: 5,
+};
+
+export const UNLOCK_HABIT_VIEW: Record<string, number> = {
+	stats: 0, //1,
 };

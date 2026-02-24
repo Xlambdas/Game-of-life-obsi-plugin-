@@ -147,10 +147,6 @@
           "success": true
         },
         {
-          "date": "2026-01-23",
-          "success": false
-        },
-        {
           "date": "2026-01-24",
           "success": false
         },
@@ -273,9 +269,13 @@
         {
           "date": "2026-02-23",
           "success": true
+        },
+        {
+          "date": "2026-02-24",
+          "success": false
         }
       ],
-      "isCompletedToday": true,
+      "isCompletedToday": false,
       "nextDate": "2026-02-24",
       "lastCompletedDate": "2026-02-23",
       "freeze": {
