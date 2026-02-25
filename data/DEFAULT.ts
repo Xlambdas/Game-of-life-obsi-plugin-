@@ -395,12 +395,56 @@ export const DEFAULT_QUEST: Quest = {
 * Habit Default Settings
 */
 
+export const WEEKDAY_LABELS: { label: string; short: string; value: Weekday }[] = [
+	{ label: 'Sunday', short: 'Su', value: 0 },
+	{ label: 'Monday', short: 'Mo', value: 1 },
+	{ label: 'Tuesday', short: 'Tu', value: 2 },
+	{ label: 'Wednesday', short: 'We', value: 3 },
+	{ label: 'Thursday', short: 'Th', value: 4 },
+	{ label: 'Friday', short: 'Fr', value: 5 },
+	{ label: 'Saturday', short: 'Sa', value: 6 },
+];
+
+export const NTH_LABELS: { label: string; value: 1 | 2 | 3 | 4 | 5 }[] = [
+	{ label: '1st', value: 1 },
+	{ label: '2nd', value: 2 },
+	{ label: '3rd', value: 3 },
+	{ label: '4th', value: 4 },
+	{ label: '5th', value: 5 },
+];
+
+export type Weekday = 0 | 1 | 2 | 3 | 4 | 5 | 6; // 0 = Sunday
+export type Nth = 1 | 2 | 3 | 4 | 5;
+
+
+export type IntervalRecurrence = {
+	type: 'interval';
+	interval: number;
+	unit: 'days' | 'weeks' | 'months' | 'years';
+};
+
+export type WeekdayRecurrence = {
+	type: 'weekday';
+	days: Array<Weekday>;
+	nth?: Array<Nth>;
+};
+
+export type Recurrence =
+	| IntervalRecurrence
+	| WeekdayRecurrence;
+
+export type RecurrenceType = Recurrence['type'];
+
+export const RECURRENCE_TYPES = ['interval', 'weekday'] as const satisfies readonly RecurrenceType[];
+export const DEFAULT_RECURRENCE: IntervalRecurrence = {
+	type: 'interval',
+	interval: 1,
+	unit: 'days',
+};
+
 export interface Habit extends BaseTask {
 	settings: {type: 'habit'} & BaseTask['settings'];
-	recurrence: {
-		interval: number;
-		unit: DefaultRecurrence;
-	};
+	recurrence: Recurrence;
 	streak: {
 		current: number; // auto generated
 		best: number; // auto generated
@@ -456,10 +500,7 @@ export const DEFAULT_HABIT: Habit = {
 		isTimeSensitive: false,
 	},
 	isArchived: false, // Auto generated when the task is archived
-	recurrence: {
-		interval: 1,
-		unit: 'days',
-	},
+	recurrence: { ...DEFAULT_RECURRENCE },
 	streak: {
 		current: 0,
 		best: 0,

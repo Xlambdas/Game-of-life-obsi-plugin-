@@ -166,9 +166,9 @@ export const HabitDetails: React.FC<HabitDetailsProps> = ({
 							<div><strong>Category:</strong> {habit.settings.category}</div>
 							<div><strong>Difficulty:</strong> {habit.settings.difficulty}</div>
 							<div><strong>Priority:</strong> {habit.settings.priority}</div>
-							<div>
+							{/* <div>
 								<strong>Recurrence:</strong> Every {habit.recurrence.interval} {habit.recurrence.unit}
-							</div>
+							</div> */}
 						</div>
 						<div className="habit-action-buttons">
 							<button className="habit-delete-btn" onClick={handleDelete}>
@@ -224,8 +224,8 @@ export const HabitDetails: React.FC<HabitDetailsProps> = ({
 					const milestoneProgress = nextMilestone ? Math.round((habit.streak.current / nextMilestone.target) * 100) : 100;
 					const streakResets = habit.streak.history.filter((h, i, arr) => i > 0 && arr[i - 1].success && !h.success).length;
 					const daysSinceCreation = Math.floor((new Date(DateHelper.today()).getTime() - new Date(habit.created_at).getTime()) / (1000 * 60 * 60 * 24));
-					const expected = Math.floor(daysSinceCreation / habit.recurrence.interval);
-					const reliability = expected > 0 ? Math.round((totalCompletions / expected) * 100) : 0;
+					// const expected = Math.floor(daysSinceCreation / habit.recurrence.interval);
+					// const reliability = expected > 0 ? Math.round((totalCompletions / expected) * 100) : 0;
 
 					return (
 						<div className="habit-stats-content">
@@ -268,7 +268,7 @@ export const HabitDetails: React.FC<HabitDetailsProps> = ({
 
 									<div className="habit-stats-grid">
 										<div><strong>Last 30d Consistency:</strong> {completionRate}%</div>
-										<div><strong>Reliability Index:</strong> {reliability}%</div>
+										{/* <div><strong>Reliability Index:</strong> {reliability}%</div> */}
 										<div><strong>Streak Resets:</strong> {streakResets}</div>
 										<div><strong>Days Active:</strong> {daysSinceCreation}</div>
 									</div>

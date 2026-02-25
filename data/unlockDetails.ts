@@ -1,4 +1,4 @@
-// data/unlockDetails.ts
+import { UNLOCK_HABIT_FORM } from './unlocks';
 
 export interface UnlockDetail {
 	name: string;
@@ -9,7 +9,7 @@ export interface UnlockDetail {
 	icon?: string;
 }
 
-// Quest Form Unlock Details
+// --- Quest Form Unlock Details ---
 export const QUEST_FORM_DETAILS: Record<string, UnlockDetail> = {
 	category: {
 		name: "Quest Categories",
@@ -109,12 +109,12 @@ export const QUEST_FORM_DETAILS: Record<string, UnlockDetail> = {
 	}
 };
 
-// Habit Form Unlock Details
+// --- Habit Form Unlock Details ---
 export const HABIT_FORM_DETAILS: Record<string, UnlockDetail> = {
 	category: {
 		name: "Habit Categories",
 		category: "Habit Form",
-		level: 1,
+		level: UNLOCK_HABIT_FORM.category,
 		description: "Organize habits into categories like health, productivity, or learning to maintain balanced personal development.",
 		benefits: [
 			"Group similar habits together",
@@ -126,7 +126,7 @@ export const HABIT_FORM_DETAILS: Record<string, UnlockDetail> = {
 	recurrence: {
 		name: "Habit Recurrence",
 		category: "Habit Form",
-		level: 1,
+		level: UNLOCK_HABIT_FORM.recurrence,
 		description: "Set how often habits should be performed - daily, weekly, or custom schedules.",
 		benefits: [
 			"Define daily, weekly, or monthly habits",
@@ -138,7 +138,7 @@ export const HABIT_FORM_DETAILS: Record<string, UnlockDetail> = {
 	description: {
 		name: "Habit Descriptions",
 		category: "Habit Form",
-		level: 1,
+		level: UNLOCK_HABIT_FORM.description,
 		description: "Add detailed notes about why this habit matters and how to perform it effectively.",
 		benefits: [
 			"Document habit purpose and motivation",
@@ -150,7 +150,7 @@ export const HABIT_FORM_DETAILS: Record<string, UnlockDetail> = {
 	priority: {
 		name: "Habit Priority",
 		category: "Habit Form",
-		level: 3,
+		level: UNLOCK_HABIT_FORM.priority,
 		description: "Prioritize habits to focus your energy on the most impactful behaviors first.",
 		benefits: [
 			"Rank habits by importance",
@@ -162,7 +162,7 @@ export const HABIT_FORM_DETAILS: Record<string, UnlockDetail> = {
 	difficulty: {
 		name: "Habit Difficulty",
 		category: "Habit Form",
-		level: 3,
+		level: UNLOCK_HABIT_FORM.difficulty,
 		description: "Rate how challenging each habit is to maintain for better self-awareness and planning.",
 		benefits: [
 			"Assess habit difficulty honestly",
@@ -174,7 +174,7 @@ export const HABIT_FORM_DETAILS: Record<string, UnlockDetail> = {
 	rewards: {
 		name: "Habit Rewards",
 		category: "Habit Form",
-		level: 3,
+		level: UNLOCK_HABIT_FORM.rewards,
 		description: "Define XP and attribute rewards earned from consistently maintaining your habits.",
 		benefits: [
 			"Earn XP for completing habits",
@@ -182,10 +182,22 @@ export const HABIT_FORM_DETAILS: Record<string, UnlockDetail> = {
 			"Customize reward amounts"
 		],
 		icon: "🎁"
+	},
+	recurrenceWeekdays: {
+		name: "Weekday Recurrence",
+		category: "Habit Form",
+		level: UNLOCK_HABIT_FORM.recurrenceWeekdays,
+		description: "Specify which days of the week a habit should be performed for more flexible scheduling.",
+		benefits: [
+			"Choose specific weekdays for habit performance",
+			"Create non-daily habits easily",
+			"Track weekday-specific streaks"
+		],
+		icon: "📅"
 	}
 };
 
-// View Unlock Details
+// --- View Unlock Details ---
 export const VIEW_DETAILS: Record<string, UnlockDetail> = {
 	side: {
 		name: "Side Panel View",
@@ -238,7 +250,7 @@ export const VIEW_DETAILS: Record<string, UnlockDetail> = {
 	}
 };
 
-// Element Unlock Details
+// --- Element Unlock Details ---
 export const ELEMENT_DETAILS: Record<string, UnlockDetail> = {
 	habit: {
 		name: "Habits",

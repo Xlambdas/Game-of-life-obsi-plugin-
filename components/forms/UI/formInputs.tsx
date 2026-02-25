@@ -1,5 +1,17 @@
 // from file (Default):
-import { DEFAULT_CATEGORIES, DEFAULT_DIFFICULTIES, DEFAULT_PRIORITIES, DEFAULT_RECURRENCES, DefaultRecurrence } from "data/DEFAULT";
+import {
+	DEFAULT_CATEGORIES,
+	DEFAULT_DIFFICULTIES,
+	DEFAULT_PRIORITIES,
+	DEFAULT_RECURRENCES,
+	RECURRENCE_TYPES,
+	DefaultRecurrence,
+	RecurrenceType,
+	Weekday,
+	Nth,
+	WEEKDAY_LABELS,
+	NTH_LABELS
+} from "data/DEFAULT";
 // from file (UI, components):
 import { RewardAttributeInput, AttributeReward } from "./rewardAttributeInput";
 import { RequirementsLevelInput, RequirementsQuestInput } from "./requirementInput";
@@ -307,56 +319,201 @@ export const ProgressConditionInput = ({
 };
 
 export const RecurrenceInput = ({
+	isUnlocked,
+	recurrenceType, setRecurrenceType,
 	interval, setInterval,
 	unit, setUnit,
-	error, setError
+	weekdays, setWeekdays,
+	nthWeekday, setNthWeekday,
+	error, setError,
 }: {
+	isUnlocked: boolean;
+	recurrenceType: RecurrenceType;
+	setRecurrenceType: (type: RecurrenceType) => void;
 	interval: number;
 	setInterval: (interval: number) => void;
 	unit: string;
-	setUnit: (unit: string) => void;
-	error: {[key: string]: string};
-	setError: (error: {[key: string]: string}) => void;
+	setUnit: (unit: DefaultRecurrence) => void;
+	weekdays: Weekday[];
+	setWeekdays: (days: Weekday[]) => void;
+	nthWeekday: Nth[] | undefined;
+	setNthWeekday: (nth: Nth[] | undefined) => void;
+	error: Record<string, string>;
+	setError: (error: Record<string, string>) => void;
 }) => {
-	return (
-		<div className="form-section">
-			<hr className='separator'></hr>
-			<h3>Recurrence</h3>
-			<label className="label-select">
-				<span>Interval</span>
-				<input
-					type="number"
-					name="recurrence"
-					placeholder="1, 2, 3..."
-					className="input"
-					value={interval}
-					onChange={(e) => {
-						setInterval(Number(e.target.value))
-						if (error.interval) {
-							setError({ ...error, interval: "" });
-						}
-					}}
-					min={1}
-				/>
-			</label>
-			<label className="label-select">
-				<span>Unit</span>
-				<select
-					name="recurrenceUnit"
-					className="input"
-					value={unit}
-					onChange={e => setUnit(e.target.value as DefaultRecurrence)}
-				>
-					{DEFAULT_RECURRENCES.map(rec => (
-						<option key={rec} value={rec}>
-							{rec.charAt(0).toUpperCase() + rec.slice(1)}
-						</option>
-					))}
-				</select>
-			</label>
-			<p className="helper-text">
-				Set how often you want to perform this habit. Consistency is key to building lasting habits!
-			</p>
-		</div>
-	)
+
+	// --- handlers ---
+
+	const handleTypeChange = (type: RecurrenceType) => {
+		setRecurrenceType(type);
+		const { interval: _, weekdays: __, ...rest } = error;
+		setError(rest);
+	};
+
+	const toggleWeekday = (day: Weekday) => {
+		const next = weekdays.includes(day)
+			? weekdays.filter(d => d !== day)
+			: [...weekdays, day].sort((a, b) => a - b);
+		setWeekdays(next);
+		if (error.weekdays) setError({ ...error, weekdays: '' });
+	};
+
+	const handleNthChange = (value: string) => {
+		setNthWeekday(value === 'every' ? undefined : [Number(value) as Nth]);
+	};
+
+	if (!isUnlocked) {
+		return (
+			<div className="form-section">
+				<hr className="separator" />
+				<h3>Recurrence</h3>
+				<label className="label-select">
+					<span>Every</span>
+					<input
+						type="number"
+						name="recurrence"
+						placeholder="1, 2, 3..."
+						className={`input ${error.interval ? 'input-error' : ''}`}
+						value={interval}
+						onChange={e => {
+							setInterval(Number(e.target.value));
+							if (error.interval) setError({ ...error, interval: '' });
+						}}
+						min={1}
+					/>
+				</label>
+				<label className="label-select">
+					<span>Unit</span>
+					<select
+						name="recurrenceUnit"
+						className="input"
+						value={unit}
+						onChange={e => setUnit(e.target.value as DefaultRecurrence)}
+					>
+						{DEFAULT_RECURRENCES.map(rec => (
+							<option key={rec} value={rec}>
+								{rec.charAt(0).toUpperCase() + rec.slice(1)}
+							</option>
+						))}
+					</select>
+				</label>
+				{error.interval && <p className="error-text">{error.interval}</p>}
+				<p className="helper-text">Consistency is key!</p>
+			</div>
+		);
+	} else {
+		return (
+			<div className="form-section">
+				<hr className="separator" />
+				<h3>Recurrence</h3>
+
+				{/* ── Type selector ── */}
+				<label className="label-select">
+					<span>Type</span>
+					<div className="segmented-control">
+						{RECURRENCE_TYPES.map(type => (
+							<button
+								key={type}
+								type="button"
+								className={`segment ${recurrenceType === type ? 'active' : ''}`}
+								onClick={() => handleTypeChange(type)}
+							>
+								{type === 'interval' ? 'Interval' : 'Weekdays'}
+							</button>
+						))}
+					</div>
+				</label>
+
+				{/* ── Interval mode ── */}
+				{recurrenceType === 'interval' && (
+					<>
+						<label className="label-select">
+							<span>Every</span>
+							<input
+								type="number"
+								name="recurrence"
+								placeholder="1, 2, 3..."
+								className={`input ${error.interval ? 'input-error' : ''}`}
+								value={interval}
+								onChange={e => {
+									setInterval(Number(e.target.value));
+									if (error.interval) setError({ ...error, interval: '' });
+								}}
+								min={1}
+							/>
+						</label>
+						<label className="label-select">
+							<span>Unit</span>
+							<select
+								name="recurrenceUnit"
+								className="input"
+								value={unit}
+								onChange={e => setUnit(e.target.value as DefaultRecurrence)}
+							>
+								{DEFAULT_RECURRENCES.map(rec => (
+									<option key={rec} value={rec}>
+										{rec.charAt(0).toUpperCase() + rec.slice(1)}
+									</option>
+								))}
+							</select>
+						</label>
+						{error.interval && <p className="error-text">{error.interval}</p>}
+						<p className="helper-text">
+							Set how often you want to perform this habit. Consistency is key!
+						</p>
+					</>
+				)}
+
+				{/* ── Weekday mode ── */}
+				{recurrenceType === 'weekday' && (
+					<>
+						<label className="label-select">
+							<span>Days</span>
+							<div className="weekday-picker">
+								{WEEKDAY_LABELS.map(({ short, label, value }) => (
+									<button
+										key={value}
+										type="button"
+										title={label}
+										className={`weekday-btn ${weekdays.includes(value) ? 'active' : ''}`}
+										onClick={() => toggleWeekday(value)}
+									>
+										{short}
+									</button>
+								))}
+							</div>
+						</label>
+						{error.weekdays && <p className="error-text">{error.weekdays}</p>}
+
+						{weekdays.length > 0 && (
+							<label className="label-select">
+								<span>Occurrence</span>
+								<select
+									className="input"
+									value={nthWeekday !== undefined ? String(nthWeekday) : 'every'}
+									onChange={e => handleNthChange(e.target.value)}
+								>
+									<option value="every">Every week</option>
+									{NTH_LABELS.map(({ label, value }) => (
+										<option key={value} value={value}>
+											{label} of the month
+										</option>
+									))}
+								</select>
+							</label>
+						)}
+
+						<p className="helper-text">
+							{weekdays.length === 0
+								? 'Select at least one day to continue.'
+								: nthWeekday !== undefined
+									? `Every ${NTH_LABELS.find(n => n.value === nthWeekday[0])?.label} ${weekdays.map(d => WEEKDAY_LABELS.find(w => w.value === d)?.label).join(', ')} of the month.`
+									: `Every ${weekdays.map(d => WEEKDAY_LABELS.find(w => w.value === d)?.label).join(', ')}.`
+							}
+						</p>
+					</>
+				)}
+			</div>
+		);
+	}
 };

@@ -150,8 +150,6 @@ interface HabitCardProps {
 const HabitCard: React.FC<HabitCardProps> = ({ habit, onClick, dimmed = false }) => {
 	const totalCompletions = habit.streak.history.filter(h => h.success).length;
 
-	const isArchived = habit.isArchived;
-
 	return (
 		<div
 			className={`habit-card ${dimmed ? 'habit-card--archived' : ''}`}
