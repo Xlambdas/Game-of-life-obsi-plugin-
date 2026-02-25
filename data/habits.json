@@ -265,7 +265,7 @@
         },
         {
           "date": "2026-02-23",
-          "success": 100
+          "success": 50
         },
         {
           "date": "2026-02-24",
@@ -388,7 +388,8 @@
             ]
           }
         }
-      ]
+      ],
+      "goalUnit": "pages"
     },
     "penalty": {
       "XPLoss": 0,
@@ -539,6 +540,317 @@
       "level": 0,
       "XP": 0,
       "goal": 2000,
+      "currentValue": 0,
+      "milestones": [
+        {
+          "target": 7,
+          "reward": {
+            "items": [
+              "Milestones Badge"
+            ]
+          }
+        }
+      ]
+    },
+    "penalty": {
+      "XPLoss": 0,
+      "breackStreak": false
+    },
+    "reward": {
+      "XP": 0,
+      "attributes": {
+        "strength": 0,
+        "agility": 0,
+        "endurance": 1,
+        "charisma": 0,
+        "wisdom": 0,
+        "perception": 0,
+        "intelligence": 0,
+        "willpower": 0,
+        "spirit": 0,
+        "flow": 0,
+        "reputation": 0,
+        "resilience": 0
+      },
+      "items": []
+    },
+    "isSystemHabit": false
+  },
+  "habit_2l9e55j": {
+    "id": "habit_2l9e55j",
+    "title": "test",
+    "shortDescription": "teststez",
+    "description": "",
+    "created_at": "2026-02-25",
+    "settings": {
+      "type": "habit",
+      "category": "undefined",
+      "priority": "low",
+      "difficulty": "easy",
+      "isSecret": false,
+      "isTimeSensitive": false
+    },
+    "isArchived": true,
+    "recurrence": {
+      "type": "interval",
+      "interval": 1,
+      "unit": "days"
+    },
+    "streak": {
+      "current": 0,
+      "best": 0,
+      "history": [
+        {
+          "date": "2026-02-25",
+          "success": 0
+        }
+      ],
+      "isCompletedToday": false,
+      "nextDate": "2026-02-25",
+      "lastCompletedDate": "1970-01-01",
+      "freeze": {
+        "available": 1,
+        "history": []
+      }
+    },
+    "progress": {
+      "level": 0,
+      "XP": 0,
+      "goal": 0,
+      "currentValue": 0,
+      "milestones": [
+        {
+          "target": 7,
+          "reward": {
+            "items": [
+              "Milestones Badge"
+            ]
+          }
+        }
+      ]
+    },
+    "penalty": {
+      "XPLoss": 0,
+      "breackStreak": false
+    },
+    "reward": {
+      "XP": 0,
+      "attributes": {
+        "strength": 0,
+        "agility": 0,
+        "endurance": 1,
+        "charisma": 0,
+        "wisdom": 0,
+        "perception": 0,
+        "intelligence": 0,
+        "willpower": 0,
+        "spirit": 0,
+        "flow": 0,
+        "reputation": 0,
+        "resilience": 0
+      },
+      "items": []
+    },
+    "isSystemHabit": false
+  },
+  "habit_cmmn62q": {
+    "id": "habit_cmmn62q",
+    "title": "yyesyhdvbe",
+    "shortDescription": "esfvrer",
+    "description": "",
+    "created_at": "2026-02-25",
+    "settings": {
+      "type": "habit",
+      "category": "undefined",
+      "priority": "low",
+      "difficulty": "easy",
+      "isSecret": false,
+      "isTimeSensitive": false
+    },
+    "isArchived": false,
+    "recurrence": {
+      "type": "interval",
+      "interval": 1,
+      "unit": "days"
+    },
+    "streak": {
+      "current": 1,
+      "best": 1,
+      "history": [
+        {
+          "date": "2026-02-25",
+          "success": 100
+        }
+      ],
+      "isCompletedToday": true,
+      "nextDate": "2026-02-26",
+      "lastCompletedDate": "2026-02-25",
+      "freeze": {
+        "available": 1,
+        "history": []
+      }
+    },
+    "progress": {
+      "level": 0,
+      "XP": 0,
+      "goalUnit": "minutes",
+      "goal": 1,
+      "currentValue": 0,
+      "milestones": [
+        {
+          "target": 7,
+          "reward": {
+            "items": [
+              "Milestones Badge"
+            ]
+          }
+        }
+      ]
+    },
+    "penalty": {
+      "XPLoss": 0,
+      "breackStreak": false
+    },
+    "reward": {
+      "XP": 0,
+      "attributes": {
+        "strength": 0,
+        "agility": 0,
+        "endurance": 1,
+        "charisma": 0,
+        "wisdom": 0,
+        "perception": 0,
+        "intelligence": 0,
+        "willpower": 0,
+        "spirit": 0,
+        "flow": 0,
+        "reputation": 0,
+        "resilience": 0
+      },
+      "items": []
+    },
+    "isSystemHabit": false
+  },
+  "habit_hbmmdra": {
+    "id": "habit_hbmmdra",
+    "title": "drftgy",
+    "shortDescription": "sdf",
+    "description": "",
+    "created_at": "2026-02-25",
+    "settings": {
+      "type": "habit",
+      "category": "undefined",
+      "priority": "low",
+      "difficulty": "easy",
+      "isSecret": false,
+      "isTimeSensitive": false
+    },
+    "isArchived": false,
+    "recurrence": {
+      "type": "interval",
+      "interval": 1,
+      "unit": "days"
+    },
+    "streak": {
+      "current": 1,
+      "best": 1,
+      "history": [
+        {
+          "date": "2026-02-25",
+          "success": 100
+        }
+      ],
+      "isCompletedToday": true,
+      "nextDate": "2026-02-26",
+      "lastCompletedDate": "2026-02-25",
+      "freeze": {
+        "available": 1,
+        "history": []
+      }
+    },
+    "progress": {
+      "level": 0,
+      "XP": 0,
+      "goalUnit": "minutes",
+      "goal": 1,
+      "currentValue": 0,
+      "milestones": [
+        {
+          "target": 7,
+          "reward": {
+            "items": [
+              "Milestones Badge"
+            ]
+          }
+        }
+      ]
+    },
+    "penalty": {
+      "XPLoss": 0,
+      "breackStreak": false
+    },
+    "reward": {
+      "XP": 0,
+      "attributes": {
+        "strength": 0,
+        "agility": 0,
+        "endurance": 1,
+        "charisma": 0,
+        "wisdom": 0,
+        "perception": 0,
+        "intelligence": 0,
+        "willpower": 0,
+        "spirit": 0,
+        "flow": 0,
+        "reputation": 0,
+        "resilience": 0
+      },
+      "items": []
+    },
+    "isSystemHabit": false
+  },
+  "habit_jz1qiao": {
+    "id": "habit_jz1qiao",
+    "title": "red",
+    "shortDescription": "tr",
+    "description": "",
+    "created_at": "2026-02-25",
+    "settings": {
+      "type": "habit",
+      "category": "undefined",
+      "priority": "low",
+      "difficulty": "easy",
+      "isSecret": false,
+      "isTimeSensitive": false
+    },
+    "isArchived": false,
+    "recurrence": {
+      "type": "interval",
+      "interval": 1,
+      "unit": "days"
+    },
+    "streak": {
+      "current": 1,
+      "best": 1,
+      "history": [
+        {
+          "date": "2026-02-25",
+          "success": 100
+        }
+      ],
+      "isCompletedToday": true,
+      "nextDate": "2026-02-26",
+      "lastCompletedDate": "2026-02-25",
+      "freeze": {
+        "available": 1,
+        "history": []
+      }
+    },
+    "progress": {
+      "level": 0,
+      "XP": 0,
+      "goalUnit": "minutes",
+      "goal": 1,
       "currentValue": 0,
       "milestones": [
         {

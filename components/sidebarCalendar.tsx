@@ -1,6 +1,4 @@
-import React, { use, useCallback, useEffect, useState } from 'react';
-import { AppContextService } from 'context/appContextService';
-import { App, Modal, Notice } from 'obsidian';
+import React, { useEffect, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 // From file (Default, Helpers):
 import { Habit, UserSettings } from 'data/DEFAULT';
@@ -143,6 +141,11 @@ export const SidebarCalendar: React.FC<SidebarCalendarProps> = ({
 			const partiallyCompleted =
 				completedCount > 0 && completedCount < totalCount;
 
+			let percent = 0;
+			if (habitsForDay.length === 1) {
+				percent = habitService.getCompletionPercentage(habitsForDay[0], dateStr);
+			}
+
 			return (
 				<button
 					key={index}
@@ -159,6 +162,7 @@ export const SidebarCalendar: React.FC<SidebarCalendarProps> = ({
 						${isFutureOrPast ? "future" : ""}
 						${allCompleted ? "all-completed" : ""}
 						${partiallyCompleted ? "partial-completed" : ""}
+						${percent > 0 && percent < 100 ? "partial-completed" : ""}
 					`}
 					title={
 						habitsForDay.length > 0

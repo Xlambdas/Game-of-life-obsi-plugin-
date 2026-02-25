@@ -16,6 +16,7 @@ import {
 	DIFFICULTY_RULES,
 	Nth,
 	DEFAULT_RECURRENCE,
+	DEFAULT_GOAL_UNITS,
 } from "../../data/DEFAULT";
 import { AttributeBlock, DEFAULT_ATTRIBUTES } from "data/attributeDetails";
 // from file (UI, components):
@@ -35,6 +36,8 @@ type ValidateAndBuildParams = {
 	priority: string;
 	difficulty: string;
 	attributeRewards: AttributeBlock;
+	goal: number;
+	goalUnit: typeof DEFAULT_GOAL_UNITS[number] | string | undefined;
 	appContext: ReturnType<typeof useAppContext>;
 };
 
@@ -91,6 +94,7 @@ export async function validateAndBuildHabit({
 	weekdays, nth,
 	category, priority, difficulty,
 	attributeRewards,
+	goal, goalUnit,
 	appContext,
 }: ValidateAndBuildParams): Promise<{ habit: Habit | null; errors: Record<string, string> }> {
 
@@ -134,6 +138,21 @@ export async function validateAndBuildHabit({
 		}
 	}
 
+	// --- Goal validation ---
+	if (goal < 0) {
+		errors.goal = 'Goal must be a non-negative number.';
+	}
+	if (goal > 0 && !goalUnit) {
+		errors.goalUnit = 'Please select a goal unit.';
+	}
+	if (goal === 0 && goalUnit) {
+		errors.goalUnit = 'Please enter a goal value greater than 0 to use the goal unit.';
+	}
+	if (goalUnit === 'undefined' || goalUnit === undefined) {
+		goal = 0;
+		goalUnit = undefined;
+	}
+
 	// --- If errors, return early with error object ---
 	if (Object.keys(errors).length > 0) {
 		new Notice('Please fix the errors in the form.');
@@ -161,14 +180,19 @@ export async function validateAndBuildHabit({
 			...(existingHabit?.streak ?? DEFAULT_HABIT.streak),
 			freeze: existingHabit?.streak?.freeze ?? { available: defaultFreeze, history: [] },
 		},
+		progress: {
+			...(existingHabit?.progress ?? DEFAULT_HABIT.progress),
+			goal,
+			goalUnit,
+		},
 		reward: {
 			...(existingHabit?.reward ?? DEFAULT_HABIT.reward),
 			attributes: updatedAttributes,
 		},
 	};
-
 	return { habit: newHabit, errors: {} };
 }
+
 
 export const updateAttributesByCategory = (category: string, attributes: AttributeBlock): AttributeBlock => {
 	const updatedAttributes: AttributeBlock = { ...DEFAULT_ATTRIBUTES, ...attributes };

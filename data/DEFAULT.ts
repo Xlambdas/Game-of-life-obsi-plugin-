@@ -5,13 +5,14 @@ import { AttributeBlock, DEFAULT_ATTRIBUTES } from "./attributeDetails";
 
 // calculate difficulty multipliers for XP gain, streaks and milestones
 export const DIFFICULTY_RULES = {
-	easy: { factor: 1.0, rewardMultiplier: 1.0, freeze: Infinity },
-	normal: { factor: 1.1, rewardMultiplier: 1.0, freeze: 4 },
-	medium: { factor: 1.2, rewardMultiplier: 1.3, freeze: 3 },
-	hard: { factor: 1.5, rewardMultiplier: 1.6, freeze: 1 },
-	expert: { factor: 2.0, rewardMultiplier: 2.0, freeze: 0 }
+	easy: { factor: 1.0, rewardMultiplier: 1.0, freeze: Infinity, validationThreshold: 0 },
+	normal: { factor: 1.1, rewardMultiplier: 1.0, freeze: 4, validationThreshold: 50 },
+	medium: { factor: 1.2, rewardMultiplier: 1.3, freeze: 3, validationThreshold: 75 },
+	hard: { factor: 1.5, rewardMultiplier: 1.6, freeze: 1, validationThreshold: 90 },
+	expert: { factor: 2.0, rewardMultiplier: 2.0, freeze: 0, validationThreshold: 100 },
 };
 
+// Based on the habit difficulty
 export const MILESTONE_CURVES = {
 	easy: [7, 14, 30, 60, 120, 240, 365],
 	normal: [7, 21, 50, 100, 180, 300],
@@ -237,6 +238,8 @@ export type DefaultDifficulty = typeof DEFAULT_DIFFICULTIES[number];
 
 export const DEFAULT_RECURRENCES = ['days', 'weeks', 'months', 'years'] as const;
 export type DefaultRecurrence = typeof DEFAULT_RECURRENCES[number];
+
+export const DEFAULT_GOAL_UNITS = ['ml', 'pages', 'minutes', 'km', 'steps', 'hours'] as const;
 
 
 export type TaskType = 'quest' | 'habit'; // | 'skill' | 'goal'; //todo : add skills/goals/...
@@ -467,6 +470,7 @@ export interface Habit extends BaseTask {
 	progress: {
 		level: number; // habit level progression
 		XP: number; // not really usefull ?
+		goalUnit: typeof DEFAULT_GOAL_UNITS[number] | string | undefined; // unit for the goal
 		goal: number; // e.g. ml of water
 		currentValue: number; // track current amount vs goal
 		milestones: {
@@ -520,7 +524,8 @@ export const DEFAULT_HABIT: Habit = {
 	progress: {
 		level: 0, // habit level progression
 		XP: 0,
-		goal: 2000, // e.g. ml of water
+		goalUnit: undefined, // unit for the goal
+		goal: 0, // e.g. ml of water
 		currentValue: 0, // track current amount vs goal
 		milestones: [
 			{ target: 7, reward: { items: ["Milestones Badge"] } }, // 7 days streak

@@ -290,8 +290,15 @@ export default class HabitService {
 
 	isCompleted(habit: Habit, date: DateString): boolean {
 		return habit.streak.history.some(
-			h => DateHelper.toDateString(h.date) === date && h.success
+			h => DateHelper.toDateString(h.date) === date && h.success === 100
 		);
+	}
+
+	getCompletionPercentage(habit: Habit, date: DateString): number {
+		const entry = habit.streak.history.find(
+			h => DateHelper.toDateString(h.date) === date
+		);
+		return entry ? Number(entry.success) : 0;
 	}
 
 	// --- updateHabitCompletion ---

@@ -10,7 +10,8 @@ import {
 	Weekday,
 	Nth,
 	WEEKDAY_LABELS,
-	NTH_LABELS
+	NTH_LABELS,
+	DEFAULT_GOAL_UNITS
 } from "data/DEFAULT";
 // from file (UI, components):
 import { RewardAttributeInput, AttributeReward } from "./rewardAttributeInput";
@@ -516,4 +517,75 @@ export const RecurrenceInput = ({
 			</div>
 		);
 	}
+};
+
+
+export const GoalInput = ({
+	goal, setGoal,
+	goalUnit, setGoalUnit,
+	error, setError
+}: {
+	goal: number;
+	setGoal: (goal: number) => void;
+	goalUnit: string | undefined;
+	setGoalUnit: (unit: string | undefined) => void;
+	error: {[key: string]: string};
+	setError: (error: {[key: string]: string}) => void;
+}) => {
+	return (
+		<div>
+			<label className="label-select">
+				<span>Goal</span>
+				<input
+					type="number"
+					name="goal"
+					placeholder="e.g. 2000"
+					className={error.goal ? 'input-error' : 'input'}
+					value={goal === 0 ? '' : goal}
+					onChange={e => {
+						setGoal(Number(e.target.value));
+						if (error.goal) {
+							setError({ ...error, goal: '' });
+						}
+					}}
+				/>
+			</label>
+			<label className="label-select">
+				<span>Unit</span>
+				<select
+					name="goalUnit"
+					className={`input ${error.goalUnit ? 'input-error' : 'input'}`}
+					value={goalUnit || 'undefined'}
+					onChange={e => {
+						const value = e.target.value === 'undefined' ? undefined : e.target.value;
+						setGoalUnit(value);
+						if (error.goalUnit) setError({ ...error, goalUnit: '' });
+					}}
+				>
+					<option value="undefined">Select or define unit...</option>
+					{DEFAULT_GOAL_UNITS.map(unit => (
+						<option key={unit} value={unit}>{unit}</option>
+					))}
+					<option value="custom">+ Add custom unit</option>
+				</select>
+			</label>
+			{goalUnit === 'custom' && (
+				<label className="label-select">
+					<input
+						type="text"
+						name="customGoalUnit"
+						placeholder="e.g. pages, reps, laps..."
+						className={error.goalUnit ? 'input-error' : 'inputs'}
+						onChange={e => {
+							setGoalUnit(e.target.value || undefined);
+							// if (error.goalUnit) setError({ ...error, goalUnit: '' });
+						}}
+					/>
+				</label>
+			)}
+			<p className="helper-text">
+				Define a clear goal and unit to track your progress effectively. It adds purpose and motivation to your habit!
+			</p>
+		</div>
+	)
 };

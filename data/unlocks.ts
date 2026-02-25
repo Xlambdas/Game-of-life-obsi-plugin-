@@ -18,6 +18,7 @@ export const UNLOCK_HABIT_FORM: Record<string, number> = {
 	difficulty: 1, //3,
 	rewards: 1, //3,
 	recurrenceWeekdays: 1, // 3,
+	goal: 1, //3
 };
 
 export const UNLOCK_VIEW: Record<string, number> = {

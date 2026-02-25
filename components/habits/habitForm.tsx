@@ -24,7 +24,8 @@ import {
 	TitleInput,
 	ShortDescription_CategoryInput, SupplementaryInput,
 	RewardsInput,
-	RecurrenceInput
+	RecurrenceInput,
+	GoalInput
 } from 'components/forms/UI/formInputs';
 
 
@@ -48,13 +49,14 @@ export const HabitFormUI = ({
 	const [weekdays, setWeekdays] = useState<Array<Weekday>>(resolveWeekdays(existingHabit));
 	const [nth, setNth] = useState<Nth[] | undefined>(resolveNth(existingHabit));
 
-
 	const [showAdvanced, setShowAdvanced] = useState(false);
 	const [description, setDescription] = useState(existingHabit?.description ?? '');
 	const [category, setCategory] = useState(existingHabit?.settings.category ?? '');
 	const [priority, setPriority] = useState(existingHabit?.settings.priority ?? '');
 	const [difficulty, setDifficulty] = useState(existingHabit?.settings.difficulty ?? '');
 	const [attributeRewards, setAttributeRewards] = useState(existingHabit?.reward.attributes || DEFAULT_HABIT.reward.attributes);
+	const [goal, setGoal] = useState(existingHabit?.progress.goal ?? 0);
+	const [goalUnit, setGoalUnit] = useState(existingHabit?.progress.goalUnit ?? undefined);
 
 	const [error, setError] = useState<Record<string, string>>({});
 
@@ -72,6 +74,7 @@ export const HabitFormUI = ({
 			weekdays, nth,
 			category, priority, difficulty,
 			attributeRewards,
+			goal, goalUnit,
 			appContext,
 		});
 		if (habit) onSuccess(habit);
@@ -158,6 +161,16 @@ export const HabitFormUI = ({
 							setError={setError}
 						/>
 					)} */}
+					{isUnlocked("goal") && (
+						<GoalInput
+							goal={goal}
+							setGoal={setGoal}
+							goalUnit={goalUnit}
+							setGoalUnit={setGoalUnit}
+							error={error}
+							setError={setError}
+						/>
+					)}
 				</div>
 			)}
 
