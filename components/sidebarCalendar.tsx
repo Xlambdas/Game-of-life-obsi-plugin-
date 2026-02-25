@@ -42,8 +42,13 @@ export const SidebarCalendar: React.FC<SidebarCalendarProps> = ({
 	}[]>([]);
 
 	useEffect(() => {
-		const newHabits = normalizeHabitsInput(habits, habit);
-		setHabitState(newHabits);
+		// If single habit mode, only update state for that habit
+		// If array mode, update with the full array
+		if (habit && !habits) {
+			setHabitState([habit]);
+		} else {
+			setHabitState(normalizeHabitsInput(habits, habit));
+		}
 	}, [habits, habit]);
 
 	useEffect(() => {
@@ -59,7 +64,15 @@ export const SidebarCalendar: React.FC<SidebarCalendarProps> = ({
 			refreshed.forEach(h => { merged[h.id] = h; });
 
 			await appService.dataService.setHabits(merged);
-			setHabitState(refreshed);
+
+			// If called with a single habit, only show that one
+			// If called with habits[], show all active habits
+			if (habit && !habits) {
+				const refreshedSingle = refreshed.find(h => h.id === habit.id);
+				if (refreshedSingle) setHabitState([refreshedSingle]);
+			} else {
+				setHabitState(refreshed);
+			}
 		};
 		refreshAllHabits();
 	}, []);
@@ -165,8 +178,10 @@ export const SidebarCalendar: React.FC<SidebarCalendarProps> = ({
 		setSelectedDate(newDate);
 		// console.log("newdate:", newDate);
 		const result = await habitService.pairDateHabit(newDate);
-		setDateHabit(result);
-		// console.log("result:", result);
+		const filteredResult = result.filter(r =>
+			habitState.some(h => h.id === r.habitID)
+		);
+		setDateHabit(filteredResult);
 
 		const modalToggleHabitCompletion = async (habitId: string, dateStr: DateString) => {
 			// update on a deeper level to avoid stale state issues
@@ -191,7 +206,7 @@ export const SidebarCalendar: React.FC<SidebarCalendarProps> = ({
 			);
 
 		};
-		new HabitListDateModal(appService.getApp(), appService, newDate, result, modalToggleHabitCompletion).open();
+		new HabitListDateModal(appService.getApp(), appService, newDate, filteredResult, modalToggleHabitCompletion).open();
 	};
 
 	return (

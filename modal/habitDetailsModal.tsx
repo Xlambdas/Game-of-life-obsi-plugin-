@@ -166,9 +166,15 @@ export const HabitDetails: React.FC<HabitDetailsProps> = ({
 							<div><strong>Category:</strong> {habit.settings.category}</div>
 							<div><strong>Difficulty:</strong> {habit.settings.difficulty}</div>
 							<div><strong>Priority:</strong> {habit.settings.priority}</div>
-							{/* <div>
-								<strong>Recurrence:</strong> Every {habit.recurrence.interval} {habit.recurrence.unit}
-							</div> */}
+							<div>
+								<strong>Recurrence:</strong>{' '}
+								{habit.recurrence.type === 'interval'
+									? `Every ${habit.recurrence.interval} ${habit.recurrence.unit}`
+									: habit.recurrence.nth !== undefined
+										? `${['1st', '2nd', '3rd', '4th', '5th'][typeof habit.recurrence.nth === 'number' ? habit.recurrence.nth - 1 : 0]} ${habit.recurrence.days.map(d => ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][d]).join(', ')} of the month`
+										: `Every ${habit.recurrence.days.map(d => ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][d]).join(', ')}`
+								}
+							</div>
 						</div>
 						<div className="habit-action-buttons">
 							<button className="habit-delete-btn" onClick={handleDelete}>
@@ -197,10 +203,10 @@ export const HabitDetails: React.FC<HabitDetailsProps> = ({
 				{(() => {
 					const last30Days = DateHelper.addInterval(DateHelper.today(), -1, "months");
 					const recentHistory = habit.streak.history.filter(h => h.date >= last30Days);
-					const completedRecent = recentHistory.filter(h => h.success).length;
+					const completedRecent = recentHistory.filter(h => h.success === 100).length;
 					const totalRecent = recentHistory.length;
 					const completionRate = totalRecent > 0 ? Math.round((completedRecent / totalRecent) * 100) : 0;
-					const totalCompletions = habit.streak.history.filter(h => h.success).length;
+					const totalCompletions = habit.streak.history.filter(h => h.success === 100).length;
 					const freezeAvailable = habit.streak.freeze?.available ?? 0;
 					const freezeUsed = habit.streak.freeze?.history?.length ?? 0;
 					const createdDate = new Date(habit.created_at);
@@ -209,7 +215,7 @@ export const HabitDetails: React.FC<HabitDetailsProps> = ({
 					const freezePenalty = (habit.streak.freeze.history?.length || 0) * 0.05;
 					const disciplineScore = (habit.streak.current * 0.4) + (completionRate * 0.6) - (freezePenalty * 100);
 					const normalizedDiscipline = Math.max(0, Math.round(disciplineScore));
-					const momentum = habit.streak.history.filter(h => h.success).reduce((score, entry) => {
+					const momentum = habit.streak.history.filter(h => h.success === 100).reduce((score, entry) => {
 						const daysAgo = Math.floor((new Date(today).getTime() - new Date(entry.date).getTime()) / (1000 * 60 * 60 * 24));
 						if (daysAgo <= 3) return score + 3;
 						if (daysAgo <= 7) return score + 2;
@@ -218,11 +224,11 @@ export const HabitDetails: React.FC<HabitDetailsProps> = ({
 					}, 0);
 					const attributeImpact = Object.entries(habit.reward.attributes).filter(([_, v]) => v > 0).map(([key, value]) => ({
 						name: key,
-						total: habit.streak.history.filter(h => h.success).length * value
+						total: habit.streak.history.filter(h => h.success === 100).length * value
 					}));
 					const nextMilestone = habit.progress.milestones.find(m => habit.streak.current < m.target);
 					const milestoneProgress = nextMilestone ? Math.round((habit.streak.current / nextMilestone.target) * 100) : 100;
-					const streakResets = habit.streak.history.filter((h, i, arr) => i > 0 && arr[i - 1].success && !h.success).length;
+					const streakResets = habit.streak.history.filter((h, i, arr) => i > 0 && arr[i - 1].success === 100 && h.success === 0).length;
 					const daysSinceCreation = Math.floor((new Date(DateHelper.today()).getTime() - new Date(habit.created_at).getTime()) / (1000 * 60 * 60 * 24));
 					// const expected = Math.floor(daysSinceCreation / habit.recurrence.interval);
 					// const reliability = expected > 0 ? Math.round((totalCompletions / expected) * 100) : 0;

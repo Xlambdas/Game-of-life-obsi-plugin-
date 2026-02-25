@@ -216,6 +216,7 @@ export const DEFAULT_SETTINGS: UserSettings = {
 	questsProgress: {}
 };
 
+// --- Shared Tasks enums and types ---
 
 export const DEFAULT_CATEGORIES = [
 	'Physical',
@@ -230,8 +231,10 @@ export type DefaultCategory = typeof DEFAULT_CATEGORIES[number] | string;
 
 export const DEFAULT_PRIORITIES = ['low', 'medium', 'high'] as const;
 export type DefaultPriority = typeof DEFAULT_PRIORITIES[number];
+
 export const DEFAULT_DIFFICULTIES = ['easy', 'normal', 'medium', 'hard', 'expert'] as const;
 export type DefaultDifficulty = typeof DEFAULT_DIFFICULTIES[number];
+
 export const DEFAULT_RECURRENCES = ['days', 'weeks', 'months', 'years'] as const;
 export type DefaultRecurrence = typeof DEFAULT_RECURRENCES[number];
 
@@ -391,9 +394,10 @@ export const DEFAULT_QUEST: Quest = {
 	notes: "This is a system-generated quest to help you get started. Complete it to unlock more features.",
 };
 
-/*
-* Habit Default Settings
-*/
+// --- Recurrence types and defaults ---
+
+export type Weekday = 0 | 1 | 2 | 3 | 4 | 5 | 6; // 0 = Sunday
+export type Nth = 1 | 2 | 3 | 4 | 5;
 
 export const WEEKDAY_LABELS: { label: string; short: string; value: Weekday }[] = [
 	{ label: 'Sunday', short: 'Su', value: 0 },
@@ -413,10 +417,6 @@ export const NTH_LABELS: { label: string; value: 1 | 2 | 3 | 4 | 5 }[] = [
 	{ label: '5th', value: 5 },
 ];
 
-export type Weekday = 0 | 1 | 2 | 3 | 4 | 5 | 6; // 0 = Sunday
-export type Nth = 1 | 2 | 3 | 4 | 5;
-
-
 export type IntervalRecurrence = {
 	type: 'interval';
 	interval: number;
@@ -429,17 +429,24 @@ export type WeekdayRecurrence = {
 	nth?: Array<Nth>;
 };
 
-export type Recurrence =
-	| IntervalRecurrence
-	| WeekdayRecurrence;
+export type Recurrence = IntervalRecurrence	| WeekdayRecurrence;
 
 export type RecurrenceType = Recurrence['type'];
-
 export const RECURRENCE_TYPES = ['interval', 'weekday'] as const satisfies readonly RecurrenceType[];
+
 export const DEFAULT_RECURRENCE: IntervalRecurrence = {
 	type: 'interval',
 	interval: 1,
 	unit: 'days',
+};
+
+/*
+* Habit Default Settings
+*/
+
+export type HabitCompletion = {
+	date: DateString;
+	success: number; // 0 = not done, 100 = complete, 1–99 = partial (future)
 };
 
 export interface Habit extends BaseTask {
@@ -448,10 +455,7 @@ export interface Habit extends BaseTask {
 	streak: {
 		current: number; // auto generated
 		best: number; // auto generated
-		history: {
-			date: DateString; // auto generated
-			success: boolean; // auto generated
-		}[];
+		history: HabitCompletion[]; // auto generated
 		isCompletedToday: boolean; // Auto generated based on history
 		nextDate: DateString; // Auto generated based on recurrence
 		lastCompletedDate: DateString; // Auto generated based on history
